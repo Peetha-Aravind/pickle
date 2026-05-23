@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Categories - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #fffbeb; font-family: sans-serif; }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .hide { display: none !important; }
+    </style>
+</head>
+<body class="text-gray-800 min-h-screen">
+    <nav class="glass-panel sticky top-0 z-50 shadow-sm border-b border-amber-200">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between h-16 items-center">
+            <a href="index.html" class="font-bold text-xl text-amber-900"><i class="fas fa-pepper-hot text-red-600 mr-2"></i>Spicy Delights Admin</a>
+            <a href="index.html" class="text-sm font-medium text-gray-600 hover:text-gray-900">Back to Store</a>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8 border-b border-amber-200 pb-4">
+            <h2 class="text-3xl font-bold"><i class="fas fa-boxes mr-2 text-amber-600"></i>Manage Categories</h2>
+            <button onclick="app.showCategoryModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium shadow"><i class="fas fa-plus mr-1"></i> Add Category</button>
+        </div>
+        <div id="categories-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
+    </main>
+
+    <!-- Modal -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hide">
+        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full">
+            <h3 class="text-lg font-bold mb-4">Add New Category</h3>
+            <div class="space-y-4 mb-6">
+                <input type="text" id="cat-name" placeholder="Category Name (e.g. Mango)" class="w-full px-3 py-2 border rounded">
+                <input type="text" id="cat-img" placeholder="Image URL (Optional)" class="w-full px-3 py-2 border rounded">
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button onclick="document.getElementById('modal').classList.add('hide')" class="px-4 py-2 bg-gray-100 rounded">Cancel</button>
+                <button onclick="app.saveCategory()" class="px-4 py-2 bg-amber-600 text-white rounded">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM", authDomain: "pickle-fdc54.firebaseapp.com", projectId: "pickle-fdc54" };
+        const db = getFirestore(initializeApp(firebaseConfig));
+        const appId = 'spicy-delights-app';
+
+        window.app = {
+            categories: [], products: [],
+            init: () => {
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'categories'), snap => {
+                    app.categories = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    app.render();
+                });
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'products'), snap => {
+                    app.products = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    app.render();
+                });
+            },
+            render: () => {
+                document.getElementById('categories-container').innerHTML = app.categories.map(cat => {
+                    const count = app.products.filter(p => p.categoryId === cat.id).length;
+                    return `
+                        <a href="manage-products.html?categoryId=${cat.id}" class="bg-white rounded-xl shadow border overflow-hidden hover:shadow-md block">
+                            <div class="h-40 overflow-hidden relative"><img src="${cat.image}" class="w-full h-full object-cover">
+                                <h3 class="absolute bottom-3 left-4 text-xl font-bold text-white drop-shadow-md">${cat.name}</h3>
+                            </div>
+                            <div class="p-4 flex justify-between"><span class="text-sm bg-gray-100 px-3 py-1 rounded-full">${count} Items</span><span class="text-amber-600 text-sm font-medium">Manage &rarr;</span></div>
+                        </a>`;
+                }).join('');
+            },
+            showCategoryModal: () => document.getElementById('modal').classList.remove('hide'),
+            saveCategory: async () => {
+                const name = document.getElementById('cat-name').value.trim();
+                const image = document.getElementById('cat-img').value.trim() || 'https://placehold.co/400x300/fef3c7/b45309?text=' + name;
+                if(!name) return alert("Name required");
+                await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'categories')), { name, image, createdAt: Date.now() });
+                document.getElementById('modal').classList.add('hide');
+            }
+        };
+        app.init();
+    </script>
+</body>
+</html>
