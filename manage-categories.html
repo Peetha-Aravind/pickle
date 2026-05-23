@@ -54,7 +54,8 @@
         window.app = {
             categories: [], products: [],
             init: () => {
-                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'categories'), snap => {
+                // Read from the root "categories" collection
+                onSnapshot(collection(db, 'categories'), snap => {
                     app.categories = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     app.render();
                 });
@@ -80,7 +81,10 @@
                 const name = document.getElementById('cat-name').value.trim();
                 const image = document.getElementById('cat-img').value.trim() || 'https://placehold.co/400x300/fef3c7/b45309?text=' + name;
                 if(!name) return alert("Name required");
-                await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'categories')), { name, image, createdAt: Date.now() });
+                
+                // Save to the root "categories" collection with an auto-generated ID
+                await setDoc(doc(collection(db, 'categories')), { name, image, createdAt: Date.now() });
+                
                 document.getElementById('modal').classList.add('hide');
             }
         };
