@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spicy Delights - Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fffbeb; }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .hide { display: none !important; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #fef3c7; }
+        ::-webkit-scrollbar-thumb { background: #d97706; border-radius: 4px; }
+    </style>
+</head>
+<body class="text-gray-800 min-h-screen flex flex-col">
+    <!-- Navigation -->
+    <nav class="glass-panel sticky top-0 z-50 shadow-sm border-b border-amber-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <a href="index.html" class="flex-shrink-0 flex items-center cursor-pointer decoration-transparent">
+                    <i class="fas fa-pepper-hot text-red-600 text-2xl mr-2"></i>
+                    <span class="font-bold text-xl text-amber-900 tracking-tight">Spicy Delights</span>
+                </a>
+                <div class="flex space-x-2 sm:space-x-4 items-center">
+                    <button id="nav-btn-user-login" onclick="app.login('user')" class="px-3 py-2 rounded-md text-sm font-medium text-amber-800 hover:bg-amber-100 transition-colors">
+                        <i class="fas fa-user mr-1"></i> <span class="hidden sm:inline">User Login</span>
+                    </button>
+                    <button id="nav-btn-admin-login" onclick="app.login('admin')" class="px-3 py-2 rounded-md text-sm font-medium text-red-700 hover:bg-red-50 transition-colors">
+                        <i class="fas fa-user-shield mr-1"></i> <span class="hidden sm:inline">Admin Login</span>
+                    </button>
+                    <a href="manage-categories.html" id="nav-btn-admin-dash" class="hide px-3 py-2 rounded-md text-sm font-medium text-amber-800 hover:bg-amber-100 transition-colors">Dashboard</a>
+                    <a href="cart.html" class="px-3 py-2 rounded-md text-sm font-medium bg-amber-600 text-white hover:bg-amber-700 transition-colors relative shadow-sm inline-block">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cart-badge" class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center hide">0</span>
+                    </a>
+                    <button id="nav-btn-logout" onclick="app.logout()" class="hide px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 relative">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold text-amber-900 mb-4">Authentic Homemade Pickles</h1>
+            <p class="text-lg text-amber-700">Taste the tradition in every bite.</p>
+        </div>
+        <div id="home-products-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div class="text-center col-span-full py-10 text-gray-500"><i class="fas fa-spinner fa-spin text-3xl mb-2"></i><br>Loading delicious pickles...</div>
+        </div>
+    </main>
+
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[110] flex flex-col space-y-2"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
+            authDomain: "pickle-fdc54.firebaseapp.com",
+            projectId: "pickle-fdc54",
+            storageBucket: "pickle-fdc54.firebasestorage.app",
+            messagingSenderId: "650348710985",
+            appId: "1:650348710985:web:b8eedb551a79b536578398"
+        };
+        const appId = 'spicy-delights-app';
+
+        const firebaseApp = initializeApp(firebaseConfig);
+        const auth = getAuth(firebaseApp);
+        const db = getFirestore(firebaseApp);
+        const googleProvider = new GoogleAuthProvider();
+
+        window.app = {
+            state: { user: null, isInteractiveLogin: false, isAdmin: false, products: [], categories: [], cart: [] },
+            
+            showToast: (msg, type = 'success') => {
+                const toast = document.createElement('div');
+                toast.className = `fade-in px-4 py-3 rounded-lg shadow-lg text-white font-medium flex items-center space-x-2 ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}`;
+                toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> <span>${msg}</span>`;
+                document.getElementById('toast-container').appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            },
+
+            initAuth: async () => {
+                onAuthStateChanged(auth, (user) => {
+                    app.state.user = user;
+                    app.state.isInteractiveLogin = user && !user.isAnonymous;
+                    app.updateNavUI();
+                    if (user) app.initDataListeners();
+                });
+                if (!auth.currentUser) await signInAnonymously(auth);
+            },
+
+            login: async (role) => {
+                try {
+                    await signInWithPopup(auth, googleProvider);
+                    app.state.isAdmin = (role === 'admin');
+                    app.showToast(`Logged in as ${role}`);
+                    if (role === 'admin') window.location.href = 'manage-categories.html';
+                } catch (error) { app.showToast(error.message, "error"); }
+            },
+
+            logout: async () => {
+                await signOut(auth);
+                window.location.reload();
+            },
+
+            updateNavUI: () => {
+                const isLoggedIn = app.state.isInteractiveLogin;
+                document.getElementById('nav-btn-user-login').classList.toggle('hide', isLoggedIn);
+                document.getElementById('nav-btn-admin-login').classList.toggle('hide', isLoggedIn);
+                document.getElementById('nav-btn-logout').classList.toggle('hide', !isLoggedIn);
+                document.getElementById('nav-btn-admin-dash').classList.toggle('hide', !app.state.isAdmin);
+            },
+
+            initDataListeners: () => {
+                const uid = app.state.user.uid;
+                const prodRef = collection(db, 'artifacts', appId, 'public', 'data', 'products');
+                const catRef = collection(db, 'artifacts', appId, 'public', 'data', 'categories');
+                const cartRef = collection(db, 'artifacts', appId, 'users', uid, 'cart');
+
+                onSnapshot(catRef, (snap) => {
+                    app.state.categories = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    app.renderHome();
+                });
+
+                onSnapshot(prodRef, (snap) => {
+                    app.state.products = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    app.renderHome();
+                });
+
+                onSnapshot(cartRef, (snap) => {
+                    app.state.cart = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    const totalItems = app.state.cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+                    const badge = document.getElementById('cart-badge');
+                    if (totalItems > 0) { badge.innerText = totalItems; badge.classList.remove('hide'); } 
+                    else { badge.classList.add('hide'); }
+                });
+            },
+
+            renderHome: () => {
+                const container = document.getElementById('home-products-container');
+                if (app.state.products.length === 0) return container.innerHTML = '<p class="col-span-full text-center">No products found.</p>';
+                
+                container.innerHTML = app.state.products.map(prod => {
+                    const cat = app.state.categories.find(c => c.id === prod.categoryId);
+                    const catName = cat ? cat.name : 'Pickle';
+                    const variants = prod.variants || [{weight: prod.weight, price: prod.price}];
+                    let displayPrice = variants[0]?.price || 0;
+                    
+                    let variantsHtml = variants.length > 1 
+                        ? `<select id="variant-${prod.id}" onchange="app.changePrice('${prod.id}')" class="w-full mb-3 p-1 text-sm border rounded">` + variants.map((v, i) => `<option value="${i}">${v.weight}</option>`).join('') + `</select>`
+                        : `<p class="text-sm text-gray-600 mb-3"><i class="fas fa-weight-hanging text-amber-500 mr-2"></i> ${variants[0]?.weight || ''}</p>`;
+
+                    return `
+                        <div class="bg-white rounded-2xl shadow border border-amber-50 overflow-hidden flex flex-col group">
+                            <div class="h-56 overflow-hidden relative">
+                                <span class="absolute top-3 left-3 bg-white/90 text-amber-800 text-xs font-bold px-2 py-1 rounded shadow-sm z-10">${catName}</span>
+                                <img src="${prod.image}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 flex-grow flex flex-col justify-between">
+                                <div><h3 class="text-xl font-bold mb-2">${prod.name}</h3>${variantsHtml}</div>
+                                <div class="flex justify-between items-center mt-2 pt-4 border-t border-gray-100">
+                                    <span id="price-${prod.id}" class="text-2xl font-bold text-green-600">₹${displayPrice}</span>
+                                    <button onclick="app.addToCart('${prod.id}')" class="bg-amber-100 text-amber-700 hover:bg-amber-600 hover:text-white h-10 w-10 rounded-full flex items-center justify-center transition-colors"><i class="fas fa-cart-plus"></i></button>
+                                </div>
+                            </div>
+                        </div>`;
+                }).join('');
+            },
+
+            changePrice: (id) => {
+                const select = document.getElementById(`variant-${id}`);
+                const prod = app.state.products.find(p => p.id === id);
+                if(prod && select) document.getElementById(`price-${id}`).innerText = `₹${prod.variants[parseInt(select.value)].price}`;
+            },
+
+            addToCart: async (productId) => {
+                if(!app.state.user) return app.showToast("Please login first", "error");
+                const prod = app.state.products.find(p => p.id === productId);
+                const select = document.getElementById(`variant-${productId}`);
+                const variant = (prod.variants || [{weight: prod.weight, price: prod.price}])[select ? parseInt(select.value) : 0];
+                
+                try {
+                    const cartRef = collection(db, 'artifacts', appId, 'users', app.state.user.uid, 'cart');
+                    const existing = app.state.cart.find(item => item.productId === productId && item.weight === variant.weight);
+                    
+                    if(existing) await setDoc(doc(cartRef, existing.id), { ...existing, quantity: existing.quantity + 1 });
+                    else await setDoc(doc(cartRef), { productId: prod.id, name: prod.name, price: variant.price, image: prod.image, weight: variant.weight, quantity: 1, addedAt: Date.now() });
+                    app.showToast(`${prod.name} added to cart!`);
+                } catch(e) { app.showToast(e.message, "error"); }
+            }
+        };
+        window.addEventListener('DOMContentLoaded', app.initAuth);
+    </script>
+</body>
+</html>
