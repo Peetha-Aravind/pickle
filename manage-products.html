@@ -29,7 +29,6 @@
 
         const firebaseConfig = { apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM", authDomain: "pickle-fdc54.firebaseapp.com", projectId: "pickle-fdc54" };
         const db = getFirestore(initializeApp(firebaseConfig));
-        const appId = 'spicy-delights-app';
         
         // Extract category ID from URL parameters
         const urlParams = new URLSearchParams(window.location.search);
@@ -40,13 +39,13 @@
             init: async () => {
                 if(!categoryId) return window.location.href = 'manage-categories.html';
                 
-                // Fetch category name
-                const catDoc = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'categories', categoryId));
+                // Fetch category name from the new root 'categories' collection
+                const catDoc = await getDoc(doc(db, 'categories', categoryId));
                 document.getElementById('page-title').innerText = catDoc.exists() ? `Pickles in "${catDoc.data().name}"` : "Category Products";
 
-                // Listen to products in this category
-                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'products'), snap => {
-                    app.products = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })).filter(p => p.categoryId === categoryId);
+                // Listen to products directly from the category's 'products' subcollection
+                onSnapshot(collection(db, 'categories', categoryId, 'products'), snap => {
+                    app.products = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     app.render();
                 });
             },
@@ -74,7 +73,13 @@
             },
             addProduct: () => window.location.href = `product.html?categoryId=${categoryId}`,
             deleteProduct: async (id) => {
-                if(confirm("Delete this pickle?")) await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', id));
+                if(confirm("Delete this pickle?")) {
+                    // Delete from both the root collection and the category subcollection
+                    await Promise.all([
+                        deleteDoc(doc(db, 'products', id)),
+                        deleteDoc(doc(db, 'categories', categoryId, 'products', id))
+                    ]);
+                }
             }
         };
         app.init();
