@@ -25,7 +25,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, doc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // Added updateDoc to imports
+        import { getFirestore, collection, onSnapshot, doc, getDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM", authDomain: "pickle-fdc54.firebaseapp.com", projectId: "pickle-fdc54" };
         const db = getFirestore(initializeApp(firebaseConfig));
@@ -55,18 +56,35 @@
                 
                 container.innerHTML = app.products.map(prod => {
                     const price = prod.variants ? prod.variants[0].price : prod.price;
+                    // Default to true if the property doesn't exist on older documents
+                    const isAvailable = prod.isavailable !== false; 
+                    
                     return `
                         <div class="bg-white rounded-xl shadow border overflow-hidden flex flex-col">
                             <img src="${prod.image}" class="h-48 w-full object-cover">
                             <div class="p-4 flex-grow flex flex-col justify-between">
                                 <div><h3 class="text-lg font-bold">${prod.name}</h3></div>
-                                <div class="flex justify-between items-center mt-4">
+                                
+                                <div class="flex justify-between items-center mt-4 mb-2">
                                     <span class="text-lg font-bold text-green-700">₹${price}</span>
                                     <div>
                                         <a href="product.html?id=${prod.id}&categoryId=${categoryId}" class="text-blue-500 p-2"><i class="fas fa-edit"></i></a>
                                         <button onclick="app.deleteProduct('${prod.id}')" class="text-red-500 p-2"><i class="fas fa-trash"></i></button>
                                     </div>
                                 </div>
+
+                                <!-- Availability Toggle -->
+                                <div class="flex justify-between items-center border-t border-gray-100 pt-3 mt-1">
+                                    <span class="text-sm font-medium ${isAvailable ? 'text-gray-700' : 'text-gray-400'}">
+                                        ${isAvailable ? 'Available' : 'Unavailable'}
+                                    </span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" ${isAvailable ? 'checked' : ''} 
+                                            onchange="app.toggleAvailability('${prod.id}', ${isAvailable})">
+                                        <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-amber-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                    </label>
+                                </div>
+
                             </div>
                         </div>`;
                 }).join('');
@@ -79,6 +97,19 @@
                         deleteDoc(doc(db, 'products', id)),
                         deleteDoc(doc(db, 'categories', categoryId, 'products', id))
                     ]);
+                }
+            },
+            toggleAvailability: async (id, currentState) => {
+                try {
+                    const newState = !currentState;
+                    // Update the status in both collections
+                    await Promise.all([
+                        updateDoc(doc(db, 'products', id), { isavailable: newState }),
+                        updateDoc(doc(db, 'categories', categoryId, 'products', id), { isavailable: newState })
+                    ]);
+                } catch (error) {
+                    console.error("Error updating product availability: ", error);
+                    alert("Failed to update availability. Please try again.");
                 }
             }
         };
