@@ -33,11 +33,11 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // Added 'collection' to imports
+        import { getFirestore, collection, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM", authDomain: "pickle-fdc54.firebaseapp.com", projectId: "pickle-fdc54" };
         const db = getFirestore(initializeApp(firebaseConfig));
-        const appId = 'spicy-delights-app';
         
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get('id');
@@ -50,7 +50,8 @@
             init: async () => {
                 if(productId) {
                     document.getElementById('editor-title').innerText = "Edit Pickle";
-                    const docSnap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', productId));
+                    // Read from the root 'products' collection
+                    const docSnap = await getDoc(doc(db, 'products', productId));
                     if(docSnap.exists()) {
                         const data = docSnap.data();
                         document.getElementById('prod-name').value = data.name;
@@ -75,11 +76,34 @@
                 const name = document.getElementById('prod-name').value;
                 const image = document.getElementById('prod-img').value || 'https://placehold.co/400x300/fef3c7/b45309?text=' + name;
                 if(!name || app.variants.length === 0) return alert("Valid name and at least one variant required.");
+                if(!categoryId) return alert("Category ID is missing. Cannot save.");
                 
                 const data = { name, image, variants: app.variants, categoryId, price: app.variants[0].price, weight: app.variants[0].weight };
-                const prodRef = productId ? doc(db, 'artifacts', appId, 'public', 'data', 'products', productId) : doc(collection(db, 'artifacts', appId, 'public', 'data', 'products'));
                 
-                productId ? await updateDoc(prodRef, data) : await setDoc(prodRef, {...data, createdAt: Date.now()});
+                if (productId) {
+                    // Updating an existing product: Update in BOTH collections
+                    const rootProdRef = doc(db, 'products', productId);
+                    const subProdRef = doc(db, 'categories', categoryId, 'products', productId);
+                    
+                    // Use setDoc with { merge: true } for the subcollection to handle cases where it might not exist yet
+                    await Promise.all([
+                        updateDoc(rootProdRef, data),
+                        setDoc(subProdRef, data, { merge: true })
+                    ]);
+                } else {
+                    // Creating a new product: Generate ID in root collection, save to BOTH
+                    const rootProdRef = doc(collection(db, 'products'));
+                    const newProductId = rootProdRef.id; // Auto-generated ID
+                    const subProdRef = doc(db, 'categories', categoryId, 'products', newProductId);
+                    
+                    const saveData = { ...data, createdAt: Date.now() };
+                    
+                    await Promise.all([
+                        setDoc(rootProdRef, saveData),
+                        setDoc(subProdRef, saveData)
+                    ]);
+                }
+
                 window.location.href = `manage-products.html?categoryId=${categoryId}`;
             }
         };
