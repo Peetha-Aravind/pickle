@@ -45,7 +45,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // Added updateDoc to imports
+        import { getFirestore, collection, onSnapshot, doc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM", authDomain: "pickle-fdc54.firebaseapp.com", projectId: "pickle-fdc54" };
         const db = getFirestore(initializeApp(firebaseConfig));
@@ -54,7 +55,6 @@
         window.app = {
             categories: [], products: [],
             init: () => {
-                // Read from the root "categories" collection
                 onSnapshot(collection(db, 'categories'), snap => {
                     app.categories = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     app.render();
@@ -67,13 +67,33 @@
             render: () => {
                 document.getElementById('categories-container').innerHTML = app.categories.map(cat => {
                     const count = app.products.filter(p => p.categoryId === cat.id).length;
+                    // Treat as available if it's explicitly true or if the field doesn't exist yet (for older docs)
+                    const isAvailable = cat.isavailable !== false; 
+
                     return `
-                        <a href="manage-products.html?categoryId=${cat.id}" class="bg-white rounded-xl shadow border overflow-hidden hover:shadow-md block">
-                            <div class="h-40 overflow-hidden relative"><img src="${cat.image}" class="w-full h-full object-cover">
-                                <h3 class="absolute bottom-3 left-4 text-xl font-bold text-white drop-shadow-md">${cat.name}</h3>
+                        <div class="bg-white rounded-xl shadow border overflow-hidden hover:shadow-md block">
+                            <a href="manage-products.html?categoryId=${cat.id}" class="block">
+                                <div class="h-40 overflow-hidden relative"><img src="${cat.image}" class="w-full h-full object-cover">
+                                    <h3 class="absolute bottom-3 left-4 text-xl font-bold text-white drop-shadow-md">${cat.name}</h3>
+                                </div>
+                            </a>
+                            <div class="p-4 flex flex-col space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm bg-gray-100 px-3 py-1 rounded-full">${count} Items</span>
+                                    <a href="manage-products.html?categoryId=${cat.id}" class="text-amber-600 text-sm font-medium">Manage &rarr;</a>
+                                </div>
+                                <div class="flex justify-between items-center border-t border-gray-100 pt-3 mt-1">
+                                    <span class="text-sm font-medium ${isAvailable ? 'text-gray-700' : 'text-gray-400'}">
+                                        ${isAvailable ? 'Visible to customers' : 'Hidden from customers'}
+                                    </span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" ${isAvailable ? 'checked' : ''} 
+                                            onchange="app.toggleAvailability(event, '${cat.id}', ${isAvailable})">
+                                        <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-amber-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                    </label>
+                                </div>
                             </div>
-                            <div class="p-4 flex justify-between"><span class="text-sm bg-gray-100 px-3 py-1 rounded-full">${count} Items</span><span class="text-amber-600 text-sm font-medium">Manage &rarr;</span></div>
-                        </a>`;
+                        </div>`;
                 }).join('');
             },
             showCategoryModal: () => document.getElementById('modal').classList.remove('hide'),
@@ -82,10 +102,26 @@
                 const image = document.getElementById('cat-img').value.trim() || 'https://placehold.co/400x300/fef3c7/b45309?text=' + name;
                 if(!name) return alert("Name required");
                 
-                // Save to the root "categories" collection with an auto-generated ID
-                await setDoc(doc(collection(db, 'categories')), { name, image, createdAt: Date.now() });
+                // Added isavailable: true default state for new categories
+                await setDoc(doc(collection(db, 'categories')), { 
+                    name, 
+                    image, 
+                    isavailable: true,
+                    createdAt: Date.now() 
+                });
                 
                 document.getElementById('modal').classList.add('hide');
+            },
+            toggleAvailability: async (event, id, currentState) => {
+                event.stopPropagation();
+                try {
+                    await updateDoc(doc(db, 'categories', id), {
+                        isavailable: !currentState
+                    });
+                } catch (error) {
+                    console.error("Error updating category: ", error);
+                    alert("Failed to update availability. Please try again.");
+                }
             }
         };
         app.init();
