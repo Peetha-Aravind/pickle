@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Editor - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-amber-50 text-gray-800 min-h-screen p-8">
+    
+    <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+        <div class="mb-4"><a id="back-link" href="#" class="text-amber-700 font-medium">&larr; Back to Products</a></div>
+        <h2 id="editor-title" class="text-2xl font-bold mb-6 border-b pb-4">Add New Pickle</h2>
+        
+        <div class="space-y-4">
+            <input type="text" id="prod-name" class="w-full px-4 py-2 border rounded" placeholder="Pickle Name (e.g. Extra Spicy Mango)">
+            <input type="text" id="prod-img" class="w-full px-4 py-2 border rounded" placeholder="Image URL">
+            
+            <div class="border rounded-lg p-4 bg-gray-50">
+                <div class="flex justify-between items-center mb-3">
+                    <label class="font-bold">Quantity Variants & Pricing</label>
+                    <button onclick="app.addVariant()" class="text-xs bg-amber-200 px-3 py-1 rounded shadow">+ Add Variant</button>
+                </div>
+                <div id="variants-container" class="space-y-3"></div>
+            </div>
+
+            <div class="flex justify-end pt-4">
+                <button onclick="app.savePickle()" class="px-6 py-2 bg-green-600 text-white rounded-lg shadow font-bold">Save Pickle</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM", authDomain: "pickle-fdc54.firebaseapp.com", projectId: "pickle-fdc54" };
+        const db = getFirestore(initializeApp(firebaseConfig));
+        const appId = 'spicy-delights-app';
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+        const categoryId = urlParams.get('categoryId');
+
+        document.getElementById('back-link').href = `manage-products.html?categoryId=${categoryId}`;
+
+        window.app = {
+            variants: [{ weight: '500g', price: 150 }],
+            init: async () => {
+                if(productId) {
+                    document.getElementById('editor-title').innerText = "Edit Pickle";
+                    const docSnap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', productId));
+                    if(docSnap.exists()) {
+                        const data = docSnap.data();
+                        document.getElementById('prod-name').value = data.name;
+                        document.getElementById('prod-img').value = data.image;
+                        app.variants = data.variants || [{weight: data.weight, price: data.price}];
+                    }
+                }
+                app.renderVariants();
+            },
+            renderVariants: () => {
+                document.getElementById('variants-container').innerHTML = app.variants.map((v, i) => `
+                    <div class="flex space-x-2 items-center bg-white p-2 rounded border">
+                        <input type="text" value="${v.weight}" onchange="app.updateVar(${i}, 'weight', this.value)" class="flex-1 px-3 py-1 border rounded" placeholder="Weight (250g)">
+                        <input type="number" value="${v.price}" onchange="app.updateVar(${i}, 'price', this.value)" class="flex-1 px-3 py-1 border rounded" placeholder="Price (₹)">
+                        <button onclick="app.removeVar(${i})" class="text-red-500 p-2"><i class="fas fa-times"></i></button>
+                    </div>`).join('');
+            },
+            addVariant: () => { app.variants.push({weight: '', price: ''}); app.renderVariants(); },
+            removeVar: (i) => { if(app.variants.length > 1) { app.variants.splice(i, 1); app.renderVariants(); } },
+            updateVar: (i, field, val) => { app.variants[i][field] = field === 'price' ? parseFloat(val) : val; },
+            savePickle: async () => {
+                const name = document.getElementById('prod-name').value;
+                const image = document.getElementById('prod-img').value || 'https://placehold.co/400x300/fef3c7/b45309?text=' + name;
+                if(!name || app.variants.length === 0) return alert("Valid name and at least one variant required.");
+                
+                const data = { name, image, variants: app.variants, categoryId, price: app.variants[0].price, weight: app.variants[0].weight };
+                const prodRef = productId ? doc(db, 'artifacts', appId, 'public', 'data', 'products', productId) : doc(collection(db, 'artifacts', appId, 'public', 'data', 'products'));
+                
+                productId ? await updateDoc(prodRef, data) : await setDoc(prodRef, {...data, createdAt: Date.now()});
+                window.location.href = `manage-products.html?categoryId=${categoryId}`;
+            }
+        };
+        app.init();
+    </script>
+</body>
+</html>
