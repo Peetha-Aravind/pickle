@@ -59,6 +59,7 @@
 
     </main>
 
+    <!-- Add Slide Modal -->
     <div id="slide-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-lg w-full mx-4">
             <div class="flex justify-between items-center mb-4 border-b pb-2">
@@ -96,46 +97,50 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        // Using getDocs and getDoc for initial load, allowing local edits before 'Save Changes'
-        import { getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM", authDomain: "pickle-fdc54.firebaseapp.com", projectId: "pickle-fdc54" };
         const db = getFirestore(initializeApp(firebaseConfig));
+
+        // ─── Single document reference ───────────────────────────────────────────
+        const MASTER_DOC = doc(db, 'landing_page', 'master');
 
         window.app = {
             slides: [],
             isHeroEnabled: true,
             
             init: async () => {
-                // 1. Fetch Master Config
-                const configSnap = await getDoc(doc(db, 'landing_page', 'config'));
-                if (configSnap.exists()) {
-                    app.isHeroEnabled = configSnap.data().isHeroEnabled !== false; 
-                }
+                try {
+                    // ONE READ for the entire landing page master document
+                    const snap = await getDoc(MASTER_DOC);
+                    if (snap.exists()) {
+                        const data = snap.data();
 
-                // 2. Fetch Slides
-                const slidesSnap = await getDocs(collection(db, 'landing_page', 'config', 'hero_slides'));
-                app.slides = slidesSnap.docs.map(d => {
-                    const data = d.data();
-                    return {
-                        id: d.id,
-                        ...data,
-                        isActive: data.isActive !== false // default to true
-                    };
-                }).sort((a, b) => a.createdAt - b.createdAt);
+                        // Read hero toggle from config sub-field
+                        app.isHeroEnabled = data.config?.isHeroEnabled !== false;
+
+                        // Read slides from hero_slides sub-field
+                        const rawSlides = data.hero_slides?.slides || [];
+                        app.slides = rawSlides.map(slide => ({
+                            ...slide,
+                            isActive: slide.isActive !== false
+                        }));
+                    }
+                } catch (error) {
+                    console.error("Error loading data:", error);
+                    alert("Failed to load hero section data.");
+                }
                 
                 app.render();
             },
 
             render: () => {
-                // Render Master Toggle
                 const toggle = document.getElementById('hero-toggle');
                 const statusText = document.getElementById('hero-status-text');
                 toggle.checked = app.isHeroEnabled;
                 statusText.innerText = app.isHeroEnabled ? "Enabled" : "Disabled";
                 statusText.className = `font-bold ${app.isHeroEnabled ? 'text-green-600' : 'text-red-500'}`;
 
-                // Render Slides
                 const container = document.getElementById('slides-container');
                 if (app.slides.length === 0) {
                     container.innerHTML = `<div class="text-center py-8 text-gray-400 italic">No slides added yet. Click "Add New Slide" to begin.</div>`;
@@ -146,17 +151,14 @@
                     <div class="flex flex-col sm:flex-row items-center justify-between bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow transition-all ${!slide.isActive ? 'opacity-70 bg-gray-50' : ''}">
                         <div class="flex items-center space-x-4 w-full sm:w-auto">
                             <span class="text-gray-400 font-bold text-lg w-6">${index + 1}.</span>
-                            
                             <div class="relative">
                                 <img src="${slide.desktopImg}" class="w-24 h-16 rounded object-cover border border-gray-300">
                                 <span class="absolute -top-2 -right-2 bg-gray-800 text-white text-[10px] px-1.5 py-0.5 rounded shadow"><i class="fas fa-desktop"></i></span>
                             </div>
-                            
                             <div class="relative">
                                 <img src="${slide.mobileImg}" class="w-12 h-16 rounded object-cover border border-gray-300">
                                 <span class="absolute -top-2 -right-2 bg-gray-800 text-white text-[10px] px-1.5 py-0.5 rounded shadow"><i class="fas fa-mobile-alt"></i></span>
                             </div>
-                            
                             <div class="ml-4 hidden md:block w-48">
                                 ${slide.btnName ? `
                                     <div class="text-sm font-bold text-gray-800">Btn: <span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-xs">${slide.btnName}</span></div>
@@ -164,16 +166,14 @@
                                 ` : `<span class="text-sm text-gray-400 italic">No button</span>`}
                             </div>
                         </div>
-                        
                         <div class="flex items-center space-x-6 mt-4 sm:mt-0">
                             <div class="flex flex-col items-center">
                                 <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer" ${slide.isActive ? 'checked' : ''} onchange="app.toggleSlideStatus(${index})">
+                                    <input type="checkbox" class="sr-only peer" ${slide.isActive ? 'checked' : ''} onchange="app.toggleSlideStatus('${slide.id}')">
                                     <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-amber-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
                                 </label>
                                 <span class="text-xs font-bold mt-1 ${slide.isActive ? 'text-blue-600' : 'text-gray-400'}">${slide.isActive ? 'Active' : 'Inactive'}</span>
                             </div>
-
                             <button onclick="app.deleteSlide('${slide.id}')" class="p-3 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete Slide">
                                 <i class="fas fa-trash-alt text-lg"></i>
                             </button>
@@ -182,29 +182,28 @@
                 `).join('');
             },
 
-            // Updates local state
             toggleMaster: (event) => {
                 app.isHeroEnabled = event.target.checked;
                 app.render();
             },
 
-            // Updates local state
-            toggleSlideStatus: (index) => {
-                app.slides[index].isActive = !app.slides[index].isActive;
-                app.render();
+            toggleSlideStatus: (id) => {
+                const slideIndex = app.slides.findIndex(s => s.id === id);
+                if (slideIndex > -1) {
+                    app.slides[slideIndex].isActive = !app.slides[slideIndex].isActive;
+                    app.render();
+                }
             },
 
-            // Modal Controls
             openModal: () => document.getElementById('slide-modal').classList.remove('hidden'),
             closeModal: () => {
                 document.getElementById('slide-modal').classList.add('hidden');
-                document.getElementById('slide-desktop').value = '';
-                document.getElementById('slide-mobile').value = '';
-                document.getElementById('slide-btn-name').value = '';
-                document.getElementById('slide-btn-link').value = '';
+                ['slide-desktop','slide-mobile','slide-btn-name','slide-btn-link'].forEach(id => {
+                    document.getElementById(id).value = '';
+                });
             },
 
-            // Saves a new slide to DB immediately, then updates local array
+            // Writes only to hero_slides sub-field using merge — other sub-fields untouched
             saveNewSlide: async () => {
                 const desktopImg = document.getElementById('slide-desktop').value.trim();
                 const mobileImg = document.getElementById('slide-mobile').value.trim();
@@ -219,13 +218,18 @@
 
                 try {
                     const newSlide = {
+                        id: Date.now().toString(),
                         desktopImg, mobileImg, btnName, btnLink,
-                        isActive: true, // Default active
+                        isActive: true,
                         createdAt: Date.now()
                     };
-                    const docRef = await addDoc(collection(db, 'landing_page', 'config', 'hero_slides'), newSlide);
-                    
-                    app.slides.push({ id: docRef.id, ...newSlide });
+                    app.slides.push(newSlide);
+
+                    // Merge write — only hero_slides key is touched
+                    await setDoc(MASTER_DOC, {
+                        hero_slides: { slides: app.slides }
+                    }, { merge: true });
+
                     app.closeModal();
                     app.render();
                 } catch (error) {
@@ -240,8 +244,12 @@
             deleteSlide: async (id) => {
                 if (confirm("Delete this slide entirely?")) {
                     try {
-                        await deleteDoc(doc(db, 'landing_page', 'config', 'hero_slides', id));
                         app.slides = app.slides.filter(s => s.id !== id);
+
+                        await setDoc(MASTER_DOC, {
+                            hero_slides: { slides: app.slides }
+                        }, { merge: true });
+
                         app.render();
                     } catch (error) {
                         console.error(error);
@@ -250,34 +258,29 @@
                 }
             },
 
-            // Bulk saves the Master Toggle and all Slide statuses
+            // Saves hero toggle (config sub-field) + all slide statuses (hero_slides sub-field)
             saveAllChanges: async () => {
                 const saveBtn = document.getElementById('save-btn');
                 saveBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>Saving...`;
 
                 try {
-                    // 1. Save master toggle
-                    await setDoc(doc(db, 'landing_page', 'config'), { 
-                        isHeroEnabled: app.isHeroEnabled,
-                        updatedAt: Date.now()
+                    await setDoc(MASTER_DOC, {
+                        config: {
+                            isHeroEnabled: app.isHeroEnabled,
+                            updatedAt: Date.now()
+                        },
+                        hero_slides: {
+                            slides: app.slides,
+                            updatedAt: Date.now()
+                        }
                     }, { merge: true });
-
-                    // 2. Save active status for all slides
-                    const promises = app.slides.map(slide => 
-                        updateDoc(doc(db, 'landing_page', 'config', 'hero_slides', slide.id), { 
-                            isActive: slide.isActive 
-                        })
-                    );
-                    await Promise.all(promises);
 
                     saveBtn.innerHTML = `<i class="fas fa-check mr-2"></i>Saved!`;
                     saveBtn.classList.replace('bg-green-600', 'bg-blue-600');
-                    
                     setTimeout(() => {
                         saveBtn.innerHTML = `<i class="fas fa-save mr-2"></i>Save Changes`;
                         saveBtn.classList.replace('bg-blue-600', 'bg-green-600');
                     }, 2000);
-
                 } catch (error) {
                     console.error("Error saving changes:", error);
                     alert("Failed to save all changes.");
