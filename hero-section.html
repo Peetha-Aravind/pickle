@@ -59,7 +59,6 @@
 
     </main>
 
-    <!-- Add Slide Modal -->
     <div id="slide-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-lg w-full mx-4">
             <div class="flex justify-between items-center mb-4 border-b pb-2">
@@ -111,15 +110,11 @@
             
             init: async () => {
                 try {
-                    // ONE READ for the entire landing page master document
                     const snap = await getDoc(MASTER_DOC);
                     if (snap.exists()) {
                         const data = snap.data();
-
-                        // Read hero toggle from config sub-field
                         app.isHeroEnabled = data.config?.isHeroEnabled !== false;
 
-                        // Read slides from hero_slides sub-field
                         const rawSlides = data.hero_slides?.slides || [];
                         app.slides = rawSlides.map(slide => ({
                             ...slide,
@@ -168,8 +163,11 @@
                         </div>
                         <div class="flex items-center space-x-6 mt-4 sm:mt-0">
                             <div class="flex flex-col items-center">
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer" ${slide.isActive ? 'checked' : ''} onchange="app.toggleSlideStatus('${slide.id}')">
+                                <label class="relative inline-flex items-center ${app.isHeroEnabled ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}">
+                                    <input type="checkbox" class="sr-only peer" 
+                                        ${slide.isActive ? 'checked' : ''} 
+                                        ${!app.isHeroEnabled ? 'disabled' : ''} 
+                                        onchange="app.toggleSlideStatus('${slide.id}')">
                                     <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-amber-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
                                 </label>
                                 <span class="text-xs font-bold mt-1 ${slide.isActive ? 'text-blue-600' : 'text-gray-400'}">${slide.isActive ? 'Active' : 'Inactive'}</span>
@@ -184,10 +182,21 @@
 
             toggleMaster: (event) => {
                 app.isHeroEnabled = event.target.checked;
+                
+                // NEW LOGIC: If master is disabled, force all slides to inactive
+                if (!app.isHeroEnabled) {
+                    app.slides.forEach(slide => {
+                        slide.isActive = false;
+                    });
+                }
+                
                 app.render();
             },
 
             toggleSlideStatus: (id) => {
+                // Safeguard: Do nothing if the main toggle is turned off
+                if (!app.isHeroEnabled) return; 
+
                 const slideIndex = app.slides.findIndex(s => s.id === id);
                 if (slideIndex > -1) {
                     app.slides[slideIndex].isActive = !app.slides[slideIndex].isActive;
@@ -203,7 +212,6 @@
                 });
             },
 
-            // Writes only to hero_slides sub-field using merge — other sub-fields untouched
             saveNewSlide: async () => {
                 const desktopImg = document.getElementById('slide-desktop').value.trim();
                 const mobileImg = document.getElementById('slide-mobile').value.trim();
@@ -220,12 +228,11 @@
                     const newSlide = {
                         id: Date.now().toString(),
                         desktopImg, mobileImg, btnName, btnLink,
-                        isActive: true,
+                        isActive: app.isHeroEnabled, // Sets new slide to inactive if master is currently off
                         createdAt: Date.now()
                     };
                     app.slides.push(newSlide);
 
-                    // Merge write — only hero_slides key is touched
                     await setDoc(MASTER_DOC, {
                         hero_slides: { slides: app.slides }
                     }, { merge: true });
@@ -258,7 +265,6 @@
                 }
             },
 
-            // Saves hero toggle (config sub-field) + all slide statuses (hero_slides sub-field)
             saveAllChanges: async () => {
                 const saveBtn = document.getElementById('save-btn');
                 saveBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>Saving...`;
