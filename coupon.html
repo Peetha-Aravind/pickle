@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Coupons - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #fffbeb; font-family: sans-serif; }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body class="text-gray-800 min-h-screen pb-20">
+    <nav class="glass-panel sticky top-0 z-50 shadow-sm border-b border-amber-200">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between h-16 items-center">
+            <a href="index.html" class="font-bold text-xl text-amber-900"><i class="fas fa-pepper-hot text-red-600 mr-2"></i>Spicy Delights Admin</a>
+            <a href="index.html" class="text-sm font-medium text-gray-600 hover:text-gray-900">Back to Dashboard</a>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
+        
+        <div class="flex justify-between items-center border-b border-amber-200 pb-4">
+            <div>
+                <h2 class="text-3xl font-bold"><i class="fas fa-ticket-alt mr-2 text-amber-600"></i>Manage Coupons</h2>
+                <p class="text-gray-600 mt-1">Create and control discount codes for your customers.</p>
+            </div>
+            <button onclick="app.openModal()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-bold shadow-lg transition-transform transform hover:scale-105">
+                <i class="fas fa-plus mr-2"></i>Add New Coupon
+            </button>
+        </div>
+
+        <div id="coupons-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="col-span-full text-center py-10 text-gray-400 italic">
+                <i class="fas fa-spinner fa-spin mr-2"></i>Loading coupons...
+            </div>
+        </div>
+
+    </main>
+
+    <div id="coupon-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 id="modal-title" class="text-xl font-bold text-gray-800">Create New Coupon</h3>
+                <button onclick="app.closeModal()" class="text-gray-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="text-sm font-bold text-gray-700 block mb-1">Coupon Code (Name) *</label>
+                    <input type="text" id="c-name" class="w-full px-4 py-2 border rounded-lg bg-gray-50 uppercase focus:ring-2 focus:ring-amber-400 focus:outline-none transition-colors" placeholder="e.g., DIWALI20">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm font-bold text-gray-700 block mb-1">Discount Type *</label>
+                        <select id="c-type" onchange="app.updateValuePlaceholder()" class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                            <option value="percentage">Percentage (%)</option>
+                            <option value="flat">Flat Amount (₹)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-sm font-bold text-gray-700 block mb-1">Discount Value *</label>
+                        <div class="relative flex items-center">
+                            <span id="value-prefix" class="absolute left-3 text-gray-500 font-bold hidden">₹</span>
+                            <input type="number" id="c-value" min="0" class="w-full pl-4 pr-8 py-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-amber-400 focus:outline-none" placeholder="20">
+                            <span id="value-suffix" class="absolute right-3 text-gray-500 font-bold">%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm font-bold text-gray-700 block mb-1">Total Usage Limit</label>
+                        <input type="number" id="c-total-limit" min="1" class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-amber-400 focus:outline-none" placeholder="e.g., 100">
+                    </div>
+                    <div>
+                        <label class="text-sm font-bold text-gray-700 block mb-1">Per User Limit</label>
+                        <input type="number" id="c-user-limit" min="1" class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-amber-400 focus:outline-none" placeholder="e.g., 1">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-sm font-bold text-gray-700 block mb-1">Expiry Date *</label>
+                    <input type="date" id="c-expiry" class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                </div>
+            </div>
+            
+            <div class="flex justify-end space-x-3">
+                <button onclick="app.closeModal()" class="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg font-medium transition-colors">Cancel</button>
+                <button onclick="app.saveCoupon()" id="modal-save-btn" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold shadow transition-colors">Create Coupon</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, doc, onSnapshot, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM", authDomain: "pickle-fdc54.firebaseapp.com", projectId: "pickle-fdc54" };
+        const db = getFirestore(initializeApp(firebaseConfig));
+
+        window.app = {
+            coupons: [],
+            
+            init: () => {
+                onSnapshot(collection(db, 'coupons'), (snap) => {
+                    app.coupons = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+                        .sort((a, b) => b.createdAt - a.createdAt);
+                    app.render();
+                });
+            },
+
+            render: () => {
+                const container = document.getElementById('coupons-container');
+                
+                if (app.coupons.length === 0) {
+                    container.innerHTML = `<div class="col-span-full text-center py-12 text-gray-400 italic bg-white rounded-xl shadow-sm border border-gray-100">No coupons created yet.</div>`;
+                    return;
+                }
+
+                container.innerHTML = app.coupons.map(coupon => {
+                    const discountDisplay = coupon.type === 'percentage' ? `${coupon.value}% OFF` : `₹${coupon.value} OFF`;
+                    const isExpired = new Date(coupon.expiry) < new Date(new Date().setHours(0,0,0,0));
+                    const statusText = !coupon.isActive ? 'Inactive' : (isExpired ? 'Expired' : 'Active');
+                    const statusColor = !coupon.isActive ? 'text-gray-400' : (isExpired ? 'text-red-500' : 'text-blue-600');
+                    
+                    const currentUsage = coupon.usage || 0;
+                    const totalLimit = coupon.totalLimit || 'Unlimited';
+
+                    return `
+                        <div class="bg-white rounded-xl shadow border border-gray-200 overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+                            <div class="bg-amber-50 p-4 border-b border-amber-100 flex justify-between items-start">
+                                <div>
+                                    <h3 class="text-xl font-black text-amber-900 tracking-wider">${coupon.id}</h3>
+                                    <p class="text-lg font-bold text-green-700 mt-1">${discountDisplay}</p>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button onclick="app.editCoupon('${coupon.id}')" class="text-blue-500 hover:text-blue-700 p-1 bg-white rounded shadow-sm border border-blue-100" title="Edit Coupon">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="app.deleteCoupon('${coupon.id}')" class="text-red-400 hover:text-red-600 p-1 bg-white rounded shadow-sm border border-red-100" title="Delete Coupon">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="p-4 flex-grow space-y-2 text-sm text-gray-600">
+                                <div class="flex justify-between border-b border-gray-100 pb-2 mb-2">
+                                    <span><i class="fas fa-chart-pie w-5 text-center text-gray-400"></i> Usage / Limit:</span>
+                                    <span class="font-bold text-gray-900">${currentUsage} / ${totalLimit}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span><i class="far fa-calendar-alt w-5 text-center text-gray-400"></i> Expires:</span>
+                                    <span class="font-medium ${isExpired ? 'text-red-500' : 'text-gray-800'}">${new Date(coupon.expiry).toLocaleDateString()}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span><i class="fas fa-user w-5 text-center text-gray-400"></i> Per User Limit:</span>
+                                    <span class="font-medium text-gray-800">${coupon.userLimit || 'Unlimited'}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-gray-50 p-3 border-t border-gray-100 flex justify-between items-center">
+                                <span class="text-sm font-bold ${statusColor}">${statusText}</span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer" ${coupon.isActive ? 'checked' : ''} onchange="app.toggleCouponStatus('${coupon.id}', ${coupon.isActive})">
+                                    <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-amber-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                </label>
+                            </div>
+                        </div>`;
+                }).join('');
+            },
+
+            updateValuePlaceholder: () => {
+                const type = document.getElementById('c-type').value;
+                const input = document.getElementById('c-value');
+                const prefix = document.getElementById('value-prefix');
+                const suffix = document.getElementById('value-suffix');
+
+                if (type === 'percentage') {
+                    prefix.classList.add('hidden');
+                    suffix.classList.remove('hidden');
+                    input.classList.remove('pl-8'); 
+                    input.classList.add('pl-4');    
+                    input.placeholder = "20";
+                } else {
+                    prefix.classList.remove('hidden');
+                    suffix.classList.add('hidden');
+                    input.classList.remove('pl-4'); 
+                    input.classList.add('pl-8');    
+                    input.placeholder = "50";
+                }
+            },
+
+            openModal: () => {
+                // Reset form for creating
+                document.getElementById('c-name').value = '';
+                document.getElementById('c-value').value = '';
+                document.getElementById('c-total-limit').value = '';
+                document.getElementById('c-user-limit').value = '';
+                document.getElementById('c-expiry').value = '';
+                document.getElementById('c-type').value = 'percentage';
+                
+                // Enable name input
+                const nameInput = document.getElementById('c-name');
+                nameInput.disabled = false;
+                nameInput.classList.remove('bg-gray-200', 'cursor-not-allowed', 'text-gray-500');
+
+                // Update UI text
+                document.getElementById('modal-title').innerText = "Create New Coupon";
+                document.getElementById('modal-save-btn').innerText = "Create Coupon";
+                
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('c-expiry').setAttribute('min', today);
+                app.updateValuePlaceholder(); 
+                document.getElementById('coupon-modal').classList.remove('hidden');
+            },
+
+            editCoupon: (id) => {
+                const coupon = app.coupons.find(c => c.id === id);
+                if (!coupon) return;
+
+                // Populate fields
+                const nameInput = document.getElementById('c-name');
+                nameInput.value = coupon.id;
+                nameInput.disabled = true; // Lock the ID field
+                nameInput.classList.add('bg-gray-200', 'cursor-not-allowed', 'text-gray-500');
+
+                document.getElementById('c-type').value = coupon.type;
+                document.getElementById('c-value').value = coupon.value;
+                document.getElementById('c-total-limit').value = coupon.totalLimit || '';
+                document.getElementById('c-user-limit').value = coupon.userLimit || '';
+                document.getElementById('c-expiry').value = coupon.expiry;
+                
+                // Update UI text
+                document.getElementById('modal-title').innerText = "Edit Coupon";
+                document.getElementById('modal-save-btn').innerText = "Save Changes";
+
+                app.updateValuePlaceholder();
+                document.getElementById('coupon-modal').classList.remove('hidden');
+            },
+
+            closeModal: () => {
+                document.getElementById('coupon-modal').classList.add('hidden');
+            },
+
+            saveCoupon: async () => {
+                const nameInput = document.getElementById('c-name');
+                const couponId = nameInput.value.trim().toUpperCase();
+                const isEdit = nameInput.disabled; // If disabled, it's an edit
+
+                const type = document.getElementById('c-type').value;
+                const value = Number(document.getElementById('c-value').value);
+                const totalLimit = document.getElementById('c-total-limit').value ? Number(document.getElementById('c-total-limit').value) : null;
+                const userLimit = document.getElementById('c-user-limit').value ? Number(document.getElementById('c-user-limit').value) : null;
+                const expiry = document.getElementById('c-expiry').value;
+
+                if (!couponId) return alert("Please enter a Coupon Name.");
+                if (couponId.includes(" ")) return alert("Coupon code cannot contain spaces.");
+                if (!value || value <= 0) return alert("Please enter a valid Discount Value.");
+                if (type === 'percentage' && value > 100) return alert("Percentage discount cannot exceed 100%.");
+                if (!expiry) return alert("Please select an Expiry Date.");
+
+                const btn = document.getElementById('modal-save-btn');
+                const originalText = btn.innerText;
+                btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> Saving...`;
+                btn.disabled = true;
+
+                try {
+                    const couponRef = doc(db, 'coupons', couponId);
+                    
+                    if (isEdit) {
+                        // Only update specific fields, preserving usage and createdAt
+                        await updateDoc(couponRef, {
+                            type: type,
+                            value: value,
+                            totalLimit: totalLimit,
+                            userLimit: userLimit,
+                            expiry: expiry
+                        });
+                    } else {
+                        // Create entirely new document
+                        await setDoc(couponRef, {
+                            name: couponId,
+                            type: type,
+                            value: value,
+                            totalLimit: totalLimit,
+                            userLimit: userLimit,
+                            expiry: expiry,
+                            usage: 0, 
+                            isActive: true, 
+                            createdAt: Date.now()
+                        });
+                    }
+
+                    app.closeModal();
+                } catch (error) {
+                    console.error("Error saving coupon:", error);
+                    alert("Failed to save coupon. Check console.");
+                } finally {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }
+            },
+
+            toggleCouponStatus: async (id, currentState) => {
+                try {
+                    await updateDoc(doc(db, 'coupons', id), {
+                        isActive: !currentState
+                    });
+                } catch (error) {
+                    console.error("Error updating status:", error);
+                    alert("Failed to update status.");
+                }
+            },
+
+            deleteCoupon: async (id) => {
+                if (confirm(`Are you sure you want to delete the coupon ${id}?`)) {
+                    try {
+                        await deleteDoc(doc(db, 'coupons', id));
+                    } catch (error) {
+                        console.error("Error deleting coupon:", error);
+                        alert("Failed to delete coupon.");
+                    }
+                }
+            }
+        };
+
+        app.init();
+    </script>
+</body>
+</html>
