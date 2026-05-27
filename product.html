@@ -50,7 +50,7 @@
             init: async () => {
                 if(productId) {
                     document.getElementById('editor-title').innerText = "Edit Pickle";
-                    // Read from the root 'products' collection
+                    // Read from the root 'products' collection for editing
                     const docSnap = await getDoc(doc(db, 'products', productId));
                     if(docSnap.exists()) {
                         const data = docSnap.data();
@@ -84,40 +84,42 @@
                 if(!name || app.variants.length === 0) return alert("Valid name and at least one variant required.");
                 if(!categoryId) return alert("Category ID is missing. Cannot save.");
                 
-                // Base data - does NOT include 'isavailable' so updates don't overwrite it
+                // Base data - omitting 'isavailable' so updates don't accidentally overwrite the toggle state
                 const data = { name, image, variants: app.variants, categoryId, price: app.variants[0].price, weight: app.variants[0].weight };
                 
+                // Dynamically target the specific category document
                 const categoryRef = doc(db, 'categories', categoryId);
 
                 try {
                     if (productId) {
-                        // Updating an existing product
+                        // 1. UPDATING EXISTING PRODUCT
                         const rootProdRef = doc(db, 'products', productId);
                         
                         await Promise.all([
                             updateDoc(rootProdRef, data),
-                            // Update specific product in the category document's map field using merge
+                            // Save into the 'products' map field on the dynamic category document
                             setDoc(categoryRef, {
                                 products: {
                                     [productId]: data
                                 }
-                            }, { merge: true })
+                            }, { merge: true }) // Merge prevents wiping other products
                         ]);
                     } else {
-                        // Creating a new product
+                        // 2. CREATING A NEW PRODUCT
                         const rootProdRef = doc(collection(db, 'products'));
                         const newProductId = rootProdRef.id;
                         
+                        // Add creation metadata and availability flag
                         const saveData = { ...data, id: newProductId, isavailable: true, createdAt: Date.now() };
                         
                         await Promise.all([
                             setDoc(rootProdRef, saveData),
-                            // Save into the category document's map field
+                            // Save into the 'products' map field on the dynamic category document
                             setDoc(categoryRef, {
                                 products: {
                                     [newProductId]: saveData
                                 }
-                            }, { merge: true })
+                            }, { merge: true }) // Merge prevents wiping other products
                         ]);
                     }
 
