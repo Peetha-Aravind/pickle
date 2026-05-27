@@ -26,7 +26,7 @@
             </div>
 
             <div class="flex justify-end pt-4">
-                <button onclick="app.savePickle()" class="px-6 py-2 bg-green-600 text-white rounded-lg shadow font-bold">Save Pickle</button>
+                <button onclick="app.savePickle()" class="px-6 py-2 bg-green-600 text-white rounded-lg shadow font-bold hover:bg-green-700 transition-colors">Save Pickle</button>
             </div>
         </div>
     </div>
@@ -46,6 +46,7 @@
 
         window.app = {
             variants: [{ weight: '500g', price: 150 }],
+            
             init: async () => {
                 if(productId) {
                     document.getElementById('editor-title').innerText = "Edit Pickle";
@@ -60,52 +61,71 @@
                 }
                 app.renderVariants();
             },
+            
             renderVariants: () => {
                 document.getElementById('variants-container').innerHTML = app.variants.map((v, i) => `
                     <div class="flex space-x-2 items-center bg-white p-2 rounded border">
                         <input type="text" value="${v.weight}" onchange="app.updateVar(${i}, 'weight', this.value)" class="flex-1 px-3 py-1 border rounded" placeholder="Weight (250g)">
                         <input type="number" value="${v.price}" onchange="app.updateVar(${i}, 'price', this.value)" class="flex-1 px-3 py-1 border rounded" placeholder="Price (₹)">
-                        <button onclick="app.removeVar(${i})" class="text-red-500 p-2"><i class="fas fa-times"></i></button>
+                        <button onclick="app.removeVar(${i})" class="text-red-500 p-2 hover:bg-red-50 rounded"><i class="fas fa-times"></i></button>
                     </div>`).join('');
             },
+            
             addVariant: () => { app.variants.push({weight: '', price: ''}); app.renderVariants(); },
+            
             removeVar: (i) => { if(app.variants.length > 1) { app.variants.splice(i, 1); app.renderVariants(); } },
+            
             updateVar: (i, field, val) => { app.variants[i][field] = field === 'price' ? parseFloat(val) : val; },
+            
             savePickle: async () => {
                 const name = document.getElementById('prod-name').value;
-                const image = document.getElementById('prod-img').value || 'https://placehold.co/400x300/fef3c7/b45309?text=' + name;
+                const image = document.getElementById('prod-img').value || 'https://placehold.co/400x300/fef3c7/b45309?text=' + encodeURIComponent(name);
+                
                 if(!name || app.variants.length === 0) return alert("Valid name and at least one variant required.");
                 if(!categoryId) return alert("Category ID is missing. Cannot save.");
                 
-                // Base data - does NOT include 'isavailable'
+                // Base data - does NOT include 'isavailable' so updates don't overwrite it
                 const data = { name, image, variants: app.variants, categoryId, price: app.variants[0].price, weight: app.variants[0].weight };
                 
-                if (productId) {
-                    // Updating an existing product: Update in BOTH collections
-                    // Because 'isavailable' is not in 'data', updateDoc/merge won't overwrite existing status
-                    const rootProdRef = doc(db, 'products', productId);
-                    const subProdRef = doc(db, 'categories', categoryId, 'products', productId);
-                    
-                    await Promise.all([
-                        updateDoc(rootProdRef, data),
-                        setDoc(subProdRef, data, { merge: true })
-                    ]);
-                } else {
-                    // Creating a new product: Generate ID in root collection, save to BOTH
-                    const rootProdRef = doc(collection(db, 'products'));
-                    const newProductId = rootProdRef.id; // Auto-generated ID
-                    const subProdRef = doc(db, 'categories', categoryId, 'products', newProductId);
-                    
-                    // Add isavailable: true ONLY when creating a new product
-                    const saveData = { ...data, isavailable: true, createdAt: Date.now() };
-                    
-                    await Promise.all([
-                        setDoc(rootProdRef, saveData),
-                        setDoc(subProdRef, saveData)
-                    ]);
-                }
+                const categoryRef = doc(db, 'categories', categoryId);
 
-                window.location.href = `manage-products.html?categoryId=${categoryId}`;
+                try {
+                    if (productId) {
+                        // Updating an existing product
+                        const rootProdRef = doc(db, 'products', productId);
+                        
+                        await Promise.all([
+                            updateDoc(rootProdRef, data),
+                            // Update specific product in the category document's map field using merge
+                            setDoc(categoryRef, {
+                                products: {
+                                    [productId]: data
+                                }
+                            }, { merge: true })
+                        ]);
+                    } else {
+                        // Creating a new product
+                        const rootProdRef = doc(collection(db, 'products'));
+                        const newProductId = rootProdRef.id;
+                        
+                        const saveData = { ...data, id: newProductId, isavailable: true, createdAt: Date.now() };
+                        
+                        await Promise.all([
+                            setDoc(rootProdRef, saveData),
+                            // Save into the category document's map field
+                            setDoc(categoryRef, {
+                                products: {
+                                    [newProductId]: saveData
+                                }
+                            }, { merge: true })
+                        ]);
+                    }
+
+                    window.location.href = `manage-products.html?categoryId=${categoryId}`;
+                } catch (error) {
+                    console.error("Error saving product:", error);
+                    alert("Failed to save the product.");
+                }
             }
         };
         app.init();
