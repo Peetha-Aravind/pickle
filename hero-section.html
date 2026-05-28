@@ -4,94 +4,368 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hero Section Settings - Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #fffbeb; font-family: sans-serif; }
-        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        :root {
+            --page-bg: #f4f5f7;
+            --header-bg: #ffffff;
+            --sidebar-bg: #ffffff;
+            --text-color: rgb(24, 24, 26);
+            --text-sub: #6b7280;
+            --icon-color: #6b7280;
+            --icon-active: #5127ba;
+            --active-bg: #f3f4f6;
+            --hover-bg: #f3f4f6;
+            --border-subtle: #e5e7eb;
+            --brand-primary: #5127ba;
+            --brand-gradient: linear-gradient(135deg, #5127ba 0%, #673de6 100%);
+            --danger-color: #ef4444;
+            --success-color: #10B981;
+            --warning-color: #f59e0b;
+            --switch-on: #5127ba;
+            --switch-off: #9CA3AF;
+            --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
+        /* TYPOGRAPHY & RESET */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        a { text-decoration: none !important; }
+        button { cursor: pointer; font-family: inherit; }
+
+        body {
+            font-family: "DM Sans", Roboto, sans-serif;
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 20px;
+            color: var(--text-color);
+            background-color: var(--page-bg);
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        /* LAYOUT & SPACING */
+        .content-inner {
+            max-width: 1110px;
+            margin: 0 auto;
+            padding: 24px 24px 40px;
+            width: 100%;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 32px;
+            color: rgb(29, 30, 32);
+        }
+
+        .breadcrumbs {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-sub);
+            margin-bottom: 8px;
+        }
+        .breadcrumbs .divider { color: #d1d5db; }
+
+        .card {
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-subtle);
+            overflow: hidden;
+            width: 100%;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* MICRO-COMPONENTS */
+        .primary-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            color: #ffffff;
+            background: var(--brand-primary);
+            transition: background 0.15s ease;
+        }
+        .primary-btn:hover { background: #471ea7; }
+        .primary-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .primary-btn svg { width: 18px; height: 18px; stroke: #ffffff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+        .btn-success { background: var(--success-color); }
+        .btn-success:hover { background: #0e9f6e; }
+
+        .btn-secondary {
+            padding: 6px 12px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            background: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-color);
+            transition: background 0.15s ease;
+        }
+        .btn-secondary:hover { background: var(--hover-bg); }
+
+        .toggle-switch { width: 44px; height: 24px; position: relative; display: inline-block; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; inset: 0; background-color: var(--switch-off); border-radius: 24px; transition: .4s; cursor: pointer; }
+        .slider::before { content: ""; position: absolute; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; border-radius: 50%; transition: .4s; }
+        input:checked + .slider { background-color: var(--switch-on); }
+        input:checked + .slider::before { transform: translateX(20px); }
+        
+        .toggle-disabled { opacity: 0.5; pointer-events: none; }
+
+        .kebab {
+            width: 32px; height: 32px; border-radius: 8px; display: inline-flex; justify-content: center; align-items: center; border: 1px solid var(--border-subtle); background: #ffffff; transition: all 0.15s ease; cursor: pointer;
+        }
+        .kebab:hover { background: #f9fafb; border-color: #d1d5db; }
+        .kebab-dots { width: 4px; height: 4px; background-color: var(--icon-color); position: relative; }
+        .kebab-dots::before, .kebab-dots::after { content: ''; position: absolute; width: 4px; height: 4px; background-color: var(--icon-color); left: 0; }
+        .kebab-dots::before { top: -6px; }
+        .kebab-dots::after { top: 6px; }
+
+        .status-badge { font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 4px; display: inline-block;}
+        .status-active { color: var(--brand-primary); background: #f2efff; }
+        .status-inactive { color: var(--text-sub); background: var(--active-bg); }
+        .item-inactive { opacity: 0.7; filter: grayscale(50%); background-color: #fafafa !important;}
+
+        /* DESKTOP DATA VIEW (TABLE) */
+        .table-wrapper { width: 100%; overflow-x: auto; overflow: visible !important; }
+        table { width: 100%; border-collapse: collapse; z-index: 1; position: relative; }
+        thead { height: 48px; }
+        th { font-weight: 700; font-size: 14px; line-height: 24px; color: rgb(29, 30, 32); text-align: left; border-bottom: 1px solid var(--border-subtle); white-space: nowrap; background-color: #ffffff; padding: 12px 20px; }
+        tbody tr { border-bottom: 1px solid #f3f4f6; background-color: #ffffff; transition: background-color 0.15s ease; }
+        tbody tr:hover { background-color: #f9fafb; }
+        tbody tr:last-child { border-bottom: none; }
+        td { padding: 12px 20px; vertical-align: middle; text-align: left; }
+        .product-thumb { width: 64px; height: 40px; border-radius: 4px; object-fit: cover; border: 1px solid var(--border-subtle); }
+
+        /* MOBILE DATA VIEW (CARDS) */
+        .mobile-view { display: none; padding: 16px; background-color: var(--page-bg); }
+        .mobile-category-cards .mobile-card {
+            background: #ffffff; border-radius: 16px; border: 1px solid var(--border-subtle); padding: 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); width: 100%; margin-bottom: 16px; transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .mobile-category-cards .mobile-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
+        .mobile-card-content { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+        .mobile-card-title { font-size: 16px; font-weight: 700; color: var(--text-color); }
+        .mobile-card-subtitle { font-size: 13px; font-weight: 500; color: var(--text-sub); }
+        .mobile-card-meta { font-size: 12px; font-weight: 600; }
+        .mobile-card-actions { margin-left: auto; display: flex; gap: 12px; align-items: center; }
+        .product-card-menu-btn { width: 40px; height: 40px; border-radius: 10px; }
+
+        /* FORMS & INPUTS */
+        .form-group { margin-bottom: 16px; }
+        .form-row { display: flex; gap: 12px; }
+        .form-row .form-group { flex: 1; margin-bottom: 12px; }
+        .form-label { display: block; font-size: 13px; font-weight: 600; color: rgb(29, 30, 32); margin-bottom: 8px; }
+        .form-input {
+            width: 100%; padding: 0.875rem 1rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: white; transition: all 0.15s ease; font-size: 0.95rem; color: var(--text-color); font-family: inherit;
+        }
+        .form-input:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 3px rgba(81, 39, 186, 0.1); outline: none; }
+
+        /* POPUPS & OVERLAYS */
+        .desktop-popup {
+            position: fixed; z-index: 10002; background: #ffffff; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); min-width: 180px; padding: 8px; display: none; flex-direction: column; gap: 4px; animation: fadeInUp 0.2s ease-out;
+        }
+        .desktop-popup.active { display: flex; }
+        .desktop-popup button { width: 100%; text-align: left; border: none; background: transparent; padding: 8px 12px; font-size: 14px; border-radius: 6px; color: var(--text-color); transition: background 0.15s; }
+        .desktop-popup button:hover { background: var(--hover-bg); }
+        .desktop-popup button.delete-btn { color: var(--danger-color); }
+        .desktop-popup button.delete-btn:hover { background: #fef2f2; }
+
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: center; justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        
+        .modal-content {
+            width: 100%; max-width: 480px; background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-premium); animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { font-size: 18px; font-weight: 700; color: rgb(29, 30, 32); }
+        .modal-close { background: none; border: none; color: var(--text-sub); cursor: pointer; padding: 4px; border-radius: 4px; transition: all 0.15s; }
+        .modal-close:hover { background: var(--hover-bg); color: var(--text-color); }
+        .modal-body { padding: 24px; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: flex-end; gap: 12px; background: #fafafa; border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+
+        .advanced-menu {
+            position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; border-radius: 24px 24px 0 0; padding: 24px 16px; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2001; box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.15); display: flex; flex-direction: column; gap: 12px;
+        }
+        .advanced-menu.active { transform: translateY(0); }
+        .drag-handle { width: 40px; height: 4px; background: var(--border-subtle); border-radius: 999px; margin: -12px auto 16px auto; }
+        .advanced-menu button { padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 600; border: 1px solid var(--border-subtle); background: #ffffff; color: var(--text-color); display: flex; align-items: center; gap: 10px; justify-content: center; }
+        .advanced-menu button.delete-btn { color: var(--danger-color); border-color: #fecaca; background: #fef2f2; }
+
+        .empty-state { padding: 48px 24px; text-align: center; color: var(--text-sub); width: 100%; font-style: italic; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(5px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes modalPop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes slideUpModal { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .animate-spin { animation: spin 1s linear infinite; }
+
+        /* RESPONSIVE */
+        @media (max-width: 767px) {
+            .content-inner { padding: 16px; background-color: var(--page-bg); }
+            .header-section { flex-direction: column; align-items: flex-start; gap: 16px; }
+            .header-actions { width: 100%; display: flex; gap: 8px; }
+            .header-actions button { flex: 1; }
+            .page-title { font-size: 22px; }
+            .desktop-view { display: none; }
+            .mobile-view { display: block; }
+            
+            .modal-content {
+                border-radius: 24px 24px 0 0; animation: slideUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1); align-self: flex-end;
+            }
+            .modal-footer { border-radius: 0; padding-bottom: 24px;}
+        }
     </style>
 </head>
-<body class="text-gray-800 min-h-screen pb-20">
-    <nav class="glass-panel sticky top-0 z-50 shadow-sm border-b border-amber-200">
-        <div class="max-w-7xl mx-auto px-4 flex justify-between h-16 items-center">
-            <a href="index.html" class="font-bold text-xl text-amber-900"><i class="fas fa-pepper-hot text-red-600 mr-2"></i>Spicy Delights Admin</a>
-            <a href="index.html" class="text-sm font-medium text-gray-600 hover:text-gray-900">Back to Dashboard</a>
-        </div>
-    </nav>
+<body>
 
-    <main class="max-w-5xl mx-auto px-4 py-8 space-y-8">
-        
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-amber-200 pb-4 gap-4">
+    <main class="content-inner">
+        <div class="header-section">
             <div>
-                <h2 class="text-3xl font-bold"><i class="fas fa-images mr-2 text-amber-600"></i>Hero Section</h2>
-                <p class="text-gray-600 mt-1">Manage the main image slider at the top of your landing page.</p>
+                <div class="breadcrumbs">
+                    <a href="index.html" style="color: inherit;">Dashboard</a>
+                    <span class="divider">/</span>
+                    <span style="color: var(--brand-primary); font-weight: 600;">Website Elements</span>
+                </div>
+                <h2 class="page-title">Hero Section Slider</h2>
             </div>
-            <div class="flex space-x-3">
-                <button onclick="app.openModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg font-bold shadow transition-colors">
-                    <i class="fas fa-plus mr-2"></i>Add New Slide
+            <div class="header-actions">
+                <button onclick="app.openModal()" class="primary-btn">
+                    <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+                    <span>Add Slide</span>
                 </button>
-                <button onclick="app.saveAllChanges()" id="save-btn" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-bold shadow-lg transition-transform transform hover:scale-105">
-                    <i class="fas fa-save mr-2"></i>Save Changes
+                <button onclick="app.saveAllChanges()" id="save-btn" class="primary-btn btn-success">
+                    <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                    <span>Save Changes</span>
                 </button>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 flex justify-between items-center">
-            <div>
-                <h3 class="font-bold text-lg text-gray-800">Entire Hero Section</h3>
-                <p class="text-sm text-gray-500">Enable or disable the slider entirely on the website.</p>
-            </div>
-            <div class="flex items-center space-x-3 bg-gray-50 p-2 px-4 rounded-lg border">
-                <span class="font-bold" id="hero-status-text">Enabled</span>
-                <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" id="hero-toggle" class="sr-only peer" onchange="app.toggleMaster(event)">
-                    <div class="w-14 h-7 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-amber-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-600"></div>
-                </label>
+        <div class="card" style="margin-bottom: 16px;">
+            <div class="card-header" style="border-bottom: none;">
+                <div>
+                    <h3 style="font-size: 16px; font-weight: 700; color: rgb(29, 30, 32);">Entire Hero Section</h3>
+                    <span style="font-size: 13px; color: var(--text-sub); display: block; margin-top: 4px;">Enable or disable the slider entirely on the website.</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px; background: #fafafa; padding: 8px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                    <span id="hero-status-text" style="font-weight: 700; font-size: 13px;">Enabled</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="hero-toggle" onchange="app.toggleMaster(event)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
             </div>
         </div>
 
-        <section class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Current Slides</h3>
-            <div id="slides-container" class="space-y-4">
-                <div class="text-center py-8 text-gray-400 italic"><i class="fas fa-spinner fa-spin mr-2"></i>Loading slides...</div>
+        <div class="card">
+            <div class="card-header">
+                <h3 style="font-size: 16px; font-weight: 600;">Current Slides</h3>
             </div>
-        </section>
+            
+            <div class="desktop-view table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">#</th>
+                            <th>Images (Desktop & Mobile)</th>
+                            <th>Action Button</th>
+                            <th>Status</th>
+                            <th>Active</th>
+                            <th style="width: 60px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="desktop-tbody">
+                        <tr><td colspan="6" class="empty-state">Loading slides...</td></tr>
+                    </tbody>
+                </table>
+            </div>
 
+            <div class="mobile-view mobile-category-cards" id="mobile-cards">
+                <div class="empty-state">Loading slides...</div>
+            </div>
+        </div>
     </main>
 
-    <div id="slide-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-lg w-full mx-4">
-            <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h3 class="text-xl font-bold text-gray-800">Add New Slide</h3>
-                <button onclick="app.closeModal()" class="text-gray-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+    <div id="slide-modal-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Add New Slide</h3>
+                <button onclick="app.closeModal()" class="modal-close">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
             </div>
-            
-            <div class="space-y-4 mb-6">
-                <div>
-                    <label class="text-sm font-bold text-gray-700 block mb-1"><i class="fas fa-desktop mr-1 text-gray-400"></i>Desktop Image URL *</label>
-                    <input type="text" id="slide-desktop" class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-amber-400 focus:outline-none" placeholder="https://...">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" style="display: flex; align-items: center; gap: 6px;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                        Desktop Image URL <span style="color: var(--danger-color)">*</span>
+                    </label>
+                    <input type="text" id="slide-desktop" class="form-input" placeholder="https://...">
                 </div>
-                <div>
-                    <label class="text-sm font-bold text-gray-700 block mb-1"><i class="fas fa-mobile-alt mr-1 text-gray-400"></i>Mobile Image URL *</label>
-                    <input type="text" id="slide-mobile" class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-amber-400 focus:outline-none" placeholder="https://...">
+
+                <div class="form-group">
+                    <label class="form-label" style="display: flex; align-items: center; gap: 6px;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                        Mobile Image URL <span style="color: var(--danger-color)">*</span>
+                    </label>
+                    <input type="text" id="slide-mobile" class="form-input" placeholder="https://...">
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-sm font-bold text-gray-700 block mb-1">Button Name</label>
-                        <input type="text" id="slide-btn-name" class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-amber-400 focus:outline-none" placeholder="Shop Now">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Button Name</label>
+                        <input type="text" id="slide-btn-name" class="form-input" placeholder="Shop Now">
                     </div>
-                    <div>
-                        <label class="text-sm font-bold text-gray-700 block mb-1">Button Link</label>
-                        <input type="text" id="slide-btn-link" class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-amber-400 focus:outline-none" placeholder="/products.html">
+                    <div class="form-group">
+                        <label class="form-label">Button Link</label>
+                        <input type="text" id="slide-btn-link" class="form-input" placeholder="/products.html">
                     </div>
                 </div>
             </div>
-            
-            <div class="flex justify-end space-x-3">
-                <button onclick="app.closeModal()" class="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg font-medium transition-colors">Cancel</button>
-                <button onclick="app.saveNewSlide()" id="modal-save-btn" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold shadow transition-colors">Save Slide</button>
+            <div class="modal-footer">
+                <button onclick="app.closeModal()" class="btn-secondary">Cancel</button>
+                <button onclick="app.saveNewSlide()" id="modal-save-btn" class="primary-btn">Save Slide</button>
             </div>
         </div>
+    </div>
+
+    <div id="desktop-menu-popup" class="desktop-popup">
+        <button id="desktop-delete-btn" class="delete-btn">Delete Slide</button>
+    </div>
+
+    <div id="action-modal-overlay" class="modal-overlay"></div>
+    <div id="mobile-bottom-sheet" class="advanced-menu">
+        <div class="drag-handle"></div>
+        <button id="mobile-delete-btn" class="delete-btn">Delete Slide</button>
+        <button onclick="app.closeActionMenus()">Cancel</button>
     </div>
 
     <script type="module">
@@ -100,9 +374,15 @@
 
         const firebaseConfig = { apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM", authDomain: "pickle-fdc54.firebaseapp.com", projectId: "pickle-fdc54" };
         const db = getFirestore(initializeApp(firebaseConfig));
-
-        // ─── Single document reference ───────────────────────────────────────────
         const MASTER_DOC = doc(db, 'landing_page', 'master');
+
+        let activeSlideId = null;
+
+        const ICONS = {
+            save: `<svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>`,
+            spin: `<svg class="animate-spin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" stroke-dasharray="31.4 31.4" stroke-linecap="round"></circle></svg>`,
+            check: `<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>`
+        };
 
         window.app = {
             slides: [],
@@ -123,10 +403,20 @@
                     }
                 } catch (error) {
                     console.error("Error loading data:", error);
-                    alert("Failed to load hero section data.");
                 }
                 
                 app.render();
+
+                // Listeners for closing modals/menus
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.kebab') && !e.target.closest('.desktop-popup')) {
+                        app.closeActionMenus();
+                    }
+                });
+                document.getElementById('action-modal-overlay').addEventListener('click', () => app.closeActionMenus());
+                document.getElementById('slide-modal-overlay').addEventListener('click', (e) => {
+                    if (e.target.id === 'slide-modal-overlay') app.closeModal();
+                });
             },
 
             render: () => {
@@ -134,69 +424,93 @@
                 const statusText = document.getElementById('hero-status-text');
                 toggle.checked = app.isHeroEnabled;
                 statusText.innerText = app.isHeroEnabled ? "Enabled" : "Disabled";
-                statusText.className = `font-bold ${app.isHeroEnabled ? 'text-green-600' : 'text-red-500'}`;
+                statusText.style.color = app.isHeroEnabled ? 'var(--success-color)' : 'var(--text-sub)';
 
-                const container = document.getElementById('slides-container');
+                const desktopTbody = document.getElementById('desktop-tbody');
+                const mobileContainer = document.getElementById('mobile-cards');
+                
                 if (app.slides.length === 0) {
-                    container.innerHTML = `<div class="text-center py-8 text-gray-400 italic">No slides added yet. Click "Add New Slide" to begin.</div>`;
+                    const emptyHtml = `<div class="empty-state">No slides added yet.</div>`;
+                    desktopTbody.innerHTML = `<tr><td colspan="6" class="empty-state">No slides added yet.</td></tr>`;
+                    mobileContainer.innerHTML = emptyHtml;
                     return;
                 }
 
-                container.innerHTML = app.slides.map((slide, index) => `
-                    <div class="flex flex-col sm:flex-row items-center justify-between bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow transition-all ${!slide.isActive ? 'opacity-70 bg-gray-50' : ''}">
-                        <div class="flex items-center space-x-4 w-full sm:w-auto">
-                            <span class="text-gray-400 font-bold text-lg w-6">${index + 1}.</span>
-                            <div class="relative">
-                                <img src="${slide.desktopImg}" class="w-24 h-16 rounded object-cover border border-gray-300">
-                                <span class="absolute -top-2 -right-2 bg-gray-800 text-white text-[10px] px-1.5 py-0.5 rounded shadow"><i class="fas fa-desktop"></i></span>
-                            </div>
-                            <div class="relative">
-                                <img src="${slide.mobileImg}" class="w-12 h-16 rounded object-cover border border-gray-300">
-                                <span class="absolute -top-2 -right-2 bg-gray-800 text-white text-[10px] px-1.5 py-0.5 rounded shadow"><i class="fas fa-mobile-alt"></i></span>
-                            </div>
-                            <div class="ml-4 hidden md:block w-48">
-                                ${slide.btnName ? `
-                                    <div class="text-sm font-bold text-gray-800">Btn: <span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-xs">${slide.btnName}</span></div>
-                                    <div class="text-xs text-blue-500 mt-1 truncate"><i class="fas fa-link"></i> ${slide.btnLink || '#'}</div>
-                                ` : `<span class="text-sm text-gray-400 italic">No button</span>`}
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-6 mt-4 sm:mt-0">
-                            <div class="flex flex-col items-center">
-                                <label class="relative inline-flex items-center ${app.isHeroEnabled ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}">
-                                    <input type="checkbox" class="sr-only peer" 
-                                        ${slide.isActive ? 'checked' : ''} 
-                                        ${!app.isHeroEnabled ? 'disabled' : ''} 
-                                        onchange="app.toggleSlideStatus('${slide.id}')">
-                                    <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-amber-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                let desktopHTML = '';
+                let mobileHTML = '';
+
+                app.slides.forEach((slide, index) => {
+                    const activeClass = slide.isActive ? 'status-active' : 'status-inactive';
+                    const activeText = slide.isActive ? 'Active' : 'Inactive';
+                    const rowClass = !slide.isActive ? 'item-inactive' : '';
+                    const toggleStateClass = !app.isHeroEnabled ? 'toggle-disabled' : '';
+
+                    // Desktop Table Row
+                    desktopHTML += `
+                        <tr class="${rowClass}">
+                            <td style="font-weight: 700; color: var(--text-sub);">${index + 1}</td>
+                            <td>
+                                <div style="display: flex; gap: 8px;">
+                                    <img src="${slide.desktopImg}" class="product-thumb" alt="Desktop">
+                                    <img src="${slide.mobileImg}" class="product-thumb" style="width: 30px;" alt="Mobile">
+                                </div>
+                            </td>
+                            <td>
+                                ${slide.btnName 
+                                    ? `<strong>${slide.btnName}</strong><br><span style="font-size: 12px; color: var(--brand-primary);">${slide.btnLink || '#'}</span>` 
+                                    : `<span style="color: var(--text-sub); font-style: italic;">No button</span>`}
+                            </td>
+                            <td><span class="status-badge ${activeClass}">${activeText}</span></td>
+                            <td>
+                                <label class="toggle-switch ${toggleStateClass}">
+                                    <input type="checkbox" ${slide.isActive ? 'checked' : ''} ${!app.isHeroEnabled ? 'disabled' : ''} onchange="app.toggleSlideStatus('${slide.id}')">
+                                    <span class="slider"></span>
                                 </label>
-                                <span class="text-xs font-bold mt-1 ${slide.isActive ? 'text-blue-600' : 'text-gray-400'}">${slide.isActive ? 'Active' : 'Inactive'}</span>
+                            </td>
+                            <td>
+                                <button class="kebab" onclick="app.openDesktopMenu(event, '${slide.id}')">
+                                    <div class="kebab-dots"></div>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+
+                    // Mobile Card
+                    mobileHTML += `
+                        <div class="mobile-card ${rowClass}">
+                            <img src="${slide.desktopImg}" style="width: 56px; height: 56px; border-radius: 8px; object-fit: cover;" alt="Img">
+                            <div class="mobile-card-content">
+                                <div class="mobile-card-title">Slide ${index + 1}</div>
+                                <div class="mobile-card-subtitle">${slide.btnName ? slide.btnName : '<span style="font-style:italic">No button</span>'}</div>
+                                <div class="mobile-card-meta"><span class="${slide.isActive ? 'status-active' : 'status-inactive'}" style="padding:2px 4px; border-radius:4px;">${activeText}</span></div>
                             </div>
-                            <button onclick="app.deleteSlide('${slide.id}')" class="p-3 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete Slide">
-                                <i class="fas fa-trash-alt text-lg"></i>
-                            </button>
+                            <div class="mobile-card-actions">
+                                <label class="toggle-switch ${toggleStateClass}">
+                                    <input type="checkbox" ${slide.isActive ? 'checked' : ''} ${!app.isHeroEnabled ? 'disabled' : ''} onchange="app.toggleSlideStatus('${slide.id}')">
+                                    <span class="slider"></span>
+                                </label>
+                                <button class="kebab product-card-menu-btn" onclick="app.openMobileMenu('${slide.id}')">
+                                    <div class="kebab-dots"></div>
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                `).join('');
+                    `;
+                });
+
+                desktopTbody.innerHTML = desktopHTML;
+                mobileContainer.innerHTML = mobileHTML;
             },
 
             toggleMaster: (event) => {
                 app.isHeroEnabled = event.target.checked;
-                
-                // NEW LOGIC: If master is disabled, force all slides to inactive
                 if (!app.isHeroEnabled) {
-                    app.slides.forEach(slide => {
-                        slide.isActive = false;
-                    });
+                    app.slides.forEach(slide => { slide.isActive = false; });
                 }
-                
                 app.render();
             },
 
             toggleSlideStatus: (id) => {
-                // Safeguard: Do nothing if the main toggle is turned off
                 if (!app.isHeroEnabled) return; 
-
                 const slideIndex = app.slides.findIndex(s => s.id === id);
                 if (slideIndex > -1) {
                     app.slides[slideIndex].isActive = !app.slides[slideIndex].isActive;
@@ -204,12 +518,44 @@
                 }
             },
 
-            openModal: () => document.getElementById('slide-modal').classList.remove('hidden'),
+            openModal: () => {
+                app.closeActionMenus();
+                document.getElementById('slide-modal-overlay').classList.add('active');
+            },
+            
             closeModal: () => {
-                document.getElementById('slide-modal').classList.add('hidden');
+                document.getElementById('slide-modal-overlay').classList.remove('active');
                 ['slide-desktop','slide-mobile','slide-btn-name','slide-btn-link'].forEach(id => {
                     document.getElementById(id).value = '';
                 });
+            },
+
+            openDesktopMenu: (event, id) => {
+                event.stopPropagation();
+                activeSlideId = id;
+                const popup = document.getElementById('desktop-menu-popup');
+                const rect = event.currentTarget.getBoundingClientRect();
+                
+                popup.style.top = `${rect.bottom + 8}px`;
+                popup.style.left = `${rect.left - 130}px`; 
+                popup.classList.add('active');
+
+                document.getElementById('desktop-delete-btn').onclick = () => { app.closeActionMenus(); app.deleteSlide(id); };
+            },
+
+            openMobileMenu: (id) => {
+                activeSlideId = id;
+                document.getElementById('action-modal-overlay').classList.add('active');
+                document.getElementById('mobile-bottom-sheet').classList.add('active');
+
+                document.getElementById('mobile-delete-btn').onclick = () => { app.closeActionMenus(); app.deleteSlide(id); };
+            },
+
+            closeActionMenus: () => {
+                document.getElementById('desktop-menu-popup').classList.remove('active');
+                document.getElementById('action-modal-overlay').classList.remove('active');
+                document.getElementById('mobile-bottom-sheet').classList.remove('active');
+                activeSlideId = null;
             },
 
             saveNewSlide: async () => {
@@ -221,14 +567,15 @@
                 if (!desktopImg || !mobileImg) return alert("Desktop and Mobile images are required.");
 
                 const btn = document.getElementById('modal-save-btn');
-                btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = `${ICONS.spin} <span>Saving...</span>`;
                 btn.disabled = true;
 
                 try {
                     const newSlide = {
                         id: Date.now().toString(),
                         desktopImg, mobileImg, btnName, btnLink,
-                        isActive: app.isHeroEnabled, // Sets new slide to inactive if master is currently off
+                        isActive: app.isHeroEnabled, 
                         createdAt: Date.now()
                     };
                     app.slides.push(newSlide);
@@ -243,7 +590,7 @@
                     console.error(error);
                     alert("Failed to save slide.");
                 } finally {
-                    btn.innerHTML = `Save Slide`;
+                    btn.innerHTML = originalHtml;
                     btn.disabled = false;
                 }
             },
@@ -252,11 +599,9 @@
                 if (confirm("Delete this slide entirely?")) {
                     try {
                         app.slides = app.slides.filter(s => s.id !== id);
-
                         await setDoc(MASTER_DOC, {
                             hero_slides: { slides: app.slides }
                         }, { merge: true });
-
                         app.render();
                     } catch (error) {
                         console.error(error);
@@ -267,7 +612,9 @@
 
             saveAllChanges: async () => {
                 const saveBtn = document.getElementById('save-btn');
-                saveBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>Saving...`;
+                const originalHtml = saveBtn.innerHTML;
+                saveBtn.innerHTML = `${ICONS.spin} <span>Saving...</span>`;
+                saveBtn.disabled = true;
 
                 try {
                     await setDoc(MASTER_DOC, {
@@ -281,16 +628,19 @@
                         }
                     }, { merge: true });
 
-                    saveBtn.innerHTML = `<i class="fas fa-check mr-2"></i>Saved!`;
-                    saveBtn.classList.replace('bg-green-600', 'bg-blue-600');
+                    saveBtn.innerHTML = `${ICONS.check} <span>Saved!</span>`;
+                    saveBtn.style.background = 'var(--brand-primary)';
+                    
                     setTimeout(() => {
-                        saveBtn.innerHTML = `<i class="fas fa-save mr-2"></i>Save Changes`;
-                        saveBtn.classList.replace('bg-blue-600', 'bg-green-600');
+                        saveBtn.innerHTML = originalHtml;
+                        saveBtn.style.background = '';
+                        saveBtn.disabled = false;
                     }, 2000);
                 } catch (error) {
                     console.error("Error saving changes:", error);
                     alert("Failed to save all changes.");
-                    saveBtn.innerHTML = `<i class="fas fa-save mr-2"></i>Save Changes`;
+                    saveBtn.innerHTML = originalHtml;
+                    saveBtn.disabled = false;
                 }
             }
         };
