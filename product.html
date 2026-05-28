@@ -10,62 +10,86 @@
 <body class="bg-amber-50 text-gray-800 min-h-screen p-8">
     
     <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
-        <div class="mb-4"><a id="back-link" href="#" class="text-amber-700 font-medium">&larr; Back to Products</a></div>
+        <div class="mb-4"><a id="back-link" href="manage-products.html" class="text-amber-700 font-medium">&larr; Back to Products</a></div>
         <h2 id="editor-title" class="text-2xl font-bold mb-6 border-b pb-4">Add New Pickle</h2>
         
         <div class="space-y-4">
-            <input type="text" id="prod-name" class="w-full px-4 py-2 border rounded" placeholder="Pickle Name (e.g. Extra Spicy Mango)">
-            <input type="text" id="prod-img" class="w-full px-4 py-2 border rounded" placeholder="Image URL">
+            <div>
+                <label class="text-sm font-bold text-gray-700 block mb-1">Pickle Name</label>
+                <input type="text" id="prod-name" class="w-full px-4 py-2 border rounded bg-gray-50 focus:ring-2 focus:ring-amber-400 outline-none" placeholder="e.g. Extra Spicy Mango">
+            </div>
             
-            <div class="border rounded-lg p-4 bg-gray-50">
+            <div>
+                <label class="text-sm font-bold text-gray-700 block mb-1">Image URL</label>
+                <input type="text" id="prod-img" class="w-full px-4 py-2 border rounded bg-gray-50 focus:ring-2 focus:ring-amber-400 outline-none" placeholder="https://...">
+            </div>
+
+            <div>
+                <label class="text-sm font-bold text-gray-700 block mb-1">Assign to Category <span class="text-red-500">*</span></label>
+                <select id="prod-category" class="w-full px-4 py-2 border rounded bg-white focus:ring-2 focus:ring-amber-400 outline-none cursor-pointer">
+                    <option value="">Loading Categories...</option>
+                </select>
+            </div>
+            
+            <div class="border rounded-lg p-4 bg-gray-50 mt-6">
                 <div class="flex justify-between items-center mb-3">
                     <label class="font-bold">Quantity Variants & Pricing</label>
-                    <button onclick="app.addVariant()" class="text-xs bg-amber-200 px-3 py-1 rounded shadow">+ Add Variant</button>
+                    <button onclick="app.addVariant()" class="text-xs bg-amber-200 hover:bg-amber-300 px-3 py-1 rounded shadow transition-colors">+ Add Variant</button>
                 </div>
                 <div id="variants-container" class="space-y-3"></div>
             </div>
 
-            <div class="flex justify-end pt-4">
-                <button onclick="app.savePickle()" class="px-6 py-2 bg-green-600 text-white rounded-lg shadow font-bold hover:bg-green-700 transition-colors">Save Pickle</button>
+            <div class="flex justify-end pt-6 border-t mt-6">
+                <button onclick="app.savePickle()" id="save-btn" class="px-6 py-2 bg-green-600 text-white rounded-lg shadow font-bold hover:bg-green-700 transition-colors flex items-center">
+                    <i class="fas fa-save mr-2"></i> Save Pickle
+                </button>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM", authDomain: "pickle-fdc54.firebaseapp.com", projectId: "pickle-fdc54" };
         const db = getFirestore(initializeApp(firebaseConfig));
         
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get('id');
-        const categoryId = urlParams.get('categoryId');
-
-        document.getElementById('back-link').href = `manage-products.html?categoryId=${categoryId}`;
+        // We no longer rely on categoryId from the URL
 
         window.app = {
             variants: [{ weight: '500g', price: 150 }],
             
             init: async () => {
-                if(productId && categoryId) {
+                // 1. Load Categories into the dropdown FIRST
+                try {
+                    const catSnap = await getDocs(collection(db, 'categories'));
+                    let optionsHTML = '<option value="">-- Select a Category --</option>';
+                    catSnap.forEach(doc => {
+                        const data = doc.data();
+                        optionsHTML += `<option value="${doc.id}">${data.name || doc.id}</option>`;
+                    });
+                    document.getElementById('prod-category').innerHTML = optionsHTML;
+                } catch (error) {
+                    console.error("Failed to load categories:", error);
+                    document.getElementById('prod-category').innerHTML = '<option value="">Error loading categories</option>';
+                }
+
+                // 2. If editing an existing product, load its data
+                if(productId) {
                     document.getElementById('editor-title').innerText = "Edit Pickle";
-                    
-                    // NEW: Fetch from the specific category document instead of root 'products'
-                    const categoryDocRef = doc(db, 'categories', categoryId);
-                    const docSnap = await getDoc(categoryDocRef);
+                    const docSnap = await getDoc(doc(db, 'products', productId));
                     
                     if(docSnap.exists()) {
-                        const categoryData = docSnap.data();
+                        const data = docSnap.data();
+                        document.getElementById('prod-name').value = data.name;
+                        document.getElementById('prod-img').value = data.image;
+                        app.variants = data.variants || [{weight: data.weight, price: data.price}];
                         
-                        // Extract the specific product from the products map
-                        if (categoryData.products && categoryData.products[productId]) {
-                            const data = categoryData.products[productId];
-                            document.getElementById('prod-name').value = data.name || '';
-                            document.getElementById('prod-img').value = data.image || '';
-                            app.variants = data.variants || [{weight: data.weight, price: data.price}];
-                        } else {
-                            console.error("Product not found inside this category's map.");
+                        // Set the dropdown to the previously saved category
+                        if(data.categoryId) {
+                            document.getElementById('prod-category').value = data.categoryId;
                         }
                     }
                 }
@@ -75,68 +99,72 @@
             renderVariants: () => {
                 document.getElementById('variants-container').innerHTML = app.variants.map((v, i) => `
                     <div class="flex space-x-2 items-center bg-white p-2 rounded border">
-                        <input type="text" value="${v.weight}" onchange="app.updateVar(${i}, 'weight', this.value)" class="flex-1 px-3 py-1 border rounded" placeholder="Weight (250g)">
-                        <input type="number" value="${v.price}" onchange="app.updateVar(${i}, 'price', this.value)" class="flex-1 px-3 py-1 border rounded" placeholder="Price (₹)">
+                        <input type="text" value="${v.weight}" onchange="app.updateVar(${i}, 'weight', this.value)" class="flex-1 px-3 py-1 border rounded bg-gray-50" placeholder="Weight (250g)">
+                        <input type="number" value="${v.price}" onchange="app.updateVar(${i}, 'price', this.value)" class="flex-1 px-3 py-1 border rounded bg-gray-50" placeholder="Price (₹)">
                         <button onclick="app.removeVar(${i})" class="text-red-500 p-2 hover:bg-red-50 rounded"><i class="fas fa-times"></i></button>
                     </div>`).join('');
             },
             
             addVariant: () => { app.variants.push({weight: '', price: ''}); app.renderVariants(); },
-            
             removeVar: (i) => { if(app.variants.length > 1) { app.variants.splice(i, 1); app.renderVariants(); } },
-            
             updateVar: (i, field, val) => { app.variants[i][field] = field === 'price' ? parseFloat(val) : val; },
             
             savePickle: async () => {
-                const name = document.getElementById('prod-name').value;
-                const image = document.getElementById('prod-img').value || 'https://placehold.co/400x300/fef3c7/b45309?text=' + encodeURIComponent(name);
+                const name = document.getElementById('prod-name').value.trim();
+                const image = document.getElementById('prod-img').value.trim() || 'https://placehold.co/400x300/fef3c7/b45309?text=' + encodeURIComponent(name);
+                
+                // Get the category ID directly from our new dropdown menu
+                const selectedCategoryId = document.getElementById('prod-category').value;
                 
                 if(!name || app.variants.length === 0) return alert("Valid name and at least one variant required.");
-                if(!categoryId) return alert("Category ID is missing. Cannot save.");
+                if(!selectedCategoryId) return alert("Please select a Category from the dropdown menu.");
                 
-                // Base data - omitting 'isavailable' so updates don't accidentally overwrite the toggle state
-                const data = { name, image, variants: app.variants, categoryId, price: app.variants[0].price, weight: app.variants[0].weight };
+                const btn = document.getElementById('save-btn');
+                btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Saving...`;
+                btn.disabled = true;
+
+                const data = { 
+                    name, 
+                    image, 
+                    variants: app.variants, 
+                    categoryId: selectedCategoryId, 
+                    price: app.variants[0].price, 
+                    weight: app.variants[0].weight 
+                };
                 
-                // Dynamically target the specific category document
-                const categoryRef = doc(db, 'categories', categoryId);
+                const categoryRef = doc(db, 'categories', selectedCategoryId);
 
                 try {
                     if (productId) {
-                        // 1. UPDATING EXISTING PRODUCT
+                        // UPDATING
                         const rootProdRef = doc(db, 'products', productId);
-                        
                         await Promise.all([
                             updateDoc(rootProdRef, data),
-                            // Save into the 'products' map field on the dynamic category document
                             setDoc(categoryRef, {
-                                products: {
-                                    [productId]: data
-                                }
-                            }, { merge: true }) // Merge prevents wiping other products
+                                products: { [productId]: data }
+                            }, { merge: true })
                         ]);
                     } else {
-                        // 2. CREATING A NEW PRODUCT
+                        // CREATING
                         const rootProdRef = doc(collection(db, 'products'));
                         const newProductId = rootProdRef.id;
-                        
-                        // Add creation metadata and availability flag
                         const saveData = { ...data, id: newProductId, isavailable: true, createdAt: Date.now() };
                         
                         await Promise.all([
                             setDoc(rootProdRef, saveData),
-                            // Save into the 'products' map field on the dynamic category document
                             setDoc(categoryRef, {
-                                products: {
-                                    [newProductId]: saveData
-                                }
-                            }, { merge: true }) // Merge prevents wiping other products
+                                products: { [newProductId]: saveData }
+                            }, { merge: true })
                         ]);
                     }
 
-                    window.location.href = `manage-products.html?categoryId=${categoryId}`;
+                    // Redirect back to the main management page
+                    window.location.href = `manage-products.html`;
                 } catch (error) {
                     console.error("Error saving product:", error);
-                    alert("Failed to save the product.");
+                    alert("Failed to save the product. Check console.");
+                    btn.innerHTML = `<i class="fas fa-save mr-2"></i> Save Pickle`;
+                    btn.disabled = false;
                 }
             }
         };
