@@ -3,11 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Editor - Admin</title>
+    <title>Manage Categories - Vastramaya Admin</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    
     <style>
+        /* 1. GLOBAL VARIABLES & COLOR PALETTE */
         :root {
             --page-bg: #f4f5f7;
             --header-bg: #ffffff;
@@ -31,53 +34,36 @@
             --radius-lg: 12px;
         }
 
-        /* TYPOGRAPHY & RESET */
+        /* 2. TYPOGRAPHY & RESET */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
-        
-        a {
             text-decoration: none !important;
         }
-
+        
         body {
             font-family: "DM Sans", Roboto, sans-serif;
             font-weight: 500;
             font-size: 14px;
             line-height: 20px;
             color: var(--text-color);
-            background-color: var(--page-bg);
             overflow-x: hidden;
             width: 100%;
-        }
-
-        button {
-            cursor: pointer;
-            font-family: inherit;
-        }
-
-        /* LAYOUT & SPACING */
-        .content-inner {
-            max-width: 1110px;
-            margin: 0 auto;
-            padding: 24px 24px 40px;
-            width: 100%;
-        }
-
-        .header-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
+            background-color: var(--page-bg);
         }
 
         .page-title {
-            font-size: 20px;
             font-weight: 700;
             line-height: 32px;
             color: rgb(29, 30, 32);
+            font-size: 20px;
+        }
+
+        .page-title-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
 
         .breadcrumbs {
@@ -86,11 +72,22 @@
             align-items: center;
             font-size: 13px;
             color: var(--text-sub);
-            margin-bottom: 8px;
         }
+        .breadcrumbs span.divider { color: #d1d5db; }
 
-        .breadcrumbs .divider {
-            color: #d1d5db;
+        /* 3. LAYOUT & SPACING MACRO-STRUCTURE */
+        .content-inner {
+            max-width: 1110px;
+            margin: 0 auto;
+            padding: 24px 24px 40px;
+            width: 100%;
+        }
+        
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
         }
 
         .card {
@@ -99,30 +96,9 @@
             border: 1px solid var(--border-subtle);
             overflow: hidden;
             width: 100%;
-            max-width: 800px; /* Constrain form width for better UX */
         }
 
-        .card-header {
-            padding: 24px 20px;
-            border-bottom: 1px solid var(--border-subtle);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .card-body {
-            padding: 32px 20px;
-        }
-        
-        .card-footer {
-            padding: 20px;
-            border-top: 1px solid var(--border-subtle);
-            display: flex;
-            justify-content: flex-end;
-            background: #fafafa;
-        }
-
-        /* MICRO-COMPONENTS */
+        /* 4. MICRO-COMPONENTS */
         .primary-btn {
             display: inline-flex;
             align-items: center;
@@ -136,63 +112,267 @@
             color: #ffffff;
             background: var(--brand-primary);
             transition: background 0.15s ease;
+            cursor: pointer;
         }
-
-        .primary-btn:hover {
-            background: #471ea7;
-        }
+        .primary-btn:hover { background: #471ea7; }
         
-        .primary-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
-        .primary-btn svg {
-            width: 18px;
-            height: 18px;
-            stroke: #ffffff;
-            fill: none;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
         .btn-secondary {
-            padding: 8px 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 12px;
             border-radius: var(--radius-md);
             border: 1px solid var(--border-subtle);
             background: #ffffff;
             font-size: 13px;
             font-weight: 600;
-            color: var(--brand-primary);
-            transition: all 0.15s ease;
+            color: #673de6;
+            transition: background 0.15s ease;
+            cursor: pointer;
+        }
+        .btn-secondary:hover { background: #f2efff; }
+
+        /* Added Danger Button for the Delete Modal */
+        .danger-btn {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
-        }
-
-        .btn-secondary:hover {
-            background: #f2efff;
-            border-color: #d8cffd;
-        }
-
-        /* FORMS & INPUTS */
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 13px;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            border: none;
             font-weight: 600;
+            font-size: 14px;
+            color: #ffffff;
+            background: var(--danger-color);
+            transition: background 0.15s ease;
+            cursor: pointer;
+        }
+        .danger-btn:hover { background: #dc2626; }
+
+        .toggle-switch {
+            width: 44px;
+            height: 24px;
+            position: relative;
+            display: inline-block;
+        }
+        .toggle-switch input { display: none; }
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background-color: var(--switch-off);
+            border-radius: 24px;
+            transition: .4s;
+            cursor: pointer;
+        }
+        .toggle-slider::before {
+            content: "";
+            position: absolute;
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            border-radius: 50%;
+            transition: .4s;
+        }
+        .toggle-switch input:checked + .toggle-slider { background-color: var(--switch-on); }
+        .toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); }
+
+        .kebab {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-md);
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid var(--border-subtle);
+            background: #ffffff;
+            cursor: pointer;
+        }
+        .kebab:hover { background: #f9fafb; border-color: #d1d5db; }
+        .kebab .dots {
+            width: 4px; height: 4px;
+            background: var(--icon-color);
+            border-radius: 50%;
+            position: relative;
+        }
+        .kebab .dots::before, .kebab .dots::after {
+            content: ""; position: absolute; width: 4px; height: 4px;
+            background: var(--icon-color); border-radius: 50%; left: 0;
+        }
+        .kebab .dots::before { top: -6px; }
+        .kebab .dots::after { bottom: -6px; }
+
+        /* Dynamic Popup Menu */
+        .dropdown-menu {
+            position: fixed; 
+            background: #ffffff;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-premium);
+            min-width: 180px; 
+            z-index: 10002;
+            display: none; 
+            flex-direction: column;
+            padding: 4px;
+            animation: fadeInUp 0.2s ease-out;
+        }
+        .dropdown-menu.show { display: flex; }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-item {
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-color);
+            cursor: pointer;
+            border-radius: 4px;
+            text-align: left;
+            background: transparent;
+            border: none;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+        .dropdown-item i { color: var(--text-sub); width: 14px; text-align: center; }
+        .dropdown-item:hover { background: var(--hover-bg); }
+        .dropdown-item.text-danger { color: var(--danger-color); }
+        .dropdown-item.text-danger i { color: var(--danger-color); }
+
+        /* 5. DESKTOP DATA VIEW (STRICTLY TABLE) */
+        .desktop-view { display: block; }
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            overflow: visible !important;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            z-index: 1;
+            position: relative;
+        }
+        thead { height: 48px; }
+        th {
+            font-weight: 700;
+            font-size: 14px;
+            line-height: 24px;
             color: rgb(29, 30, 32);
-            margin-bottom: 8px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-subtle);
+            white-space: nowrap;
+            background-color: #ffffff;
+            padding: 12px 20px;
+        }
+        tbody tr {
+            border-bottom: 1px solid var(--hover-bg);
+            background-color: #ffffff;
+        }
+        tbody tr:hover { background-color: #f9fafb; }
+        tbody tr:last-child { border-bottom: none; }
+        td {
+            padding: 12px 20px;
+            vertical-align: middle;
+            text-align: left;
         }
         
-        .required-mark {
-            color: var(--danger-color);
+        .product-thumb {
+            width: 48px; height: 48px;
+            border-radius: var(--radius-md);
+            object-fit: cover;
+            border: 1px solid var(--border-subtle);
+        }
+        .td-flex { display: flex; align-items: center; gap: 12px; }
+
+        /* 6. MOBILE DATA VIEW (STRICTLY CARDS) */
+        .mobile-view { display: none; }
+        .mobile-category-cards {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid var(--border-subtle);
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            margin-bottom: 16px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .mobile-category-cards:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        .mobile-category-cards img {
+            width: 56px; height: 56px;
+            border-radius: var(--radius-lg);
+            object-fit: cover;
+        }
+        .mobile-card-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .mobile-card-title { font-size: 16px; font-weight: 700; color: var(--text-color); }
+        .mobile-card-sub { font-size: 14px; font-weight: 600; color: var(--brand-primary); }
+        .mobile-card-meta { font-size: 12px; font-weight: 500; color: var(--text-sub); }
+        .mobile-card-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .product-card-menu-btn {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            border: 1px solid var(--border-subtle);
+            display: flex; justify-content: center; align-items: center;
+            background: #fff;
         }
 
+        /* 7. POPUPS & OVERLAYS */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            display: none; 
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-premium);
+            padding: 24px;
+            animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .modal-header { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+        .modal-body-text { color: var(--text-sub); line-height: 1.5; margin-bottom: 24px; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes slideUpModal {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        /* 8. FORMS & INPUTS */
+        .form-group { margin-bottom: 16px; }
         .form-input {
             width: 100%;
             padding: 0.875rem 1rem;
@@ -201,119 +381,27 @@
             background: white;
             transition: all 0.15s ease;
             font-size: 0.95rem;
-            font-family: inherit;
             color: var(--text-color);
+            font-family: inherit;
         }
-
         .form-input:focus {
             border-color: var(--brand-primary);
             box-shadow: 0 0 0 3px rgba(81, 39, 186, 0.1);
             outline: none;
         }
 
-        /* PREMIUM IMAGE UPLOAD BOX */
-        .premium-upload-box {
-            position: relative;
-            border: 2px dashed var(--border-subtle);
-            border-radius: 16px;
-            padding: 3rem 2rem;
-            background: linear-gradient(135deg, #FAFAFA 0%, #F5F5F5 100%);
-            overflow: hidden;
-            margin-bottom: 32px;
-        }
-
-        .premium-upload-box::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -100%;
-            width: 50%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--brand-primary), transparent);
-            animation: shimmerTop 2.5s infinite linear;
-        }
-
-        @keyframes shimmerTop {
-            0% { left: -100%; }
-            100% { left: 200%; }
-        }
-        
-        /* DYNAMIC VARIANTS STYLING */
-        .variants-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-        
-        .variant-row {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            margin-bottom: 12px;
-            animation: slideDown 0.2s ease-out;
-        }
-        
-        .variant-row .form-input {
-            flex: 1;
-        }
-        
-        .remove-btn {
-            background: transparent;
-            border: 1px solid transparent;
-            color: var(--text-sub);
-            width: 44px;
-            height: 44px;
-            border-radius: var(--radius-md);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.15s ease;
-        }
-        
-        .remove-btn:hover {
-            background: #fef2f2;
-            color: var(--danger-color);
-            border-color: #fecaca;
-        }
-        
-        .remove-btn svg {
-            width: 18px;
-            height: 18px;
-            stroke: currentColor;
-            fill: none;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* RESPONSIVE */
-        @media (max-width: 767px) {
-            .content-inner {
-                padding: 16px;
-            }
-            .header-section {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-            }
-            .page-title {
-                font-size: 22px;
-            }
-            .card {
-                border-radius: 16px;
-                border: none;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            }
-            .premium-upload-box {
-                padding: 2rem 1rem;
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .content-inner { padding: 16px; }
+            .page-title { font-size: 22px; }
+            .desktop-view { display: none; }
+            .mobile-view { display: block; }
+            .modal-content {
+                align-self: flex-end;
+                border-radius: 24px 24px 0 0;
+                animation: slideUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                margin: 0; 
+                padding-bottom: 40px; 
             }
         }
     </style>
@@ -321,173 +409,285 @@
 <body>
 
     <main class="content-inner">
-        <div class="header-section">
-            <div>
+        <div class="header-actions">
+            <div class="page-title-group">
+                <h1 class="page-title">Manage Categories</h1>
                 <div class="breadcrumbs">
-                    <a href="manage-categories.html" style="color: inherit;">Categories</a>
+                    <span>Admin</span>
                     <span class="divider">/</span>
-                    <a id="back-link" href="#" style="color: inherit;">Products</a>
-                    <span class="divider">/</span>
-                    <span id="breadcrumb-current" style="color: var(--brand-primary); font-weight: 600;">Editor</span>
+                    <span>Catalog</span>
                 </div>
-                <h2 id="editor-title" class="page-title">Add New Pickle</h2>
-            </div>
-        </div>
-        
-        <div class="card">
-            <div class="card-header">
-                <h3 style="font-size: 16px; font-weight: 600; color: rgb(29, 30, 32);">Product Details</h3>
             </div>
             
-            <div class="card-body">
-                <div class="form-group">
-                    <label class="form-label">Pickle Name <span class="required-mark">*</span></label>
-                    <input type="text" id="prod-name" class="form-input" placeholder="e.g. Extra Spicy Mango">
-                </div>
-                
-                <div class="premium-upload-box">
-                    <label class="form-label">Image URL</label>
-                    <input type="text" id="prod-img" class="form-input" placeholder="https://..." style="margin-bottom: 8px;">
-                    <span style="font-size: 12px; color: var(--text-sub);">Provide a high-resolution image link for the product display.</span>
-                </div>
-                
-                <div>
-                    <div class="variants-header">
-                        <div>
-                            <h4 style="font-size: 14px; font-weight: 700; color: rgb(29, 30, 32);">Quantity Variants & Pricing <span class="required-mark">*</span></h4>
-                            <span style="font-size: 12px; color: var(--text-sub); display: block; margin-top: 4px;">Set available weights and their corresponding prices.</span>
-                        </div>
-                        <button onclick="app.addVariant()" class="btn-secondary">
-                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
-                            Add Variant
-                        </button>
-                    </div>
-                    <div id="variants-container"></div>
-                </div>
-            </div>
+            <button onclick="app.showCategoryModal()" class="primary-btn">
+                <i class="fas fa-plus" style="font-size: 12px;"></i> Add Category
+            </button>
+        </div>
 
-            <div class="card-footer">
-                <button onclick="app.savePickle()" id="save-btn" class="primary-btn">
-                    <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-                    <span id="save-btn-text">Save Pickle</span>
-                </button>
+        <div id="data-container">
+            </div>
+    </main>
+
+    <div id="modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">Add New Category</div>
+            <div class="form-group">
+                <input type="text" id="cat-name" placeholder="Category Name (e.g. Mango)" class="form-input">
+            </div>
+            <div class="form-group">
+                <input type="text" id="cat-img" placeholder="Image URL (Optional)" class="form-input">
+            </div>
+            <div class="modal-footer">
+                <button onclick="document.getElementById('modal').style.display = 'none'" class="btn-secondary">Cancel</button>
+                <button onclick="app.saveCategory()" class="primary-btn">Save Category</button>
             </div>
         </div>
-    </main>
+    </div>
+
+    <div id="delete-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header" style="color: var(--danger-color);">Confirm Deletion</div>
+            <div class="modal-body-text">
+                Are you sure you want to delete this category? This action permanently removes it from the database and cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button onclick="app.cancelDelete()" class="btn-secondary">Cancel</button>
+                <button onclick="app.confirmDelete()" class="danger-btn">Delete Category</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="menus-container"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // Added deleteDoc to imports
+        import { getFirestore, collection, onSnapshot, doc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM", authDomain: "pickle-fdc54.firebaseapp.com", projectId: "pickle-fdc54" };
         const db = getFirestore(initializeApp(firebaseConfig));
-        
-        const urlParams = new URLSearchParams(window.location.search);
-        const productId = urlParams.get('id');
-        const categoryId = urlParams.get('categoryId');
+        const appId = 'spicy-delights-app';
 
         window.app = {
-            variants: [{ weight: '500g', price: 150 }],
+            categories: [], 
+            products: [],
+            pendingDeleteId: null, // Tracks which category is queued for deletion
             
-            init: async () => {
-                if(!categoryId) {
-                    alert("Category ID is missing. Returning to Categories.");
-                    window.location.href = 'manage-categories.html';
-                    return;
-                }
-
-                document.getElementById('back-link').href = `manage-products.html?categoryId=${categoryId}`;
-
-                if(productId) {
-                    document.getElementById('editor-title').innerText = "Edit Pickle";
-                    document.getElementById('breadcrumb-current').innerText = "Edit";
-                    
-                    const categoryRef = doc(db, 'categories', categoryId);
-                    const docSnap = await getDoc(categoryRef);
-                    
-                    if(docSnap.exists()) {
-                        const data = docSnap.data();
-                        if(data.products && data.products[productId]) {
-                            const prodData = data.products[productId];
-                            document.getElementById('prod-name').value = prodData.name || '';
-                            document.getElementById('prod-img').value = prodData.image || '';
-                            app.variants = prodData.variants || [{weight: prodData.weight, price: prodData.price}];
-                        }
-                    }
-                }
-                app.renderVariants();
+            init: () => {
+                onSnapshot(collection(db, 'categories'), snap => {
+                    app.categories = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    app.render();
+                });
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'products'), snap => {
+                    app.products = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    app.render();
+                });
             },
             
-            renderVariants: () => {
-                document.getElementById('variants-container').innerHTML = app.variants.map((v, i) => `
-                    <div class="variant-row">
-                        <input type="text" value="${v.weight}" onchange="app.updateVar(${i}, 'weight', this.value)" class="form-input" placeholder="Weight (e.g. 250g)">
-                        <input type="number" value="${v.price}" onchange="app.updateVar(${i}, 'price', this.value)" class="form-input" placeholder="Price (₹)">
-                        <button onclick="app.removeVar(${i})" class="remove-btn" title="Remove Variant">
-                            <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"></path></svg>
-                        </button>
-                    </div>`).join('');
+            render: () => {
+                const container = document.getElementById('data-container');
+                const menusContainer = document.getElementById('menus-container');
+                
+                let desktopHTML = `<div class="desktop-view card"><div class="table-wrapper"><table>
+                                    <thead><tr>
+                                        <th>Image</th>
+                                        <th>Name</th>
+                                        <th>Items</th>
+                                        <th>Visibility</th>
+                                        <th>Actions</th>
+                                    </tr></thead><tbody>`;
+                
+                let mobileHTML = `<div class="mobile-view">`;
+                let popupsHTML = ``; 
+
+                app.categories.forEach(cat => {
+                    const count = app.products.filter(p => p.categoryId === cat.id).length;
+                    const isAvailable = cat.isavailable !== false; 
+                    const imgSrc = cat.image || `https://placehold.co/400x300/fef3c7/b45309?text=${cat.name}`;
+
+                    // Desktop Table Row
+                    desktopHTML += `
+                        <tr>
+                            <td><img src="${imgSrc}" class="product-thumb" alt="${cat.name}"></td>
+                            <td><span style="font-weight: 600;">${cat.name}</span></td>
+                            <td>${count} Items</td>
+                            <td>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" ${isAvailable ? 'checked' : ''} onchange="app.toggleAvailability(event, '${cat.id}', ${isAvailable})">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <div class="td-flex">
+                                    <button onclick="window.location.href='manage-products.html?categoryId=${cat.id}'" class="btn-secondary">Manage</button>
+                                    <button class="kebab" onclick="app.toggleMenu(event, 'menu-${cat.id}')">
+                                        <div class="dots"></div>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+
+                    // Mobile Cards
+                    mobileHTML += `
+                        <div class="mobile-category-cards">
+                            <img src="${imgSrc}" alt="${cat.name}">
+                            <div class="mobile-card-content">
+                                <div class="mobile-card-title">${cat.name}</div>
+                                <div class="mobile-card-sub">${count} Items</div>
+                                <div class="mobile-card-meta">${isAvailable ? 'Visible' : 'Hidden'}</div>
+                            </div>
+                            <div class="mobile-card-actions">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" ${isAvailable ? 'checked' : ''} onchange="app.toggleAvailability(event, '${cat.id}', ${isAvailable})">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <button class="kebab product-card-menu-btn" onclick="app.toggleMenu(event, 'menu-${cat.id}')">
+                                    <div class="dots"></div>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+
+                    // Single popup menu per category, rendered globally to prevent clipping
+                    popupsHTML += `
+                        <div class="dropdown-menu" id="menu-${cat.id}">
+                            <button class="dropdown-item" onclick="app.editCategory(event, '${cat.id}')"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="dropdown-item text-danger" onclick="app.deleteCategory(event, '${cat.id}')"><i class="fas fa-trash"></i> Delete</button>
+                        </div>
+                    `;
+                });
+
+                desktopHTML += `</tbody></table></div></div>`;
+                mobileHTML += `</div>`;
+
+                container.innerHTML = desktopHTML + mobileHTML;
+                menusContainer.innerHTML = popupsHTML;
             },
             
-            addVariant: () => { app.variants.push({weight: '', price: ''}); app.renderVariants(); },
-            removeVar: (i) => { if(app.variants.length > 1) { app.variants.splice(i, 1); app.renderVariants(); } },
-            updateVar: (i, field, val) => { app.variants[i][field] = field === 'price' ? parseFloat(val) : val; },
+            showCategoryModal: () => {
+                document.getElementById('modal').style.display = 'flex';
+                document.getElementById('cat-name').value = '';
+                document.getElementById('cat-img').value = '';
+            },
             
-            savePickle: async () => {
-                const name = document.getElementById('prod-name').value.trim();
-                const image = document.getElementById('prod-img').value.trim() || 'https://placehold.co/400x300/fef3c7/b45309?text=' + encodeURIComponent(name);
+            saveCategory: async () => {
+                const name = document.getElementById('cat-name').value.trim();
+                const image = document.getElementById('cat-img').value.trim() || 'https://placehold.co/400x300/fef3c7/b45309?text=' + name;
+                if(!name) return alert("Name required");
                 
-                if(!name || app.variants.length === 0) return alert("Valid name and at least one variant required.");
-                
-                const btn = document.getElementById('save-btn');
-                const btnText = document.getElementById('save-btn-text');
-                
-                btnText.innerText = "Saving...";
-                btn.disabled = true;
-
-                const data = { 
+                await setDoc(doc(collection(db, 'categories')), { 
                     name, 
                     image, 
-                    variants: app.variants, 
-                    categoryId,
-                    price: app.variants[0].price, 
-                    weight: app.variants[0].weight 
-                };
+                    isavailable: true,
+                    createdAt: Date.now() 
+                });
                 
-                const categoryRef = doc(db, 'categories', categoryId);
-
+                document.getElementById('modal').style.display = 'none';
+            },
+            
+            toggleAvailability: async (event, id, currentState) => {
+                event.stopPropagation();
                 try {
-                    if (productId) {
-                        const rootProdRef = doc(db, 'products', productId);
-                        await Promise.all([
-                            updateDoc(rootProdRef, data),
-                            setDoc(categoryRef, {
-                                products: { [productId]: data }
-                            }, { merge: true })
-                        ]);
-                    } else {
-                        const rootProdRef = doc(collection(db, 'products'));
-                        const newProductId = rootProdRef.id;
-                        const saveData = { ...data, id: newProductId, isavailable: true, createdAt: Date.now() };
-                        
-                        await Promise.all([
-                            setDoc(rootProdRef, saveData),
-                            setDoc(categoryRef, {
-                                products: { [newProductId]: saveData }
-                            }, { merge: true })
-                        ]);
+                    await updateDoc(doc(db, 'categories', id), {
+                        isavailable: !currentState
+                    });
+                } catch (error) {
+                    console.error("Error updating category: ", error);
+                    alert("Failed to update availability. Please try again.");
+                }
+            },
+            
+            toggleMenu: (event, menuId) => {
+                event.stopPropagation();
+                const button = event.currentTarget;
+                const targetMenu = document.getElementById(menuId);
+                const isCurrentlyShowing = targetMenu.classList.contains('show');
+                
+                // Close all open menus
+                document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                    menu.classList.remove('show');
+                });
+                
+                if (!isCurrentlyShowing) {
+                    // Show menu to calculate size
+                    targetMenu.classList.add('show');
+                    
+                    // Get positions
+                    const btnRect = button.getBoundingClientRect();
+                    const menuRect = targetMenu.getBoundingClientRect();
+                    
+                    let topPosition = btnRect.bottom + 8;
+                    let leftPosition = btnRect.right - menuRect.width;
+
+                    // Intelligent Flip: If the menu clips the bottom of the window, render it above the button instead
+                    if (topPosition + menuRect.height > window.innerHeight) {
+                        topPosition = btnRect.top - menuRect.height - 8;
                     }
 
-                    window.location.href = `manage-products.html?categoryId=${categoryId}`;
+                    // Apply coordinates
+                    targetMenu.style.top = topPosition + 'px';
+                    targetMenu.style.left = leftPosition + 'px';
+                }
+            },
+
+            editCategory: (event, id) => {
+                event.stopPropagation();
+                document.querySelectorAll('.dropdown-menu.show').forEach(menu => menu.classList.remove('show'));
+                alert('Edit function triggered for category: ' + id);
+            },
+            
+            // --- NEW DELETE LOGIC ---
+            deleteCategory: (event, id) => {
+                event.stopPropagation();
+                
+                // Hide any open kebab menus
+                document.querySelectorAll('.dropdown-menu.show').forEach(menu => menu.classList.remove('show'));
+                
+                // Store the ID of the category we want to delete
+                app.pendingDeleteId = id;
+                
+                // Show the custom confirmation modal
+                document.getElementById('delete-modal').style.display = 'flex';
+            },
+            
+            cancelDelete: () => {
+                // Clear the ID and hide the modal
+                app.pendingDeleteId = null;
+                document.getElementById('delete-modal').style.display = 'none';
+            },
+            
+            confirmDelete: async () => {
+                if (!app.pendingDeleteId) return;
+                
+                try {
+                    // Delete the document from Firestore
+                    await deleteDoc(doc(db, 'categories', app.pendingDeleteId));
+                    
+                    // Close the modal and clear the ID
+                    app.cancelDelete();
                 } catch (error) {
-                    console.error("Error saving product:", error);
-                    alert("Failed to save the product. Check console.");
-                    btnText.innerText = "Save Pickle";
-                    btn.disabled = false;
+                    console.error("Error deleting category:", error);
+                    alert("Failed to delete category. Please check your console and try again.");
                 }
             }
         };
+
         app.init();
+
+        // Auto-close menus on off-click
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                menu.classList.remove('show');
+            });
+        });
+
+        // Auto-close menus on scroll (to prevent floating menus detaching from rows)
+        document.addEventListener('scroll', () => {
+            document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                menu.classList.remove('show');
+            });
+        }, true); 
     </script>
 </body>
 </html>
