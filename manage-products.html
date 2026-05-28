@@ -74,7 +74,7 @@
         }
 
         .page-title {
-            font-size: 20px;
+            font-size: 24px;
             font-weight: 700;
             line-height: 32px;
             color: rgb(29, 30, 32);
@@ -85,8 +85,8 @@
             gap: 8px;
             align-items: center;
             font-size: 13px;
-            color: #6b7280;
-            margin-bottom: 8px;
+            color: var(--text-sub);
+            margin-top: 4px;
         }
 
         .breadcrumbs .divider {
@@ -544,13 +544,12 @@
     <main class="content-inner">
         <div class="header-section">
             <div>
-                <div class="breadcrumbs">
-                    <a href="manage-categories.html">Categories</a>
-                    <span class="divider">/</span>
-                    <span>Products</span>
-                </div>
                 <h2 id="page-title" class="page-title">Loading...</h2>
-                <p id="page-subtitle" style="color: var(--text-sub); margin-top: 4px; font-size: 14px;"></p>
+                <div class="breadcrumbs">
+                    <a href="manage-categories.html" style="color: inherit;">Categories</a>
+                    <span class="divider">/</span>
+                    <span style="color: var(--brand-primary); font-weight: 600;">Products</span>
+                </div>
             </div>
             <button onclick="app.addProduct()" class="primary-btn">
                 <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
@@ -629,10 +628,7 @@
                 onSnapshot(categoryRef, (docSnap) => {
                     if (docSnap.exists()) {
                         const data = docSnap.data();
-                        const categoryName = data.name || 'Category';
-                        
-                        document.getElementById('page-title').innerText = `${categoryName} Pickles`;
-                        document.getElementById('page-subtitle').innerText = `${categoryName} / Product`;
+                        document.getElementById('page-title').innerText = `${data.name || 'Category'} Pickles`;
                         
                         const productsMap = data.products || {};
                         app.products = Object.entries(productsMap).map(([id, prodData]) => ({
@@ -643,8 +639,6 @@
                         app.render();
                     } else {
                         document.getElementById('page-title').innerText = "Category not found";
-                        document.getElementById('page-subtitle').innerText = "";
-                        
                         document.getElementById('desktop-tbody').innerHTML = `<tr><td colspan="6" class="empty-state" style="color: var(--danger-color)">This category does not exist.</td></tr>`;
                         document.getElementById('mobile-cards').innerHTML = `<div class="empty-state" style="color: var(--danger-color)">This category does not exist.</div>`;
                     }
