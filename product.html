@@ -4,41 +4,376 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Editor - Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-</head>
-<body class="bg-amber-50 text-gray-800 min-h-screen p-8">
-    
-    <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
-        <div class="mb-4"><a id="back-link" href="#" class="text-amber-700 font-medium hover:underline">&larr; Back to Products</a></div>
-        <h2 id="editor-title" class="text-2xl font-bold mb-6 border-b pb-4">Add New Pickle</h2>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --page-bg: #f4f5f7;
+            --header-bg: #ffffff;
+            --sidebar-bg: #ffffff;
+            --text-color: rgb(24, 24, 26);
+            --text-sub: #6b7280;
+            --icon-color: #6b7280;
+            --icon-active: #5127ba;
+            --active-bg: #f3f4f6;
+            --hover-bg: #f3f4f6;
+            --border-subtle: #e5e7eb;
+            --brand-primary: #5127ba;
+            --brand-gradient: linear-gradient(135deg, #5127ba 0%, #673de6 100%);
+            --danger-color: #ef4444;
+            --success-color: #10B981;
+            --warning-color: #f59e0b;
+            --switch-on: #5127ba;
+            --switch-off: #9CA3AF;
+            --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
+        /* TYPOGRAPHY & RESET */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         
-        <div class="space-y-4">
+        a {
+            text-decoration: none !important;
+        }
+
+        body {
+            font-family: "DM Sans", Roboto, sans-serif;
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 20px;
+            color: var(--text-color);
+            background-color: var(--page-bg);
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        button {
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        /* LAYOUT & SPACING */
+        .content-inner {
+            max-width: 1110px;
+            margin: 0 auto;
+            padding: 24px 24px 40px;
+            width: 100%;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 32px;
+            color: rgb(29, 30, 32);
+        }
+
+        .breadcrumbs {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-sub);
+            margin-bottom: 8px;
+        }
+
+        .breadcrumbs .divider {
+            color: #d1d5db;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-subtle);
+            overflow: hidden;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .card-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-body {
+            padding: 32px 20px;
+        }
+        
+        .card-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: flex-end;
+            background: #fafafa;
+        }
+
+        /* MICRO-COMPONENTS */
+        .primary-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            color: #ffffff;
+            background: var(--brand-primary);
+            transition: background 0.15s ease;
+        }
+
+        .primary-btn:hover {
+            background: #471ea7;
+        }
+        
+        .primary-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .primary-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: #ffffff;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .btn-secondary {
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            background: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--brand-primary);
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary:hover {
+            background: #f2efff;
+            border-color: #d8cffd;
+        }
+
+        /* FORMS & INPUTS */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: rgb(29, 30, 32);
+            margin-bottom: 8px;
+        }
+        
+        .required-mark {
+            color: var(--danger-color);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            background: white;
+            transition: all 0.15s ease;
+            font-size: 0.95rem;
+            font-family: inherit;
+            color: var(--text-color);
+        }
+
+        .form-input:focus {
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 3px rgba(81, 39, 186, 0.1);
+            outline: none;
+        }
+
+        /* PREMIUM IMAGE UPLOAD BOX */
+        .premium-upload-box {
+            position: relative;
+            border: 2px dashed var(--border-subtle);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, #FAFAFA 0%, #F5F5F5 100%);
+            overflow: hidden;
+            margin-bottom: 32px;
+        }
+
+        .premium-upload-box::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -100%;
+            width: 50%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--brand-primary), transparent);
+            animation: shimmerTop 2.5s infinite linear;
+        }
+
+        @keyframes shimmerTop {
+            0% { left: -100%; }
+            100% { left: 200%; }
+        }
+        
+        /* DYNAMIC VARIANTS STYLING */
+        .variants-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        
+        .variant-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 12px;
+            animation: slideDown 0.2s ease-out;
+        }
+        
+        .variant-row .form-input {
+            flex: 1;
+        }
+        
+        .remove-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-sub);
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-md);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.15s ease;
+        }
+        
+        .remove-btn:hover {
+            background: #fef2f2;
+            color: var(--danger-color);
+            border-color: #fecaca;
+        }
+        
+        .remove-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 767px) {
+            .content-inner {
+                padding: 16px;
+            }
+            .header-section {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .page-title {
+                font-size: 22px;
+            }
+            .card {
+                border-radius: 16px;
+                border: none;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            }
+            .premium-upload-box {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="content-inner">
+        <div class="header-section">
             <div>
-                <label class="text-sm font-bold text-gray-700 block mb-1">Pickle Name <span class="text-red-500">*</span></label>
-                <input type="text" id="prod-name" class="w-full px-4 py-2 border rounded bg-gray-50 focus:ring-2 focus:ring-amber-400 outline-none" placeholder="e.g. Extra Spicy Mango">
-            </div>
-            
-            <div>
-                <label class="text-sm font-bold text-gray-700 block mb-1">Image URL</label>
-                <input type="text" id="prod-img" class="w-full px-4 py-2 border rounded bg-gray-50 focus:ring-2 focus:ring-amber-400 outline-none" placeholder="https://...">
-            </div>
-            
-            <div class="border rounded-lg p-4 bg-gray-50 mt-6">
-                <div class="flex justify-between items-center mb-3">
-                    <label class="font-bold text-gray-800">Quantity Variants & Pricing <span class="text-red-500">*</span></label>
-                    <button onclick="app.addVariant()" class="text-xs bg-amber-200 hover:bg-amber-300 px-3 py-1.5 rounded font-bold shadow transition-colors text-amber-900">+ Add Variant</button>
+                <div class="breadcrumbs">
+                    <a href="manage-categories.html" style="color: inherit;">Categories</a>
+                    <span class="divider">/</span>
+                    <a id="back-link" href="#" style="color: inherit;">Products</a>
+                    <span class="divider">/</span>
+                    <span id="breadcrumb-current" style="color: var(--brand-primary); font-weight: 600;">Editor</span>
                 </div>
-                <div id="variants-container" class="space-y-3"></div>
+                <h2 id="editor-title" class="page-title">Add New Pickle</h2>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h3 style="font-size: 16px; font-weight: 600; color: rgb(29, 30, 32);">Product Details</h3>
+            </div>
+            
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">Pickle Name <span class="required-mark">*</span></label>
+                    <input type="text" id="prod-name" class="form-input" placeholder="e.g. Extra Spicy Mango">
+                </div>
+                
+                <div class="premium-upload-box">
+                    <label class="form-label">Image URL</label>
+                    <input type="text" id="prod-img" class="form-input" placeholder="https://..." style="margin-bottom: 8px;">
+                    <span style="font-size: 12px; color: var(--text-sub);">Provide a high-resolution image link for the product display.</span>
+                </div>
+                
+                <div>
+                    <div class="variants-header">
+                        <div>
+                            <h4 style="font-size: 14px; font-weight: 700; color: rgb(29, 30, 32);">Quantity Variants & Pricing <span class="required-mark">*</span></h4>
+                            <span style="font-size: 12px; color: var(--text-sub); display: block; margin-top: 4px;">Set available weights and their corresponding prices.</span>
+                        </div>
+                        <button onclick="app.addVariant()" class="btn-secondary">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
+                            Add Variant
+                        </button>
+                    </div>
+                    <div id="variants-container"></div>
+                </div>
             </div>
 
-            <div class="flex justify-end pt-6 border-t mt-6">
-                <button onclick="app.savePickle()" id="save-btn" class="px-8 py-2.5 bg-green-600 text-white rounded-lg shadow-md font-bold hover:bg-green-700 transition-colors flex items-center">
-                    <i class="fas fa-save mr-2"></i> Save Pickle
+            <div class="card-footer">
+                <button onclick="app.savePickle()" id="save-btn" class="primary-btn">
+                    <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                    <span id="save-btn-text">Save Pickle</span>
                 </button>
             </div>
         </div>
-    </div>
+    </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -47,7 +382,6 @@
         const firebaseConfig = { apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM", authDomain: "pickle-fdc54.firebaseapp.com", projectId: "pickle-fdc54" };
         const db = getFirestore(initializeApp(firebaseConfig));
         
-        // Extract both IDs from the URL
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get('id');
         const categoryId = urlParams.get('categoryId');
@@ -62,19 +396,17 @@
                     return;
                 }
 
-                // Dynamically set the back link to return to the specific category
                 document.getElementById('back-link').href = `manage-products.html?categoryId=${categoryId}`;
 
-                // If editing an existing product
                 if(productId) {
                     document.getElementById('editor-title').innerText = "Edit Pickle";
+                    document.getElementById('breadcrumb-current').innerText = "Edit";
                     
                     const categoryRef = doc(db, 'categories', categoryId);
                     const docSnap = await getDoc(categoryRef);
                     
                     if(docSnap.exists()) {
                         const data = docSnap.data();
-                        // Pull data directly from the Map
                         if(data.products && data.products[productId]) {
                             const prodData = data.products[productId];
                             document.getElementById('prod-name').value = prodData.name || '';
@@ -88,10 +420,12 @@
             
             renderVariants: () => {
                 document.getElementById('variants-container').innerHTML = app.variants.map((v, i) => `
-                    <div class="flex space-x-2 items-center bg-white p-2 rounded border shadow-sm">
-                        <input type="text" value="${v.weight}" onchange="app.updateVar(${i}, 'weight', this.value)" class="flex-1 px-3 py-1.5 border rounded bg-gray-50 outline-none focus:ring-1 focus:ring-amber-400" placeholder="Weight (250g)">
-                        <input type="number" value="${v.price}" onchange="app.updateVar(${i}, 'price', this.value)" class="flex-1 px-3 py-1.5 border rounded bg-gray-50 outline-none focus:ring-1 focus:ring-amber-400" placeholder="Price (₹)">
-                        <button onclick="app.removeVar(${i})" class="text-red-500 p-2 hover:bg-red-50 rounded transition-colors" title="Remove"><i class="fas fa-times"></i></button>
+                    <div class="variant-row">
+                        <input type="text" value="${v.weight}" onchange="app.updateVar(${i}, 'weight', this.value)" class="form-input" placeholder="Weight (e.g. 250g)">
+                        <input type="number" value="${v.price}" onchange="app.updateVar(${i}, 'price', this.value)" class="form-input" placeholder="Price (₹)">
+                        <button onclick="app.removeVar(${i})" class="remove-btn" title="Remove Variant">
+                            <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+                        </button>
                     </div>`).join('');
             },
             
@@ -106,14 +440,16 @@
                 if(!name || app.variants.length === 0) return alert("Valid name and at least one variant required.");
                 
                 const btn = document.getElementById('save-btn');
-                btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Saving...`;
+                const btnText = document.getElementById('save-btn-text');
+                
+                btnText.innerText = "Saving...";
                 btn.disabled = true;
 
                 const data = { 
                     name, 
                     image, 
                     variants: app.variants, 
-                    categoryId, // Automatically uses the ID from the URL
+                    categoryId,
                     price: app.variants[0].price, 
                     weight: app.variants[0].weight 
                 };
@@ -122,7 +458,6 @@
 
                 try {
                     if (productId) {
-                        // UPDATING
                         const rootProdRef = doc(db, 'products', productId);
                         await Promise.all([
                             updateDoc(rootProdRef, data),
@@ -131,7 +466,6 @@
                             }, { merge: true })
                         ]);
                     } else {
-                        // CREATING
                         const rootProdRef = doc(collection(db, 'products'));
                         const newProductId = rootProdRef.id;
                         const saveData = { ...data, id: newProductId, isavailable: true, createdAt: Date.now() };
@@ -144,12 +478,11 @@
                         ]);
                     }
 
-                    // Redirect securely back to that specific category's management page
                     window.location.href = `manage-products.html?categoryId=${categoryId}`;
                 } catch (error) {
                     console.error("Error saving product:", error);
                     alert("Failed to save the product. Check console.");
-                    btn.innerHTML = `<i class="fas fa-save mr-2"></i> Save Pickle`;
+                    btnText.innerText = "Save Pickle";
                     btn.disabled = false;
                 }
             }
