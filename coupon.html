@@ -1,97 +1,365 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>  
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Coupons - Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #fffbeb; font-family: sans-serif; }
-        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        :root {
+            --page-bg: #f4f5f7;
+            --header-bg: #ffffff;
+            --sidebar-bg: #ffffff;
+            --text-color: rgb(24, 24, 26);
+            --text-sub: #6b7280;
+            --icon-color: #6b7280;
+            --icon-active: #5127ba;
+            --active-bg: #f3f4f6;
+            --hover-bg: #f3f4f6;
+            --border-subtle: #e5e7eb;
+            --brand-primary: #5127ba;
+            --brand-gradient: linear-gradient(135deg, #5127ba 0%, #673de6 100%);
+            --danger-color: #ef4444;
+            --success-color: #10B981;
+            --warning-color: #f59e0b;
+            --switch-on: #5127ba;
+            --switch-off: #9CA3AF;
+            --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
+        /* TYPOGRAPHY & RESET */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        a { text-decoration: none !important; }
+        button { cursor: pointer; font-family: inherit; }
+
+        body {
+            font-family: "DM Sans", Roboto, sans-serif;
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 20px;
+            color: var(--text-color);
+            background-color: var(--page-bg);
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        /* LAYOUT & SPACING */
+        .content-inner {
+            max-width: 1110px;
+            margin: 0 auto;
+            padding: 24px 24px 40px;
+            width: 100%;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 32px;
+            color: rgb(29, 30, 32);
+        }
+
+        .breadcrumbs {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-sub);
+            margin-bottom: 8px;
+        }
+        .breadcrumbs .divider { color: #d1d5db; }
+
+        .card {
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-subtle);
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .card-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* MICRO-COMPONENTS */
+        .primary-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            color: #ffffff;
+            background: var(--brand-primary);
+            transition: background 0.15s ease;
+        }
+        .primary-btn:hover { background: #471ea7; }
+        .primary-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .primary-btn svg {
+            width: 18px; height: 18px; stroke: #ffffff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+        }
+
+        .btn-secondary {
+            padding: 6px 12px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            background: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-color);
+            transition: background 0.15s ease;
+        }
+        .btn-secondary:hover { background: var(--hover-bg); }
+
+        .toggle-switch { width: 44px; height: 24px; position: relative; display: inline-block; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; inset: 0; background-color: var(--switch-off); border-radius: 24px; transition: .4s; cursor: pointer; }
+        .slider::before { content: ""; position: absolute; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; border-radius: 50%; transition: .4s; }
+        input:checked + .slider { background-color: var(--switch-on); }
+        input:checked + .slider::before { transform: translateX(20px); }
+
+        .kebab {
+            width: 32px; height: 32px; border-radius: 8px; display: inline-flex; justify-content: center; align-items: center; border: 1px solid var(--border-subtle); background: #ffffff; transition: all 0.15s ease; cursor: pointer;
+        }
+        .kebab:hover { background: #f9fafb; border-color: #d1d5db; }
+        .kebab-dots { width: 4px; height: 4px; background-color: var(--icon-color); position: relative; }
+        .kebab-dots::before, .kebab-dots::after { content: ''; position: absolute; width: 4px; height: 4px; background-color: var(--icon-color); left: 0; }
+        .kebab-dots::before { top: -6px; }
+        .kebab-dots::after { top: 6px; }
+
+        /* DESKTOP DATA VIEW (TABLE) */
+        .table-wrapper { width: 100%; overflow-x: auto; overflow: visible !important; }
+        table { width: 100%; border-collapse: collapse; z-index: 1; position: relative; }
+        thead { height: 48px; }
+        th { font-weight: 700; font-size: 14px; line-height: 24px; color: rgb(29, 30, 32); text-align: left; border-bottom: 1px solid var(--border-subtle); white-space: nowrap; background-color: #ffffff; padding: 12px 20px; }
+        tbody tr { border-bottom: 1px solid #f3f4f6; background-color: #ffffff; transition: background-color 0.15s ease; }
+        tbody tr:hover { background-color: #f9fafb; }
+        tbody tr:last-child { border-bottom: none; }
+        td { padding: 12px 20px; vertical-align: middle; text-align: left; }
+        
+        .status-badge { font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 4px; display: inline-block;}
+        .status-active { color: var(--success-color); background: rgba(16, 185, 129, 0.1); }
+        .status-inactive { color: var(--text-sub); background: var(--active-bg); }
+        .status-expired { color: var(--danger-color); background: #fef2f2; }
+        .code-badge { font-family: monospace; font-weight: 700; font-size: 13px; color: var(--brand-primary); background: #f2efff; padding: 4px 8px; border-radius: 4px; letter-spacing: 0.5px; border: 1px dashed #d8cffd;}
+
+        /* MOBILE DATA VIEW (CARDS) */
+        .mobile-view { display: none; padding: 16px; background-color: var(--page-bg); }
+        .mobile-category-cards .mobile-card {
+            background: #ffffff; border-radius: 16px; border: 1px solid var(--border-subtle); padding: 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); width: 100%; margin-bottom: 16px; transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .mobile-category-cards .mobile-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
+        .mobile-card-content { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+        .mobile-card-title { font-size: 16px; font-weight: 700; color: var(--text-color); display: flex; align-items: center; gap: 8px;}
+        .mobile-card-subtitle { font-size: 14px; font-weight: 600; color: var(--brand-primary); }
+        .mobile-card-meta { font-size: 12px; font-weight: 500; color: var(--text-sub); }
+        .mobile-card-actions { margin-left: auto; display: flex; gap: 12px; align-items: center; }
+        .product-card-menu-btn { width: 40px; height: 40px; border-radius: 10px; }
+
+        /* FORMS & INPUTS */
+        .form-group { margin-bottom: 16px; }
+        .form-row { display: flex; gap: 12px; }
+        .form-row .form-group { flex: 1; margin-bottom: 12px; }
+        .form-label { display: block; font-size: 13px; font-weight: 600; color: rgb(29, 30, 32); margin-bottom: 8px; }
+        .form-input {
+            width: 100%; padding: 0.875rem 1rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: white; transition: all 0.15s ease; font-size: 0.95rem; color: var(--text-color); font-family: inherit;
+        }
+        .form-input:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 3px rgba(81, 39, 186, 0.1); outline: none; }
+        select.form-input { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 40px; }
+        .input-group { position: relative; display: flex; align-items: center; }
+        .input-prefix, .input-suffix { position: absolute; color: var(--text-sub); font-weight: 600; font-size: 14px; pointer-events: none;}
+        .input-prefix { left: 16px; }
+        .input-suffix { right: 16px; }
+
+        /* POPUPS & OVERLAYS */
+        .desktop-popup {
+            position: fixed; z-index: 10002; background: #ffffff; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); min-width: 180px; padding: 8px; display: none; flex-direction: column; gap: 4px; animation: fadeInUp 0.2s ease-out;
+        }
+        .desktop-popup.active { display: flex; }
+        .desktop-popup button { width: 100%; text-align: left; border: none; background: transparent; padding: 8px 12px; font-size: 14px; border-radius: 6px; color: var(--text-color); transition: background 0.15s; }
+        .desktop-popup button:hover { background: var(--hover-bg); }
+        .desktop-popup button.delete-btn { color: var(--danger-color); }
+        .desktop-popup button.delete-btn:hover { background: #fef2f2; }
+
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: center; justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        
+        .modal-content {
+            width: 100%; max-width: 480px; background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-premium); animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { font-size: 18px; font-weight: 700; color: rgb(29, 30, 32); }
+        .modal-close { background: none; border: none; color: var(--text-sub); cursor: pointer; padding: 4px; border-radius: 4px; transition: all 0.15s; }
+        .modal-close:hover { background: var(--hover-bg); color: var(--text-color); }
+        .modal-body { padding: 24px; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: flex-end; gap: 12px; background: #fafafa; border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+
+        .advanced-menu {
+            position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; border-radius: 24px 24px 0 0; padding: 24px 16px; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2001; box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.15); display: flex; flex-direction: column; gap: 12px;
+        }
+        .advanced-menu.active { transform: translateY(0); }
+        .drag-handle { width: 40px; height: 4px; background: var(--border-subtle); border-radius: 999px; margin: -12px auto 16px auto; }
+        .advanced-menu button { padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 600; border: 1px solid var(--border-subtle); background: #ffffff; color: var(--text-color); display: flex; align-items: center; gap: 10px; justify-content: center; }
+        .advanced-menu button.delete-btn { color: var(--danger-color); border-color: #fecaca; background: #fef2f2; }
+
+        .empty-state { padding: 48px 24px; text-align: center; color: var(--text-sub); width: 100%; font-style: italic; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(5px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes modalPop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes slideUpModal { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        /* RESPONSIVE */
+        @media (max-width: 767px) {
+            .content-inner { padding: 16px; background-color: var(--page-bg); }
+            .header-section { flex-direction: column; align-items: flex-start; gap: 16px; }
+            .page-title { font-size: 22px; }
+            .desktop-view { display: none; }
+            .mobile-view { display: block; }
+            .card { background: transparent; border: none; }
+            .card-header { display: none; }
+            
+            /* Form Modal transforms to bottom sheet style */
+            .modal-content {
+                border-radius: 24px 24px 0 0; animation: slideUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1); align-self: flex-end;
+            }
+            .modal-footer { border-radius: 0; padding-bottom: 24px;}
+        }
     </style>
 </head>
-<body class="text-gray-800 min-h-screen pb-20">
-    <nav class="glass-panel sticky top-0 z-50 shadow-sm border-b border-amber-200">
-        <div class="max-w-7xl mx-auto px-4 flex justify-between h-16 items-center">
-            <a href="index.html" class="font-bold text-xl text-amber-900"><i class="fas fa-pepper-hot text-red-600 mr-2"></i>Spicy Delights Admin</a>
-            <a href="index.html" class="text-sm font-medium text-gray-600 hover:text-gray-900">Back to Dashboard</a>
-        </div>
-    </nav>
+<body>
 
-    <main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
-        
-        <div class="flex justify-between items-center border-b border-amber-200 pb-4">
+    <main class="content-inner">
+        <div class="header-section">
             <div>
-                <h2 class="text-3xl font-bold"><i class="fas fa-ticket-alt mr-2 text-amber-600"></i>Manage Coupons</h2>
-                <p class="text-gray-600 mt-1">Create and control discount codes for your customers.</p>
+                <div class="breadcrumbs">
+                    <a href="index.html" style="color: inherit;">Dashboard</a>
+                    <span class="divider">/</span>
+                    <span style="color: var(--brand-primary); font-weight: 600;">Coupons</span>
+                </div>
+                <h2 class="page-title">Manage Coupons</h2>
             </div>
-            <button onclick="app.openModal()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-bold shadow-lg transition-transform transform hover:scale-105">
-                <i class="fas fa-plus mr-2"></i>Add New Coupon
+            <button onclick="app.openModal()" class="primary-btn">
+                <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+                Add Coupon
             </button>
         </div>
 
-        <div id="coupons-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="col-span-full text-center py-10 text-gray-400 italic">
-                <i class="fas fa-spinner fa-spin mr-2"></i>Loading coupons...
-            </div>
-        </div>
-
-    </main>
-
-    <div id="coupon-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4">
-            <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h3 id="modal-title" class="text-xl font-bold text-gray-800">Create New Coupon</h3>
-                <button onclick="app.closeModal()" class="text-gray-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+        <div class="card">
+            <div class="card-header">
+                <h3 style="font-size: 16px; font-weight: 600;">Active & Past Coupons</h3>
             </div>
             
-            <div class="space-y-4 mb-6">
-                <div>
-                    <label class="text-sm font-bold text-gray-700 block mb-1">Coupon Code (Name) *</label>
-                    <input type="text" id="c-name" class="w-full px-4 py-2 border rounded-lg bg-gray-50 uppercase focus:ring-2 focus:ring-amber-400 focus:outline-none transition-colors" placeholder="e.g., DIWALI20">
+            <div class="desktop-view table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Coupon Code</th>
+                            <th>Discount</th>
+                            <th>Usage (Used/Limit)</th>
+                            <th>Expiry Date</th>
+                            <th>Status</th>
+                            <th>Active</th>
+                            <th style="width: 60px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="desktop-tbody">
+                        <tr><td colspan="7" class="empty-state">Loading coupons...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mobile-view mobile-category-cards" id="mobile-cards">
+                <div class="empty-state">Loading coupons...</div>
+            </div>
+        </div>
+    </main>
+
+    <div id="form-modal-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Create New Coupon</h3>
+                <button onclick="app.closeModal()" class="modal-close">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Coupon Code (Name) <span style="color: var(--danger-color)">*</span></label>
+                    <input type="text" id="c-name" class="form-input" style="text-transform: uppercase;" placeholder="e.g., DIWALI20">
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-sm font-bold text-gray-700 block mb-1">Discount Type *</label>
-                        <select id="c-type" onchange="app.updateValuePlaceholder()" class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Discount Type <span style="color: var(--danger-color)">*</span></label>
+                        <select id="c-type" onchange="app.updateValuePlaceholder()" class="form-input">
                             <option value="percentage">Percentage (%)</option>
                             <option value="flat">Flat Amount (₹)</option>
                         </select>
                     </div>
-                    <div>
-                        <label class="text-sm font-bold text-gray-700 block mb-1">Discount Value *</label>
-                        <div class="relative flex items-center">
-                            <span id="value-prefix" class="absolute left-3 text-gray-500 font-bold hidden">₹</span>
-                            <input type="number" id="c-value" min="0" class="w-full pl-4 pr-8 py-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-amber-400 focus:outline-none" placeholder="20">
-                            <span id="value-suffix" class="absolute right-3 text-gray-500 font-bold">%</span>
+                    <div class="form-group">
+                        <label class="form-label">Discount Value <span style="color: var(--danger-color)">*</span></label>
+                        <div class="input-group">
+                            <span id="value-prefix" class="input-prefix" style="display: none;">₹</span>
+                            <input type="number" id="c-value" min="0" class="form-input" placeholder="20">
+                            <span id="value-suffix" class="input-suffix">%</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-sm font-bold text-gray-700 block mb-1">Total Usage Limit</label>
-                        <input type="number" id="c-total-limit" min="1" class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-amber-400 focus:outline-none" placeholder="e.g., 100">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Total Usage Limit</label>
+                        <input type="number" id="c-total-limit" min="1" class="form-input" placeholder="e.g., 100">
                     </div>
-                    <div>
-                        <label class="text-sm font-bold text-gray-700 block mb-1">Per User Limit</label>
-                        <input type="number" id="c-user-limit" min="1" class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-amber-400 focus:outline-none" placeholder="e.g., 1">
+                    <div class="form-group">
+                        <label class="form-label">Per User Limit</label>
+                        <input type="number" id="c-user-limit" min="1" class="form-input" placeholder="e.g., 1">
                     </div>
                 </div>
 
-                <div>
-                    <label class="text-sm font-bold text-gray-700 block mb-1">Expiry Date *</label>
-                    <input type="date" id="c-expiry" class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Expiry Date <span style="color: var(--danger-color)">*</span></label>
+                    <input type="date" id="c-expiry" class="form-input">
                 </div>
             </div>
-            
-            <div class="flex justify-end space-x-3">
-                <button onclick="app.closeModal()" class="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg font-medium transition-colors">Cancel</button>
-                <button onclick="app.saveCoupon()" id="modal-save-btn" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold shadow transition-colors">Create Coupon</button>
+            <div class="modal-footer">
+                <button onclick="app.closeModal()" class="btn-secondary">Cancel</button>
+                <button onclick="app.saveCoupon()" id="modal-save-btn" class="primary-btn">Create Coupon</button>
             </div>
         </div>
+    </div>
+
+    <div id="desktop-menu-popup" class="desktop-popup">
+        <button id="desktop-edit-btn">Edit Coupon</button>
+        <button id="desktop-delete-btn" class="delete-btn">Delete Coupon</button>
+    </div>
+
+    <div id="action-modal-overlay" class="modal-overlay"></div>
+    <div id="mobile-bottom-sheet" class="advanced-menu">
+        <div class="drag-handle"></div>
+        <button id="mobile-edit-btn">Edit Coupon</button>
+        <button id="mobile-delete-btn" class="delete-btn">Delete Coupon</button>
+        <button onclick="app.closeActionMenus()">Cancel</button>
     </div>
 
     <script type="module">
@@ -100,6 +368,8 @@
 
         const firebaseConfig = { apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM", authDomain: "pickle-fdc54.firebaseapp.com", projectId: "pickle-fdc54" };
         const db = getFirestore(initializeApp(firebaseConfig));
+        
+        let activeCouponId = null;
 
         window.app = {
             coupons: [],
@@ -110,66 +380,105 @@
                         .sort((a, b) => b.createdAt - a.createdAt);
                     app.render();
                 });
+
+                // Global event listeners to close overlays
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.kebab') && !e.target.closest('.desktop-popup')) {
+                        app.closeActionMenus();
+                    }
+                });
+                
+                document.getElementById('action-modal-overlay').addEventListener('click', () => {
+                    app.closeActionMenus();
+                });
+                
+                // Form modal overlay strict click (prevent accidental close unless clicking background exactly)
+                document.getElementById('form-modal-overlay').addEventListener('click', (e) => {
+                    if (e.target.id === 'form-modal-overlay') {
+                        app.closeModal();
+                    }
+                });
             },
 
             render: () => {
-                const container = document.getElementById('coupons-container');
+                const desktopTbody = document.getElementById('desktop-tbody');
+                const mobileContainer = document.getElementById('mobile-cards');
                 
                 if (app.coupons.length === 0) {
-                    container.innerHTML = `<div class="col-span-full text-center py-12 text-gray-400 italic bg-white rounded-xl shadow-sm border border-gray-100">No coupons created yet.</div>`;
+                    const empty = `<div class="empty-state">No coupons created yet.</div>`;
+                    desktopTbody.innerHTML = `<tr><td colspan="7" class="empty-state">No coupons created yet.</td></tr>`;
+                    mobileContainer.innerHTML = empty;
                     return;
                 }
 
-                container.innerHTML = app.coupons.map(coupon => {
+                let desktopHTML = '';
+                let mobileHTML = '';
+
+                app.coupons.forEach(coupon => {
                     const discountDisplay = coupon.type === 'percentage' ? `${coupon.value}% OFF` : `₹${coupon.value} OFF`;
-                    const isExpired = new Date(coupon.expiry) < new Date(new Date().setHours(0,0,0,0));
+                    
+                    // Expiry check normalized
+                    const expiryDateObj = new Date(coupon.expiry);
+                    const isExpired = expiryDateObj < new Date(new Date().setHours(0,0,0,0));
+                    
                     const statusText = !coupon.isActive ? 'Inactive' : (isExpired ? 'Expired' : 'Active');
-                    const statusColor = !coupon.isActive ? 'text-gray-400' : (isExpired ? 'text-red-500' : 'text-blue-600');
+                    let statusClass = 'status-active';
+                    if(!coupon.isActive) statusClass = 'status-inactive';
+                    else if (isExpired) statusClass = 'status-expired';
                     
                     const currentUsage = coupon.usage || 0;
-                    const totalLimit = coupon.totalLimit || 'Unlimited';
+                    const totalLimit = coupon.totalLimit || '∞';
+                    const userLimit = coupon.userLimit || '∞';
 
-                    return `
-                        <div class="bg-white rounded-xl shadow border border-gray-200 overflow-hidden flex flex-col hover:shadow-md transition-shadow">
-                            <div class="bg-amber-50 p-4 border-b border-amber-100 flex justify-between items-start">
-                                <div>
-                                    <h3 class="text-xl font-black text-amber-900 tracking-wider">${coupon.id}</h3>
-                                    <p class="text-lg font-bold text-green-700 mt-1">${discountDisplay}</p>
-                                </div>
-                                <div class="flex space-x-2">
-                                    <button onclick="app.editCoupon('${coupon.id}')" class="text-blue-500 hover:text-blue-700 p-1 bg-white rounded shadow-sm border border-blue-100" title="Edit Coupon">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button onclick="app.deleteCoupon('${coupon.id}')" class="text-red-400 hover:text-red-600 p-1 bg-white rounded shadow-sm border border-red-100" title="Delete Coupon">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div class="p-4 flex-grow space-y-2 text-sm text-gray-600">
-                                <div class="flex justify-between border-b border-gray-100 pb-2 mb-2">
-                                    <span><i class="fas fa-chart-pie w-5 text-center text-gray-400"></i> Usage / Limit:</span>
-                                    <span class="font-bold text-gray-900">${currentUsage} / ${totalLimit}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span><i class="far fa-calendar-alt w-5 text-center text-gray-400"></i> Expires:</span>
-                                    <span class="font-medium ${isExpired ? 'text-red-500' : 'text-gray-800'}">${new Date(coupon.expiry).toLocaleDateString()}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span><i class="fas fa-user w-5 text-center text-gray-400"></i> Per User Limit:</span>
-                                    <span class="font-medium text-gray-800">${coupon.userLimit || 'Unlimited'}</span>
-                                </div>
-                            </div>
-                            
-                            <div class="bg-gray-50 p-3 border-t border-gray-100 flex justify-between items-center">
-                                <span class="text-sm font-bold ${statusColor}">${statusText}</span>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer" ${coupon.isActive ? 'checked' : ''} onchange="app.toggleCouponStatus('${coupon.id}', ${coupon.isActive})">
-                                    <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-amber-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                    // Desktop Table Row
+                    desktopHTML += `
+                        <tr>
+                            <td><span class="code-badge">${coupon.id}</span></td>
+                            <td style="font-weight: 600;">${discountDisplay}</td>
+                            <td>${currentUsage} / ${totalLimit}</td>
+                            <td>${expiryDateObj.toLocaleDateString()}</td>
+                            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                            <td>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" ${coupon.isActive ? 'checked' : ''} onchange="app.toggleCouponStatus('${coupon.id}', ${coupon.isActive})">
+                                    <span class="slider"></span>
                                 </label>
+                            </td>
+                            <td>
+                                <button class="kebab" onclick="app.openDesktopMenu(event, '${coupon.id}')">
+                                    <div class="kebab-dots"></div>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+
+                    // Mobile Card
+                    mobileHTML += `
+                        <div class="mobile-card">
+                            <div class="mobile-card-content">
+                                <div class="mobile-card-title">
+                                    <span class="code-badge">${coupon.id}</span>
+                                    <span class="status-badge ${statusClass}" style="margin-left: auto;">${statusText}</span>
+                                </div>
+                                <div class="mobile-card-subtitle" style="margin-top: 4px;">${discountDisplay}</div>
+                                <div class="mobile-card-meta">Usage: ${currentUsage}/${totalLimit} • Per User: ${userLimit}</div>
+                                <div class="mobile-card-meta">Expires: ${expiryDateObj.toLocaleDateString()}</div>
                             </div>
-                        </div>`;
-                }).join('');
+                            <div class="mobile-card-actions">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" ${coupon.isActive ? 'checked' : ''} onchange="app.toggleCouponStatus('${coupon.id}', ${coupon.isActive})">
+                                    <span class="slider"></span>
+                                </label>
+                                <button class="kebab product-card-menu-btn" onclick="app.openMobileMenu('${coupon.id}')">
+                                    <div class="kebab-dots"></div>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                desktopTbody.innerHTML = desktopHTML;
+                mobileContainer.innerHTML = mobileHTML;
             },
 
             updateValuePlaceholder: () => {
@@ -179,22 +488,20 @@
                 const suffix = document.getElementById('value-suffix');
 
                 if (type === 'percentage') {
-                    prefix.classList.add('hidden');
-                    suffix.classList.remove('hidden');
-                    input.classList.remove('pl-8'); 
-                    input.classList.add('pl-4');    
+                    prefix.style.display = 'none';
+                    suffix.style.display = 'block';
+                    input.style.paddingLeft = '1rem';
                     input.placeholder = "20";
                 } else {
-                    prefix.classList.remove('hidden');
-                    suffix.classList.add('hidden');
-                    input.classList.remove('pl-4'); 
-                    input.classList.add('pl-8');    
-                    input.placeholder = "50";
+                    prefix.style.display = 'block';
+                    suffix.style.display = 'none';
+                    input.style.paddingLeft = '2rem';
+                    input.placeholder = "500";
                 }
             },
 
             openModal: () => {
-                // Reset form for creating
+                app.closeActionMenus();
                 document.getElementById('c-name').value = '';
                 document.getElementById('c-value').value = '';
                 document.getElementById('c-total-limit').value = '';
@@ -202,30 +509,30 @@
                 document.getElementById('c-expiry').value = '';
                 document.getElementById('c-type').value = 'percentage';
                 
-                // Enable name input
                 const nameInput = document.getElementById('c-name');
                 nameInput.disabled = false;
-                nameInput.classList.remove('bg-gray-200', 'cursor-not-allowed', 'text-gray-500');
+                nameInput.style.backgroundColor = 'white';
 
-                // Update UI text
                 document.getElementById('modal-title').innerText = "Create New Coupon";
                 document.getElementById('modal-save-btn').innerText = "Create Coupon";
                 
                 const today = new Date().toISOString().split('T')[0];
                 document.getElementById('c-expiry').setAttribute('min', today);
                 app.updateValuePlaceholder(); 
-                document.getElementById('coupon-modal').classList.remove('hidden');
+                
+                document.getElementById('form-modal-overlay').classList.add('active');
             },
 
             editCoupon: (id) => {
+                app.closeActionMenus();
                 const coupon = app.coupons.find(c => c.id === id);
                 if (!coupon) return;
 
-                // Populate fields
                 const nameInput = document.getElementById('c-name');
                 nameInput.value = coupon.id;
-                nameInput.disabled = true; // Lock the ID field
-                nameInput.classList.add('bg-gray-200', 'cursor-not-allowed', 'text-gray-500');
+                nameInput.disabled = true; 
+                nameInput.style.backgroundColor = 'var(--active-bg)';
+                nameInput.style.color = 'var(--text-sub)';
 
                 document.getElementById('c-type').value = coupon.type;
                 document.getElementById('c-value').value = coupon.value;
@@ -233,22 +540,51 @@
                 document.getElementById('c-user-limit').value = coupon.userLimit || '';
                 document.getElementById('c-expiry').value = coupon.expiry;
                 
-                // Update UI text
                 document.getElementById('modal-title').innerText = "Edit Coupon";
                 document.getElementById('modal-save-btn').innerText = "Save Changes";
 
                 app.updateValuePlaceholder();
-                document.getElementById('coupon-modal').classList.remove('hidden');
+                document.getElementById('form-modal-overlay').classList.add('active');
             },
 
             closeModal: () => {
-                document.getElementById('coupon-modal').classList.add('hidden');
+                document.getElementById('form-modal-overlay').classList.remove('active');
+            },
+            
+            openDesktopMenu: (event, id) => {
+                event.stopPropagation();
+                activeCouponId = id;
+                const popup = document.getElementById('desktop-menu-popup');
+                const rect = event.currentTarget.getBoundingClientRect();
+                
+                popup.style.top = `${rect.bottom + 8}px`;
+                popup.style.left = `${rect.left - 130}px`; 
+                popup.classList.add('active');
+
+                document.getElementById('desktop-edit-btn').onclick = () => app.editCoupon(id);
+                document.getElementById('desktop-delete-btn').onclick = () => { app.closeActionMenus(); app.deleteCoupon(id); };
+            },
+
+            openMobileMenu: (id) => {
+                activeCouponId = id;
+                document.getElementById('action-modal-overlay').classList.add('active');
+                document.getElementById('mobile-bottom-sheet').classList.add('active');
+
+                document.getElementById('mobile-edit-btn').onclick = () => app.editCoupon(id);
+                document.getElementById('mobile-delete-btn').onclick = () => { app.closeActionMenus(); app.deleteCoupon(id); };
+            },
+
+            closeActionMenus: () => {
+                document.getElementById('desktop-menu-popup').classList.remove('active');
+                document.getElementById('action-modal-overlay').classList.remove('active');
+                document.getElementById('mobile-bottom-sheet').classList.remove('active');
+                activeCouponId = null;
             },
 
             saveCoupon: async () => {
                 const nameInput = document.getElementById('c-name');
                 const couponId = nameInput.value.trim().toUpperCase();
-                const isEdit = nameInput.disabled; // If disabled, it's an edit
+                const isEdit = nameInput.disabled; 
 
                 const type = document.getElementById('c-type').value;
                 const value = Number(document.getElementById('c-value').value);
@@ -264,14 +600,13 @@
 
                 const btn = document.getElementById('modal-save-btn');
                 const originalText = btn.innerText;
-                btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i> Saving...`;
+                btn.innerText = "Saving...";
                 btn.disabled = true;
 
                 try {
                     const couponRef = doc(db, 'coupons', couponId);
                     
                     if (isEdit) {
-                        // Only update specific fields, preserving usage and createdAt
                         await updateDoc(couponRef, {
                             type: type,
                             value: value,
@@ -280,7 +615,6 @@
                             expiry: expiry
                         });
                     } else {
-                        // Create entirely new document
                         await setDoc(couponRef, {
                             name: couponId,
                             type: type,
