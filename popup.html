@@ -4,105 +4,508 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Popup - Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #fffbeb; font-family: sans-serif; }
-        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        :root {
+            --page-bg: #f4f5f7;
+            --header-bg: #ffffff;
+            --sidebar-bg: #ffffff;
+            --text-color: rgb(24, 24, 26);
+            --text-sub: #6b7280;
+            --icon-color: #6b7280;
+            --icon-active: #5127ba;
+            --active-bg: #f3f4f6;
+            --hover-bg: #f3f4f6;
+            --border-subtle: #e5e7eb;
+            --brand-primary: #5127ba;
+            --brand-gradient: linear-gradient(135deg, #5127ba 0%, #673de6 100%);
+            --danger-color: #ef4444;
+            --success-color: #10B981;
+            --warning-color: #f59e0b;
+            --switch-on: #5127ba;
+            --switch-off: #9CA3AF;
+            --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
+        /* TYPOGRAPHY & RESET */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        a {
+            text-decoration: none !important;
+        }
+
+        body {
+            font-family: "DM Sans", Roboto, sans-serif;
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 20px;
+            color: var(--text-color);
+            background-color: var(--page-bg);
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        button {
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        /* LAYOUT & SPACING */
+        .content-inner {
+            max-width: 1110px;
+            margin: 0 auto;
+            padding: 24px 24px 40px;
+            width: 100%;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 32px;
+            color: rgb(29, 30, 32);
+        }
+
+        .breadcrumbs {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-sub);
+            margin-bottom: 8px;
+        }
+
+        .breadcrumbs .divider {
+            color: #d1d5db;
+        }
+
+        .settings-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (min-width: 768px) {
+            .settings-layout {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-subtle);
+            overflow: hidden;
+            width: 100%;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: rgb(29, 30, 32);
+        }
+
+        .card-header svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--icon-color);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        /* MICRO-COMPONENTS */
+        .primary-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            color: #ffffff;
+            background: var(--brand-primary);
+            transition: background 0.15s ease;
+            width: 100%;
+        }
+
+        .primary-btn:hover {
+            background: #471ea7;
+        }
+        
+        .primary-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .primary-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: #ffffff;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            background: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-color);
+            transition: all 0.15s ease;
+            width: 100%;
+        }
+
+        .btn-secondary:hover {
+            background: var(--hover-bg);
+            color: var(--danger-color);
+            border-color: #fecaca;
+        }
+        
+        .btn-secondary svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .toggle-switch {
+            width: 44px;
+            height: 24px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            inset: 0;
+            background-color: var(--switch-off);
+            border-radius: 24px;
+            transition: .4s;
+            cursor: pointer;
+        }
+
+        .slider::before {
+            content: "";
+            position: absolute;
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            border-radius: 50%;
+            transition: .4s;
+        }
+
+        input:checked + .slider {
+            background-color: var(--switch-on);
+        }
+
+        input:checked + .slider::before {
+            transform: translateX(20px);
+        }
+        
+        .status-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #ffffff;
+            border: 1px solid var(--border-subtle);
+            padding: 8px 16px;
+            border-radius: 999px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        .status-text {
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .status-enabled { color: var(--success-color); }
+        .status-disabled { color: var(--text-sub); }
+
+        /* FORMS & INPUTS */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: rgb(29, 30, 32);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            background: white;
+            transition: all 0.15s ease;
+            font-size: 0.95rem;
+            color: var(--text-color);
+            font-family: inherit;
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-input:focus {
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 3px rgba(81, 39, 186, 0.1);
+            outline: none;
+        }
+
+        select.form-input {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 40px;
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-suffix {
+            position: absolute;
+            right: 16px;
+            color: var(--text-sub);
+            font-weight: 500;
+            font-size: 13px;
+            pointer-events: none;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: var(--text-sub);
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .help-text svg {
+            width: 14px;
+            height: 14px;
+            stroke: var(--icon-color);
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .sticky-sidebar {
+            position: sticky;
+            top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* ANIMATIONS */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 767px) {
+            .content-inner {
+                padding: 16px;
+            }
+            .header-section {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            .page-title {
+                font-size: 22px;
+            }
+            .form-row {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .header-section .status-container {
+                align-self: flex-start;
+            }
+        }
     </style>
 </head>
-<body class="text-gray-800 min-h-screen pb-20">
-    <nav class="glass-panel sticky top-0 z-50 shadow-sm border-b border-amber-200">
-        <div class="max-w-7xl mx-auto px-4 flex justify-between h-16 items-center">
-            <a href="index.html" class="font-bold text-xl text-amber-900"><i class="fas fa-pepper-hot text-red-600 mr-2"></i>Spicy Delights Admin</a>
-            <a href="index.html" class="text-sm font-medium text-gray-600 hover:text-gray-900">Back to Dashboard</a>
-        </div>
-    </nav>
+<body>
 
-    <main class="max-w-4xl mx-auto px-4 py-8 space-y-8">
-        
-        <div class="bg-white rounded-xl shadow-sm border border-amber-200 p-6 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+    <main class="content-inner">
+        <div class="header-section">
             <div>
-                <h2 class="text-3xl font-bold"><i class="fas fa-window-restore mr-2 text-amber-600"></i>Promotional Popup</h2>
-                <p class="text-gray-600 mt-1">Configure the popup that appears when customers visit your site.</p>
+                <div class="breadcrumbs">
+                    <a href="index.html" style="color: inherit;">Dashboard</a>
+                    <span class="divider">/</span>
+                    <span style="color: var(--brand-primary); font-weight: 600;">Marketing</span>
+                </div>
+                <h2 class="page-title">Promotional Popup Configuration</h2>
             </div>
-            <div class="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg border border-gray-200">
-                <span class="font-bold text-gray-700" id="popup-status-text">Disabled</span>
-                <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" id="popup-toggle" class="sr-only peer" onchange="app.togglePopup(event)">
-                    <div class="w-14 h-7 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-amber-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-600"></div>
+            
+            <div class="status-container">
+                <span id="popup-status-text" class="status-text status-disabled">Disabled</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="popup-toggle" onchange="app.togglePopup(event)">
+                    <span class="slider"></span>
                 </label>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            
-            <div class="md:col-span-2 space-y-6">
+        <div class="settings-layout">
+            <div class="settings-main">
                 
-                <section class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-5">
-                    <h3 class="text-xl font-bold text-gray-800 border-b pb-2"><i class="fas fa-image text-gray-400 mr-2"></i>Content Settings</h3>
-                    
-                    <div>
-                        <label class="text-sm font-bold text-gray-700 block mb-1">Popup Image URL</label>
-                        <input type="text" id="p-image" class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-amber-400 focus:outline-none" placeholder="https://...">
-                        <p class="text-xs text-amber-600 mt-1 font-medium"><i class="fas fa-info-circle"></i> Tip: If you use a fully designed image flyer, leave the Title and Message blank below.</p>
+                <div class="card">
+                    <div class="card-header">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        <h3>Content Settings</h3>
                     </div>
-
-                    <div>
-                        <label class="text-sm font-bold text-gray-700 block mb-1">Popup Title</label>
-                        <input type="text" id="p-title" class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-amber-400 focus:outline-none" placeholder="e.g., Massive Diwali Sale!">
-                    </div>
-
-                    <div>
-                        <label class="text-sm font-bold text-gray-700 block mb-1">Popup Message</label>
-                        <textarea id="p-message" rows="3" class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-amber-400 focus:outline-none" placeholder="Get 20% off on all pickles this weekend."></textarea>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-sm font-bold text-gray-700 block mb-1">Button Text</label>
-                            <input type="text" id="p-btn-text" class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-amber-400 focus:outline-none" placeholder="Shop Now">
-                        </div>
-                        <div>
-                            <label class="text-sm font-bold text-gray-700 block mb-1">Button Link</label>
-                            <input type="text" id="p-btn-link" class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-amber-400 focus:outline-none" placeholder="/products.html">
-                        </div>
-                    </div>
-                </section>
-
-                <section class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-5">
-                    <h3 class="text-xl font-bold text-gray-800 border-b pb-2"><i class="fas fa-clock text-gray-400 mr-2"></i>Display Rules</h3>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-sm font-bold text-gray-700 block mb-1">Delay (Seconds)</label>
-                            <div class="relative">
-                                <input type="number" id="p-delay" min="0" class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-amber-400 focus:outline-none" placeholder="3">
-                                <span class="absolute right-3 top-2 text-gray-400 font-medium">sec</span>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">Popup Image URL</label>
+                            <input type="text" id="p-image" class="form-input" placeholder="https://...">
+                            <div class="help-text">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                                Tip: If you use a fully designed image flyer, leave the Title and Message blank below.
                             </div>
                         </div>
-                        <div>
-                            <label class="text-sm font-bold text-gray-700 block mb-1">Frequency</label>
-                            <select id="p-frequency" class="w-full px-4 py-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-amber-400 focus:outline-none">
-                                <option value="always">Always Show (Every Page Load)</option>
-                                <option value="session">Once Per Session (Browser Close)</option>
-                                <option value="daily">Once Per Day</option>
-                            </select>
+
+                        <div class="form-group">
+                            <label class="form-label">Popup Title</label>
+                            <input type="text" id="p-title" class="form-input" placeholder="e.g., Massive Diwali Sale!">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Popup Message</label>
+                            <textarea id="p-message" class="form-input" placeholder="Get 20% off on all items this weekend."></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Button Text</label>
+                                <input type="text" id="p-btn-text" class="form-input" placeholder="Shop Now">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Button Link</label>
+                                <input type="text" id="p-btn-link" class="form-input" placeholder="/products.html">
+                            </div>
                         </div>
                     </div>
-                </section>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        <h3>Display Rules</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Delay</label>
+                                <div class="input-group">
+                                    <input type="number" id="p-delay" min="0" class="form-input" placeholder="3">
+                                    <span class="input-suffix">seconds</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Frequency</label>
+                                <select id="p-frequency" class="form-input">
+                                    <option value="always">Always Show (Every Page Load)</option>
+                                    <option value="session">Once Per Session (Browser Close)</option>
+                                    <option value="daily">Once Per Day</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
             </div>
 
-            <div class="space-y-4">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Actions</h3>
-                    <div class="space-y-3">
-                        <button onclick="app.saveSettings()" id="save-btn" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-bold shadow-lg transition-transform transform hover:scale-105 flex justify-center items-center">
-                            <i class="fas fa-save mr-2"></i> Save Popup
-                        </button>
-                        <button onclick="app.resetToDefault()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-medium transition-colors">
-                            <i class="fas fa-undo mr-2"></i> Reset to Default
-                        </button>
+            <div class="settings-sidebar">
+                <div class="sticky-sidebar">
+                    <div class="card" style="margin-bottom: 0;">
+                        <div class="card-header">
+                            <svg viewBox="0 0 24 24"><polygon points="14 2 18 6 7 17 3 17 3 13 14 2"></polygon><line x1="3" y1="22" x2="21" y2="22"></line></svg>
+                            <h3>Actions</h3>
+                        </div>
+                        <div class="card-body" style="display: flex; flex-direction: column; gap: 12px;">
+                            <button onclick="app.saveSettings()" id="save-btn" class="primary-btn">
+                                <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                                <span>Save Configuration</span>
+                            </button>
+                            <button onclick="app.resetToDefault()" class="btn-secondary">
+                                <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
+                                Reset to Default
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -117,24 +520,28 @@
         const firebaseConfig = { apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM", authDomain: "pickle-fdc54.firebaseapp.com", projectId: "pickle-fdc54" };
         const db = getFirestore(initializeApp(firebaseConfig));
 
-        // ─── Single document reference ───────────────────────────────────────────
         const MASTER_DOC = doc(db, 'landing_page', 'master');
 
         const DEFAULT_SETTINGS = {
             isEnabled: false,
             image: '',
             title: 'Welcome to Spicy Delights!',
-            message: 'Sign up today and get a flat 10% discount on your first pickle order.',
+            message: 'Sign up today and get a flat 10% discount on your first order.',
             btnText: 'Shop Now',
             btnLink: '/index.html',
             delay: 3,
             frequency: 'session'
         };
 
+        const ICONS = {
+            save: `<svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>`,
+            spin: `<svg class="animate-spin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" stroke-dasharray="31.4 31.4" stroke-linecap="round"></circle></svg>`,
+            check: `<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>`
+        };
+
         window.app = {
             init: async () => {
                 try {
-                    // ONE READ — grab only the popup_config sub-field from master
                     const snap = await getDoc(MASTER_DOC);
                     if (snap.exists() && snap.data().popup_config) {
                         const data = snap.data().popup_config;
@@ -164,12 +571,19 @@
             updateToggleUI: (isEnabled) => {
                 const toggle = document.getElementById('popup-toggle');
                 const statusText = document.getElementById('popup-status-text');
+                
                 toggle.checked = isEnabled === true;
                 statusText.innerText = isEnabled ? "Enabled" : "Disabled";
-                statusText.className = `font-bold ${isEnabled ? 'text-green-600' : 'text-gray-500'}`;
+                
+                if (isEnabled) {
+                    statusText.classList.remove('status-disabled');
+                    statusText.classList.add('status-enabled');
+                } else {
+                    statusText.classList.remove('status-enabled');
+                    statusText.classList.add('status-disabled');
+                }
             },
 
-            // Instant toggle — writes only popup_config.isEnabled, rest of master untouched
             togglePopup: async (event) => {
                 const isEnabled = event.target.checked;
                 app.updateToggleUI(isEnabled);
@@ -185,11 +599,11 @@
                 }
             },
 
-            // Writes only to popup_config sub-field — config and hero_slides untouched
             saveSettings: async () => {
                 const btn = document.getElementById('save-btn');
                 const originalHtml = btn.innerHTML;
-                btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Saving...`;
+                
+                btn.innerHTML = `${ICONS.spin} <span>Saving...</span>`;
                 btn.disabled = true;
 
                 const popupData = {
@@ -209,11 +623,12 @@
                         popup_config: popupData
                     }, { merge: true });
 
-                    btn.innerHTML = `<i class="fas fa-check mr-2"></i> Saved!`;
-                    btn.classList.replace('bg-green-600', 'bg-blue-600');
+                    btn.innerHTML = `${ICONS.check} <span>Saved!</span>`;
+                    btn.style.background = 'var(--success-color)';
+                    
                     setTimeout(() => {
                         btn.innerHTML = originalHtml;
-                        btn.classList.replace('bg-blue-600', 'bg-green-600');
+                        btn.style.background = '';
                         btn.disabled = false;
                     }, 2000);
                 } catch (error) {
