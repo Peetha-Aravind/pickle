@@ -48,15 +48,25 @@
             variants: [{ weight: '500g', price: 150 }],
             
             init: async () => {
-                if(productId) {
+                if(productId && categoryId) {
                     document.getElementById('editor-title').innerText = "Edit Pickle";
-                    // Read from the root 'products' collection for editing
-                    const docSnap = await getDoc(doc(db, 'products', productId));
+                    
+                    // NEW: Fetch from the specific category document instead of root 'products'
+                    const categoryDocRef = doc(db, 'categories', categoryId);
+                    const docSnap = await getDoc(categoryDocRef);
+                    
                     if(docSnap.exists()) {
-                        const data = docSnap.data();
-                        document.getElementById('prod-name').value = data.name;
-                        document.getElementById('prod-img').value = data.image;
-                        app.variants = data.variants || [{weight: data.weight, price: data.price}];
+                        const categoryData = docSnap.data();
+                        
+                        // Extract the specific product from the products map
+                        if (categoryData.products && categoryData.products[productId]) {
+                            const data = categoryData.products[productId];
+                            document.getElementById('prod-name').value = data.name || '';
+                            document.getElementById('prod-img').value = data.image || '';
+                            app.variants = data.variants || [{weight: data.weight, price: data.price}];
+                        } else {
+                            console.error("Product not found inside this category's map.");
+                        }
                     }
                 }
                 app.renderVariants();
