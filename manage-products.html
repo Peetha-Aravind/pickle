@@ -11,105 +11,164 @@
     <nav class="bg-white/90 backdrop-blur sticky top-0 z-50 shadow-sm border-b border-amber-200">
         <div class="max-w-7xl mx-auto px-4 flex justify-between h-16 items-center">
             <span class="font-bold text-xl text-amber-900"><i class="fas fa-pepper-hot text-red-600 mr-2"></i>Spicy Delights Admin</span>
-            <a href="manage-categories.html" class="text-sm font-medium text-amber-700 hover:text-amber-900">&larr; Back to Categories</a>
+            <a href="index.html" class="text-sm font-medium text-amber-700 hover:text-amber-900">&larr; Back to Dashboard</a>
         </div>
     </nav>
 
     <main class="max-w-7xl mx-auto px-4 py-8">
-        <div class="flex justify-between items-center mb-8 border-b border-amber-200 pb-4">
-            <h2 id="page-title" class="text-3xl font-bold">Loading Category...</h2>
-            <button id="add-btn" onclick="app.addProduct()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium shadow"><i class="fas fa-plus mr-1"></i> Add Pickle</button>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 border-b border-amber-200 pb-4 gap-4">
+            <div>
+                <h2 id="page-title" class="text-3xl font-bold">All Pickles</h2>
+                <p class="text-gray-600 text-sm mt-1">Managing products across all categories</p>
+            </div>
+            <button id="add-btn" onclick="app.addProduct()" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg font-bold shadow transition-colors">
+                <i class="fas fa-plus mr-2"></i> Add Pickle
+            </button>
         </div>
-        <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
+        
+        <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div class="col-span-full text-center py-12 text-gray-400 italic">
+                <i class="fas fa-spinner fa-spin text-2xl mb-2 block"></i> Loading all products...
+            </div>
+        </div>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        // Added updateDoc to imports
-        import { getFirestore, collection, onSnapshot, doc, getDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, deleteDoc, updateDoc, deleteField } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM", authDomain: "pickle-fdc54.firebaseapp.com", projectId: "pickle-fdc54" };
         const db = getFirestore(initializeApp(firebaseConfig));
-        
-        // Extract category ID from URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const categoryId = urlParams.get('categoryId');
 
         window.app = {
             products: [],
-            init: async () => {
-                if(!categoryId) return window.location.href = 'manage-categories.html';
-                
-                // Fetch category name from the new root 'categories' collection
-                const catDoc = await getDoc(doc(db, 'categories', categoryId));
-                document.getElementById('page-title').innerText = catDoc.exists() ? `Pickles in "${catDoc.data().name}"` : "Category Products";
+            
+            init: () => {
+                // Listen to the entire categories collection in real-time
+                onSnapshot(collection(db, 'categories'), (snapshot) => {
+                    let allFetchedProducts = [];
+                    
+                    snapshot.forEach(docSnap => {
+                        const categoryData = docSnap.data();
+                        
+                        // Check if this category has the products map
+                        if (categoryData.products) {
+                            // Convert the map into an array and attach the category ID and Name to each product
+                            Object.entries(categoryData.products).forEach(([productId, productData]) => {
+                                allFetchedProducts.push({
+                                    ...productData,
+                                    id: productId, // Ensure we have the ID
+                                    categoryId: docSnap.id, // Store which category doc it belongs to
+                                    categoryName: categoryData.name || 'Unknown Category'
+                                });
+                            });
+                        }
+                    });
 
-                // Listen to products directly from the category's 'products' subcollection
-                onSnapshot(collection(db, 'categories', categoryId, 'products'), snap => {
-                    app.products = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    // Sort products by creation date (newest first) or alphabetically
+                    app.products = allFetchedProducts.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
                     app.render();
+                }, (error) => {
+                    console.error("Error fetching products:", error);
+                    document.getElementById('products-container').innerHTML = `<p class="text-red-500 col-span-full text-center">Failed to load products.</p>`;
                 });
             },
+            
             render: () => {
                 const container = document.getElementById('products-container');
-                if(app.products.length === 0) return container.innerHTML = "<p>No products found. Add one!</p>";
+                
+                if(app.products.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-span-full bg-white rounded-xl shadow-sm border border-dashed border-gray-300 p-12 text-center">
+                            <i class="fas fa-box-open text-4xl text-gray-300 mb-3 block"></i>
+                            <p class="text-gray-500 font-medium mb-4">No products found in any category.</p>
+                            <button onclick="app.addProduct()" class="text-amber-600 font-bold hover:underline">Add your first pickle</button>
+                        </div>`;
+                    return;
+                }
                 
                 container.innerHTML = app.products.map(prod => {
-                    const price = prod.variants ? prod.variants[0].price : prod.price;
-                    // Default to true if the property doesn't exist on older documents
+                    const price = prod.variants && prod.variants.length > 0 ? prod.variants[0].price : (prod.price || 'N/A');
                     const isAvailable = prod.isavailable !== false; 
                     
                     return `
-                        <div class="bg-white rounded-xl shadow border overflow-hidden flex flex-col">
-                            <img src="${prod.image}" class="h-48 w-full object-cover">
+                        <div class="bg-white rounded-xl shadow border border-gray-200 overflow-hidden flex flex-col hover:shadow-md transition-shadow ${!isAvailable ? 'opacity-75 grayscale-[30%]' : ''}">
+                            <div class="relative h-48">
+                                <img src="${prod.image || 'https://placehold.co/400x300/fef3c7/b45309?text=Pickle'}" class="h-full w-full object-cover">
+                                <span class="absolute top-2 left-2 bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-amber-200">
+                                    ${prod.categoryName}
+                                </span>
+                            </div>
                             <div class="p-4 flex-grow flex flex-col justify-between">
-                                <div><h3 class="text-lg font-bold">${prod.name}</h3></div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-800 mb-1 leading-tight">${prod.name}</h3>
+                                </div>
                                 
-                                <div class="flex justify-between items-center mt-4 mb-2">
-                                    <span class="text-lg font-bold text-green-700">₹${price}</span>
-                                    <div>
-                                        <a href="product.html?id=${prod.id}&categoryId=${categoryId}" class="text-blue-500 p-2"><i class="fas fa-edit"></i></a>
-                                        <button onclick="app.deleteProduct('${prod.id}')" class="text-red-500 p-2"><i class="fas fa-trash"></i></button>
+                                <div class="flex justify-between items-end mt-4 mb-3">
+                                    <span class="text-xl font-bold text-green-700">₹${price}</span>
+                                    <div class="flex space-x-1">
+                                        <a href="product.html?id=${prod.id}" class="bg-blue-50 text-blue-600 hover:bg-blue-100 p-2 rounded transition-colors" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button onclick="app.deleteProduct('${prod.id}', '${prod.categoryId}')" class="bg-red-50 text-red-500 hover:bg-red-100 p-2 rounded transition-colors" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </div>
                                 </div>
 
-                                <!-- Availability Toggle -->
                                 <div class="flex justify-between items-center border-t border-gray-100 pt-3 mt-1">
-                                    <span class="text-sm font-medium ${isAvailable ? 'text-gray-700' : 'text-gray-400'}">
-                                        ${isAvailable ? 'Available' : 'Unavailable'}
+                                    <span class="text-xs font-bold uppercase tracking-wider ${isAvailable ? 'text-green-600' : 'text-gray-400'}">
+                                        ${isAvailable ? 'Available' : 'Hidden'}
                                     </span>
                                     <label class="relative inline-flex items-center cursor-pointer">
                                         <input type="checkbox" class="sr-only peer" ${isAvailable ? 'checked' : ''} 
-                                            onchange="app.toggleAvailability('${prod.id}', ${isAvailable})">
-                                        <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-amber-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                            onchange="app.toggleAvailability('${prod.id}', '${prod.categoryId}', ${isAvailable})">
+                                        <div class="w-10 h-5 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-amber-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-500"></div>
                                     </label>
                                 </div>
-
                             </div>
                         </div>`;
                 }).join('');
             },
-            addProduct: () => window.location.href = `product.html?categoryId=${categoryId}`,
-            deleteProduct: async (id) => {
-                if(confirm("Delete this pickle?")) {
-                    // Delete from both the root collection and the category subcollection
-                    await Promise.all([
-                        deleteDoc(doc(db, 'products', id)),
-                        deleteDoc(doc(db, 'categories', categoryId, 'products', id))
-                    ]);
+            
+            addProduct: () => window.location.href = `product.html`,
+            
+            deleteProduct: async (productId, categoryId) => {
+                if(confirm("Are you sure you want to delete this pickle?")) {
+                    try {
+                        const rootProdRef = doc(db, 'products', productId);
+                        const categoryRef = doc(db, 'categories', categoryId);
+
+                        // Delete from root AND remove the specific key from the category's Map
+                        await Promise.all([
+                            deleteDoc(rootProdRef),
+                            updateDoc(categoryRef, {
+                                [`products.${productId}`]: deleteField()
+                            })
+                        ]);
+                    } catch (error) {
+                        console.error("Error deleting product:", error);
+                        alert("Failed to delete product.");
+                    }
                 }
             },
-            toggleAvailability: async (id, currentState) => {
+            
+            toggleAvailability: async (productId, categoryId, currentState) => {
                 try {
                     const newState = !currentState;
-                    // Update the status in both collections
+                    const rootProdRef = doc(db, 'products', productId);
+                    const categoryRef = doc(db, 'categories', categoryId);
+
+                    // Update the status in both root and the nested map field
                     await Promise.all([
-                        updateDoc(doc(db, 'products', id), { isavailable: newState }),
-                        updateDoc(doc(db, 'categories', categoryId, 'products', id), { isavailable: newState })
+                        updateDoc(rootProdRef, { isavailable: newState }),
+                        updateDoc(categoryRef, { 
+                            [`products.${productId}.isavailable`]: newState 
+                        })
                     ]);
                 } catch (error) {
                     console.error("Error updating product availability: ", error);
-                    alert("Failed to update availability. Please try again.");
+                    alert("Failed to update availability.");
                 }
             }
         };
