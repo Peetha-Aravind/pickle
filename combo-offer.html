@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Combo Offer - Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --page-bg: #f4f5f7;
+            --header-bg: #ffffff;
+            --sidebar-bg: #ffffff;
+            --text-color: rgb(24, 24, 26);
+            --text-sub: #6b7280;
+            --border-subtle: #e5e7eb;
+            --brand-primary: #5127ba;
+            --danger-color: #ef4444;
+            --success-color: #10B981;
+            --switch-on: #10B981; /* Using green for active states */
+            --switch-off: #d1d5db;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
+        /* TYPOGRAPHY & RESET */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        a { text-decoration: none !important; }
+        body {
+            font-family: "DM Sans", Roboto, sans-serif;
+            font-weight: 500; font-size: 14px; line-height: 20px;
+            color: var(--text-color); background-color: var(--page-bg);
+        }
+        button { cursor: pointer; font-family: inherit; }
+
+        /* LAYOUT & SPACING */
+        .content-inner { max-width: 1000px; margin: 0 auto; padding: 24px 24px 40px; }
+        .header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .page-title { font-size: 20px; font-weight: 700; color: rgb(29, 30, 32); }
+        
+        .card { background: #ffffff; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); margin-bottom: 24px; overflow: hidden; }
+        .card-header { padding: 20px; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
+        .card-body { padding: 24px 20px; }
+        .card-footer { padding: 20px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: flex-end; gap: 12px; background: #fafafa; }
+
+        /* BUTTONS */
+        .primary-btn { padding: 8px 16px; border-radius: var(--radius-md); border: none; font-weight: 600; color: #ffffff; background: var(--brand-primary); transition: background 0.15s ease; }
+        .primary-btn:hover { background: #471ea7; }
+        .primary-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .btn-secondary { padding: 8px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); background: #ffffff; font-weight: 600; color: var(--text-color); }
+        .btn-secondary:hover { background: #f9fafb; }
+
+        /* FORMS */
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+        .required-mark { color: var(--danger-color); }
+        .form-input { width: 100%; padding: 0.875rem 1rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); transition: all 0.15s ease; font-family: inherit; }
+        .form-input:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 3px rgba(81, 39, 186, 0.1); outline: none; }
+
+        /* TOGGLE SWITCH */
+        .toggle-wrapper { display: flex; align-items: center; gap: 12px; }
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--switch-off); transition: .3s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--switch-on); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* PICKLE SELECTION GRID */
+        .filter-row { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 20px; }
+        .pickle-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-top: 16px; }
+        .pickle-card { border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: border 0.2s; }
+        .pickle-card:hover { border-color: var(--brand-primary); background: #fdfcff; }
+        .pickle-card.selected { border-color: var(--brand-primary); background: #f2efff; }
+        .pickle-card img { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; }
+        .pickle-card input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--brand-primary); cursor: pointer; }
+
+        /* DYNAMIC IMAGE ROWS */
+        .image-row { display: flex; gap: 16px; align-items: center; padding: 12px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); margin-bottom: 12px; background: #fafafa; }
+        .image-row span { font-weight: 600; width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    </style>
+</head>
+<body>
+
+    <main class="content-inner">
+        <div class="header-section">
+            <h2 class="page-title">Create Combo Offer</h2>
+            <div class="toggle-wrapper">
+                <span style="font-weight: 600; color: var(--text-color);">Offer Status</span>
+                <label class="switch">
+                    <input type="checkbox" id="combo-active" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h3 style="font-size: 16px; font-weight: 600;">Combo Details</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">Combo Name <span class="required-mark">*</span></label>
+                    <input type="text" id="combo-name" class="form-input" placeholder="e.g. Mega Family Pack - Pick Any 8">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Price (₹) <span class="required-mark">*</span></label>
+                    <input type="number" id="combo-price" class="form-input" placeholder="Total combo price">
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 style="font-size: 16px; font-weight: 600;">Select Pickles (Max 8)</h3>
+            </div>
+            <div class="card-body">
+                <div class="filter-row">
+                    <div style="flex: 1;">
+                        <label class="form-label">Filter by Weight Variant</label>
+                        <input type="text" id="weight-filter" class="form-input" placeholder="e.g. 250g, 500g">
+                    </div>
+                    <button onclick="app.fetchPicklesByWeight()" class="btn-secondary" style="height: 46px;">Fetch Pickles</button>
+                </div>
+                
+                <div style="font-size: 13px; color: var(--text-sub); margin-bottom: 8px;">
+                    Selected: <span id="selection-count" style="font-weight: 700; color: var(--brand-primary);">0</span> / 8
+                </div>
+
+                <div id="pickle-grid" class="pickle-grid">
+                    <p style="color: var(--text-sub); font-size: 13px; grid-column: 1 / -1;">Enter a weight variant above and click fetch to see available pickles.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="images-card" style="display: none;">
+            <div class="card-header">
+                <h3 style="font-size: 16px; font-weight: 600;">Custom Images for Selected Pickles</h3>
+                <span style="font-size: 12px; color: var(--text-sub);">Assign a specific image for each pickle in this combo</span>
+            </div>
+            <div class="card-body" id="custom-images-container">
+                </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 40px;">
+            <button onclick="window.history.back()" class="btn-secondary">Cancel</button>
+            <button onclick="app.saveCombo()" id="save-btn" class="primary-btn">Save Combo Offer</button>
+        </div>
+
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // IMPORTANT: Replace with your actual Firebase config
+        const firebaseConfig = { apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM", authDomain: "pickle-fdc54.firebaseapp.com", projectId: "pickle-fdc54" };
+        const db = getFirestore(initializeApp(firebaseConfig));
+
+        window.app = {
+            allProducts: [],
+            filteredProducts: [],
+            selectedPickles: [], // array of objects: {id, name, image}
+
+            init: async () => {
+                // Pre-fetch all products on load to make filtering instant
+                try {
+                    const snapshot = await getDocs(collection(db, 'products'));
+                    app.allProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                } catch (error) {
+                    console.error("Error loading products:", error);
+                    alert("Failed to load products from database.");
+                }
+            },
+
+            fetchPicklesByWeight: () => {
+                const targetWeight = document.getElementById('weight-filter').value.trim().toLowerCase();
+                if(!targetWeight) return alert("Please enter a weight to filter (e.g. 250g)");
+
+                // Filter products that contain the specific weight variant
+                app.filteredProducts = app.allProducts.filter(p => {
+                    if(!p.variants) return false;
+                    return p.variants.some(v => v.weight.toLowerCase() === targetWeight);
+                });
+
+                // Clear previous selections if fetching new list
+                app.selectedPickles = [];
+                app.renderPickles();
+                app.renderImageInputs();
+            },
+
+            renderPickles: () => {
+                const container = document.getElementById('pickle-grid');
+                
+                if(app.filteredProducts.length === 0) {
+                    container.innerHTML = `<p style="color: var(--danger-color); font-size: 13px; grid-column: 1 / -1;">No pickles found with this weight variant.</p>`;
+                    return;
+                }
+
+                container.innerHTML = app.filteredProducts.map(p => `
+                    <label class="pickle-card" id="card-${p.id}">
+                        <input type="checkbox" value="${p.id}" onchange="app.togglePickle('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${p.image}')">
+                        <img src="${p.image || 'https://placehold.co/40'}" alt="img">
+                        <span style="font-size: 13px; font-weight: 600;">${p.name}</span>
+                    </label>
+                `).join('');
+                
+                document.getElementById('selection-count').innerText = app.selectedPickles.length;
+            },
+
+            togglePickle: (id, name, fallbackImage) => {
+                const checkbox = document.querySelector(`input[value="${id}"]`);
+                const card = document.getElementById(`card-${id}`);
+
+                if(checkbox.checked) {
+                    if(app.selectedPickles.length >= 8) {
+                        checkbox.checked = false;
+                        alert("You can only select a maximum of 8 pickles for this combo.");
+                        return;
+                    }
+                    app.selectedPickles.push({ id, name, fallbackImage, customImage: '' });
+                    card.classList.add('selected');
+                } else {
+                    app.selectedPickles = app.selectedPickles.filter(p => p.id !== id);
+                    card.classList.remove('selected');
+                }
+
+                document.getElementById('selection-count').innerText = app.selectedPickles.length;
+                app.renderImageInputs();
+            },
+
+            renderImageInputs: () => {
+                const container = document.getElementById('custom-images-container');
+                const card = document.getElementById('images-card');
+
+                if(app.selectedPickles.length === 0) {
+                    card.style.display = 'none';
+                    return;
+                }
+
+                card.style.display = 'block';
+                container.innerHTML = app.selectedPickles.map(p => `
+                    <div class="image-row">
+                        <span>${p.name}</span>
+                        <input type="text" class="form-input" placeholder="Paste custom image URL for this combo" 
+                               value="${p.customImage}" onchange="app.updateCustomImage('${p.id}', this.value)">
+                    </div>
+                `).join('');
+            },
+
+            updateCustomImage: (id, url) => {
+                const pickle = app.selectedPickles.find(p => p.id === id);
+                if(pickle) pickle.customImage = url;
+            },
+
+            saveCombo: async () => {
+                const name = document.getElementById('combo-name').value.trim();
+                const price = document.getElementById('combo-price').value.trim();
+                const isActive = document.getElementById('combo-active').checked;
+                const weight = document.getElementById('weight-filter').value.trim();
+
+                if(!name || !price) return alert("Combo Name and Price are required.");
+                if(app.selectedPickles.length === 0) return alert("Please select at least 1 pickle for the combo.");
+
+                const btn = document.getElementById('save-btn');
+                btn.innerText = "Saving...";
+                btn.disabled = true;
+
+                // Format the pickles data to save
+                const savedPickles = app.selectedPickles.map(p => ({
+                    id: p.id,
+                    name: p.name,
+                    // If no custom image provided, fallback to original product image
+                    image: p.customImage.trim() !== '' ? p.customImage : p.fallbackImage
+                }));
+
+                const newComboRef = doc(collection(db, 'combos'));
+                const comboData = {
+                    id: newComboRef.id,
+                    name: name,
+                    price: parseFloat(price),
+                    weightVariant: weight,
+                    isActive: isActive,
+                    items: savedPickles,
+                    createdAt: Date.now()
+                };
+
+                try {
+                    await setDoc(newComboRef, comboData);
+                    alert("Combo offer saved successfully!");
+                    window.location.reload(); // Or redirect to a combo listing page
+                } catch (error) {
+                    console.error("Error saving combo:", error);
+                    alert("Failed to save combo offer.");
+                    btn.innerText = "Save Combo Offer";
+                    btn.disabled = false;
+                }
+            }
+        };
+
+        // Initialize to fetch products right away
+        app.init();
+    </script>
+</body>
+</html>
