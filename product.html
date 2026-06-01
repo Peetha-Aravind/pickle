@@ -1,3 +1,8 @@
+Here is the updated code. I have restructured the layout using a CSS Grid to place the Variants section in a separate card on the right side. I also added the Save and Cancel buttons to both the top header and the bottom of the page.
+
+### **Updated Code:**
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,7 +65,7 @@
 
         /* LAYOUT & SPACING */
         .content-inner {
-            max-width: 1110px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 24px 24px 40px;
             width: 100%;
@@ -93,13 +98,20 @@
             color: #d1d5db;
         }
 
+        /* GRID LAYOUT */
+        .layout-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr);
+            gap: 24px;
+            align-items: start;
+        }
+
         .card {
             background: #ffffff;
             border-radius: var(--radius-lg);
             border: 1px solid var(--border-subtle);
             overflow: hidden;
             width: 100%;
-            max-width: 800px;
         }
 
         .card-header {
@@ -113,13 +125,21 @@
         .card-body {
             padding: 32px 20px;
         }
-        
-        .card-footer {
-            padding: 20px;
+
+        /* ACTION BUTTON AREAS */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .bottom-actions {
+            margin-top: 24px;
+            padding-top: 24px;
             border-top: 1px solid var(--border-subtle);
             display: flex;
             justify-content: flex-end;
-            background: #fafafa;
+            gap: 12px;
         }
 
         /* MICRO-COMPONENTS */
@@ -164,7 +184,7 @@
             background: #ffffff;
             font-size: 13px;
             font-weight: 600;
-            color: var(--brand-primary);
+            color: var(--text-color);
             transition: all 0.15s ease;
             display: inline-flex;
             align-items: center;
@@ -172,6 +192,14 @@
         }
 
         .btn-secondary:hover {
+            background: #f9fafb;
+        }
+
+        .btn-secondary.brand-text {
+            color: var(--brand-primary);
+        }
+
+        .btn-secondary.brand-text:hover {
             background: #f2efff;
             border-color: #d8cffd;
         }
@@ -259,10 +287,12 @@
             align-items: center;
             margin-bottom: 12px;
             animation: slideDown 0.2s ease-out;
+            flex-wrap: wrap; /* Allows stacking in smaller right column */
         }
         
         .variant-row .form-input {
             flex: 1;
+            min-width: 100px;
         }
         
         .remove-btn {
@@ -300,29 +330,19 @@
         }
 
         /* RESPONSIVE */
+        @media (max-width: 992px) {
+            .layout-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (max-width: 767px) {
-            .content-inner {
-                padding: 16px;
-            }
-            .header-section {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-            }
-            .page-title {
-                font-size: 22px;
-            }
-            .card {
-                border-radius: 16px;
-                border: none;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            }
-            .premium-upload-box {
-                padding: 2rem 1rem;
-            }
-            .variant-row {
-                flex-wrap: wrap;
-            }
+            .content-inner { padding: 16px; }
+            .header-section { flex-direction: column; align-items: flex-start; gap: 16px; }
+            .action-buttons { width: 100%; justify-content: flex-end; }
+            .page-title { font-size: 22px; }
+            .card { border-radius: 16px; border: none; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
+            .premium-upload-box { padding: 2rem 1rem; }
         }
     </style>
 </head>
@@ -340,70 +360,86 @@
                     <span id="breadcrumb-current" style="color: var(--brand-primary); font-weight: 600;">Editor</span>
                 </div>
             </div>
+            
+            <div class="action-buttons">
+                <button onclick="app.cancelEdit()" class="btn-secondary">Cancel</button>
+                <button onclick="app.savePickle()" id="save-btn-top" class="primary-btn">
+                    <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                    <span id="save-btn-text-top">Save Pickle</span>
+                </button>
+            </div>
         </div>
         
-        <div class="card">
-            <div class="card-header">
-                <h3 style="font-size: 16px; font-weight: 600; color: rgb(29, 30, 32);">Product Details</h3>
-            </div>
-            
-            <div class="card-body">
-                <div class="form-group">
-                    <label class="form-label">Pickle Name (Short Name) <span class="required-mark">*</span></label>
-                    <input type="text" id="prod-name" class="form-input" placeholder="e.g. Spicy Mango">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Pickle Long Name <span class="required-mark">*</span></label>
-                    <input type="text" id="prod-long-name" class="form-input" placeholder="e.g. Grandma's Extra Spicy Mango Pickle">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Description <span class="required-mark">*</span></label>
-                    <textarea id="prod-desc" class="form-input" placeholder="Write a delicious description about this pickle..."></textarea>
+        <div class="layout-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h3 style="font-size: 16px; font-weight: 600; color: rgb(29, 30, 32);">Product Details</h3>
                 </div>
                 
-                <div class="premium-upload-box">
-                    <label class="form-label">Main Image URL <span class="required-mark">*</span></label>
-                    <input type="text" id="prod-img" class="form-input" placeholder="https://..." style="margin-bottom: 8px;">
-                    <span style="font-size: 12px; color: var(--text-sub);">Provide a high-resolution image link for the main product display.</span>
-                </div>
-
-                <div class="form-group" style="margin-bottom: 32px;">
-                    <div class="variants-header">
-                        <div>
-                            <h4 style="font-size: 14px; font-weight: 700; color: rgb(29, 30, 32);">Additional Images</h4>
-                            <span style="font-size: 12px; color: var(--text-sub); display: block; margin-top: 4px;">Add more images for the product gallery.</span>
-                        </div>
-                        <button onclick="app.addAdditionalImage()" class="btn-secondary">
-                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
-                            Add Image
-                        </button>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">Pickle Name (Short Name) <span class="required-mark">*</span></label>
+                        <input type="text" id="prod-name" class="form-input" placeholder="e.g. Spicy Mango">
                     </div>
-                    <div id="additional-images-container"></div>
-                </div>
-                
-                <div>
-                    <div class="variants-header">
-                        <div>
-                            <h4 style="font-size: 14px; font-weight: 700; color: rgb(29, 30, 32);">Quantity Variants & Pricing <span class="required-mark">*</span></h4>
-                            <span style="font-size: 12px; color: var(--text-sub); display: block; margin-top: 4px;">Set available weights, MRP (old price), and Current Price.</span>
+
+                    <div class="form-group">
+                        <label class="form-label">Pickle Long Name <span class="required-mark">*</span></label>
+                        <input type="text" id="prod-long-name" class="form-input" placeholder="e.g. Grandma's Extra Spicy Mango Pickle">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Description <span class="required-mark">*</span></label>
+                        <textarea id="prod-desc" class="form-input" placeholder="Write a delicious description about this pickle..."></textarea>
+                    </div>
+                    
+                    <div class="premium-upload-box">
+                        <label class="form-label">Main Image URL <span class="required-mark">*</span></label>
+                        <input type="text" id="prod-img" class="form-input" placeholder="https://..." style="margin-bottom: 8px;">
+                        <span style="font-size: 12px; color: var(--text-sub);">Provide a high-resolution image link for the main product display.</span>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <div class="variants-header">
+                            <div>
+                                <h4 style="font-size: 14px; font-weight: 700; color: rgb(29, 30, 32);">Additional Images</h4>
+                                <span style="font-size: 12px; color: var(--text-sub); display: block; margin-top: 4px;">Add more images for the product gallery.</span>
+                            </div>
+                            <button onclick="app.addAdditionalImage()" class="btn-secondary brand-text">
+                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
+                                Add Image
+                            </button>
                         </div>
-                        <button onclick="app.addVariant()" class="btn-secondary">
+                        <div id="additional-images-container"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 style="font-size: 16px; font-weight: 600; color: rgb(29, 30, 32);">Variants & Pricing</h3>
+                </div>
+                <div class="card-body">
+                    <div class="variants-header" style="flex-direction: column; align-items: flex-start; gap: 12px;">
+                        <div>
+                            <span style="font-size: 13px; font-weight: 600; color: rgb(29, 30, 32);">Quantity Configurations <span class="required-mark">*</span></span>
+                            <span style="font-size: 12px; color: var(--text-sub); display: block; margin-top: 4px;">Set weights, MRP (old price), and Current Price.</span>
+                        </div>
+                        <button onclick="app.addVariant()" class="btn-secondary brand-text" style="width: 100%; justify-content: center;">
                             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
-                            Add Variant
+                            Add New Variant
                         </button>
                     </div>
                     <div id="variants-container"></div>
                 </div>
             </div>
+        </div>
 
-            <div class="card-footer">
-                <button onclick="app.savePickle()" id="save-btn" class="primary-btn">
-                    <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-                    <span id="save-btn-text">Save Pickle</span>
-                </button>
-            </div>
+        <div class="bottom-actions">
+            <button onclick="app.cancelEdit()" class="btn-secondary">Cancel</button>
+            <button onclick="app.savePickle()" id="save-btn-bottom" class="primary-btn">
+                <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                <span id="save-btn-text-bottom">Save Pickle</span>
+            </button>
         </div>
     </main>
 
@@ -435,7 +471,6 @@
                     document.getElementById('editor-title').innerText = "Edit Pickle";
                     document.getElementById('breadcrumb-current').innerText = "Editor";
                     
-                    // Fetch full product details from 'products' collection (Not Categories summary)
                     const productRef = doc(db, 'products', productId);
                     const docSnap = await getDoc(productRef);
                     
@@ -455,6 +490,14 @@
                 app.renderAdditionalImages();
             },
 
+            cancelEdit: () => {
+                if(categoryId) {
+                    window.location.href = `manage-products.html?categoryId=${categoryId}`;
+                } else {
+                    window.history.back();
+                }
+            },
+
             // --- Additional Images Logic ---
             renderAdditionalImages: () => {
                 document.getElementById('additional-images-container').innerHTML = app.additionalImages.map((img, i) => `
@@ -471,12 +514,17 @@
 
             // --- Variants Logic ---
             renderVariants: () => {
+                // Simplified layout slightly for the narrow column
                 document.getElementById('variants-container').innerHTML = app.variants.map((v, i) => `
-                    <div class="variant-row">
-                        <input type="text" value="${v.weight}" onchange="app.updateVar(${i}, 'weight', this.value)" class="form-input" placeholder="Weight (e.g. 250g)">
-                        <input type="number" value="${v.mrp || ''}" onchange="app.updateVar(${i}, 'mrp', this.value)" class="form-input" placeholder="MRP (₹)">
-                        <input type="number" value="${v.price || ''}" onchange="app.updateVar(${i}, 'price', this.value)" class="form-input" placeholder="Current Price (₹)">
-                        <button onclick="app.removeVar(${i})" class="remove-btn" title="Remove Variant">
+                    <div class="variant-row" style="background: #fafafa; padding: 12px; border-radius: 8px; border: 1px solid var(--border-subtle); position: relative;">
+                        <div style="display: flex; flex-direction: column; width: 100%; gap: 8px;">
+                            <input type="text" value="${v.weight}" onchange="app.updateVar(${i}, 'weight', this.value)" class="form-input" placeholder="Weight (e.g. 250g)">
+                            <div style="display: flex; gap: 8px;">
+                                <input type="number" value="${v.mrp || ''}" onchange="app.updateVar(${i}, 'mrp', this.value)" class="form-input" placeholder="MRP (₹)">
+                                <input type="number" value="${v.price || ''}" onchange="app.updateVar(${i}, 'price', this.value)" class="form-input" placeholder="Price (₹)">
+                            </div>
+                        </div>
+                        <button onclick="app.removeVar(${i})" class="remove-btn" title="Remove Variant" style="position: absolute; top: 4px; right: 4px; width: 32px; height: 32px;">
                             <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"></path></svg>
                         </button>
                     </div>`).join('');
@@ -496,15 +544,19 @@
                 
                 if(!name || !longName || app.variants.length === 0) return alert("Short name, Long name, and at least one variant are required.");
                 
-                // Clean empty additional images
                 const validAdditionalImages = app.additionalImages.filter(url => url.trim() !== '');
 
-                const btn = document.getElementById('save-btn');
-                const btnText = document.getElementById('save-btn-text');
-                btnText.innerText = "Saving...";
-                btn.disabled = true;
+                // Handle both save buttons
+                const btnTop = document.getElementById('save-btn-top');
+                const btnBottom = document.getElementById('save-btn-bottom');
+                const textTop = document.getElementById('save-btn-text-top');
+                const textBottom = document.getElementById('save-btn-text-bottom');
+                
+                textTop.innerText = "Saving...";
+                textBottom.innerText = "Saving...";
+                btnTop.disabled = true;
+                btnBottom.disabled = true;
 
-                // Establish Product ID
                 let targetProductId = productId;
                 let rootProdRef;
                 
@@ -515,12 +567,10 @@
                     targetProductId = rootProdRef.id;
                 }
 
-                // Calculate Lowest and Highest Price based on Variants
                 let validPrices = app.variants.map(v => parseFloat(v.price)).filter(p => !isNaN(p));
                 let minPrice = validPrices.length > 0 ? Math.min(...validPrices) : 0;
                 let maxPrice = validPrices.length > 0 ? Math.max(...validPrices) : 0;
 
-                // 1. Full Data payload for `products` collection
                 const fullProductData = { 
                     id: targetProductId,
                     name, 
@@ -536,9 +586,8 @@
                     isavailable: true,
                     updatedAt: Date.now()
                 };
-                if (!productId) fullProductData.createdAt = Date.now(); // only set on create
+                if (!productId) fullProductData.createdAt = Date.now();
 
-                // 2. Summary Data payload for `categories` collection 
                 const summaryProductData = {
                     id: targetProductId,
                     name: name,
@@ -550,7 +599,6 @@
                 const categoryRef = doc(db, 'categories', categoryId);
 
                 try {
-                    // Update both collections using setDoc with {merge: true}
                     await Promise.all([
                         setDoc(rootProdRef, fullProductData, { merge: true }),
                         setDoc(categoryRef, {
@@ -562,8 +610,10 @@
                 } catch (error) {
                     console.error("Error saving product:", error);
                     alert("Failed to save the product. Check console.");
-                    btnText.innerText = "Save Pickle";
-                    btn.disabled = false;
+                    textTop.innerText = "Save Pickle";
+                    textBottom.innerText = "Save Pickle";
+                    btnTop.disabled = false;
+                    btnBottom.disabled = false;
                 }
             }
         };
@@ -571,3 +621,5 @@
     </script>
 </body>
 </html>
+
+```
