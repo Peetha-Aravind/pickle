@@ -674,7 +674,21 @@
                 let mobileHTML = '';
 
                 app.products.forEach(prod => {
-                    const price = prod.variants && prod.variants.length > 0 ? prod.variants[0].price : (prod.price || 'N/A');
+                    // Logic to display price as min-max range
+                    let priceText = 'N/A';
+                    if (prod.minPrice !== undefined && prod.maxPrice !== undefined) {
+                        priceText = prod.minPrice === prod.maxPrice ? `₹${prod.minPrice}` : `₹${prod.minPrice} - ₹${prod.maxPrice}`;
+                    } else if (prod.variants && prod.variants.length > 0) {
+                        const prices = prod.variants.map(v => parseFloat(v.price)).filter(p => !isNaN(p));
+                        if (prices.length > 0) {
+                            const minPrice = Math.min(...prices);
+                            const maxPrice = Math.max(...prices);
+                            priceText = minPrice === maxPrice ? `₹${minPrice}` : `₹${minPrice} - ₹${maxPrice}`;
+                        }
+                    } else if (prod.price) {
+                        priceText = `₹${prod.price}`;
+                    }
+
                     const isAvailable = prod.isavailable !== false; 
                     const imgUrl = prod.image || 'https://placehold.co/150x150/f3f4f6/6b7280?text=Image';
                     const hiddenClass = !isAvailable ? 'item-hidden' : '';
@@ -684,7 +698,7 @@
                         <tr class="${hiddenClass}">
                             <td><img src="${imgUrl}" class="product-image" alt="Product"></td>
                             <td><strong>${prod.name}</strong></td>
-                            <td style="font-weight: 600;">₹${price}</td>
+                            <td style="font-weight: 600;">${priceText}</td>
                             <td>
                                 <span class="status-badge ${isAvailable ? 'status-available' : 'status-hidden'}">
                                     ${isAvailable ? 'Available' : 'Hidden'}
@@ -710,7 +724,7 @@
                             <img src="${imgUrl}" alt="Product">
                             <div class="mobile-card-content">
                                 <div class="mobile-card-title">${prod.name}</div>
-                                <div class="mobile-card-subtitle">₹${price}</div>
+                                <div class="mobile-card-subtitle">${priceText}</div>
                                 <div class="mobile-card-meta">${isAvailable ? 'Available' : 'Hidden'}</div>
                             </div>
                             <div class="mobile-card-actions">
