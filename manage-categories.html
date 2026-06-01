@@ -1,3 +1,8 @@
+Here is the updated code. The issue was that the page was trying to fetch the products from an old database path (`artifacts/.../products`). I have updated the database listener to fetch directly from the main `products` collection, which will accurately calculate and display the item count for each category.
+
+I also added a fallback to check if the products are stored directly inside the category document, ensuring the count works instantly no matter how the products were saved.
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -461,24 +466,25 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        // Added deleteDoc to imports
         import { getFirestore, collection, onSnapshot, doc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM", authDomain: "pickle-fdc54.firebaseapp.com", projectId: "pickle-fdc54" };
         const db = getFirestore(initializeApp(firebaseConfig));
-        const appId = 'spicy-delights-app';
 
         window.app = {
             categories: [], 
             products: [],
-            pendingDeleteId: null, // Tracks which category is queued for deletion
+            pendingDeleteId: null,
             
             init: () => {
+                // Fetch Categories
                 onSnapshot(collection(db, 'categories'), snap => {
                     app.categories = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     app.render();
                 });
-                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'products'), snap => {
+                
+                // Fetch Products from the correct root collection
+                onSnapshot(collection(db, 'products'), snap => {
                     app.products = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     app.render();
                 });
@@ -501,7 +507,10 @@
                 let popupsHTML = ``; 
 
                 app.categories.forEach(cat => {
-                    const count = app.products.filter(p => p.categoryId === cat.id).length;
+                    // Count items properly depending on how they are stored
+                    // Checks if category has a products map, otherwise checks the fetched products collection
+                    const count = cat.products ? Object.keys(cat.products).length : app.products.filter(p => p.categoryId === cat.id).length;
+                    
                     const isAvailable = cat.isavailable !== false; 
                     const imgSrc = cat.image || `https://placehold.co/400x300/fef3c7/b45309?text=${cat.name}`;
 
@@ -691,3 +700,5 @@
     </script>
 </body>
 </html>
+
+```
