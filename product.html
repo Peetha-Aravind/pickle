@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -87,7 +86,7 @@
             align-items: center;
             font-size: 13px;
             color: var(--text-sub);
-            margin-top: 4px; /* Moved below the title */
+            margin-top: 4px;
         }
 
         .breadcrumbs .divider {
@@ -206,6 +205,11 @@
             color: var(--text-color);
         }
 
+        textarea.form-input {
+            resize: vertical;
+            min-height: 100px;
+        }
+
         .form-input:focus {
             border-color: var(--brand-primary);
             box-shadow: 0 0 0 3px rgba(81, 39, 186, 0.1);
@@ -217,7 +221,7 @@
             position: relative;
             border: 2px dashed var(--border-subtle);
             border-radius: 16px;
-            padding: 3rem 2rem;
+            padding: 2.5rem 2rem;
             background: linear-gradient(135deg, #FAFAFA 0%, #F5F5F5 100%);
             overflow: hidden;
             margin-bottom: 32px;
@@ -316,6 +320,9 @@
             .premium-upload-box {
                 padding: 2rem 1rem;
             }
+            .variant-row {
+                flex-wrap: wrap;
+            }
         }
     </style>
 </head>
@@ -345,18 +352,37 @@
                     <label class="form-label">Pickle Name <span class="required-mark">*</span></label>
                     <input type="text" id="prod-name" class="form-input" placeholder="e.g. Extra Spicy Mango">
                 </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description <span class="required-mark">*</span></label>
+                    <textarea id="prod-desc" class="form-input" placeholder="Write a delicious description about this pickle..."></textarea>
+                </div>
                 
                 <div class="premium-upload-box">
-                    <label class="form-label">Image URL</label>
+                    <label class="form-label">Main Image URL</label>
                     <input type="text" id="prod-img" class="form-input" placeholder="https://..." style="margin-bottom: 8px;">
-                    <span style="font-size: 12px; color: var(--text-sub);">Provide a high-resolution image link for the product display.</span>
+                    <span style="font-size: 12px; color: var(--text-sub);">Provide a high-resolution image link for the main product display.</span>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 32px;">
+                    <div class="variants-header">
+                        <div>
+                            <h4 style="font-size: 14px; font-weight: 700; color: rgb(29, 30, 32);">Additional Images</h4>
+                            <span style="font-size: 12px; color: var(--text-sub); display: block; margin-top: 4px;">Add more images for the product gallery.</span>
+                        </div>
+                        <button onclick="app.addAdditionalImage()" class="btn-secondary">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
+                            Add Image
+                        </button>
+                    </div>
+                    <div id="additional-images-container"></div>
                 </div>
                 
                 <div>
                     <div class="variants-header">
                         <div>
                             <h4 style="font-size: 14px; font-weight: 700; color: rgb(29, 30, 32);">Quantity Variants & Pricing <span class="required-mark">*</span></h4>
-                            <span style="font-size: 12px; color: var(--text-sub); display: block; margin-top: 4px;">Set available weights and their corresponding prices.</span>
+                            <span style="font-size: 12px; color: var(--text-sub); display: block; margin-top: 4px;">Set available weights, MRP (old price), and Current Price.</span>
                         </div>
                         <button onclick="app.addVariant()" class="btn-secondary">
                             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
@@ -388,7 +414,8 @@
         const categoryId = urlParams.get('categoryId');
 
         window.app = {
-            variants: [{ weight: '500g', price: 150 }],
+            variants: [{ weight: '500g', mrp: 200, price: 150 }],
+            additionalImages: [],
             
             init: async () => {
                 if(!categoryId) {
@@ -411,46 +438,81 @@
                         if(data.products && data.products[productId]) {
                             const prodData = data.products[productId];
                             document.getElementById('prod-name').value = prodData.name || '';
+                            document.getElementById('prod-desc').value = prodData.description || '';
                             document.getElementById('prod-img').value = prodData.image || '';
-                            app.variants = prodData.variants || [{weight: prodData.weight, price: prodData.price}];
+                            app.additionalImages = prodData.additionalImages || [];
+                            
+                            // Map existing variants to ensure MRP defaults to '' if missing
+                            app.variants = prodData.variants || [{
+                                weight: prodData.weight, 
+                                mrp: prodData.mrp || '', 
+                                price: prodData.price
+                            }];
                         }
                     }
                 }
                 app.renderVariants();
+                app.renderAdditionalImages();
             },
-            
+
+            // --- Additional Images Logic ---
+            renderAdditionalImages: () => {
+                document.getElementById('additional-images-container').innerHTML = app.additionalImages.map((img, i) => `
+                    <div class="variant-row">
+                        <input type="text" value="${img}" onchange="app.updateAdditionalImage(${i}, this.value)" class="form-input" placeholder="Image URL ${i + 1}">
+                        <button onclick="app.removeAdditionalImage(${i})" class="remove-btn" title="Remove Image">
+                            <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+                        </button>
+                    </div>`).join('');
+            },
+            addAdditionalImage: () => { app.additionalImages.push(''); app.renderAdditionalImages(); },
+            removeAdditionalImage: (i) => { app.additionalImages.splice(i, 1); app.renderAdditionalImages(); },
+            updateAdditionalImage: (i, val) => { app.additionalImages[i] = val; },
+
+            // --- Variants Logic ---
             renderVariants: () => {
                 document.getElementById('variants-container').innerHTML = app.variants.map((v, i) => `
                     <div class="variant-row">
                         <input type="text" value="${v.weight}" onchange="app.updateVar(${i}, 'weight', this.value)" class="form-input" placeholder="Weight (e.g. 250g)">
-                        <input type="number" value="${v.price}" onchange="app.updateVar(${i}, 'price', this.value)" class="form-input" placeholder="Price (₹)">
+                        <input type="number" value="${v.mrp || ''}" onchange="app.updateVar(${i}, 'mrp', this.value)" class="form-input" placeholder="MRP (₹)">
+                        <input type="number" value="${v.price || ''}" onchange="app.updateVar(${i}, 'price', this.value)" class="form-input" placeholder="Current Price (₹)">
                         <button onclick="app.removeVar(${i})" class="remove-btn" title="Remove Variant">
                             <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"></path></svg>
                         </button>
                     </div>`).join('');
             },
             
-            addVariant: () => { app.variants.push({weight: '', price: ''}); app.renderVariants(); },
+            addVariant: () => { app.variants.push({weight: '', mrp: '', price: ''}); app.renderVariants(); },
             removeVar: (i) => { if(app.variants.length > 1) { app.variants.splice(i, 1); app.renderVariants(); } },
-            updateVar: (i, field, val) => { app.variants[i][field] = field === 'price' ? parseFloat(val) : val; },
+            updateVar: (i, field, val) => { 
+                app.variants[i][field] = (field === 'price' || field === 'mrp') ? parseFloat(val) || '' : val; 
+            },
             
             savePickle: async () => {
                 const name = document.getElementById('prod-name').value.trim();
+                const description = document.getElementById('prod-desc').value.trim();
                 const image = document.getElementById('prod-img').value.trim() || 'https://placehold.co/400x300/fef3c7/b45309?text=' + encodeURIComponent(name);
                 
                 if(!name || app.variants.length === 0) return alert("Valid name and at least one variant required.");
                 
+                // Clean empty additional images
+                const validAdditionalImages = app.additionalImages.filter(url => url.trim() !== '');
+
                 const btn = document.getElementById('save-btn');
                 const btnText = document.getElementById('save-btn-text');
                 
                 btnText.innerText = "Saving...";
                 btn.disabled = true;
 
+                // Sync base price & mrp variables with the first variant for main listings
                 const data = { 
                     name, 
+                    description,
                     image, 
+                    additionalImages: validAdditionalImages,
                     variants: app.variants, 
                     categoryId,
+                    mrp: app.variants[0].mrp || null,
                     price: app.variants[0].price, 
                     weight: app.variants[0].weight 
                 };
@@ -492,5 +554,3 @@
     </script>
 </body>
 </html>
-
-```
