@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -449,11 +448,11 @@
         <div class="modal-content" style="max-width: 400px;">
             <div class="modal-header" style="color: var(--danger-color);">Confirm Deletion</div>
             <div class="modal-body-text">
-                Are you sure you want to delete this category? This action permanently removes it from the database and cannot be undone.
+                Are you sure you want to delete this category? All products inside this category will also be permanently deleted. This action cannot be undone.
             </div>
             <div class="modal-footer">
                 <button onclick="app.cancelDelete()" class="btn-secondary">Cancel</button>
-                <button onclick="app.confirmDelete()" class="danger-btn">Delete Category</button>
+                <button onclick="app.confirmDelete()" class="danger-btn">Delete Category & Products</button>
             </div>
         </div>
     </div>
@@ -504,7 +503,6 @@
 
                 app.categories.forEach(cat => {
                     // Count items properly depending on how they are stored
-                    // Checks if category has a products map, otherwise checks the fetched products collection
                     const count = cat.products ? Object.keys(cat.products).length : app.products.filter(p => p.categoryId === cat.id).length;
                     
                     const isAvailable = cat.isavailable !== false; 
@@ -642,7 +640,7 @@
                 alert('Edit function triggered for category: ' + id);
             },
             
-            // --- NEW DELETE LOGIC ---
+            // --- UPDATED DELETE LOGIC ---
             deleteCategory: (event, id) => {
                 event.stopPropagation();
                 
@@ -666,14 +664,28 @@
                 if (!app.pendingDeleteId) return;
                 
                 try {
-                    // Delete the document from Firestore
-                    await deleteDoc(doc(db, 'categories', app.pendingDeleteId));
+                    const catId = app.pendingDeleteId;
+                    const deletePromises = [];
+                    
+                    // 1. Find all products associated with this category ID
+                    const productsToDelete = app.products.filter(p => p.categoryId === catId);
+                    
+                    // 2. Queue up the product deletions from the 'products' collection
+                    productsToDelete.forEach(p => {
+                        deletePromises.push(deleteDoc(doc(db, 'products', p.id)));
+                    });
+                    
+                    // 3. Queue up the category document deletion
+                    deletePromises.push(deleteDoc(doc(db, 'categories', catId)));
+                    
+                    // 4. Execute all deletions concurrently
+                    await Promise.all(deletePromises);
                     
                     // Close the modal and clear the ID
                     app.cancelDelete();
                 } catch (error) {
-                    console.error("Error deleting category:", error);
-                    alert("Failed to delete category. Please check your console and try again.");
+                    console.error("Error deleting category and products:", error);
+                    alert("Failed to delete category and associated products. Please check your console and try again.");
                 }
             }
         };
@@ -696,5 +708,3 @@
     </script>
 </body>
 </html>
-
-```
