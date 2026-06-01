@@ -349,8 +349,13 @@
             
             <div class="card-body">
                 <div class="form-group">
-                    <label class="form-label">Pickle Name <span class="required-mark">*</span></label>
-                    <input type="text" id="prod-name" class="form-input" placeholder="e.g. Extra Spicy Mango">
+                    <label class="form-label">Pickle Name (Short Name) <span class="required-mark">*</span></label>
+                    <input type="text" id="prod-name" class="form-input" placeholder="e.g. Spicy Mango">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Pickle Long Name <span class="required-mark">*</span></label>
+                    <input type="text" id="prod-long-name" class="form-input" placeholder="e.g. Grandma's Extra Spicy Mango Pickle">
                 </div>
 
                 <div class="form-group">
@@ -359,7 +364,7 @@
                 </div>
                 
                 <div class="premium-upload-box">
-                    <label class="form-label">Main Image URL</label>
+                    <label class="form-label">Main Image URL <span class="required-mark">*</span></label>
                     <input type="text" id="prod-img" class="form-input" placeholder="https://..." style="margin-bottom: 8px;">
                     <span style="font-size: 12px; color: var(--text-sub);">Provide a high-resolution image link for the main product display.</span>
                 </div>
@@ -404,7 +409,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM", authDomain: "pickle-fdc54.firebaseapp.com", projectId: "pickle-fdc54" };
         const db = getFirestore(initializeApp(firebaseConfig));
@@ -430,25 +435,20 @@
                     document.getElementById('editor-title').innerText = "Edit Pickle";
                     document.getElementById('breadcrumb-current').innerText = "Editor";
                     
-                    const categoryRef = doc(db, 'categories', categoryId);
-                    const docSnap = await getDoc(categoryRef);
+                    // Fetch full product details from 'products' collection (Not Categories summary)
+                    const productRef = doc(db, 'products', productId);
+                    const docSnap = await getDoc(productRef);
                     
                     if(docSnap.exists()) {
-                        const data = docSnap.data();
-                        if(data.products && data.products[productId]) {
-                            const prodData = data.products[productId];
-                            document.getElementById('prod-name').value = prodData.name || '';
-                            document.getElementById('prod-desc').value = prodData.description || '';
-                            document.getElementById('prod-img').value = prodData.image || '';
-                            app.additionalImages = prodData.additionalImages || [];
-                            
-                            // Map existing variants to ensure MRP defaults to '' if missing
-                            app.variants = prodData.variants || [{
-                                weight: prodData.weight, 
-                                mrp: prodData.mrp || '', 
-                                price: prodData.price
-                            }];
-                        }
+                        const prodData = docSnap.data();
+                        
+                        document.getElementById('prod-name').value = prodData.name || '';
+                        document.getElementById('prod-long-name').value = prodData.longName || '';
+                        document.getElementById('prod-desc').value = prodData.description || '';
+                        document.getElementById('prod-img').value = prodData.image || '';
+                        
+                        app.additionalImages = prodData.additionalImages || [];
+                        app.variants = prodData.variants && prodData.variants.length > 0 ? prodData.variants : [{ weight: '', mrp: '', price: '' }];
                     }
                 }
                 app.renderVariants();
@@ -490,56 +490,73 @@
             
             savePickle: async () => {
                 const name = document.getElementById('prod-name').value.trim();
+                const longName = document.getElementById('prod-long-name').value.trim();
                 const description = document.getElementById('prod-desc').value.trim();
                 const image = document.getElementById('prod-img').value.trim() || 'https://placehold.co/400x300/fef3c7/b45309?text=' + encodeURIComponent(name);
                 
-                if(!name || app.variants.length === 0) return alert("Valid name and at least one variant required.");
+                if(!name || !longName || app.variants.length === 0) return alert("Short name, Long name, and at least one variant are required.");
                 
                 // Clean empty additional images
                 const validAdditionalImages = app.additionalImages.filter(url => url.trim() !== '');
 
                 const btn = document.getElementById('save-btn');
                 const btnText = document.getElementById('save-btn-text');
-                
                 btnText.innerText = "Saving...";
                 btn.disabled = true;
 
-                // Sync base price & mrp variables with the first variant for main listings
-                const data = { 
+                // Establish Product ID
+                let targetProductId = productId;
+                let rootProdRef;
+                
+                if (targetProductId) {
+                    rootProdRef = doc(db, 'products', targetProductId);
+                } else {
+                    rootProdRef = doc(collection(db, 'products'));
+                    targetProductId = rootProdRef.id;
+                }
+
+                // Calculate Lowest and Highest Price based on Variants
+                let validPrices = app.variants.map(v => parseFloat(v.price)).filter(p => !isNaN(p));
+                let minPrice = validPrices.length > 0 ? Math.min(...validPrices) : 0;
+                let maxPrice = validPrices.length > 0 ? Math.max(...validPrices) : 0;
+
+                // 1. Full Data payload for `products` collection
+                const fullProductData = { 
+                    id: targetProductId,
                     name, 
+                    longName,
                     description,
                     image, 
                     additionalImages: validAdditionalImages,
                     variants: app.variants, 
                     categoryId,
                     mrp: app.variants[0].mrp || null,
-                    price: app.variants[0].price, 
-                    weight: app.variants[0].weight 
+                    price: app.variants[0].price || 0, 
+                    weight: app.variants[0].weight,
+                    isavailable: true,
+                    updatedAt: Date.now()
+                };
+                if (!productId) fullProductData.createdAt = Date.now(); // only set on create
+
+                // 2. Summary Data payload for `categories` collection 
+                const summaryProductData = {
+                    id: targetProductId,
+                    name: name,
+                    image: image,
+                    minPrice: minPrice,
+                    maxPrice: maxPrice
                 };
                 
                 const categoryRef = doc(db, 'categories', categoryId);
 
                 try {
-                    if (productId) {
-                        const rootProdRef = doc(db, 'products', productId);
-                        await Promise.all([
-                            updateDoc(rootProdRef, data),
-                            setDoc(categoryRef, {
-                                products: { [productId]: data }
-                            }, { merge: true })
-                        ]);
-                    } else {
-                        const rootProdRef = doc(collection(db, 'products'));
-                        const newProductId = rootProdRef.id;
-                        const saveData = { ...data, id: newProductId, isavailable: true, createdAt: Date.now() };
-                        
-                        await Promise.all([
-                            setDoc(rootProdRef, saveData),
-                            setDoc(categoryRef, {
-                                products: { [newProductId]: saveData }
-                            }, { merge: true })
-                        ]);
-                    }
+                    // Update both collections using setDoc with {merge: true}
+                    await Promise.all([
+                        setDoc(rootProdRef, fullProductData, { merge: true }),
+                        setDoc(categoryRef, {
+                            products: { [targetProductId]: summaryProductData }
+                        }, { merge: true })
+                    ]);
 
                     window.location.href = `manage-products.html?categoryId=${categoryId}`;
                 } catch (error) {
