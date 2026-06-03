@@ -164,17 +164,56 @@
     /* main content wrapper */
     .main-content {
       flex: 1;
-      padding: 0;
-      transition: margin-left 0.2s;
+      display: flex;
+      flex-direction: column;
       background-color: var(--page-bg);
+      min-height: 100vh;
+    }
+
+    /* ========= NEW WHITE TOP BAR ========= */
+    .app-top-bar {
+      background: white;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+    .top-bar-brand {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--brand-primary);
+      letter-spacing: -0.2px;
+      background: linear-gradient(135deg, #5127ba 0%, #673de6 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .top-bar-actions {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    /* optional badge to show active page (just aesthetic) */
+    .page-badge {
+      background: var(--active-bg);
+      padding: 4px 10px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--brand-primary);
     }
 
     /* ========= CATEGORY MANAGEMENT STYLES (merged) ========= */
-    .content-inner {
-      max-width: 1110px;
-      margin: 0 auto;
+    .content-sections-container {
+      flex: 1;
       padding: 24px 24px 40px;
       width: 100%;
+      max-width: 1110px;
+      margin: 0 auto;
     }
     .header-actions {
       display: flex;
@@ -402,8 +441,19 @@
         z-index: 1000;
       }
       .sidebar.mobile-open { transform: translateX(0); box-shadow: 8px 0 20px rgba(0,0,0,0.15); }
-      .main-content { padding: 80px 16px 20px 16px; }
-      .content-inner { padding: 0; }
+      .main-content {
+        padding-top: 0;
+      }
+      .app-top-bar {
+        padding: 12px 20px;
+        position: sticky;
+        top: 0;
+        z-index: 900;
+        background: white;
+      }
+      .content-sections-container {
+        padding: 16px 16px 30px;
+      }
       .desktop-view { display: none; }
       .mobile-view { display: block; }
       .modal-content { align-self: flex-end; border-radius: 24px 24px 0 0; }
@@ -460,22 +510,28 @@
     </nav>
   </aside>
 
-  <!-- Main Content Area with two sections -->
+  <!-- Main Content Area with Top Bar -->
   <main class="main-content">
-    <!-- DASHBOARD SECTION -->
-    <div id="dashboardSection" class="content-section active-section">
-      <div class="content-inner">
-        <div class="dashboard-welcome">
-          <h1 style="margin-bottom: 16px;">📦 Welcome to Spicy Pickles Admin</h1>
-          <p style="color: var(--text-sub);">Manage your categories, inventory, and site content.</p>
-          <p style="margin-top: 12px;">👈 Click <strong>Inventory</strong> to manage categories & products (Firebase powered).</p>
-        </div>
+    <!-- WHITE TOP BAR with Spicy pickles brand -->
+    <div class="app-top-bar">
+      <div class="top-bar-brand">🌶️ Spicy pickles</div>
+      <div class="top-bar-actions">
+        <span class="page-badge" id="activePageBadge">Dashboard</span>
       </div>
     </div>
 
-    <!-- INVENTORY SECTION (CATEGORY MANAGER) -->
-    <div id="inventorySection" class="content-section">
-      <div class="content-inner">
+    <div class="content-sections-container">
+      <!-- DASHBOARD SECTION -->
+      <div id="dashboardSection" class="content-section active-section">
+        <div class="dashboard-welcome">
+          <h1 style="margin-bottom: 16px;">📦 Welcome to Spicy Pickles Admin</h1>
+          <p style="color: var(--text-sub);">Manage your categories, inventory, and site content with ease.</p>
+          <p style="margin-top: 12px;">👈 Click <strong>Inventory</strong> to manage categories & products (Firebase powered).</p>
+        </div>
+      </div>
+
+      <!-- INVENTORY SECTION (CATEGORY MANAGER) -->
+      <div id="inventorySection" class="content-section">
         <div class="header-actions">
           <div class="page-title-group">
             <h1 class="page-title">Manage Categories</h1>
@@ -640,33 +696,32 @@
     
     app.init();
     
-    // close kebab on outside click
     document.addEventListener('click', () => document.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show')));
     document.addEventListener('scroll', () => document.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show')), true);
   </script>
 
-  <!-- Left menu routing & mobile hamburger logic -->
+  <!-- Left menu routing & mobile hamburger + Top bar badge update -->
   <script>
-    // left menu toggle (customize dropdown)
     window.toggleDropdown = function(id) {
       document.getElementById(id).classList.toggle('expanded');
     };
     
-    // content switcher
     function switchContent(page) {
       document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active-section'));
-      if (page === 'dashboard') document.getElementById('dashboardSection').classList.add('active-section');
-      else if (page === 'inventory') document.getElementById('inventorySection').classList.add('active-section');
-      else if (page === 'section') {
-        // simple placeholder
+      if (page === 'dashboard') {
+        document.getElementById('dashboardSection').classList.add('active-section');
+        document.getElementById('activePageBadge').innerText = 'Dashboard';
+      } else if (page === 'inventory') {
+        document.getElementById('inventorySection').classList.add('active-section');
+        document.getElementById('activePageBadge').innerText = 'Inventory';
+      } else if (page === 'section') {
         alert('Section Manager — coming soon (use Inventory for categories)');
         document.getElementById('dashboardSection').classList.add('active-section');
+        document.getElementById('activePageBadge').innerText = 'Dashboard';
         return;
       }
-      // update active menu state
       document.querySelectorAll('.nav-item[data-page]').forEach(btn => btn.classList.remove('active'));
       document.querySelector(`.nav-item[data-page="${page}"]`).classList.add('active');
-      // close mobile sidebar after navigation on small screens
       if (window.innerWidth <= 768) closeMobileSidebar();
     }
     
@@ -694,7 +749,6 @@
       }
     }
     
-    // event binding
     document.querySelectorAll('.nav-item[data-page]').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -707,7 +761,6 @@
     window.addEventListener('resize', () => {
       if (window.innerWidth > 768) closeMobileSidebar();
     });
-    // set active default dashboard
     switchContent('dashboard');
   </script>
 </body>
