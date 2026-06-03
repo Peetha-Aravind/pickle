@@ -1,16 +1,16 @@
-
+Here is the final HTML document with a full‑width white top bar that spans the entire screen from left edge to right edge, and the left menu (sidebar) positioned directly below it – keeping all Firebase category management functionality intact.
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Spicy Pickles Admin — Categories</title>
-  <!-- Fonts & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   
   <style>
-    /* ---------- GLOBAL VARIABLES (merged) ---------- */
+    /* ---------- GLOBAL VARIABLES ---------- */
     :root {
       --page-bg: #f4f5f7;
       --header-bg: #ffffff;
@@ -32,6 +32,7 @@
       --radius-md: 8px;
       --radius-lg: 12px;
       --sidebar-width: 260px;
+      --topbar-height: 64px;
     }
 
     * {
@@ -49,11 +50,81 @@
       color: var(--text-color);
       background-color: var(--page-bg);
       display: flex;
+      flex-direction: column;
       min-height: 100vh;
       overflow-x: hidden;
     }
 
-    /* ========= SIDEBAR (DESKTOP + MOBILE) ========= */
+    /* ========= FULL-WIDTH TOP BAR (connected to leftmost edge) ========= */
+    .global-top-bar {
+      background: white;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0 28px;
+      height: var(--topbar-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      position: sticky;
+      top: 0;
+      z-index: 1100;
+      flex-shrink: 0;
+    }
+    .top-bar-brand {
+      font-size: 18px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #5127ba 0%, #673de6 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -0.2px;
+    }
+    .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .page-badge {
+      background: var(--active-bg);
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--brand-primary);
+    }
+
+    /* Mobile menu button inside top bar (replaces floating hamburger) */
+    .mobile-menu-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      width: 40px;
+      height: 40px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      cursor: pointer;
+      border-radius: var(--radius-md);
+      transition: background 0.2s;
+    }
+    .mobile-menu-btn span {
+      width: 22px;
+      height: 2px;
+      background: var(--text-color);
+      border-radius: 2px;
+      transition: 0.2s;
+    }
+    .mobile-menu-btn:hover { background: var(--hover-bg); }
+
+    /* ========= LAYOUT: SIDEBAR + MAIN CONTENT (below top bar) ========= */
+    .app-layout {
+      display: flex;
+      flex: 1;
+      width: 100%;
+    }
+
+    /* SIDEBAR (left menu) — starts directly below top bar */
     .sidebar {
       width: var(--sidebar-width);
       background-color: var(--sidebar-bg);
@@ -62,17 +133,19 @@
       display: flex;
       flex-direction: column;
       gap: 32px;
-      height: 100vh;
+      height: calc(100vh - var(--topbar-height));
       position: sticky;
-      top: 0;
+      top: var(--topbar-height);
       transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
       z-index: 1000;
+      flex-shrink: 0;
     }
     .sidebar-brand {
       font-size: 20px;
       font-weight: 700;
       color: var(--text-color);
       padding: 0 12px;
+      display: block;
     }
     .nav-menu {
       display: flex;
@@ -161,60 +234,20 @@
       color: var(--brand-primary);
     }
 
-    /* main content wrapper */
+    /* MAIN CONTENT AREA */
     .main-content {
       flex: 1;
-      display: flex;
-      flex-direction: column;
       background-color: var(--page-bg);
-      min-height: 100vh;
+      overflow-x: auto;
     }
-
-    /* ========= NEW WHITE TOP BAR ========= */
-    .app-top-bar {
-      background: white;
-      border-bottom: 1px solid var(--border-subtle);
-      padding: 14px 28px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-    }
-    .top-bar-brand {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--brand-primary);
-      letter-spacing: -0.2px;
-      background: linear-gradient(135deg, #5127ba 0%, #673de6 100%);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-    .top-bar-actions {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-    }
-    /* optional badge to show active page (just aesthetic) */
-    .page-badge {
-      background: var(--active-bg);
-      padding: 4px 10px;
-      border-radius: 30px;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--brand-primary);
-    }
-
-    /* ========= CATEGORY MANAGEMENT STYLES (merged) ========= */
     .content-sections-container {
-      flex: 1;
-      padding: 24px 24px 40px;
-      width: 100%;
+      padding: 24px 28px 40px;
       max-width: 1110px;
       margin: 0 auto;
+      width: 100%;
     }
+
+    /* ========= CATEGORY MANAGEMENT STYLES (unchanged) ========= */
     .header-actions {
       display: flex;
       justify-content: space-between;
@@ -332,7 +365,6 @@
     th { font-weight: 700; background: #fff; border-bottom: 1px solid var(--border-subtle); }
     .product-thumb { width: 48px; height: 48px; border-radius: var(--radius-md); object-fit: cover; border: 1px solid var(--border-subtle); }
     .td-flex { display: flex; align-items: center; gap: 12px; }
-    /* mobile cards */
     .mobile-view { display: none; }
     .mobile-category-cards {
       background: #fff;
@@ -346,7 +378,6 @@
     }
     .mobile-card-content { flex: 1; }
     .mobile-card-title { font-size: 16px; font-weight: 700; }
-    /* modals */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -375,7 +406,6 @@
     .modal-footer { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
     @keyframes modalPop { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
     
-    /* dropdown menus (kebab) */
     .dropdown-menu {
       position: fixed;
       background: white;
@@ -405,63 +435,6 @@
     .dropdown-item:hover { background: var(--hover-bg); }
     .text-danger { color: var(--danger-color); }
 
-    /* hamburger & responsive */
-    .hamburger-btn {
-      display: none;
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      z-index: 1100;
-      background: white;
-      border: 1px solid var(--border-subtle);
-      border-radius: 10px;
-      width: 44px;
-      height: 44px;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-    .hamburger-btn span { width: 22px; height: 2px; background: var(--text-color); border-radius: 2px; }
-    .sidebar-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      backdrop-filter: blur(2px);
-      z-index: 998;
-    }
-    @media (max-width: 768px) {
-      .hamburger-btn { display: flex; }
-      .sidebar {
-        position: fixed;
-        transform: translateX(-100%);
-        height: 100vh;
-        z-index: 1000;
-      }
-      .sidebar.mobile-open { transform: translateX(0); box-shadow: 8px 0 20px rgba(0,0,0,0.15); }
-      .main-content {
-        padding-top: 0;
-      }
-      .app-top-bar {
-        padding: 12px 20px;
-        position: sticky;
-        top: 0;
-        z-index: 900;
-        background: white;
-      }
-      .content-sections-container {
-        padding: 16px 16px 30px;
-      }
-      .desktop-view { display: none; }
-      .mobile-view { display: block; }
-      .modal-content { align-self: flex-end; border-radius: 24px 24px 0 0; }
-    }
-    @media (min-width: 769px) {
-      .sidebar { transform: translateX(0) !important; }
-      .sidebar-overlay { display: none !important; }
-    }
     .dashboard-welcome {
       background: white;
       border-radius: var(--radius-lg);
@@ -471,80 +444,129 @@
     }
     .content-section { display: none; }
     .content-section.active-section { display: block; }
+
+    /* ========= RESPONSIVE (Mobile) ========= */
+    @media (max-width: 768px) {
+      .global-top-bar {
+        padding: 0 16px;
+      }
+      .mobile-menu-btn {
+        display: flex;
+      }
+      .sidebar {
+        position: fixed;
+        top: var(--topbar-height);
+        left: 0;
+        transform: translateX(-100%);
+        height: calc(100vh - var(--topbar-height));
+        z-index: 1000;
+        box-shadow: none;
+        transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      }
+      .sidebar.mobile-open {
+        transform: translateX(0);
+        box-shadow: 8px 0 20px rgba(0,0,0,0.15);
+      }
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.45);
+        backdrop-filter: blur(2px);
+        z-index: 998;
+        top: var(--topbar-height);
+      }
+      .sidebar-overlay.active {
+        display: block;
+      }
+      .content-sections-container {
+        padding: 16px 16px 30px;
+      }
+      .desktop-view { display: none; }
+      .mobile-view { display: block; }
+      .modal-content { align-self: flex-end; border-radius: 24px 24px 0 0; }
+    }
+    @media (min-width: 769px) {
+      .sidebar-overlay { display: none !important; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Hamburger & Overlay -->
-  <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
+  <!-- FULL-WIDTH TOP BAR (connected to leftmost edge) -->
+  <div class="global-top-bar">
+    <div class="top-bar-brand">🌶️ Spicy pickles</div>
+    <div class="top-bar-right">
+      <span class="page-badge" id="activePageBadge">Dashboard</span>
+      <!-- Mobile menu button (inside top bar) -->
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Overlay for mobile sidebar -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-  <!-- Persistent Left Menu -->
-  <aside class="sidebar" id="mainSidebar">
-    <div class="sidebar-brand">Spicy Pickles</div>
-    <nav class="nav-menu">
-      <button class="nav-item" data-page="dashboard">
-        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-        Dashboard
-      </button>
-      <button class="nav-item" data-page="inventory">
-        <svg viewBox="0 0 24 24"><line x1="16" y1="4" x2="16" y2="20"></line><line x1="8" y1="4" x2="8" y2="20"></line><line x1="3" y1="8" x2="21" y2="8"></line><line x1="3" y1="16" x2="21" y2="16"></line></svg>
-        Inventory
-      </button>
-      <button class="nav-item" data-page="section">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-        Section Manager
-      </button>
-      <div class="nav-dropdown" id="customizeDropdown">
-        <button class="nav-item dropdown-toggle" onclick="toggleDropdown('customizeDropdown')">
-          <div class="menu-left"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>Customize Site</div>
-          <svg class="chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+  <!-- MAIN LAYOUT: SIDEBAR + CONTENT (below top bar) -->
+  <div class="app-layout">
+    <!-- Persistent Left Menu (sidebar) -->
+    <aside class="sidebar" id="mainSidebar">
+      <div class="sidebar-brand">Spicy Pickles</div>
+      <nav class="nav-menu">
+        <button class="nav-item" data-page="dashboard">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          Dashboard
         </button>
-        <div class="dropdown-menu-sub">
-          <a href="#" class="dropdown-item-sub">Hero Section</a>
-          <a href="#" class="dropdown-item-sub">Pop up Section</a>
-        </div>
-      </div>
-    </nav>
-  </aside>
-
-  <!-- Main Content Area with Top Bar -->
-  <main class="main-content">
-    <!-- WHITE TOP BAR with Spicy pickles brand -->
-    <div class="app-top-bar">
-      <div class="top-bar-brand">🌶️ Spicy pickles</div>
-      <div class="top-bar-actions">
-        <span class="page-badge" id="activePageBadge">Dashboard</span>
-      </div>
-    </div>
-
-    <div class="content-sections-container">
-      <!-- DASHBOARD SECTION -->
-      <div id="dashboardSection" class="content-section active-section">
-        <div class="dashboard-welcome">
-          <h1 style="margin-bottom: 16px;">📦 Welcome to Spicy Pickles Admin</h1>
-          <p style="color: var(--text-sub);">Manage your categories, inventory, and site content with ease.</p>
-          <p style="margin-top: 12px;">👈 Click <strong>Inventory</strong> to manage categories & products (Firebase powered).</p>
-        </div>
-      </div>
-
-      <!-- INVENTORY SECTION (CATEGORY MANAGER) -->
-      <div id="inventorySection" class="content-section">
-        <div class="header-actions">
-          <div class="page-title-group">
-            <h1 class="page-title">Manage Categories</h1>
-            <div class="breadcrumbs"><span>Admin</span><span class="divider">/</span><span>Catalog</span></div>
+        <button class="nav-item" data-page="inventory">
+          <svg viewBox="0 0 24 24"><line x1="16" y1="4" x2="16" y2="20"></line><line x1="8" y1="4" x2="8" y2="20"></line><line x1="3" y1="8" x2="21" y2="8"></line><line x1="3" y1="16" x2="21" y2="16"></line></svg>
+          Inventory
+        </button>
+        <button class="nav-item" data-page="section">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+          Section Manager
+        </button>
+        <div class="nav-dropdown" id="customizeDropdown">
+          <button class="nav-item dropdown-toggle" onclick="toggleDropdown('customizeDropdown')">
+            <div class="menu-left"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>Customize Site</div>
+            <svg class="chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="dropdown-menu-sub">
+            <a href="#" class="dropdown-item-sub">Hero Section</a>
+            <a href="#" class="dropdown-item-sub">Pop up Section</a>
           </div>
-          <button onclick="app.showCategoryModal()" class="primary-btn"><i class="fas fa-plus"></i> Add Category</button>
         </div>
-        <div id="data-container"></div>
-      </div>
-    </div>
-  </main>
+      </nav>
+    </aside>
 
-  <!-- Global Modals (used by category manager) -->
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <div class="content-sections-container">
+        <!-- DASHBOARD SECTION -->
+        <div id="dashboardSection" class="content-section active-section">
+          <div class="dashboard-welcome">
+            <h1 style="margin-bottom: 16px;">📦 Welcome to Spicy Pickles Admin</h1>
+            <p style="color: var(--text-sub);">Manage your categories, inventory, and site content with ease.</p>
+            <p style="margin-top: 12px;">👈 Click <strong>Inventory</strong> to manage categories & products (Firebase powered).</p>
+          </div>
+        </div>
+
+        <!-- INVENTORY SECTION (CATEGORY MANAGER) -->
+        <div id="inventorySection" class="content-section">
+          <div class="header-actions">
+            <div class="page-title-group">
+              <h1 class="page-title">Manage Categories</h1>
+              <div class="breadcrumbs"><span>Admin</span><span class="divider">/</span><span>Catalog</span></div>
+            </div>
+            <button onclick="app.showCategoryModal()" class="primary-btn"><i class="fas fa-plus"></i> Add Category</button>
+          </div>
+          <div id="data-container"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Global Modals -->
   <div id="modal" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-header" style="font-weight:700; margin-bottom:16px;">Add New Category</div>
@@ -695,12 +717,11 @@
     };
     
     app.init();
-    
     document.addEventListener('click', () => document.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show')));
     document.addEventListener('scroll', () => document.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show')), true);
   </script>
 
-  <!-- Left menu routing & mobile hamburger + Top bar badge update -->
+  <!-- Left menu routing & mobile sidebar toggle -->
   <script>
     window.toggleDropdown = function(id) {
       document.getElementById(id).classList.toggle('expanded');
@@ -731,8 +752,6 @@
       if (sidebar) sidebar.classList.remove('mobile-open');
       if (overlay) overlay.classList.remove('active');
       document.body.style.overflow = '';
-      const hamburger = document.getElementById('hamburgerBtn');
-      if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
     }
     
     function toggleMobileMenu() {
@@ -743,7 +762,6 @@
         sidebar.classList.add('mobile-open');
         overlay.classList.add('active');
         document.body.style.overflow = 'hidden';
-        document.getElementById('hamburgerBtn').setAttribute('aria-expanded', 'true');
       } else {
         closeMobileSidebar();
       }
@@ -756,7 +774,8 @@
         switchContent(page);
       });
     });
-    document.getElementById('hamburgerBtn')?.addEventListener('click', toggleMobileMenu);
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+    if (mobileBtn) mobileBtn.addEventListener('click', toggleMobileMenu);
     document.getElementById('sidebarOverlay')?.addEventListener('click', closeMobileSidebar);
     window.addEventListener('resize', () => {
       if (window.innerWidth > 768) closeMobileSidebar();
