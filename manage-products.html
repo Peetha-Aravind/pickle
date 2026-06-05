@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Happy NonVeg Pickles – Manage Pickles</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <link rel="preload" as="image" href="./assets/dashboard.svg">
+    <link rel="preload" as="image" href="./assets/hover_dashboard.svg">
+    <link rel="preload" as="image" href="./assets/fill_dashboard.svg">
+    <link rel="preload" as="image" href="./assets/inventory.svg">
+    <link rel="preload" as="image" href="./assets/hover_inventory.svg">
+    <link rel="preload" as="image" href="./assets/fill_inventory.svg">
+    <link rel="preload" as="image" href="./assets/coupons.svg">
+    <link rel="preload" as="image" href="./assets/hover_coupons.svg">
+    <link rel="preload" as="image" href="./assets/fill_coupons.svg">
+    <link rel="preload" as="image" href="./assets/site.svg">
+    <link rel="preload" as="image" href="./assets/hover_site.svg">
+    <link rel="preload" as="image" href="./assets/fill_site.svg">
+    <link rel="preload" as="image" href="./assets/panel_close.svg">
+    <link rel="preload" as="image" href="./assets/panel_open.svg">
+    <link rel="preload" as="image" href="./assets/herosection.svg">
+    <link rel="preload" as="image" href="./assets/hover_herosection.svg">
+    <link rel="preload" as="image" href="./assets/fill_herosection.svg">
+    <link rel="preload" as="image" href="./assets/sections.svg">
+    <link rel="preload" as="image" href="./assets/hover_sections.svg">
+    <link rel="preload" as="image" href="./assets/fill_sections.svg">
+    <link rel="preload" as="image" href="./assets/popup.svg">
+    <link rel="preload" as="image" href="./assets/hover_popup.svg">
+    <link rel="preload" as="image" href="./assets/fill_popup.svg">
+    <link rel="preload" as="image" href="./assets/combo.svg">
+    <link rel="preload" as="image" href="./assets/hover_combo.svg">
+    <link rel="preload" as="image" href="./assets/fill_combo.svg">
+
+    <style>
+        /* ========== GLOBAL VARIABLES ========== */
+        :root {
+            --text-sub: #6b7280;
+            --header-height-desktop: 70px;
+            --sidebar-width: 260px;
+            --sidebar-collapsed-width: 90px;
+            --row-height: 52px;
+            --sidebar-bg: #ffffff;
+            --header-bg: #ffffff;
+            --page-bg: #f4f5f7;
+            --text-color: rgb(24, 24, 26);
+            --icon-color: #6b7280;
+            --brand-primary: #643DE4;
+            --active-bg: #f4f0fa;
+            --hover-bg: #f3f4f6;
+            --border-subtle: #e5e7eb;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --shadow-premium: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+            --tooltip-bg: #1f2937;
+            --danger-color: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; text-decoration: none !important; }
+
+        /* ── GLOBAL: block ALL text/image selection & callouts ── */
+        * {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+        /* Re-enable selection only for inputs/textareas */
+        input, textarea, [contenteditable] {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            user-select: text;
+        }
+        /* Block image dragging everywhere */
+        img {
+            -webkit-user-drag: none;
+            user-drag: none;
+            pointer-events: none;
+            -webkit-touch-callout: none;
+        }
+        /* Re-enable pointer-events for img inside interactive elements */
+        button img, a img, label img, .action-btn img, .product-card-menu-btn img, .drag-handle img,
+        .sidebar-toggle img, .m-menu-btn img { pointer-events: none; }
+
+        body {
+            min-height: 100vh;
+            background: var(--page-bg);
+            font-family: "DM Sans", Roboto, sans-serif;
+            font-weight: 500;
+            color: var(--text-color);
+            overflow: hidden;
+            display: none;
+        }
+
+        /* ── DURING DRAG: lock cursor & prevent any selection ── */
+        body.is-dragging,
+        body.is-dragging * {
+            cursor: grabbing !important;
+        }
+
+        /* LOGO */
+        .brand-logo { display: flex; align-items: center; text-decoration: none; transition: all 0.3s; }
+        .brand-logo img { height: 45px; width: auto; display: block; }
+        .mini-logo { display: none; align-items: center; justify-content: center; }
+        .mini-logo img { height: 45px; width: auto; display: block; }
+
+        /* ICON SYSTEM */
+        .icon { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex-shrink: 0; }
+        .icon-custom { position: relative; width: 24px; height: 24px; }
+        .icon-custom > span {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-size: contain; background-repeat: no-repeat; background-position: center;
+        }
+        .icon-custom .icon-normal { display: block; }
+        .icon-custom .icon-hover, .icon-custom .icon-active { display: none; }
+        .nav-item:hover:not(.active) .icon-custom .icon-normal { display: none; }
+        .nav-item:hover:not(.active) .icon-custom .icon-hover { display: block; }
+        .nav-item.active .icon-custom .icon-normal,
+        .nav-item.active .icon-custom .icon-hover { display: none; }
+        .nav-item.active .icon-custom .icon-active { display: block; }
+        .nav-item.active.dropdown-open .icon-custom .icon-normal,
+        .nav-item.active.dropdown-open .icon-custom .icon-hover { display: none; }
+        .nav-item.active.dropdown-open .icon-custom .icon-active { display: block; }
+
+        .icon-dashboard .icon-normal  { background-image: url('./assets/dashboard.svg'); }
+        .icon-dashboard .icon-hover   { background-image: url('./assets/hover_dashboard.svg'); }
+        .icon-dashboard .icon-active  { background-image: url('./assets/fill_dashboard.svg'); }
+        .icon-inventory .icon-normal  { background-image: url('./assets/inventory.svg'); }
+        .icon-inventory .icon-hover   { background-image: url('./assets/hover_inventory.svg'); }
+        .icon-inventory .icon-active  { background-image: url('./assets/fill_inventory.svg'); }
+        .icon-coupons .icon-normal    { background-image: url('./assets/coupons.svg'); }
+        .icon-coupons .icon-hover     { background-image: url('./assets/hover_coupons.svg'); }
+        .icon-coupons .icon-active    { background-image: url('./assets/fill_coupons.svg'); }
+        .icon-site .icon-normal       { background-image: url('./assets/site.svg'); }
+        .icon-site .icon-hover        { background-image: url('./assets/hover_site.svg'); }
+        .icon-site .icon-active       { background-image: url('./assets/fill_site.svg'); }
+        .icon-herosection .icon-normal  { background-image: url('./assets/herosection.svg'); }
+        .icon-herosection .icon-hover   { background-image: url('./assets/hover_herosection.svg'); }
+        .icon-herosection .icon-active  { background-image: url('./assets/fill_herosection.svg'); }
+        .icon-sections .icon-normal     { background-image: url('./assets/sections.svg'); }
+        .icon-sections .icon-hover      { background-image: url('./assets/hover_sections.svg'); }
+        .icon-sections .icon-active     { background-image: url('./assets/fill_sections.svg'); }
+        .icon-popup .icon-normal        { background-image: url('./assets/popup.svg'); }
+        .icon-popup .icon-hover         { background-image: url('./assets/hover_popup.svg'); }
+        .icon-popup .icon-active        { background-image: url('./assets/fill_popup.svg'); }
+        .icon-combo .icon-normal        { background-image: url('./assets/combo.svg'); }
+        .icon-combo .icon-hover         { background-image: url('./assets/hover_combo.svg'); }
+        .icon-combo .icon-active        { background-image: url('./assets/fill_combo.svg'); }
+
+        .nav-submenu-item .icon-custom .icon-normal { display: block; }
+        .nav-submenu-item .icon-custom .icon-hover,
+        .nav-submenu-item .icon-custom .icon-active { display: none; }
+        .nav-submenu-item:hover .icon-custom .icon-normal { display: none; }
+        .nav-submenu-item:hover .icon-custom .icon-hover { display: block; }
+        .nav-submenu-item.active .icon-custom .icon-normal,
+        .nav-submenu-item.active .icon-custom .icon-hover { display: none; }
+        .nav-submenu-item.active .icon-custom .icon-active { display: block; }
+
+        /* DESKTOP LAYOUT */
+        .page-desktop { display: flex; height: 100vh; width: 100vw; }
+        .d-sidebar {
+            width: var(--sidebar-width); height: 100%; background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-subtle); display: flex; flex-direction: column;
+            flex-shrink: 0; transition: width 0.3s cubic-bezier(0.4,0,0.2,1); z-index: 100;
+        }
+        .d-sidebar-header {
+            min-height: var(--header-height-desktop); display: flex; align-items: center;
+            justify-content: space-between; padding: 30px 24px; transition: all 0.3s;
+        }
+        .d-sidebar-inner {
+            flex: 1; padding: 10px 16px; display: flex; flex-direction: column;
+            overflow-y: auto; overflow-x: hidden;
+        }
+        .sidebar-toggle {
+            background: none; border: none; cursor: pointer; color: var(--icon-color);
+            display: flex; align-items: center; justify-content: center;
+            padding: 6px; border-radius: 8px; transition: 0.2s;
+        }
+        .sidebar-toggle:hover { background: var(--hover-bg); color: var(--text-color); }
+
+        .nav-item {
+            position: relative; display: flex; align-items: center; height: var(--row-height);
+            padding: 0 16px; margin: 2px 0; border-radius: var(--radius-md); gap: 14px;
+            cursor: pointer; color: var(--text-color); text-decoration: none;
+            transition: background 0.2s, color 0.2s; white-space: nowrap; user-select: none;
+        }
+        .nav-item:hover { background: var(--hover-bg); }
+        .nav-item.active { background: var(--active-bg); color: var(--brand-primary); font-weight: 700; }
+        .nav-chevron {
+            margin-left: auto; width: 16px; height: 16px; stroke: currentColor;
+            flex-shrink: 0; transition: transform 0.25s ease;
+        }
+        .nav-item.dropdown-open .nav-chevron { transform: rotate(90deg); }
+
+        .nav-submenu {
+            display: none; margin: 2px 0 4px 20px; padding-left: 16px;
+            border-left: 2px solid var(--border-subtle); flex-direction: column;
+        }
+        .nav-submenu.open { display: flex; }
+        .nav-submenu-item {
+            display: flex; align-items: center; height: 50px; padding: 0 14px;
+            border-radius: 8px; margin: 1px 0; gap: 12px; cursor: pointer;
+            color: var(--text-color); font-size: 15px; font-weight: 600;
+            text-decoration: none; transition: background 0.15s, color 0.15s; white-space: nowrap;
+        }
+        .nav-submenu-item:hover { background: var(--hover-bg); color: var(--brand-primary); }
+        .nav-submenu-item.active { background: var(--active-bg); color: var(--brand-primary); font-weight: 700; }
+
+        .d-account-section {
+            margin-top: auto; padding: 24px 16px; border-top: 1px solid var(--border-subtle); cursor: pointer;
+        }
+        .account-card { display: flex; align-items: center; gap: 12px; }
+        .account-avatar { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--border-subtle); object-fit: cover; flex-shrink: 0; pointer-events: auto; }
+        .account-text { display: flex; flex-direction: column; overflow: hidden; transition: opacity 0.2s; }
+        .account-name { font-size: 15px; font-weight: 700; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+        .account-email { font-size: 13px; color: var(--text-sub); white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+
+        .d-main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .d-topbar {
+            height: 80px; background: var(--header-bg); border-bottom: 1px solid var(--border-subtle);
+            padding: 0 40px; display: flex; align-items: center; font-weight: 700; font-size: 20px;
+        }
+        .d-content { flex: 1; padding: 16px; overflow-y: auto; }
+
+        /* COLLAPSED SIDEBAR */
+        .d-sidebar.collapsed { width: var(--sidebar-collapsed-width); }
+        .d-sidebar.collapsed .brand-logo,
+        .d-sidebar.collapsed .account-text,
+        .d-sidebar.collapsed .btn-close-svg,
+        .d-sidebar.collapsed .nav-chevron,
+        .d-sidebar.collapsed .nav-submenu { display: none !important; }
+        .d-sidebar.collapsed .nav-label { display: none; }
+        .d-sidebar.collapsed .mini-logo,
+        .d-sidebar.collapsed .btn-open-svg { display: flex; }
+        .btn-open-svg { display: none; }
+        .d-sidebar.collapsed .d-sidebar-header { flex-direction: column; height: auto; padding: 30px 0 20px; gap: 30px; }
+        .d-sidebar.collapsed .nav-item { justify-content: center; padding: 0; }
+        .d-sidebar.collapsed .d-account-section { display: flex; justify-content: center; padding: 24px 0; }
+        .d-sidebar.collapsed .d-sidebar-inner { overflow: visible; }
+        .d-sidebar.collapsed .nav-item:hover .nav-label {
+            display: block; position: absolute; left: 100%; top: 50%; transform: translateY(-50%);
+            background-color: var(--tooltip-bg); color: #fff; padding: 8px 12px; border-radius: 6px;
+            font-size: 13px; font-weight: 500; white-space: nowrap; z-index: 1000; margin-left: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); pointer-events: none;
+        }
+        .d-sidebar.collapsed .nav-item:hover .nav-label::before {
+            content: ""; position: absolute; left: -6px; top: 50%; transform: translateY(-50%);
+            border-width: 6px 6px 6px 0; border-style: solid;
+            border-color: transparent var(--tooltip-bg) transparent transparent;
+        }
+
+        /* MOBILE */
+        .m-header { display: none; }
+        .m-header {
+            height: 72px; background: #fff; border-bottom: 1px solid var(--border-subtle);
+            align-items: center; justify-content: space-between;
+            padding: 0 16px; position: fixed; top: 0; width: 100%; z-index: 1000;
+        }
+        .m-menu-btn { width: 40px; height: 40px; border-radius: 10px; border: 1px solid #e5e7eb; background: #f9fafb; display: flex; align-items: center; justify-content: center; }
+        .m-menu-lines { width: 18px; height: 14px; position: relative; }
+        .m-menu-lines::before, .m-menu-lines::after, .m-menu-lines span { content: ""; position: absolute; left: 0; right: 0; height: 2px; background: #111827; border-radius: 10px; }
+        .m-menu-lines::before { top: 0; }
+        .m-menu-lines span { top: 6px; }
+        .m-menu-lines::after { bottom: 0; }
+        .m-overlay {
+            position: fixed; inset: 0; background: rgba(15,23,42,0.45); opacity: 0;
+            pointer-events: none; transition: 0.25s; z-index: 2000;
+        }
+        .m-overlay.open { opacity: 1; pointer-events: auto; }
+        .m-drawer {
+            position: absolute; left: 0; top: 0; width: 300px; max-width: 85vw; height: 100%;
+            background: #fff; transform: translateX(-100%); transition: 0.25s;
+            display: flex; flex-direction: column; overflow-y: auto;
+        }
+        .m-overlay.open .m-drawer { transform: translateX(0); }
+        .m-drawer-header { height: 80px; padding: 0 20px; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+        .m-drawer-close { width: 40px; height: 40px; border-radius: 10px; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; background: #f9fafb; }
+        .m-drawer-close-icon { width: 14px; height: 14px; position: relative; }
+        .m-drawer-close-icon::before, .m-drawer-close-icon::after { content: ""; position: absolute; inset: 0; margin: auto; width: 14px; height: 2px; background: #111827; }
+        .m-drawer-close-icon::before { transform: rotate(45deg); }
+        .m-drawer-close-icon::after { transform: rotate(-45deg); }
+        .m-drawer-nav { padding: 20px 12px; flex: 1; }
+        .m-account-section { padding: 20px; border-top: 1px solid var(--border-subtle); background: #fff; }
+
+        /* PROFILE POPUP */
+        .profile-popup {
+            position: fixed; background: #fff; border-radius: 12px; box-shadow: var(--shadow-premium);
+            border: 1px solid #e5e7eb; width: 260px; z-index: 3000; opacity: 0; pointer-events: none;
+            transition: 0.2s; overflow: hidden;
+        }
+        .profile-popup.active { opacity: 1; pointer-events: all; }
+        .popup-header { padding: 16px; border-bottom: 1px solid #e5e7eb; background: #f9fafb; display: flex; align-items: center; gap: 12px; }
+        .popup-list { list-style: none; padding: 8px; }
+        .popup-list a { display: flex; align-items: center; gap: 12px; padding: 12px; text-decoration: none; color: var(--text-color); border-radius: 8px; cursor: pointer; }
+        .popup-list a:hover { background: #f3f4f6; }
+
+        /* GLOBAL BUTTONS */
+        .primary-btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            padding: 14px 24px; border-radius: var(--radius-md); border: none;
+            font-weight: 600; font-size: 16px; color: #ffffff; background: var(--brand-primary);
+            transition: background 0.2s, transform 0.2s; cursor: pointer;
+            letter-spacing: 0.2px; white-space: nowrap; font-family: inherit;
+        }
+        .primary-btn:hover { background: #5228d3; transform: translateY(-1px); }
+        .primary-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-secondary {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 12px 20px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);
+            background: #ffffff; font-size: 15px; font-weight: 600; color: var(--brand-primary);
+            transition: background 0.2s, transform 0.2s; cursor: pointer;
+            letter-spacing: 0.2px; font-family: inherit;
+        }
+        .btn-secondary:hover { background: #f2efff; transform: translateY(-1px); }
+        .btn-secondary:disabled { opacity: 0.6; cursor: not-allowed; }
+        .danger-btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            padding: 14px 24px; border-radius: var(--radius-md); border: none;
+            font-weight: 600; font-size: 16px; color: #ffffff; background: var(--danger-color);
+            transition: background 0.2s, transform 0.2s; cursor: pointer; font-family: inherit;
+        }
+        .danger-btn:hover { background: #dc2626; transform: translateY(-1px); }
+        .danger-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* PAGE CONTENT */
+        .content-inner {
+            --brand-primary: #643DE4;
+            --danger-color: #ef4444;
+            --success-color: #10B981;
+            --warning-color: #f59e0b;
+            --switch-on: #643DE4;
+            --switch-off: #9CA3AF;
+            --hover-bg: #f3f4f6;
+            --border-subtle: #e5e7eb;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            max-width: 1110px; margin: 0 auto; padding: 16px 16px 24px;
+            width: 100%; font-family: 'IBM Plex Sans', Roboto, sans-serif;
+            font-weight: 500; font-size: 14px; line-height: 20px; color: var(--text-color);
+        }
+        .content-inner .page-title { font-weight: 700; line-height: 1.2; color: rgb(29, 30, 32); font-size: 22px; }
+        .content-inner .page-title-group { display: flex; flex-direction: column; gap: 4px; }
+        .content-inner .breadcrumbs { display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--text-sub); }
+        .content-inner .breadcrumbs .divider { color: #d1d5db; }
+        .content-inner .breadcrumbs img { width: 18px; height: 18px; vertical-align: middle; pointer-events: none; }
+        .content-inner .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .content-inner .card { background: #ffffff; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); overflow: hidden; width: 100%; }
+
+        /* Toggle switch */
+        .content-inner .toggle-switch { width: 44px; height: 24px; position: relative; display: inline-block; }
+        .content-inner .toggle-switch input { display: none; }
+        .content-inner .toggle-slider { position: absolute; inset: 0; background-color: var(--switch-off); border-radius: 24px; transition: .4s; cursor: pointer; }
+        .content-inner .toggle-slider::before { content: ""; position: absolute; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; border-radius: 50%; transition: .4s; }
+        .content-inner .toggle-switch input:checked + .toggle-slider { background-color: var(--switch-on); }
+        .content-inner .toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); }
+
+        /* Desktop table */
+        .content-inner .desktop-view { display: block; }
+        .content-inner .table-wrapper { width: 100%; overflow: visible !important; }
+        .content-inner table { width: 100%; border-collapse: collapse; position: relative; }
+        .content-inner thead { height: 48px; }
+        .content-inner th {
+            font-weight: 700; font-size: 14px; line-height: 24px; color: rgb(29, 30, 32);
+            text-align: left; border-bottom: 1px solid var(--border-subtle); white-space: nowrap;
+            background-color: #ffffff; padding: 12px 20px;
+        }
+        .content-inner tbody tr { border-bottom: 1px solid var(--hover-bg); background-color: #ffffff; transition: background 0.15s; }
+        .content-inner tbody tr:hover { background-color: #f9fafb; }
+        .content-inner tbody tr:last-child { border-bottom: none; }
+        .content-inner td { padding: 12px 20px; vertical-align: middle; text-align: left; }
+        .content-inner .product-thumb { width: 48px; height: 48px; border-radius: var(--radius-md); object-fit: cover; border: 1px solid var(--border-subtle); pointer-events: none; }
+        .content-inner .item-hidden { opacity: 0.5; }
+        .content-inner .actions-cell { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; }
+        .content-inner .action-btn img { width: 18px; height: 18px; vertical-align: middle; pointer-events: none; }
+
+        /* ===== DRAG HANDLE ===== */
+        .drag-handle {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 32px; height: 32px; border-radius: 8px;
+            border: 1px solid var(--border-subtle); background: #fff;
+            cursor: grab; color: #9ca3af; transition: background 0.15s, color 0.15s, border-color 0.15s;
+            flex-shrink: 0;
+        }
+        .drag-handle:hover { background: var(--hover-bg); border-color: #9ca3af; color: var(--brand-primary); }
+        .drag-handle:active { cursor: grabbing; }
+        .drag-handle svg { width: 16px; height: 16px; pointer-events: none; }
+
+        /* Desktop row drag states */
+        .content-inner tbody tr.dragging {
+            opacity: 0.4;
+            background: #f4f0fa !important;
+        }
+        .content-inner tbody tr.drag-over-top {
+            box-shadow: inset 0 3px 0 var(--brand-primary);
+        }
+        .content-inner tbody tr.drag-over-bottom {
+            box-shadow: inset 0 -3px 0 var(--brand-primary);
+        }
+
+        /* Mobile card drag states */
+        .mobile-category-cards.dragging {
+            opacity: 0.35;
+            background: #f4f0fa !important;
+            transform: scale(0.98);
+            transition: transform 0.15s, opacity 0.15s;
+        }
+        .mobile-category-cards.drag-over-top {
+            box-shadow: 0 -3px 0 var(--brand-primary), 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .mobile-category-cards.drag-over-bottom {
+            box-shadow: 0 3px 0 var(--brand-primary), 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        /* ===== PRODUCT BADGE TAGS ===== */
+        .product-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 700;
+            white-space: nowrap; margin: 2px 2px 2px 0; letter-spacing: 0.2px;
+        }
+        .badge-bestseller { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+        .badge-recommended { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+        .badge-spicy { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+        .badge-new { background: #ede9fe; color: #4c1d95; border: 1px solid #c4b5fd; }
+        .badge-trending { background: #fce7f3; color: #831843; border: 1px solid #f9a8d4; }
+        .badge-limited { background: #ffedd5; color: #7c2d12; border: 1px solid #fdba74; }
+        .badge-mild { background: #ecfdf5; color: #064e3b; border: 1px solid #34d399; }
+        .badge-premium { background: #f0f9ff; color: #0c4a6e; border: 1px solid #7dd3fc; }
+        .badge-gift { background: #fdf4ff; color: #581c87; border: 1px solid #d8b4fe; }
+        .badge-seasonal { background: #fff7ed; color: #7c2d12; border: 1px solid #fed7aa; }
+        .badge-homemade { background: #f0fdf4; color: #14532d; border: 1px solid #86efac; }
+        .badge-glutenfree { background: #f0f9ff; color: #1e3a5f; border: 1px solid #93c5fd; }
+
+        /* ===== BADGES DROPDOWN ===== */
+        .badges-dropdown-trigger {
+            display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+            padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-subtle);
+            background: #fff; font-size: 13px; font-weight: 600; color: var(--text-color);
+            transition: border-color 0.15s, background 0.15s; min-width: 120px;
+            white-space: nowrap; font-family: inherit;
+        }
+        .badges-dropdown-trigger:hover { border-color: var(--brand-primary); background: #faf9ff; }
+        .badges-dropdown-trigger.has-badges { color: var(--brand-primary); border-color: #c4b5fd; background: #faf8ff; }
+        .badges-dropdown-trigger .bdrop-chevron {
+            margin-left: auto; width: 14px; height: 14px; flex-shrink: 0;
+            transition: transform 0.2s; color: #9ca3af;
+        }
+        .badges-dropdown-trigger .bdrop-label { flex: 1; }
+        .bdrop-tag-icon { width: 14px; height: 14px; opacity: 0.7; flex-shrink: 0; pointer-events: none; }
+
+        /* ===== TAG DROPDOWN PANEL ===== */
+        .tag-dropdown-panel {
+            position: fixed; background: #fff; border: 1px solid var(--border-subtle);
+            border-radius: 14px; box-shadow: 0 12px 36px rgba(0,0,0,0.14), 0 4px 14px rgba(0,0,0,0.07);
+            z-index: 10010; display: none; flex-direction: column;
+            min-width: 230px; padding: 10px; animation: fadeInUp 0.18s ease-out;
+        }
+        .tag-dropdown-panel.show { display: flex; }
+        .tag-dropdown-panel .tdp-title {
+            font-size: 11px; font-weight: 700; color: var(--text-sub); text-transform: uppercase;
+            letter-spacing: 0.8px; padding: 4px 8px 8px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 6px;
+        }
+        .tag-option {
+            display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+            border-radius: 8px; cursor: pointer; transition: background 0.12s; font-size: 13px; font-weight: 600;
+        }
+        .tag-option:hover { background: var(--hover-bg); }
+        .tag-option input[type="checkbox"] { accent-color: var(--brand-primary); width: 15px; height: 15px; cursor: pointer; flex-shrink: 0; -webkit-user-select: auto; user-select: auto; }
+        .tag-option .tag-preview { pointer-events: none; }
+        .tdp-footer { padding-top: 8px; border-top: 1px solid var(--border-subtle); margin-top: 6px; }
+        .tdp-save-btn {
+            width: 100%; padding: 10px; border-radius: 8px; border: none;
+            background: var(--brand-primary); color: #fff; font-weight: 700; font-size: 14px;
+            cursor: pointer; font-family: inherit; transition: background 0.15s;
+        }
+        .tdp-save-btn:hover { background: #5228d3; }
+
+        /* Tags cell in table */
+        .tags-cell { min-width: 160px; }
+
+        /* Mobile cards */
+        .content-inner .mobile-view { display: none; }
+        .content-inner .mobile-category-cards {
+            background: #ffffff; border-radius: 16px; border: 1px solid var(--border-subtle);
+            padding: 14px 16px; display: flex; align-items: center; gap: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04); width: 100%; margin-bottom: 14px;
+            cursor: default;
+            /* KEY FIX: allow-y lets normal scroll happen; JS overrides to none only when long-press fires */
+            touch-action: pan-y;
+        }
+        .content-inner .mobile-category-cards img.prod-img {
+            width: 56px; height: 56px; border-radius: var(--radius-lg); object-fit: cover; flex-shrink: 0;
+            pointer-events: none;
+        }
+        .content-inner .mobile-card-content {
+            flex: 1; display: flex; flex-direction: column; gap: 5px; min-width: 0;
+        }
+        .content-inner .mobile-card-title { font-size: 17px; font-weight: 700; color: var(--text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .content-inner .mobile-card-sub { font-size: 14px; font-weight: 600; color: var(--brand-primary); }
+        .content-inner .mobile-card-tags { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 2px; }
+        .content-inner .mobile-card-actions { display: flex; gap: 8px; align-items: center; margin-left: auto; flex-shrink: 0; }
+        .content-inner .product-card-menu-btn {
+            width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--border-subtle);
+            background: #fff; display: flex; justify-content: center; align-items: center; cursor: pointer;
+        }
+        .content-inner .product-card-menu-btn img { width: 22px; height: 22px; pointer-events: none; }
+
+        /* Mobile drag ghost */
+        .mobile-drag-ghost {
+            position: fixed;
+            pointer-events: none;
+            z-index: 10099;
+            background: #fff;
+            border-radius: 16px;
+            border: 2px solid var(--brand-primary);
+            box-shadow: 0 16px 40px rgba(100,61,228,0.22);
+            opacity: 0.92;
+            will-change: transform;
+            display: none;
+            padding: 14px 16px;
+            align-items: center;
+            gap: 12px;
+            max-width: 340px;
+            overflow: hidden;
+            left: 0;
+            top: 0;
+        }
+
+        /* MODALS */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px); z-index: 2000;
+            display: none; align-items: center; justify-content: center;
+        }
+        .modal-content {
+            width: 100%; max-width: 520px; background: white;
+            border-radius: var(--radius-lg); box-shadow: var(--shadow-premium);
+            padding: 28px 24px; animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            margin: 16px; position: relative;
+        }
+        .bottom-sheet-handle { display: none; width: 36px; height: 4px; background: #d1d5db; border-radius: 2px; margin: 0 auto 16px; }
+        .modal-header { font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--text-color); }
+        .modal-body-text { color: var(--text-sub); line-height: 1.6; margin-bottom: 24px; font-size: 15px; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+
+        @keyframes modalPop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Dropdown menu */
+        .dropdown-menu {
+            position: fixed; background: #ffffff; border: 1px solid var(--border-subtle);
+            border-radius: 14px; box-shadow: 0 12px 32px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
+            min-width: 200px; z-index: 10002; display: none; flex-direction: column; padding: 8px;
+            animation: fadeInUp 0.2s ease-out;
+        }
+        .dropdown-menu.show { display: flex; }
+        .dropdown-item {
+            padding: 14px 16px; font-size: 15px; font-weight: 600; color: var(--text-color);
+            cursor: pointer; border-radius: 10px; text-align: left; background: transparent;
+            border: none; width: 100%; display: flex; align-items: center; gap: 14px;
+            font-family: inherit; transition: background 0.15s;
+        }
+        .dropdown-item img { width: 20px; height: 20px; opacity: 0.85; pointer-events: none; }
+        .dropdown-item:hover { background: var(--hover-bg); }
+        .dropdown-item.text-danger { color: var(--danger-color); }
+
+        /* Toast */
+        .toast-container {
+            position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+            z-index: 9999; display: flex; flex-direction: column; align-items: center;
+            gap: 10px; pointer-events: none;
+        }
+        .toast {
+            display: flex; align-items: center; gap: 10px;
+            padding: 13px 20px; border-radius: 12px; font-size: 14px; font-weight: 600;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.14); pointer-events: none;
+            animation: toastIn 0.35s cubic-bezier(0.16,1,0.3,1) forwards;
+            font-family: 'IBM Plex Sans', sans-serif; max-width: 380px; text-align: left; white-space: nowrap;
+        }
+        .toast.success { background: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7; }
+        .toast.error   { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
+        .toast.info    { background: #eff6ff; color: #1e40af; border: 1px solid #93c5fd; }
+        .toast.hide    { animation: toastOut 0.3s ease forwards; }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(16px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes toastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(8px); } }
+
+        /* Spinner */
+        .spinner-overlay {
+            position: fixed; inset: 0; z-index: 3000; background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center;
+            flex-direction: column; gap: 16px;
+        }
+        .spinner-overlay.active { display: flex; }
+        .spinner { width: 48px; height: 48px; border: 5px solid #e5e7eb; border-top-color: var(--brand-primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spinner-text { font-weight: 600; color: var(--text-color); }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .d-sidebar { display: none; }
+            .d-topbar { display: none; }
+            .d-content { padding: 8px; padding-top: 80px;padding-bottom: 60px; }
+            .m-header { display: flex; }
+            .profile-popup { bottom: 100px; left: 50%; transform: translateX(-50%); }
+            .content-inner { padding: 16px; }
+            .content-inner .page-title { font-size: 24px; }
+            .content-inner .header-actions { flex-direction: column; align-items: flex-start; gap: 14px; }
+            .content-inner .primary-btn { width: 100%; justify-content: center; padding: 16px; font-size: 17px; }
+            .content-inner .desktop-view { display: none; }
+            .content-inner .mobile-view { display: block; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- MOBILE HEADER -->
+    <header class="m-header" id="mobile-header">
+        <button class="m-menu-btn" id="m-open-drawer">
+            <div class="m-menu-lines"><span></span></div>
+        </button>
+        <a href="#" class="brand-logo"><img src="./assets/logo.png" alt="Happy NonVeg Pickles"></a>
+        <div style="width:40px;"></div>
+    </header>
+
+    <!-- MOBILE DRAWER -->
+    <div class="m-overlay" id="m-overlay">
+        <div class="m-drawer">
+            <div class="m-drawer-header">
+                <span class="brand-logo"><img src="./assets/logo.png" alt="Happy NonVeg Pickles"></span>
+                <button class="m-drawer-close" id="m-close-drawer"><div class="m-drawer-close-icon"></div></button>
+            </div>
+            <nav class="m-drawer-nav">
+                <a href="dashboard.html" class="nav-item">
+                    <span class="icon icon-custom icon-dashboard"><span class="icon-normal"></span><span class="icon-hover"></span><span class="icon-active"></span></span>
+                    <span class="nav-label">Dashboard</span>
+                </a>
+                <a href="manage-categories.html" class="nav-item active">
+                    <span class="icon icon-custom icon-inventory"><span class="icon-normal"></span><span class="icon-hover"></span><span class="icon-active"></span></span>
+                    <span class="nav-label">Inventory</span>
+                </a>
+                <a href="coupons.html" class="nav-item">
+                    <span class="icon icon-custom icon-coupons"><span class="icon-normal"></span><span class="icon-hover"></span><span class="icon-active"></span></span>
+                    <span class="nav-label">Manage Coupons</span>
+                </a>
+                <div class="nav-item" id="m-site-toggle">
+                    <span class="icon icon-custom icon-site"><span class="icon-normal"></span><span class="icon-hover"></span><span class="icon-active"></span></span>
+                    <span class="nav-label">Customize Site</span>
+                    <svg class="nav-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </div>
+                <div class="nav-submenu" id="m-site-submenu">
+                    <a href="manage_herosection.html" class="nav-submenu-item"><span class="icon icon-custom icon-herosection"><span class="icon-normal"></span><span class="icon-hover"></span><span class="icon-active"></span></span>Hero Section</a>
+                    <a href="manage-sections.html" class="nav-submenu-item"><span class="icon icon-custom icon-sections"><span class="icon-normal"></span><span class="icon-hover"></span><span class="icon-active"></span></span>Sections</a>
+                    <a href="manage-popup.html" class="nav-submenu-item"><span class="icon icon-custom icon-popup"><span class="icon-normal"></span><span class="icon-hover"></span><span class="icon-active"></span></span>Popup</a>
+                    <a href="manage-combo.html" class="nav-submenu-item"><span class="icon icon-custom icon-combo"><span class="icon-normal"></span><span class="icon-hover"></span><span class="icon-active"></span></span>Combo Offer</a>
+                </div>
+            </nav>
+            <div class="m-account-section" id="profile-trigger-mobile">
+                <div class="account-card">
+                    <img class="account-avatar" src="" alt="User">
+                    <div class="account-text">
+                        <div class="account-name">Loading...</div>
+                        <div class="account-email">loading...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DESKTOP LAYOUT -->
+    <div class="page-desktop">
+        <aside class="d-sidebar" id="sidebar">
+            <div class="d-sidebar-header">
+                <a href="#" class="brand-logo"><img src="./assets/logo.png" alt="Happy NonVeg Pickles"></a>
+                <span class="mini-logo"><img src="./assets/logo-small.png" alt="H"></span>
+                <button class="sidebar-toggle" id="sidebar-toggle-btn">
+                    <img class="btn-close-svg" src="./assets/panel_close.svg" alt="Close sidebar" width="24" height="24">
+                    <img class="btn-open-svg" src="./assets/panel_open.svg" alt="Open sidebar" width="24" height="24">
+                </button>
+            </div>
+            <div class="d-sidebar-inner">
+                <nav>
+                    <a href="dashboard.html" class="nav-item">
+                        <span class="icon icon-custom icon-dashboard"><span class="icon-normal"></span><span class="icon-hover"></span><span class="icon-active"></span></span>
+                        <span class="nav-label">Dashboard</span>
+                    </a>
+                    <a href="manage-categories.html" class="nav-item active">
+                        <span class="icon icon-custom icon-inventory"><span class="icon-normal"></span><span class="icon-hover"></span><span class="icon-active"></span></span>
+                        <span class="nav-label">Inventory</span>
+                    </a>
+                    <a href="coupons.html" class="nav-item">
+                        <span class="icon icon-custom icon-coupons"><span class="icon-normal"></span><span class="icon-hover"></span><span class="icon-active"></span></span>
+                        <span class="nav-label">Manage Coupons</span>
+                    </a>
+                    <div class="nav-item" id="d-site-toggle">
+                        <span class="icon icon-custom icon-site"><span class="icon-normal"></span><span class="icon-hover"></span><span class="icon-active"></span></span>
+                        <span class="nav-label">Customize Site</span>
+                        <svg class="nav-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    </div>
+                    <div class="nav-submenu" id="d-site-submenu">
+                        <a href="manage_herosection.html" class="nav-submenu-item"><span class="icon icon-custom icon-herosection"><span class="icon-normal"></span><span class="icon-hover"></span><span class="icon-active"></span></span>Hero Section</a>
+                        <a href="manage-sections.html" class="nav-submenu-item"><span class="icon icon-custom icon-sections"><span class="icon-normal"></span><span class="icon-hover"></span><span class="icon-active"></span></span>Sections</a>
+                        <a href="manage-popup.html" class="nav-submenu-item"><span class="icon icon-custom icon-popup"><span class="icon-normal"></span><span class="icon-hover"></span><span class="icon-active"></span></span>Popup</a>
+                        <a href="manage-combo.html" class="nav-submenu-item"><span class="icon icon-custom icon-combo"><span class="icon-normal"></span><span class="icon-hover"></span><span class="icon-active"></span></span>Combo Offer</a>
+                    </div>
+                </nav>
+                <div class="d-account-section" id="profile-trigger-desktop">
+                    <div class="account-card">
+                        <img class="account-avatar" src="" alt="User">
+                        <div class="account-text">
+                            <div class="account-name">Loading...</div>
+                            <div class="account-email">loading...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <div class="d-main-wrapper">
+            <header class="d-topbar">Manage Pickles</header>
+            <main class="d-content">
+                <div class="content-inner">
+                    <div class="header-actions">
+                        <div class="page-title-group">
+                            <h1 class="page-title" id="page-title">Loading...</h1>
+                            <div class="breadcrumbs">
+                                <img src="./assets/home_icon.svg" alt="Home" />
+                                <span class="divider">/</span>
+                                <a href="manage-categories.html" id="breadcrumb-category">Category</a>
+                                <span class="divider">/</span>
+                                <span>Products</span>
+                            </div>
+                        </div>
+                        <button id="addProductBtn" class="primary-btn">
+                            <i class="fas fa-plus" style="font-size: 14px;"></i> Add Pickle
+                        </button>
+                    </div>
+                    <div id="data-container"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- PROFILE POPUP -->
+    <div class="profile-popup" id="profile-popup">
+        <div class="popup-header">
+            <img class="account-avatar" src="" alt="User">
+            <div class="account-text">
+                <div class="account-name">Loading...</div>
+                <div class="account-email">loading...</div>
+            </div>
+        </div>
+        <ul class="popup-list">
+            <li><a id="logout-btn" style="color:var(--danger-color)"><span>Logout</span></a></li>
+        </ul>
+    </div>
+
+    <!-- MODALS -->
+    <div class="spinner-overlay" id="spinnerOverlay">
+        <div class="spinner"></div>
+        <div class="spinner-text" id="spinnerText">Saving…</div>
+    </div>
+
+    <div id="delete-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 480px;">
+            <div class="bottom-sheet-handle"></div>
+            <div class="modal-header" style="color: var(--danger-color);">Confirm Deletion</div>
+            <div class="modal-body-text">Are you sure you want to delete this pickle? This action cannot be undone.</div>
+            <div class="modal-footer">
+                <button id="deleteCancelBtn" class="btn-secondary">Cancel</button>
+                <button id="deleteConfirmBtn" class="danger-btn">Delete Product</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAG DROPDOWN PANEL -->
+    <div class="tag-dropdown-panel" id="tag-dropdown-panel">
+        <div class="tdp-title"><i class="fas fa-tag" style="margin-right:5px;"></i>Product Badges</div>
+        <div id="tag-options-list"></div>
+        <div class="tdp-footer">
+            <button class="tdp-save-btn" id="tdp-save-btn"><i class="fas fa-check" style="margin-right:6px;"></i>Save Badges</button>
+        </div>
+    </div>
+
+    <!-- Mobile drag ghost element -->
+    <div class="mobile-drag-ghost" id="mobileDragGhost">
+        <img style="width:48px;height:48px;border-radius:10px;object-fit:cover;flex-shrink:0;pointer-events:none;" id="ghostImg" src="" alt="" draggable="false">
+        <div style="flex:1;min-width:0;pointer-events:none;">
+            <div style="font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="ghostName"></div>
+            <div style="font-size:13px;font-weight:600;color:#643DE4;margin-top:3px;" id="ghostPrice"></div>
+        </div>
+    </div>
+
+    <div id="menus-container"></div>
+
+    <script type="module">
+        import { initializeApp }    from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import {
+            getFirestore, doc, onSnapshot, deleteDoc, updateDoc, deleteField, writeBatch, getDoc
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCZbCr-Zt5KQblRQ8Pk58KuinCVP-TlXGo",
+            authDomain: "happynonvegpickles-f2636.firebaseapp.com",
+            projectId: "happynonvegpickles-f2636",
+            storageBucket: "happynonvegpickles-f2636.firebasestorage.app",
+            messagingSenderId: "802823212924",
+            appId: "1:802823212924:web:d82c92737ffa950798def9",
+            measurementId: "G-18GP45EWTT"
+        };
+        const firebaseApp = initializeApp(firebaseConfig);
+        const auth = getAuth(firebaseApp);
+        const db   = getFirestore(firebaseApp);
+        const ALLOWED_ADMIN = "harshavardhanjw@gmail.com";
+
+        /* ── Auth ── */
+        onAuthStateChanged(auth, user => {
+            if (!user || user.email !== ALLOWED_ADMIN) {
+                if (user) signOut(auth).then(() => window.location.href = './');
+                else window.location.href = './';
+            } else {
+                document.body.style.display = 'block';
+                const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'Admin')}&background=673DE6&color=fff`;
+                document.querySelectorAll('.account-avatar').forEach(el => el.src = user.photoURL || defaultAvatar);
+                document.querySelectorAll('.account-name').forEach(el => el.textContent = user.displayName || 'Admin');
+                document.querySelectorAll('.account-email').forEach(el => el.textContent = user.email);
+            }
+        });
+        document.getElementById('logout-btn').addEventListener('click', e => {
+            e.preventDefault();
+            signOut(auth).then(() => window.location.href = './');
+        });
+
+        /* ── Sidebar ── */
+        const sidebar = document.getElementById('sidebar');
+        document.getElementById('sidebar-toggle-btn').addEventListener('click', () => sidebar.classList.toggle('collapsed'));
+        function clearNavActive(nav) { nav.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); }
+        function setupDropdown(toggleId, submenuId) {
+            const toggle = document.getElementById(toggleId);
+            const submenu = document.getElementById(submenuId);
+            if (!toggle || !submenu) return;
+            toggle.addEventListener('click', () => {
+                if (sidebar && sidebar.classList.contains('collapsed')) {
+                    sidebar.classList.remove('collapsed');
+                    setTimeout(() => { submenu.classList.add('open'); toggle.classList.add('dropdown-open'); }, 300);
+                    return;
+                }
+                const isOpen = submenu.classList.contains('open');
+                submenu.classList.toggle('open', !isOpen);
+                toggle.classList.toggle('dropdown-open', !isOpen);
+            });
+            submenu.querySelectorAll('.nav-submenu-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const parentNav = toggle.closest('nav') || toggle.parentElement;
+                    clearNavActive(parentNav);
+                    submenu.querySelectorAll('.nav-submenu-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    toggle.classList.add('dropdown-open', 'active');
+                    submenu.classList.add('open');
+                });
+            });
+        }
+        setupDropdown('d-site-toggle', 'd-site-submenu');
+        setupDropdown('m-site-toggle', 'm-site-submenu');
+
+        const mOverlay = document.getElementById('m-overlay');
+        document.getElementById('m-open-drawer').onclick = () => mOverlay.classList.add('open');
+        document.getElementById('m-close-drawer').onclick = () => mOverlay.classList.remove('open');
+        mOverlay.onclick = e => { if (e.target === mOverlay) mOverlay.classList.remove('open'); };
+
+        const pPopup = document.getElementById('profile-popup');
+        ['profile-trigger-desktop','profile-trigger-mobile'].forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.onclick = e => {
+                e.stopPropagation();
+                if (window.innerWidth > 768) { pPopup.style.left = '16px'; pPopup.style.bottom = '80px'; }
+                pPopup.classList.toggle('active');
+            };
+        });
+        document.addEventListener('click', () => pPopup.classList.remove('active'));
+
+        /* ── Toast ── */
+        function showToast(msg, type = 'info', duration = 3000) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            const icons = { success: 'fa-circle-check', error: 'fa-circle-xmark', info: 'fa-circle-info' };
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${icons[type] || 'fa-circle-info'}"></i> ${msg}`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('hide');
+                toast.addEventListener('animationend', () => toast.remove(), { once: true });
+            }, duration);
+        }
+
+        /* ══════════════════════════════════════════
+           BADGE DEFINITIONS
+        ══════════════════════════════════════════ */
+        const BADGE_DEFS = [
+            { key: 'bestseller',  label: 'Best Seller',   icon: '🔥', cls: 'badge-bestseller'  },
+            { key: 'recommended', label: 'Recommended',   icon: '⭐', cls: 'badge-recommended' },
+            { key: 'spicy',       label: 'Spicy',         icon: '🌶️', cls: 'badge-spicy'       },
+            { key: 'new',         label: 'New Arrival',   icon: '✨', cls: 'badge-new'         },
+            { key: 'trending',    label: 'Trending',      icon: '📈', cls: 'badge-trending'    },
+            { key: 'limited',     label: 'Limited Stock', icon: '⏳', cls: 'badge-limited'     },
+            { key: 'mild',        label: 'Mild & Tangy',  icon: '🍋', cls: 'badge-mild'        },
+            { key: 'premium',     label: 'Premium',       icon: '💎', cls: 'badge-premium'     },
+            { key: 'gift',        label: 'Gift Pick',     icon: '🎁', cls: 'badge-gift'        },
+            { key: 'seasonal',    label: 'Seasonal',      icon: '🌿', cls: 'badge-seasonal'    },
+            { key: 'homemade',    label: 'Homemade Style',icon: '🏠', cls: 'badge-homemade'    },
+            { key: 'glutenfree',  label: 'Gluten Free',   icon: '🌾', cls: 'badge-glutenfree'  },
+        ];
+
+        function renderBadgesHtml(badgeKeys = []) {
+            if (!badgeKeys || badgeKeys.length === 0) return '<span style="color:#9ca3af;font-size:12px;">—</span>';
+            return badgeKeys.map(k => {
+                const def = BADGE_DEFS.find(d => d.key === k);
+                if (!def) return '';
+                return `<span class="product-badge ${def.cls}">${def.icon} ${def.label}</span>`;
+            }).join('');
+        }
+
+        /* ══════════════════════════════════════════
+           URL PARAMS
+        ══════════════════════════════════════════ */
+        const urlParams  = new URLSearchParams(window.location.search);
+        const categoryId = urlParams.get('categoryId');
+
+        /* ══════════════════════════════════════════
+           TAG DROPDOWN STATE
+        ══════════════════════════════════════════ */
+        let tagDropdownProductId = null;
+        let tagDropdownCurrentBadges = [];
+
+        const tagPanel       = document.getElementById('tag-dropdown-panel');
+        const tagOptionsList = document.getElementById('tag-options-list');
+        const tdpSaveBtn     = document.getElementById('tdp-save-btn');
+
+        function openTagDropdown(productId, currentBadges, anchorEl) {
+            tagDropdownProductId     = productId;
+            tagDropdownCurrentBadges = [...(currentBadges || [])];
+
+            tagOptionsList.innerHTML = BADGE_DEFS.map(def => `
+                <label class="tag-option">
+                    <input type="checkbox" value="${def.key}" ${tagDropdownCurrentBadges.includes(def.key) ? 'checked' : ''}>
+                    <span class="product-badge ${def.cls} tag-preview">${def.icon} ${def.label}</span>
+                </label>
+            `).join('');
+
+            tagPanel.classList.add('show');
+
+            const rect   = anchorEl.getBoundingClientRect();
+            const panelW = tagPanel.offsetWidth  || 240;
+            const panelH = tagPanel.offsetHeight || 420;
+            let left = rect.left;
+            let top  = rect.bottom + 6;
+            if (left + panelW > window.innerWidth  - 8) left = window.innerWidth  - panelW - 8;
+            if (top  + panelH > window.innerHeight - 8) top  = rect.top - panelH - 6;
+            if (left < 8) left = 8;
+            tagPanel.style.left = left + 'px';
+            tagPanel.style.top  = top  + 'px';
+        }
+
+        function closeTagDropdown() {
+            tagPanel.classList.remove('show');
+            tagDropdownProductId = null;
+        }
+
+        tdpSaveBtn.addEventListener('click', async () => {
+            if (!tagDropdownProductId) return;
+            const checked = [...tagOptionsList.querySelectorAll('input:checked')].map(i => i.value);
+            await window.app.saveBadges(tagDropdownProductId, checked);
+            closeTagDropdown();
+        });
+
+        document.addEventListener('click', e => {
+            if (!tagPanel.contains(e.target) && !e.target.closest('[data-tag-btn]')) {
+                closeTagDropdown();
+            }
+        });
+
+        /* ══════════════════════════════════════════════════════
+           DESKTOP DRAG-AND-DROP (HTML5)
+        ══════════════════════════════════════════════════════ */
+        let dragSrcId = null;
+
+        function initDesktopDnd() {
+            const tbody = document.querySelector('#data-container table tbody');
+            if (!tbody) return;
+
+            tbody.querySelectorAll('tr[data-prod-id]').forEach(row => {
+                const handle = row.querySelector('.drag-handle');
+                if (!handle) return;
+
+                handle.addEventListener('mousedown', () => { row.draggable = true; });
+                handle.addEventListener('mouseup',   () => { row.draggable = false; });
+
+                row.addEventListener('dragstart', e => {
+                    dragSrcId = row.dataset.prodId;
+                    row.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', dragSrcId);
+                });
+                row.addEventListener('dragend', () => {
+                    row.classList.remove('dragging');
+                    row.draggable = false;
+                    tbody.querySelectorAll('tr').forEach(r => r.classList.remove('drag-over-top','drag-over-bottom'));
+                });
+                row.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    if (row.dataset.prodId === dragSrcId) return;
+                    const rect = row.getBoundingClientRect();
+                    const midY = rect.top + rect.height / 2;
+                    tbody.querySelectorAll('tr').forEach(r => r.classList.remove('drag-over-top','drag-over-bottom'));
+                    row.classList.add(e.clientY < midY ? 'drag-over-top' : 'drag-over-bottom');
+                });
+                row.addEventListener('dragleave', () => {
+                    row.classList.remove('drag-over-top','drag-over-bottom');
+                });
+                row.addEventListener('drop', e => {
+                    e.preventDefault();
+                    if (!dragSrcId || row.dataset.prodId === dragSrcId) return;
+                    const rect   = row.getBoundingClientRect();
+                    const before = e.clientY < (rect.top + rect.height / 2);
+                    window.app.reorderByDrop(dragSrcId, row.dataset.prodId, before);
+                });
+            });
+        }
+
+        /* ══════════════════════════════════════════════════════
+           MOBILE TOUCH DRAG-AND-DROP
+           FIX 1: touch-action pan-y on cards → normal scroll works
+           FIX 2: long-press (450ms) activates drag → e.preventDefault() in touchmove blocks scroll only then
+           FIX 3: edge-scroll when ghost near top/bottom of viewport
+           FIX 4: all text/image selection fully blocked via CSS + JS
+        ══════════════════════════════════════════════════════ */
+        let touchDragId    = null;
+        let touchLongTimer = null;
+        let rafId          = null;
+        let lastTouchX     = 0;
+        let lastTouchY     = 0;
+        let scrollRAF      = null;   // edge-scroll rAF
+
+        const ghost = document.getElementById('mobileDragGhost');
+
+        // Smoothly move ghost via rAF
+        function scheduleGhostMove(x, y) {
+            lastTouchX = x;
+            lastTouchY = y;
+            if (rafId) return;
+            rafId = requestAnimationFrame(() => {
+                rafId = null;
+                const gw = ghost.offsetWidth  || 300;
+                const gh = ghost.offsetHeight || 80;
+                ghost.style.transform = `translate(${lastTouchX - gw / 2}px, ${lastTouchY - gh / 2}px) rotate(2deg) scale(1.03)`;
+            });
+        }
+
+        // Auto-scroll the d-content area when dragging near edges
+        const EDGE_ZONE  = 80;   // px from top/bottom to trigger scroll
+        const SCROLL_SPD = 12;   // px per frame
+
+        function getScrollContainer() {
+            // Mobile: .d-content
+            return document.querySelector('.d-content');
+        }
+
+        function startEdgeScroll(touchY) {
+            if (scrollRAF) return;
+            const sc = getScrollContainer();
+            if (!sc) return;
+
+            function step() {
+                const rect   = sc.getBoundingClientRect();
+                const relY   = touchY - rect.top;
+                const height = rect.height;
+                if (relY < EDGE_ZONE) {
+                    // scroll up
+                    sc.scrollTop -= SCROLL_SPD * (1 - relY / EDGE_ZONE);
+                } else if (relY > height - EDGE_ZONE) {
+                    // scroll down
+                    sc.scrollTop += SCROLL_SPD * ((relY - (height - EDGE_ZONE)) / EDGE_ZONE);
+                }
+                scrollRAF = requestAnimationFrame(step);
+            }
+            scrollRAF = requestAnimationFrame(step);
+        }
+
+        function stopEdgeScroll() {
+            if (scrollRAF) { cancelAnimationFrame(scrollRAF); scrollRAF = null; }
+        }
+
+        // Block context menu during drag (prevents long-press OS menu on images)
+        document.addEventListener('contextmenu', e => {
+            if (touchDragId || touchLongTimer) e.preventDefault();
+        });
+
+        function initMobileDnd() {
+            const container = document.querySelector('#data-container .mobile-view');
+            if (!container) return;
+
+            container.querySelectorAll('.mobile-category-cards[data-prod-id]').forEach(card => {
+                card.addEventListener('touchstart', onTouchStart, { passive: true });
+                // NOTE: touchmove must be passive:false so we can preventDefault when dragging
+                card.addEventListener('touchmove',  onTouchMove,  { passive: false });
+                card.addEventListener('touchend',   onTouchEnd,   { passive: true });
+                card.addEventListener('touchcancel',onTouchCancel,{ passive: true });
+            });
+        }
+
+        function onTouchStart(e) {
+            const card  = this;
+            const touch = e.touches[0];
+            const startX = touch.clientX;
+            const startY = touch.clientY;
+
+            touchLongTimer = setTimeout(() => {
+                touchDragId = card.dataset.prodId;
+                card.classList.add('dragging');
+
+                // Lock body — prevent scroll during drag
+                document.body.classList.add('is-dragging');
+
+                // Switch all cards to touch-action:none so touchmove can preventDefault
+                document.querySelectorAll('.mobile-category-cards').forEach(c => {
+                    c.style.touchAction = 'none';
+                });
+
+                const prod = window.app.products.find(p => p.id === touchDragId);
+                if (prod) {
+                    document.getElementById('ghostImg').src          = prod.image || 'https://placehold.co/150x150/f3f4f6/6b7280?text=Pickle';
+                    document.getElementById('ghostName').textContent = prod.name;
+                    document.getElementById('ghostPrice').textContent = window.app.getPriceText(prod);
+                }
+
+                ghost.style.width     = Math.min(card.offsetWidth, 340) + 'px';
+                ghost.style.display   = 'flex';
+                ghost.style.transform = `translate(${touch.clientX}px, ${touch.clientY}px) rotate(2deg) scale(1.03)`;
+                scheduleGhostMove(touch.clientX, touch.clientY);
+                startEdgeScroll(touch.clientY);
+
+                if (navigator.vibrate) navigator.vibrate(40);
+            }, 450);
+        }
+
+        function onTouchMove(e) {
+            const touch = e.touches[0];
+
+            if (!touchDragId) {
+                // Not dragging yet — cancel long-press if finger moved > 8px (it's a scroll)
+                const origTouch = e.changedTouches[0];
+                clearTimeout(touchLongTimer);
+                return;
+            }
+
+            // Active drag — block native scroll
+            e.preventDefault();
+
+            scheduleGhostMove(touch.clientX, touch.clientY);
+
+            // Update edge-scroll target Y
+            lastTouchY = touch.clientY;
+            stopEdgeScroll();
+            startEdgeScroll(touch.clientY);
+
+            // Find card under finger
+            ghost.style.visibility = 'hidden';
+            const elUnder = document.elementFromPoint(touch.clientX, touch.clientY);
+            ghost.style.visibility = 'visible';
+
+            const container = document.querySelector('#data-container .mobile-view');
+            if (!container) return;
+            container.querySelectorAll('.mobile-category-cards').forEach(c =>
+                c.classList.remove('drag-over-top', 'drag-over-bottom')
+            );
+
+            const targetCard = elUnder && elUnder.closest('.mobile-category-cards[data-prod-id]');
+            if (targetCard && targetCard.dataset.prodId !== touchDragId) {
+                const rect   = targetCard.getBoundingClientRect();
+                const before = touch.clientY < (rect.top + rect.height / 2);
+                targetCard.classList.add(before ? 'drag-over-top' : 'drag-over-bottom');
+            }
+        }
+
+        function onTouchEnd(e) {
+            clearTimeout(touchLongTimer);
+            touchLongTimer = null;
+            if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+            stopEdgeScroll();
+
+            if (!touchDragId) return;
+
+            ghost.style.display   = 'none';
+            ghost.style.transform = '';
+            document.body.classList.remove('is-dragging');
+
+            // Restore touch-action on all cards
+            document.querySelectorAll('.mobile-category-cards').forEach(c => {
+                c.style.touchAction = '';
+            });
+
+            const container = document.querySelector('#data-container .mobile-view');
+            if (container) {
+                const lastTouch  = e.changedTouches[0];
+
+                ghost.style.display = 'none';
+                const elUnder    = document.elementFromPoint(lastTouch.clientX, lastTouch.clientY);
+                const targetCard = elUnder && elUnder.closest('.mobile-category-cards[data-prod-id]');
+
+                container.querySelectorAll('.mobile-category-cards').forEach(c =>
+                    c.classList.remove('drag-over-top', 'drag-over-bottom', 'dragging')
+                );
+
+                if (targetCard && targetCard.dataset.prodId !== touchDragId) {
+                    const rect   = targetCard.getBoundingClientRect();
+                    const before = lastTouch.clientY < (rect.top + rect.height / 2);
+                    window.app.reorderByDrop(touchDragId, targetCard.dataset.prodId, before);
+                }
+            }
+
+            touchDragId = null;
+        }
+
+        function onTouchCancel() {
+            clearTimeout(touchLongTimer);
+            touchLongTimer = null;
+            if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+            stopEdgeScroll();
+            if (touchDragId) {
+                ghost.style.display   = 'none';
+                ghost.style.transform = '';
+                document.body.classList.remove('is-dragging');
+                document.querySelectorAll('.mobile-category-cards').forEach(c => {
+                    c.style.touchAction = '';
+                    c.classList.remove('drag-over-top', 'drag-over-bottom', 'dragging');
+                });
+                touchDragId = null;
+            }
+        }
+
+        /* ══════════════════════════════════════════
+           APP
+        ══════════════════════════════════════════ */
+        window.app = {
+            products: [],
+            categoryName: '',
+            pendingDeleteId: null,
+            isLoading: false,
+
+            getPriceText(prod) {
+                if (prod.minPrice !== undefined && prod.maxPrice !== undefined) {
+                    return prod.minPrice === prod.maxPrice ? `₹${prod.minPrice}` : `₹${prod.minPrice} – ₹${prod.maxPrice}`;
+                } else if (prod.variants && prod.variants.length > 0) {
+                    const prices = prod.variants.map(v => parseFloat(v.price)).filter(p => !isNaN(p));
+                    if (prices.length > 0) {
+                        const minP = Math.min(...prices), maxP = Math.max(...prices);
+                        return minP === maxP ? `₹${minP}` : `₹${minP} – ₹${maxP}`;
+                    }
+                } else if (prod.price) { return `₹${prod.price}`; }
+                return 'N/A';
+            },
+
+            init() {
+                if (!categoryId) {
+                    alert("No category selected!");
+                    window.location.href = 'manage-categories.html';
+                    return;
+                }
+
+                const categoryRef = doc(db, 'categories', categoryId);
+                onSnapshot(categoryRef, snap => {
+                    if (snap.exists()) {
+                        const data = snap.data();
+                        this.categoryName = data.name || 'Category';
+                        document.getElementById('page-title').textContent = `${this.categoryName} Pickles`;
+                        document.getElementById('breadcrumb-category').textContent = this.categoryName;
+
+                        const productsMap = data.products || {};
+                        this.products = Object.entries(productsMap)
+                            .map(([id, d]) => ({ id, ...d }))
+                            .sort((a, b) => {
+                                if (a.sortOrder !== undefined && b.sortOrder !== undefined) return a.sortOrder - b.sortOrder;
+                                if (a.sortOrder !== undefined) return -1;
+                                if (b.sortOrder !== undefined) return 1;
+                                return (b.createdAt || 0) - (a.createdAt || 0);
+                            });
+                        this.render();
+                    } else {
+                        document.getElementById('page-title').textContent = "Category not found";
+                        document.getElementById('data-container').innerHTML =
+                            `<div style="text-align:center;color:var(--danger-color);padding:48px;">This category does not exist.</div>`;
+                    }
+                });
+
+                document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                    overlay.addEventListener('click', e => { if (e.target === overlay) this.cancelDelete(); });
+                });
+                document.getElementById('addProductBtn').addEventListener('click', () => this.addProduct());
+                document.getElementById('deleteCancelBtn').addEventListener('click', () => this.cancelDelete());
+                document.getElementById('deleteConfirmBtn').addEventListener('click', () => this.confirmDelete());
+
+                document.addEventListener('click', e => {
+                    if (!e.target.closest('.dropdown-menu') && !e.target.closest('[data-kebab]')) {
+                        document.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show'));
+                    }
+                });
+                document.addEventListener('scroll', () => {
+                    document.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show'));
+                    closeTagDropdown();
+                }, true);
+            },
+
+            showSpinner(text = 'Saving…') {
+                document.getElementById('spinnerText').textContent = text;
+                document.getElementById('spinnerOverlay').classList.add('active');
+                this.isLoading = true;
+                document.querySelectorAll('.primary-btn,.btn-secondary,.danger-btn').forEach(b => b.disabled = true);
+            },
+            hideSpinner() {
+                document.getElementById('spinnerOverlay').classList.remove('active');
+                this.isLoading = false;
+                document.querySelectorAll('.primary-btn,.btn-secondary,.danger-btn').forEach(b => b.disabled = false);
+            },
+
+            render() {
+                const container      = document.getElementById('data-container');
+                const menusContainer = document.getElementById('menus-container');
+
+                if (this.products.length === 0) {
+                    container.innerHTML = `<div style="text-align:center;color:var(--text-sub);padding:48px;">No products found.</div>`;
+                    menusContainer.innerHTML = '';
+                    return;
+                }
+
+                let desktopHTML = `<div class="desktop-view card"><div class="table-wrapper"><table>
+                    <thead><tr>
+                        <th style="width:50px;"></th>
+                        <th style="width:70px;">Image</th>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th class="tags-cell">Badges</th>
+                        <th>Visibility</th>
+                        <th style="width:240px;">Actions</th>
+                    </tr></thead><tbody>`;
+
+                let mobileHTML = `<div class="mobile-view">`;
+                let popupsHTML = ``;
+
+                this.products.forEach((prod, idx) => {
+                    const priceText   = this.getPriceText(prod);
+                    const isAvailable = prod.isavailable !== false;
+                    const imgUrl      = prod.image || 'https://placehold.co/150x150/f3f4f6/6b7280?text=Pickle';
+                    const hiddenClass = !isAvailable ? 'item-hidden' : '';
+                    const badges      = prod.badges || [];
+                    const badgeCount  = badges.length;
+
+                    const badgeTriggerLabel = badgeCount === 0
+                        ? 'Add badges'
+                        : badgeCount === 1
+                            ? `${BADGE_DEFS.find(d=>d.key===badges[0])?.icon||''} ${BADGE_DEFS.find(d=>d.key===badges[0])?.label||badges[0]}`
+                            : `${badgeCount} badges`;
+                    const hasBadgesClass = badgeCount > 0 ? 'has-badges' : '';
+
+                    // DESKTOP ROW
+                    desktopHTML += `
+                        <tr class="${hiddenClass}" data-prod-id="${prod.id}" draggable="false">
+                            <td style="width:50px;">
+                                <button class="drag-handle" title="Drag to reorder" onclick="event.stopPropagation()">
+                                    <svg viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="5.5" cy="3.5" r="1.2"/><circle cx="10.5" cy="3.5" r="1.2"/>
+                                        <circle cx="5.5" cy="8" r="1.2"/><circle cx="10.5" cy="8" r="1.2"/>
+                                        <circle cx="5.5" cy="12.5" r="1.2"/><circle cx="10.5" cy="12.5" r="1.2"/>
+                                    </svg>
+                                </button>
+                            </td>
+                            <td><img src="${imgUrl}" class="product-thumb" alt="${prod.name}" onerror="this.src='https://placehold.co/150x150/f3f4f6/6b7280?text=Pickle'"></td>
+                            <td style="font-weight:600;">${prod.name}</td>
+                            <td style="font-weight:600;">${priceText}</td>
+                            <td class="tags-cell">
+                                <button class="badges-dropdown-trigger ${hasBadgesClass}" data-tag-btn
+                                    onclick="app.openBadges(event,'${prod.id}')">
+                                    <img src="./assets/tag.svg" class="bdrop-tag-icon" alt="">
+                                    <span class="bdrop-label">${badgeTriggerLabel}</span>
+                                    <svg class="bdrop-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M4 6l4 4 4-4"/>
+                                    </svg>
+                                </button>
+                            </td>
+                            <td>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" ${isAvailable ? 'checked' : ''} onchange="app.toggleAvailability(event,'${prod.id}',${isAvailable})">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <div class="actions-cell">
+                                    <button class="btn-secondary action-btn" onclick="app.editProductDirect('${prod.id}')">
+                                        <img src="./assets/edit_blue.svg" alt="Edit" /> Edit
+                                    </button>
+                                    <button class="danger-btn action-btn" onclick="app.deleteProductDirect('${prod.id}')">
+                                        <img src="./assets/delete_white.svg" alt="Delete" /> Delete
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>`;
+
+                    // MOBILE CARD
+                    const badgesHtml = renderBadgesHtml(badges);
+                    mobileHTML += `
+                        <div class="mobile-category-cards ${hiddenClass}" data-prod-id="${prod.id}">
+                            <img class="prod-img" src="${imgUrl}" alt="${prod.name}" draggable="false"
+                                 onerror="this.src='https://placehold.co/150x150/f3f4f6/6b7280?text=Pickle'">
+                            <div class="mobile-card-content">
+                                <div class="mobile-card-title">${prod.name}</div>
+                                <div class="mobile-card-sub">${priceText}</div>
+                                <div class="mobile-card-tags">${badgesHtml}</div>
+                            </div>
+                            <div class="mobile-card-actions" onclick="event.stopPropagation()">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" ${isAvailable ? 'checked' : ''} onchange="app.toggleAvailability(event,'${prod.id}',${isAvailable})">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <button class="product-card-menu-btn" data-kebab onclick="app.toggleMenu(event,'menu-${prod.id}')">
+                                    <img src="./assets/dots.svg" alt="Menu" draggable="false" />
+                                </button>
+                            </div>
+                        </div>`;
+
+                    // DROPDOWN (mobile kebab)
+                    popupsHTML += `
+                        <div class="dropdown-menu" id="menu-${prod.id}">
+                            <button class="dropdown-item" onclick="app.editProductDirect('${prod.id}')">
+                                <img src="./assets/edit.svg" alt="Edit" /> Edit Pickle
+                            </button>
+                            <button class="dropdown-item" data-tag-btn data-prod-id="${prod.id}" onclick="app.openBadgesMobile(event,'${prod.id}')">
+                                <img src="./assets/tag.svg" alt="Badges" style="width:20px;height:20px;opacity:0.85;" /> Edit Badges
+                            </button>
+                            <button class="dropdown-item text-danger" onclick="app.deleteProductDirect('${prod.id}')">
+                                <img src="./assets/delete.svg" alt="Delete" /> Delete Pickle
+                            </button>
+                        </div>`;
+                });
+
+                desktopHTML += `</tbody></table></div></div>`;
+                mobileHTML  += `</div>`;
+                container.innerHTML      = desktopHTML + mobileHTML;
+                menusContainer.innerHTML = popupsHTML;
+
+                initDesktopDnd();
+                initMobileDnd();
+            },
+
+            /* ── Reorder by drop ── */
+            async reorderByDrop(srcId, targetId, insertBefore) {
+                if (this.isLoading) return;
+                const srcIdx    = this.products.findIndex(p => p.id === srcId);
+                const targetIdx = this.products.findIndex(p => p.id === targetId);
+                if (srcIdx === -1 || targetIdx === -1) return;
+
+                const [moved] = this.products.splice(srcIdx, 1);
+                const newTargetIdx = this.products.findIndex(p => p.id === targetId);
+                const insertAt = insertBefore ? newTargetIdx : newTargetIdx + 1;
+                this.products.splice(insertAt, 0, moved);
+
+                this.showSpinner('Saving order…');
+                try {
+                    const batch = writeBatch(db);
+                    this.products.forEach((p, i) => {
+                        batch.update(doc(db, 'products', p.id), { sortOrder: i });
+                        batch.update(doc(db, 'categories', categoryId), { [`products.${p.id}.sortOrder`]: i });
+                    });
+                    await batch.commit();
+                    showToast('Order saved!', 'success', 1800);
+                } catch (err) {
+                    console.error(err);
+                    showToast('Failed to save order.', 'error');
+                } finally {
+                    this.hideSpinner();
+                }
+            },
+
+            /* ── Badges ── */
+            openBadges(event, productId) {
+                event.stopPropagation();
+                const prod = this.products.find(p => p.id === productId);
+                openTagDropdown(productId, prod?.badges || [], event.currentTarget);
+            },
+            openBadgesMobile(event, productId) {
+                event.stopPropagation();
+                document.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show'));
+                const prod = this.products.find(p => p.id === productId);
+                const btn  = event.currentTarget;
+                setTimeout(() => openTagDropdown(productId, prod?.badges || [], btn), 60);
+            },
+            async saveBadges(productId, badges) {
+                if (this.isLoading) return;
+                this.showSpinner('Saving badges…');
+                try {
+                    const batch = writeBatch(db);
+                    batch.update(doc(db, 'products', productId), { badges });
+                    batch.update(doc(db, 'categories', categoryId), { [`products.${productId}.badges`]: badges });
+                    await batch.commit();
+                    showToast('Badges updated!', 'success', 2000);
+                } catch (err) {
+                    console.error(err);
+                    showToast('Failed to save badges.', 'error');
+                } finally {
+                    this.hideSpinner();
+                }
+            },
+
+            /* ── Standard ops ── */
+            editProductDirect(id) {
+                window.location.href = `product.html?id=${id}&categoryId=${categoryId}`;
+            },
+            deleteProductDirect(id) {
+                document.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show'));
+                this.pendingDeleteId = id;
+                document.getElementById('delete-modal').style.display = 'flex';
+            },
+            toggleMenu(event, menuId) {
+                event.stopPropagation();
+                const button     = event.currentTarget;
+                const targetMenu = document.getElementById(menuId);
+                if (!targetMenu) return;
+                const isCurrentlyShowing = targetMenu.classList.contains('show');
+                document.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show'));
+                if (!isCurrentlyShowing) {
+                    targetMenu.classList.add('show');
+                    const btnRect  = button.getBoundingClientRect();
+                    const menuRect = targetMenu.getBoundingClientRect();
+                    let topPos  = btnRect.bottom + 8;
+                    let leftPos = btnRect.right - (menuRect.width || 200);
+                    if (topPos + (menuRect.height || 160) > window.innerHeight) topPos = btnRect.top - (menuRect.height || 160) - 8;
+                    targetMenu.style.top  = topPos  + 'px';
+                    targetMenu.style.left = leftPos + 'px';
+                }
+            },
+            addProduct() {
+                window.location.href = `product.html?categoryId=${categoryId}`;
+            },
+            cancelDelete() {
+                this.pendingDeleteId = null;
+                document.getElementById('delete-modal').style.display = 'none';
+            },
+            async confirmDelete() {
+                if (!this.pendingDeleteId || this.isLoading) return;
+                const productId = this.pendingDeleteId;
+                this.showSpinner('Deleting product…');
+                try {
+                    const batch = writeBatch(db);
+                    batch.delete(doc(db, 'products', productId));
+                    batch.update(doc(db, 'categories', categoryId), { [`products.${productId}`]: deleteField() });
+                    await batch.commit();
+                    this.cancelDelete();
+                    showToast('Product deleted.', 'success', 2000);
+                } catch (err) {
+                    console.error(err);
+                    showToast('Failed to delete product.', 'error');
+                } finally {
+                    this.hideSpinner();
+                }
+            },
+            async toggleAvailability(event, productId, currentState) {
+                event.stopPropagation();
+                if (this.isLoading) return;
+                try {
+                    const newState = !currentState;
+                    const batch    = writeBatch(db);
+                    batch.update(doc(db, 'products', productId), { isavailable: newState });
+                    batch.update(doc(db, 'categories', categoryId), { [`products.${productId}.isavailable`]: newState });
+                    await batch.commit();
+                } catch (err) {
+                    console.error(err);
+                    showToast('Failed to update availability.', 'error');
+                }
+            }
+        };
+
+        window.app.init();
+    </script>
+</body>
+</html>
