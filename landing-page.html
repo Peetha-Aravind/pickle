@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy NonVeg Pickles – Bold Flavours, Every Bite</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════════
+       TOKENS & RESET
+    ═══════════════════════════════════════════ */
+    :root {
+      --rust:       #C0392B;
+      --rust-dark:  #962d22;
+      --rust-light: #f5e9e7;
+      --turmeric:   #E8A020;
+      --cream:      #FDF6EC;
+      --ink:        #1C1009;
+      --ash:        #6b5b4e;
+      --border:     rgba(28,16,9,.1);
+      --shadow-sm:  0 2px 8px rgba(28,16,9,.08);
+      --shadow-md:  0 8px 32px rgba(28,16,9,.12);
+      --shadow-lg:  0 20px 60px rgba(28,16,9,.18);
+      --r-card:     16px;
+      --r-pill:     999px;
+      --ff-display: 'Playfair Display', Georgia, serif;
+      --ff-body:    'DM Sans', sans-serif;
+      --nav-h:      68px;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: var(--ff-body);
+      font-size: 15px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    img { display:block; max-width:100%; }
+    a { text-decoration:none; color:inherit; }
+    button { font-family: var(--ff-body); cursor:pointer; border:none; outline:none; }
+
+    /* ═══════════════════════════════════════════
+       NOISE TEXTURE OVERLAY (subtle grain)
+    ═══════════════════════════════════════════ */
+    body::before {
+      content:'';
+      position:fixed; inset:0; z-index:1000; pointer-events:none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      opacity: .4;
+    }
+
+    /* ═══════════════════════════════════════════
+       NAV
+    ═══════════════════════════════════════════ */
+    .nav {
+      position: fixed; top:0; left:0; right:0; z-index:900;
+      height: var(--nav-h);
+      display: flex; align-items:center; justify-content:space-between;
+      padding: 0 5vw;
+      background: rgba(253,246,236,.88);
+      backdrop-filter: blur(16px) saturate(1.4);
+      border-bottom: 1px solid var(--border);
+      transition: box-shadow .3s;
+    }
+    .nav.scrolled { box-shadow: var(--shadow-md); }
+    .nav-logo {
+      font-family: var(--ff-display);
+      font-size: 1.45rem;
+      font-weight: 900;
+      color: var(--rust);
+      letter-spacing: -.5px;
+      display:flex; align-items:center; gap:10px;
+    }
+    .nav-logo .dot { width:8px; height:8px; border-radius:50%; background:var(--turmeric); display:inline-block; }
+    .nav-links { display:flex; align-items:center; gap:32px; }
+    .nav-links a { font-size:14px; font-weight:600; color:var(--ash); transition:color .2s; }
+    .nav-links a:hover { color:var(--rust); }
+    .nav-cta {
+      background: var(--rust); color:#fff;
+      padding: 10px 22px; border-radius: var(--r-pill);
+      font-size:14px; font-weight:600;
+      transition: background .2s, transform .15s;
+    }
+    .nav-cta:hover { background:var(--rust-dark); transform:translateY(-1px); }
+    .nav-hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:4px; }
+    .nav-hamburger span { width:22px; height:2px; background:var(--ink); border-radius:2px; transition:.3s; display:block; }
+
+    /* ═══════════════════════════════════════════
+       HERO SLIDER
+    ═══════════════════════════════════════════ */
+    .hero {
+      margin-top: var(--nav-h);
+      position:relative; overflow:hidden;
+      height: calc(100svh - var(--nav-h));
+      min-height: 480px; max-height: 860px;
+      background: var(--ink);
+    }
+    .hero-slide {
+      position:absolute; inset:0;
+      opacity:0; transition: opacity .9s cubic-bezier(.4,0,.2,1);
+      pointer-events:none;
+    }
+    .hero-slide.active { opacity:1; pointer-events:auto; }
+    .hero-slide img {
+      width:100%; height:100%;
+      object-fit:cover; object-position:center;
+    }
+    /* gradient scrim for text legibility */
+    .hero-slide::after {
+      content:'';
+      position:absolute; inset:0;
+      background: linear-gradient(
+        110deg,
+        rgba(28,16,9,.72) 0%,
+        rgba(28,16,9,.3) 55%,
+        transparent 100%
+      );
+    }
+    .hero-slide-content {
+      position:absolute; inset:0; z-index:2;
+      display:flex; flex-direction:column; justify-content:center;
+      padding: 0 8vw;
+      max-width: 680px;
+    }
+    .hero-eyebrow {
+      font-size:11px; font-weight:700; letter-spacing:3px;
+      text-transform:uppercase; color:var(--turmeric);
+      margin-bottom:16px;
+      opacity:0; transform:translateY(20px);
+      animation: none;
+    }
+    .hero-slide.active .hero-eyebrow {
+      animation: slideUp .6s .15s ease forwards;
+    }
+    .hero-heading {
+      font-family: var(--ff-display);
+      font-size: clamp(2.2rem, 5.5vw, 4rem);
+      font-weight:900; line-height:1.08;
+      color:#fff; margin-bottom:20px;
+      opacity:0; transform:translateY(24px);
+    }
+    .hero-slide.active .hero-heading {
+      animation: slideUp .65s .28s ease forwards;
+    }
+    .hero-btn {
+      display:inline-flex; align-items:center; gap:8px;
+      background:var(--rust); color:#fff;
+      padding:14px 28px; border-radius:var(--r-pill);
+      font-size:15px; font-weight:700;
+      align-self:flex-start;
+      transition: background .2s, transform .15s, box-shadow .2s;
+      opacity:0; transform:translateY(20px);
+    }
+    .hero-slide.active .hero-btn {
+      animation: slideUp .6s .44s ease forwards;
+    }
+    .hero-btn:hover { background:var(--rust-dark); transform:translateY(-2px); box-shadow:0 8px 24px rgba(192,57,43,.4); }
+    .hero-btn svg { transition:transform .2s; }
+    .hero-btn:hover svg { transform:translateX(4px); }
+
+    @keyframes slideUp {
+      to { opacity:1; transform:translateY(0); }
+    }
+
+    /* Dots */
+    .hero-dots {
+      position:absolute; bottom:28px; left:50%; transform:translateX(-50%);
+      display:flex; gap:8px; z-index:10;
+    }
+    .hero-dot {
+      width:8px; height:8px; border-radius:50%;
+      background:rgba(255,255,255,.4); cursor:pointer;
+      transition: background .3s, transform .3s;
+      border:none;
+    }
+    .hero-dot.active { background:#fff; transform:scale(1.3); }
+
+    /* Arrows */
+    .hero-arrow {
+      position:absolute; top:50%; transform:translateY(-50%);
+      z-index:10; background:rgba(255,255,255,.15);
+      backdrop-filter:blur(8px);
+      width:48px; height:48px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; transition: background .2s;
+      border: 1px solid rgba(255,255,255,.25);
+    }
+    .hero-arrow:hover { background:rgba(255,255,255,.28); }
+    .hero-arrow svg { stroke:#fff; }
+    .hero-arrow.prev { left:24px; }
+    .hero-arrow.next { right:24px; }
+
+    /* Hero skeleton (while loading) */
+    .hero-skeleton {
+      position:absolute; inset:0;
+      background: linear-gradient(90deg, #2a1a10 0%, #3d2518 50%, #2a1a10 100%);
+      background-size:200% 100%;
+      animation: shimmer 1.6s infinite;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .hero-skeleton-text { color:rgba(255,255,255,.2); font-size:1rem; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    /* ═══════════════════════════════════════════
+       SECTION SHARED
+    ═══════════════════════════════════════════ */
+    .section { padding: 80px 5vw; }
+    .section-label {
+      display:inline-flex; align-items:center; gap:8px;
+      font-size:11px; font-weight:700; letter-spacing:3px;
+      text-transform:uppercase; color:var(--rust);
+      margin-bottom:14px;
+    }
+    .section-label::before {
+      content:''; width:28px; height:2px; background:var(--rust);
+    }
+    .section-heading {
+      font-family: var(--ff-display);
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight:900; line-height:1.15;
+      color:var(--ink); margin-bottom:8px;
+    }
+    .section-sub { font-size:15px; color:var(--ash); margin-bottom:48px; max-width:500px; }
+
+    /* Skeleton card */
+    .skel {
+      background:linear-gradient(90deg,#ede8e1 0%,#f5f0e8 50%,#ede8e1 100%);
+      background-size:200% 100%;
+      animation:shimmer 1.6s infinite;
+      border-radius:var(--r-card);
+    }
+
+    /* ═══════════════════════════════════════════
+       BEST SELLERS / CATEGORY PRODUCTS
+    ═══════════════════════════════════════════ */
+    .bestsellers, .category-products-wrapper { background:#fff; }
+    .category-products-wrapper:nth-child(even) { background: var(--cream); }
+    
+    .product-grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap:24px;
+    }
+    .product-card {
+      background:#fff;
+      border-radius:var(--r-card);
+      overflow:hidden;
+      border:1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      transition: transform .25s, box-shadow .25s;
+      cursor:pointer;
+      position:relative;
+      display:flex; flex-direction:column;
+    }
+    .product-card:hover { transform:translateY(-6px); box-shadow:var(--shadow-md); }
+    .product-card-img {
+      aspect-ratio:1/1; overflow:hidden; background:#f5ede4;
+      position:relative;
+    }
+    .product-card-img img {
+      width:100%; height:100%; object-fit:cover;
+      transition:transform .4s ease;
+    }
+    .product-card:hover .product-card-img img { transform:scale(1.07); }
+
+    /* badge ribbon */
+    .card-ribbon {
+      position:absolute; top:12px; left:0;
+      background:var(--rust); color:#fff;
+      font-size:11px; font-weight:700; letter-spacing:.5px;
+      padding:4px 12px 4px 10px;
+      clip-path: polygon(0 0,100% 0,calc(100% - 8px) 50%,100% 100%,0 100%);
+    }
+
+    .product-card-body { padding:16px; flex:1; display:flex; flex-direction:column; gap:6px; }
+    .product-card-name { font-weight:700; font-size:15px; color:var(--ink); line-height:1.3; }
+    .product-card-weight { font-size:12px; color:var(--ash); }
+    .product-card-pricing { display:flex; align-items:baseline; gap:8px; margin-top:auto; padding-top:10px; }
+    .product-card-price { font-size:1.25rem; font-weight:800; color:var(--rust); }
+    .product-card-mrp { font-size:12px; color:#aaa; text-decoration:line-through; }
+    .product-card-discount { font-size:11px; font-weight:700; background:var(--rust-light); color:var(--rust); padding:2px 8px; border-radius:var(--r-pill); }
+
+    .product-card-cta {
+      margin:0 16px 16px;
+      background:var(--ink); color:#fff;
+      padding:11px; border-radius:10px;
+      font-size:14px; font-weight:700;
+      text-align:center;
+      transition: background .2s;
+    }
+    .product-card:hover .product-card-cta { background:var(--rust); }
+
+    /* Skeleton product card */
+    .skel-card { border-radius:var(--r-card); border:1px solid var(--border); overflow:hidden; }
+    .skel-img  { aspect-ratio:1/1; }
+    .skel-line { height:14px; border-radius:4px; margin:12px 16px 6px; }
+    .skel-line.short { width:55%; }
+    .skel-line.medium { width:75%; margin-bottom:0; }
+    .skel-price { height:20px; width:40%; border-radius:4px; margin:10px 16px 16px; }
+
+    /* ═══════════════════════════════════════════
+       DIVIDER BANNER
+    ═══════════════════════════════════════════ */
+    .divider-banner {
+      background: var(--rust);
+      padding: 24px 5vw;
+      display:flex; align-items:center;
+      gap:24px; overflow:hidden;
+      white-space:nowrap;
+    }
+    .divider-track {
+      display:flex; gap:40px;
+      animation: marquee 18s linear infinite;
+    }
+    .divider-item {
+      display:flex; align-items:center; gap:12px;
+      font-family:var(--ff-display); font-size:1.1rem;
+      font-style:italic; color:rgba(255,255,255,.85);
+      font-weight:700; flex-shrink:0;
+    }
+    .divider-item::before { content:'✦'; color:var(--turmeric); font-style:normal; }
+    @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+    /* ═══════════════════════════════════════════
+       CATEGORIES
+    ═══════════════════════════════════════════ */
+    .categories { background:var(--cream); }
+    .categories-grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap:20px;
+    }
+    .cat-card {
+      border-radius:var(--r-card);
+      overflow:hidden;
+      position:relative; cursor:pointer;
+      aspect-ratio:3/4;
+      box-shadow:var(--shadow-sm);
+      transition: transform .25s, box-shadow .25s;
+    }
+    .cat-card:hover { transform:translateY(-6px); box-shadow:var(--shadow-lg); }
+    .cat-card img {
+      width:100%; height:100%; object-fit:cover;
+      transition:transform .5s ease;
+    }
+    .cat-card:hover img { transform:scale(1.1); }
+    .cat-card::after {
+      content:'';
+      position:absolute; inset:0;
+      background: linear-gradient(0deg, rgba(28,16,9,.78) 0%, rgba(28,16,9,.1) 50%, transparent 100%);
+    }
+    .cat-card-label {
+      position:absolute; bottom:0; left:0; right:0; z-index:2;
+      padding:20px 16px 16px;
+    }
+    .cat-card-name {
+      font-family:var(--ff-display);
+      font-size:1.2rem; font-weight:700; color:#fff;
+      line-height:1.2;
+    }
+    .cat-card-count { font-size:12px; color:rgba(255,255,255,.65); margin-top:3px; }
+    .cat-card-arrow {
+      position:absolute; top:14px; right:14px; z-index:2;
+      width:34px; height:34px; border-radius:50%;
+      background:rgba(255,255,255,.18); backdrop-filter:blur(6px);
+      display:flex; align-items:center; justify-content:center;
+      border:1px solid rgba(255,255,255,.3);
+      transition: background .2s, transform .2s;
+    }
+    .cat-card:hover .cat-card-arrow { background:var(--rust); transform:scale(1.1); }
+    .cat-card-arrow svg { stroke:#fff; }
+
+    /* Skeleton cat card */
+    .skel-cat { aspect-ratio:3/4; }
+
+    /* ═══════════════════════════════════════════
+       EMPTY / ERROR STATES
+    ═══════════════════════════════════════════ */
+    .empty-state {
+      grid-column:1/-1; text-align:center;
+      padding:60px 20px; color:var(--ash);
+      font-size:.95rem;
+    }
+
+    /* ═══════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════ */
+    .footer {
+      background:var(--ink); color:rgba(255,255,255,.6);
+      padding:40px 5vw;
+      display:flex; flex-wrap:wrap; align-items:center;
+      justify-content:space-between; gap:16px;
+      font-size:13px;
+    }
+    .footer-brand {
+      font-family:var(--ff-display); font-size:1.25rem;
+      font-weight:900; color:#fff;
+    }
+    .footer-links { display:flex; gap:24px; }
+    .footer-links a { transition:color .2s; }
+    .footer-links a:hover { color:#fff; }
+
+    /* ═══════════════════════════════════════════
+       MOBILE
+    ═══════════════════════════════════════════ */
+    @media (max-width:768px) {
+      .nav-links { display:none; }
+      .nav-hamburger { display:flex; }
+      .hero { max-height:580px; }
+      .hero-arrow { display:none; }
+      .hero-slide-content { padding:0 6vw; }
+      .section { padding:56px 5vw; }
+      .product-grid { grid-template-columns:repeat(2,1fr); gap:14px; }
+      .categories-grid  { grid-template-columns:repeat(2,1fr); gap:14px; }
+      .product-card-body { padding:12px; }
+      .product-card-cta  { margin:0 12px 12px; padding:9px; font-size:13px; }
+    }
+    @media (max-width:480px) {
+      .product-grid { grid-template-columns:1fr 1fr; gap:12px; }
+      .categories-grid  { grid-template-columns:1fr 1fr; gap:12px; }
+    }
+
+    /* ═══════════════════════════════════════════
+       SCROLL-REVEAL UTILITY
+    ═══════════════════════════════════════════ */
+    .reveal { opacity:0; transform:translateY(30px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+  </style>
+</head>
+<body>
+
+  <nav class="nav" id="mainNav">
+    <div class="nav-logo">
+      <span class="dot"></span> Happy NonVeg Pickles
+    </div>
+    <div class="nav-links">
+      <a href="#bestsellers">Best Sellers</a>
+      <a href="#categories">Shop</a>
+      <a href="#bestsellers" class="nav-cta">Order Now</a>
+    </div>
+    <div class="nav-hamburger" id="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <section class="hero" id="heroSection">
+    <div class="hero-skeleton" id="heroSkeleton">
+      <span class="hero-skeleton-text">Loading…</span>
+    </div>
+
+    <div id="heroSlides"></div>
+
+    <button class="hero-arrow prev" id="heroPrev" aria-label="Previous slide" style="display:none">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+    </button>
+    <button class="hero-arrow next" id="heroNext" aria-label="Next slide" style="display:none">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 18l6-6-6-6"/>
+      </svg>
+    </button>
+    <div class="hero-dots" id="heroDots"></div>
+  </section>
+
+  <div class="divider-banner" aria-hidden="true">
+    <div class="divider-track" id="marqueeTrack">
+      </div>
+  </div>
+
+  <section class="section bestsellers reveal" id="bestsellers">
+    <div class="section-label">Our Favourites</div>
+    <h2 class="section-heading">Best Sellers</h2>
+    <p class="section-sub">Hand-picked by thousands of happy customers — the flavours that keep coming back.</p>
+    <div class="product-grid" id="bestsellersGrid">
+      ${Array(6).fill(0).map(()=>`
+        <div class="skel-card">
+          <div class="skel skel-img"></div>
+          <div class="skel skel-line medium"></div>
+          <div class="skel skel-line short"></div>
+          <div class="skel skel-price"></div>
+        </div>`).join('')}
+    </div>
+  </section>
+
+  <section class="section categories reveal" id="categories">
+    <div class="section-label">Explore</div>
+    <h2 class="section-heading">Shop by Category</h2>
+    <p class="section-sub">From fiery non-veg to tangy classics — every palate finds its match.</p>
+    <div class="categories-grid" id="categoriesGrid">
+      ${Array(4).fill(0).map(()=>`<div class="skel skel-cat"></div>`).join('')}
+    </div>
+  </section>
+
+  <div id="allCategoryProductsContainer"></div>
+
+  <footer class="footer">
+    <div class="footer-brand">Happy NonVeg Pickles</div>
+    <div class="footer-links">
+      <a href="#bestsellers">Best Sellers</a>
+      <a href="#categories">Categories</a>
+    </div>
+    <div>© 2025 Happy NonVeg Pickles. All rights reserved.</div>
+  </footer>
+
+  <script type="module">
+    import { initializeApp }  from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getFirestore, doc, getDoc, getDocs, collection }
+      from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey:            "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
+      authDomain:        "pickle-fdc54.firebaseapp.com",
+      projectId:         "pickle-fdc54",
+      storageBucket:     "pickle-fdc54.firebasestorage.app",
+      messagingSenderId: "650348710985",
+      appId:             "1:650348710985:web:b8eedb551a79b536578398",
+      measurementId:     "G-B40NG5KQDL"
+    };
+
+    const fbApp = initializeApp(firebaseConfig);
+    const db    = getFirestore(fbApp);
+
+    /* ─── helpers ─── */
+    const isMobile = () => window.innerWidth <= 768;
+
+    function fmt(price) {
+      return `₹${Math.round(parseFloat(price))}`;
+    }
+    function discount(mrp, price) {
+      if (!mrp || !price || +mrp <= 0) return null;
+      const p = Math.round((1 - price / mrp) * 100);
+      return p > 0 ? `${p}% off` : null;
+    }
+    function fallback(w, h, text) {
+      return `https://placehold.co/${w}x${h}/f5e9e7/c0392b?text=${encodeURIComponent(text||'Pickle')}`;
+    }
+
+    /* ─── REUSABLE PRODUCT CARD GENERATOR ─── */
+    function createProductCard(prod, index = 0) {
+      const variants = prod.variants || [];
+      const v0 = variants[0] || {};
+      const price = v0.price ?? prod.price ?? 0;
+      const mrp   = v0.mrp   ?? prod.mrp   ?? 0;
+      const disc  = discount(mrp, price);
+      const img   = prod.image || fallback(400, 400, prod.name);
+
+      const card = document.createElement('div');
+      card.className = 'product-card reveal';
+      card.style.transitionDelay = `${(index % 6) * 70}ms`;
+      card.onclick = () => window.location.href = `product-page.html?id=${prod.id}`;
+      card.innerHTML = `
+        <div class="product-card-img">
+          ${disc ? `<div class="card-ribbon">${disc}</div>` : ''}
+          <img src="${img}" alt="${prod.name}"
+               loading="lazy"
+               onerror="this.src='${fallback(400,400,prod.name)}'">
+        </div>
+        <div class="product-card-body">
+          <div class="product-card-name">${prod.name}</div>
+          ${v0.weight ? `<div class="product-card-weight">${v0.weight}${variants.length > 1 ? ` · ${variants.length} sizes` : ''}</div>` : ''}
+          <div class="product-card-pricing">
+            <span class="product-card-price">${fmt(price)}</span>
+            ${mrp && +mrp > +price ? `<span class="product-card-mrp">${fmt(mrp)}</span>` : ''}
+            ${disc ? `<span class="product-card-discount">${disc}</span>` : ''}
+          </div>
+        </div>
+        <div class="product-card-cta">View Product</div>`;
+      return card;
+    }
+
+    /* ─────────────────────────────────────────
+       HERO SLIDER
+    ───────────────────────────────────────── */
+    const HERO_INTERVAL = 5000;
+    let heroSlides = [], heroIndex = 0, heroTimer = null;
+
+    function buildHeroSlide(slide, idx) {
+      const imgSrc = isMobile() && slide.mobileImg ? slide.mobileImg : slide.desktopImg;
+      const div = document.createElement('div');
+      div.className = `hero-slide${idx === 0 ? ' active' : ''}`;
+      div.innerHTML = `
+        <img
+          src="${imgSrc}"
+          alt="Slide ${idx + 1}"
+          onerror="this.src='${fallback(1400,700,'')}'">
+        <div class="hero-slide-content">
+          <div class="hero-eyebrow">Fresh & Flavourful</div>
+          <h1 class="hero-heading">${slide.heading || 'Taste the Tradition'}</h1>
+          ${slide.btnName
+            ? `<a href="${slide.btnLink || '#bestsellers'}" class="hero-btn">
+                ${slide.btnName}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>`
+            : `<a href="#bestsellers" class="hero-btn">
+                Shop Now
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>`}
+        </div>`;
+      return div;
+    }
+
+    function buildDot(idx) {
+      const btn = document.createElement('button');
+      btn.className = `hero-dot${idx === 0 ? ' active' : ''}`;
+      btn.setAttribute('aria-label', `Slide ${idx + 1}`);
+      btn.onclick = () => goToSlide(idx);
+      return btn;
+    }
+
+    function goToSlide(idx) {
+      const slides = document.querySelectorAll('.hero-slide');
+      const dots   = document.querySelectorAll('.hero-dot');
+      slides[heroIndex]?.classList.remove('active');
+      dots[heroIndex]?.classList.remove('active');
+      heroIndex = (idx + heroSlides.length) % heroSlides.length;
+      slides[heroIndex]?.classList.add('active');
+      dots[heroIndex]?.classList.add('active');
+      resetTimer();
+    }
+
+    function resetTimer() {
+      clearInterval(heroTimer);
+      if (heroSlides.length > 1) heroTimer = setInterval(() => goToSlide(heroIndex + 1), HERO_INTERVAL);
+    }
+
+    async function loadHero(masterData) {
+      const skeleton = document.getElementById('heroSkeleton');
+      const slidesEl = document.getElementById('heroSlides');
+      const dotsEl   = document.getElementById('heroDots');
+      const prevBtn  = document.getElementById('heroPrev');
+      const nextBtn  = document.getElementById('heroNext');
+
+      if (masterData?.config?.isHeroEnabled === false) {
+        skeleton.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;">
+          <p style="color:rgba(255,255,255,.4);font-size:1rem;">Hero section is currently disabled.</p>
+        </div>`;
+        return;
+      }
+
+      const rawSlides = masterData?.hero_slides?.slides || [];
+      heroSlides = rawSlides.filter(s => s.isActive !== false);
+
+      if (!heroSlides.length) {
+        skeleton.style.background = 'linear-gradient(120deg, #2a1a10 0%, #5a2e1a 50%, #2a1a10 100%)';
+        skeleton.innerHTML = `
+          <div style="text-align:center;padding:0 40px;">
+            <div style="font-family:'Playfair Display',serif;font-size:clamp(2rem,6vw,4rem);font-weight:900;color:#fff;line-height:1.1;margin-bottom:20px;">
+              Bold Flavours,<br>Every Bite.
+            </div>
+            <a href="#bestsellers" style="display:inline-flex;align-items:center;gap:8px;background:#C0392B;color:#fff;padding:14px 32px;border-radius:999px;font-weight:700;font-size:15px;text-decoration:none;">
+              Shop Now
+            </a>
+          </div>`;
+        return;
+      }
+
+      skeleton.style.display = 'none';
+
+      heroSlides.forEach((slide, i) => {
+        slidesEl.appendChild(buildHeroSlide(slide, i));
+        dotsEl.appendChild(buildDot(i));
+      });
+
+      if (heroSlides.length > 1) {
+        prevBtn.style.display = 'flex';
+        nextBtn.style.display = 'flex';
+        prevBtn.onclick = () => goToSlide(heroIndex - 1);
+        nextBtn.onclick = () => goToSlide(heroIndex + 1);
+        resetTimer();
+      }
+
+      let lastMobile = isMobile();
+      window.addEventListener('resize', () => {
+        const nowMobile = isMobile();
+        if (nowMobile === lastMobile) return;
+        lastMobile = nowMobile;
+        document.querySelectorAll('.hero-slide').forEach((el, i) => {
+          const slide = heroSlides[i];
+          const img   = el.querySelector('img');
+          if (img && slide) {
+            img.src = (nowMobile && slide.mobileImg) ? slide.mobileImg : slide.desktopImg;
+          }
+        });
+      });
+    }
+
+    /* ─────────────────────────────────────────
+       MARQUEE
+    ───────────────────────────────────────── */
+    function buildMarquee() {
+      const items = [
+        'Authentic Recipes', 'Sun-dried Mangoes', 'No Preservatives',
+        'Handcrafted Daily', 'Ships Pan-India', 'Family Secret Spices',
+        'Authentic Recipes', 'Sun-dried Mangoes', 'No Preservatives',
+        'Handcrafted Daily', 'Ships Pan-India', 'Family Secret Spices',
+      ];
+      const track = document.getElementById('marqueeTrack');
+      track.innerHTML = items.map(t =>
+        `<span class="divider-item">${t}</span>`
+      ).join('');
+    }
+
+    /* ─────────────────────────────────────────
+       BEST SELLERS
+    ───────────────────────────────────────── */
+    async function loadBestSellers(bestPickleIds, allProducts) {
+      const grid = document.getElementById('bestsellersGrid');
+      grid.innerHTML = '';
+
+      const picks = bestPickleIds
+        .map(id => allProducts.find(p => p.id === id))
+        .filter(Boolean)
+        .filter(p => p.isavailable !== false);
+
+      if (!picks.length) {
+        grid.innerHTML = `<div class="empty-state">No best sellers configured yet.</div>`;
+        return;
+      }
+
+      picks.forEach((prod, i) => {
+        grid.appendChild(createProductCard(prod, i));
+      });
+
+      observeReveal();
+    }
+
+    /* ─────────────────────────────────────────
+       CATEGORIES
+    ───────────────────────────────────────── */
+    async function loadCategories(landingCats, allCategories) {
+      const grid = document.getElementById('categoriesGrid');
+      grid.innerHTML = '';
+
+      const visible = landingCats.filter(c => c.isVisible !== false);
+      const orderedCats = visible
+        .map(lc => allCategories.find(c => c.id === lc.id))
+        .filter(c => c && c.isavailable !== false);
+
+      if (!orderedCats.length) {
+        grid.innerHTML = `<div class="empty-state">No categories available.</div>`;
+        return;
+      }
+
+      orderedCats.forEach((cat, i) => {
+        const img      = cat.image || fallback(300, 400, cat.name);
+        const prodCount = cat.products ? Object.keys(cat.products).length : null;
+
+        const card = document.createElement('div');
+        card.className = 'cat-card reveal';
+        card.style.transitionDelay = `${i * 80}ms`;
+        card.onclick = () => window.location.href = `products.html?categoryId=${cat.id}`;
+        card.innerHTML = `
+          <img src="${img}" alt="${cat.name}" loading="lazy"
+               onerror="this.src='${fallback(300,400,cat.name)}'">
+          <div class="cat-card-arrow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </div>
+          <div class="cat-card-label">
+            <div class="cat-card-name">${cat.name}</div>
+            ${prodCount !== null ? `<div class="cat-card-count">${prodCount} product${prodCount !== 1 ? 's' : ''}</div>` : ''}
+          </div>`;
+        grid.appendChild(card);
+      });
+
+      observeReveal();
+    }
+
+    /* ─────────────────────────────────────────
+       ALL CATEGORY PRODUCTS LISTINGS
+    ───────────────────────────────────────── */
+    function loadAllCategoryProducts(landingCats, allCategories, allProducts) {
+      const container = document.getElementById('allCategoryProductsContainer');
+      container.innerHTML = '';
+
+      // Create an array mapping the admin-configured order
+      const visible = landingCats.filter(c => c.isVisible !== false);
+      let orderedCats = visible
+        .map(lc => allCategories.find(c => c.id === lc.id))
+        .filter(c => c && c.isavailable !== false);
+
+      // Fallback if no admin config was found
+      if (!orderedCats.length && !landingCats.length) {
+        orderedCats = allCategories.filter(c => c.isavailable !== false);
+      }
+
+      if (!orderedCats.length) return;
+
+      orderedCats.forEach((cat) => {
+        // Find products belonging to this category
+        let catProducts = allProducts.filter(p => p.categoryId === cat.id || p.category === cat.name);
+        
+        // Fallback: Check if category document stores an object map of product keys
+        if (catProducts.length === 0 && cat.products) {
+          const productIds = Object.keys(cat.products);
+          catProducts = allProducts.filter(p => productIds.includes(p.id));
+        }
+
+        // Filter out unavailable items
+        catProducts = catProducts.filter(p => p.isavailable !== false);
+
+        if (catProducts.length === 0) return; // Hide category sections that have no active products
+
+        // Build dynamically styled block
+        const sectionWrapper = document.createElement('section');
+        sectionWrapper.className = 'section category-products-wrapper reveal';
+        
+        const sectionHeader = `
+          <div class="section-label">${cat.name} Collection</div>
+          <h2 class="section-heading">Best of ${cat.name}</h2>
+          <p class="section-sub">Explore our top picks carefully curated for our ${cat.name} lovers.</p>
+        `;
+
+        const grid = document.createElement('div');
+        grid.className = 'product-grid';
+        
+        // Append cards to grid
+        catProducts.forEach((prod, idx) => {
+          grid.appendChild(createProductCard(prod, idx));
+        });
+
+        sectionWrapper.innerHTML = sectionHeader;
+        sectionWrapper.appendChild(grid);
+        
+        container.appendChild(sectionWrapper);
+      });
+
+      observeReveal();
+    }
+
+    /* ─────────────────────────────────────────
+       MAIN INIT — parallel fetches
+    ───────────────────────────────────────── */
+    async function init() {
+      buildMarquee();
+
+      try {
+        const [masterSnap, productsSnap, categoriesSnap] = await Promise.all([
+          getDoc(doc(db, 'landing_page', 'master')),
+          getDocs(collection(db, 'products')),
+          getDocs(collection(db, 'categories')),
+        ]);
+
+        const masterData   = masterSnap.exists() ? masterSnap.data() : {};
+        const allProducts  = productsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const allCategories= categoriesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        // 2. Hero
+        await loadHero(masterData);
+
+        // 3. Best sellers
+        const bestIds      = masterData?.config?.bestPickles || [];
+        const picksToShow  = bestIds.length
+          ? bestIds
+          : allProducts.filter(p => p.isavailable !== false).slice(0, 6).map(p => p.id);
+        await loadBestSellers(picksToShow, allProducts);
+
+        // 4. Categories (get admin order array)
+        const landingCats  = masterData?.config?.categories || [];
+        const catsToShow   = landingCats.length
+          ? landingCats
+          : allCategories.map(c => ({ id: c.id, isVisible: true }));
+        
+        await loadCategories(catsToShow, allCategories);
+
+        // 5. Build dynamic category-wise product listings using the same admin order
+        loadAllCategoryProducts(catsToShow, allCategories, allProducts);
+
+      } catch (err) {
+        console.error('Firebase load error:', err);
+        document.getElementById('bestsellersGrid').innerHTML =
+          `<div class="empty-state">Failed to load products. Please refresh.</div>`;
+        document.getElementById('categoriesGrid').innerHTML =
+          `<div class="empty-state">Failed to load categories. Please refresh.</div>`;
+      }
+    }
+
+    init();
+  </script>
+
+  <script>
+    /* sticky nav shadow */
+    const nav = document.getElementById('mainNav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 10);
+    }, { passive: true });
+
+    /* mobile nav toggle */
+    function toggleMenu() {
+      const links = document.querySelector('.nav-links');
+      if (!links) return;
+      const open = links.style.display === 'flex';
+      links.style.cssText = open
+        ? ''
+        : 'display:flex;flex-direction:column;position:fixed;top:var(--nav-h);left:0;right:0;background:rgba(253,246,236,.97);backdrop-filter:blur(16px);padding:24px 5vw 32px;gap:20px;border-bottom:1px solid rgba(28,16,9,.08);z-index:800;';
+    }
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.nav') && !e.target.closest('#hamburger')) {
+        const links = document.querySelector('.nav-links');
+        if (links && links.style.display === 'flex') links.style.cssText = '';
+      }
+    });
+
+    /* scroll-reveal via IntersectionObserver */
+    function observeReveal() {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(en => {
+          if (en.isIntersecting) { en.target.classList.add('visible'); io.unobserve(en.target); }
+        });
+      }, { threshold: 0.08 });
+      document.querySelectorAll('.reveal:not(.visible)').forEach(el => io.observe(el));
+    }
+    /* observe sections themselves on load */
+    observeReveal();
+  </script>
+
+</body>
+</html>
