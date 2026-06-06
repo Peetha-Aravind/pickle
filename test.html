@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Page – Happy NonVeg Pickles</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f9f9f9; padding: 40px 20px; display: flex; justify-content: center; }
+        .page-wrapper { max-width: 1200px; width: 100%; }
+        .single-box { background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 40px; }
+
+        /* Loading & Error states */
+        .loading-state { text-align: center; padding: 80px 20px; color: #95a5a6; font-size: 1.1rem; }
+        .loading-spinner { width: 40px; height: 40px; border: 4px solid #e0e0e0; border-top-color: #e67e22; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* TOP SPLIT */
+        .split-layout { display: flex; gap: 50px; align-items: flex-start; }
+        .sticky-image-column { flex: 1.5; position: sticky; top: 40px; }
+        .image-section { display: flex; gap: 15px; }
+        .thumbnail-column { display: flex; flex-direction: column; gap: 12px; width: 90px; flex-shrink: 0; }
+        .thumb { width: 100%; height: 90px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid transparent; background-color: #e0e0e0; transition: border 0.2s ease; }
+        .thumb:hover, .thumb.active { border-color: red; }
+        .main-image-container { flex: 1; height: 600px; background-color: #e0e0e0; border-radius: 8px; overflow: hidden; border: 1px solid #eaeaea; display: flex; align-items: center; justify-content: center; }
+        .main-image-container img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s ease-in-out; }
+
+        /* RIGHT SIDE */
+        .scrollable-content-column { flex: 1.2; display: flex; flex-direction: column; gap: 30px; }
+        .details-section { display: flex; flex-direction: column; gap: 20px; }
+        .product-header { display: flex; flex-direction: column; gap: 8px; }
+        .product-long-name { font-size: 1rem; color: #7f8c8d; font-weight: 400; margin-bottom: 4px; }
+        .product-title { font-size: 2.2rem; color: #2c3e50; line-height: 1.2; }
+        .price-container { display: flex; align-items: baseline; gap: 12px; margin-top: 5px; }
+        .current-price-display { font-size: 2rem; font-weight: bold; color: #e67e22; }
+        .mrp-price { font-size: 1.2rem; color: #95a5a6; text-decoration: line-through; }
+        .discount-badge { background-color: #2ecc71; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.9rem; font-weight: bold; }
+        .rating-container { display: flex; align-items: center; gap: 10px; }
+        .stars { color: #f1c40f; font-size: 1.3rem; }
+        .rating-text { color: #7f8c8d; font-size: 0.95rem; }
+        hr { border: 0; height: 1px; background: #eaeaea; width: 100%; }
+
+        /* Badges */
+        .badges-container { display: flex; flex-wrap: wrap; gap: 6px; }
+        .product-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        .badge-bestseller { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+        .badge-recommended { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+        .badge-spicy { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+        .badge-new { background: #ede9fe; color: #4c1d95; border: 1px solid #c4b5fd; }
+        .badge-trending { background: #fce7f3; color: #831843; border: 1px solid #f9a8d4; }
+        .badge-limited { background: #ffedd5; color: #7c2d12; border: 1px solid #fdba74; }
+        .badge-mild { background: #ecfdf5; color: #064e3b; border: 1px solid #34d399; }
+        .badge-premium { background: #f0f9ff; color: #0c4a6e; border: 1px solid #7dd3fc; }
+        .badge-gift { background: #fdf4ff; color: #581c87; border: 1px solid #d8b4fe; }
+        .badge-seasonal { background: #fff7ed; color: #7c2d12; border: 1px solid #fed7aa; }
+        .badge-homemade { background: #f0fdf4; color: #14532d; border: 1px solid #86efac; }
+        .badge-glutenfree { background: #f0f9ff; color: #1e3a5f; border: 1px solid #93c5fd; }
+
+        /* Tags */
+        .tags-container { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag-chip { background: #f0f0f0; color: #555; padding: 3px 10px; border-radius: 20px; font-size: 12px; }
+
+        /* Variants */
+        .pricing-section h3 { font-size: 1.1rem; color: #34495e; margin-bottom: 12px; }
+        .quantity-options { display: flex; gap: 15px; margin-bottom: 10px; flex-wrap: wrap; }
+        .quantity-card { flex: 1; min-width: 90px; cursor: pointer; }
+        .quantity-card input { display: none; }
+        .card-content { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; border: 2px solid #eaeaea; border-radius: 8px; transition: all 0.2s ease; text-align: center; }
+        .card-content .weight { font-weight: bold; color: #2c3e50; font-size: 1.1rem; margin-bottom: 5px; }
+        .card-prices { font-size: 0.9rem; color: #555; }
+        .card-prices .strike { text-decoration: line-through; color: #95a5a6; font-size: 0.8rem; }
+        .card-discount { color: #d32f2f; font-weight: bold; font-size: 0.8rem; margin-top: 3px; }
+        .quantity-card input:checked + .card-content { border-color: red; background-color: #fff5f5; }
+
+        /* Qty controls */
+        .item-quantity { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; }
+        .item-quantity span { font-weight: bold; color: #34495e; }
+        .qty-controls { display: flex; align-items: center; border: 1px solid #ccc; border-radius: 6px; overflow: hidden; }
+        .qty-controls button { background: #f0f0f0; border: none; padding: 8px 15px; font-size: 1.2rem; cursor: pointer; transition: background 0.2s; }
+        .qty-controls button:hover { background: #e0e0e0; }
+        .qty-controls input { width: 40px; text-align: center; border: none; font-size: 1.1rem; font-weight: bold; outline: none; background: #fff; }
+
+        /* Buttons */
+        .action-container { display: flex; flex-direction: column; gap: 15px; }
+        .cart-wishlist-row { display: flex; gap: 15px; width: 100%; }
+        .cart-btn, .wishlist-btn { flex: 1; padding: 16px; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: all 0.3s ease; }
+        .cart-btn { background-color: black; color: white; border: 2px solid black; }
+        .wishlist-btn { background-color: white; color: black; border: 2px solid black; }
+        .buy-now-btn { width: 100%; background-color: #e67e22; color: white; border: none; padding: 16px; font-size: 1.2rem; font-weight: bold; border-radius: 8px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 15px; transition: all 0.3s ease; text-transform: uppercase; }
+        .cart-btn:hover, .wishlist-btn:hover, .buy-now-btn:hover { transform: translateY(-5px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
+        .cart-btn:hover { opacity: 0.85; }
+        .wishlist-btn:hover { border-color: red; color: red; }
+        .buy-now-btn:hover { background-color: #cf6d17; }
+        .payment-icons { display: flex; gap: 8px; }
+        .pay-icon { width: 26px; height: 26px; border-radius: 50%; background-color: white; border: 1px solid #ccc; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .pay-icon img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Policy accordion */
+        .policy-accordion { background: #fdfbf7; border-radius: 8px; border: 1px solid #e67e22; overflow: hidden; }
+        .policy-accordion summary { padding: 15px; font-weight: bold; color: #e67e22; cursor: pointer; user-select: none; outline: none; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+        .policy-accordion summary::-webkit-details-marker { display: none; }
+        .policy-accordion summary::after { content: '+'; font-size: 1.2rem; }
+        .policy-accordion[open] summary::after { content: '-'; }
+        .policy-accordion p { padding: 15px; color: #2c3e50; font-size: 0.95rem; line-height: 1.5; margin: 0; border-top: 1px dashed #e67e22; }
+
+        /* Description */
+        .description-section h2 { font-size: 1.5rem; color: #2c3e50; margin-bottom: 15px; }
+        .description-section p { color: #555; line-height: 1.7; font-size: 1.05rem; white-space: pre-line; }
+
+        /* Related Products */
+        .related-products-section h2 { font-size: 1.8rem; color: #2c3e50; margin-bottom: 25px; }
+        .related-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+        .related-card { border: 1px solid #eaeaea; border-radius: 8px; overflow: hidden; background: #fff; transition: transform 0.2s, box-shadow 0.2s; text-align: center; padding-bottom: 15px; display: flex; flex-direction: column; position: relative; cursor: pointer; }
+        .related-card:hover { transform: translateY(-5px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
+        .related-discount-tag { position: absolute; top: 10px; right: 10px; background: #d32f2f; color: white; font-size: 0.8rem; font-weight: bold; padding: 4px 8px; border-radius: 4px; z-index: 10; }
+        .related-img-box { width: 100%; height: 280px; background-color: #f0f0f0; }
+        .related-img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .related-name { font-size: 1.05rem; color: #2c3e50; margin: 12px 10px 6px 10px; font-weight: 600; }
+        .related-stars { color: #f1c40f; font-size: 0.9rem; margin-bottom: 6px; }
+        .related-price-box { display: flex; justify-content: center; align-items: baseline; gap: 8px; margin-bottom: 15px; }
+        .related-price { color: #e67e22; font-weight: bold; font-size: 1.05rem; }
+        .related-mrp { text-decoration: line-through; color: #95a5a6; font-size: 0.9rem; }
+        .view-product-btn { background-color: black; color: white; border: none; padding: 10px 15px; margin: auto 15px 0 15px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: opacity 0.2s; }
+        .view-product-btn:hover { opacity: 0.8; }
+
+        /* Combo Section */
+        .combo-section h2 { font-size: 1.8rem; color: #2c3e50; margin-bottom: 25px; }
+        .combo-section.hidden { display: none; }
+        .combo-layout { display: flex; gap: 60px; align-items: stretch; }
+        .combo-banner { flex: 1; border-radius: 8px; overflow: hidden; background-color: #fdf6f0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; border: 2px dashed #e67e22; }
+        .combo-banner h3 { font-size: 2rem; color: #d35400; margin-bottom: 10px; }
+        .combo-banner p { font-size: 1.2rem; font-weight: bold; color: #2c3e50; }
+        .combo-banner img { margin-top: 15px; border-radius: 8px; max-width: 100%; max-height: 200px; object-fit: cover; }
+        .combo-selector { flex: 1.3; display: flex; flex-direction: column; }
+        .combo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-weight: bold; }
+        .combo-counter { background: #2c3e50; color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; }
+        .combo-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(4, 1fr); gap: 35px; padding-left: 25px; }
+        .combo-tag-item { display: block; cursor: pointer; }
+        .combo-tag-item input { display: none; }
+        .combo-tag-content { display: flex; align-items: center; background: #f5f5f5; border: 2px solid transparent; border-radius: 40px; padding: 8px 15px 8px 45px; transition: all 0.3s ease; position: relative; min-height: 44px; }
+        .combo-tag-item:hover .combo-tag-content { transform: translateY(-5px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
+        .combo-name { font-weight: 600; color: #34495e; font-size: 1rem; width: 100%; text-align: center; }
+        .combo-img-circle { width: 64px; height: 64px; border-radius: 50%; overflow: hidden; border: 3px solid white; box-shadow: 0 3px 8px rgba(0,0,0,0.15); position: absolute; left: -25px; top: 50%; transform: translateY(-50%); background: #fff; z-index: 2; }
+        .combo-img-circle img { width: 100%; height: 100%; object-fit: cover; }
+        .combo-tag-item input:checked + .combo-tag-content { border-color: red; background-color: #fff5f5; }
+        .combo-tag-item input:checked + .combo-tag-content .combo-img-circle::after { content: '✓'; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(211,47,47,0.85); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.5rem; border-radius: 50%; }
+        .combo-tag-item.dimmed { opacity: 0.4; pointer-events: none; }
+
+        @media (max-width: 900px) {
+            .split-layout, .combo-layout { flex-direction: column; gap: 30px; }
+            .sticky-image-column { position: relative; top: 0; width: 100%; }
+            .image-section { flex-direction: column-reverse; }
+            .thumbnail-column { flex-direction: row; width: 100%; }
+            .thumb { width: calc(25% - 9px); }
+            .main-image-container { height: 350px; }
+            .cart-wishlist-row { flex-direction: column; }
+            .combo-grid { grid-template-columns: 1fr; padding-left: 25px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+    <div class="single-box" id="page-content">
+        <!-- Loading state -->
+        <div class="loading-state" id="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Loading product...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getFirestore, collection, doc, getDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
+        authDomain: "pickle-fdc54.firebaseapp.com",
+        projectId: "pickle-fdc54",
+        storageBucket: "pickle-fdc54.firebasestorage.app",
+        messagingSenderId: "650348710985",
+        appId: "1:650348710985:web:b8eedb551a79b536578398",
+        measurementId: "G-B40NG5KQDL"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // ─────────────────────────────────────────
+    //  BADGE DEFINITIONS
+    // ─────────────────────────────────────────
+    const BADGE_DEFS = [
+        { key:'bestseller',  label:'Best Seller',    icon:'🔥', cls:'badge-bestseller'  },
+        { key:'recommended', label:'Recommended',    icon:'⭐', cls:'badge-recommended' },
+        { key:'spicy',       label:'Spicy',          icon:'🌶️', cls:'badge-spicy'       },
+        { key:'new',         label:'New Arrival',    icon:'✨', cls:'badge-new'         },
+        { key:'trending',    label:'Trending',       icon:'📈', cls:'badge-trending'    },
+        { key:'limited',     label:'Limited Stock',  icon:'⏳', cls:'badge-limited'     },
+        { key:'mild',        label:'Mild & Tangy',   icon:'🍋', cls:'badge-mild'        },
+        { key:'premium',     label:'Premium',        icon:'💎', cls:'badge-premium'     },
+        { key:'gift',        label:'Gift Pick',      icon:'🎁', cls:'badge-gift'        },
+        { key:'seasonal',    label:'Seasonal',       icon:'🌿', cls:'badge-seasonal'    },
+        { key:'homemade',    label:'Homemade Style', icon:'🏠', cls:'badge-homemade'    },
+        { key:'glutenfree',  label:'Gluten Free',    icon:'🌾', cls:'badge-glutenfree'  },
+    ];
+
+    // ─────────────────────────────────────────
+    //  HELPERS
+    // ─────────────────────────────────────────
+    function getProductId() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('id');
+    }
+
+    function formatPrice(price) {
+        return `₹${parseFloat(price).toFixed(0)}`;
+    }
+
+    function calcDiscount(mrp, price) {
+        if (!mrp || !price || parseFloat(mrp) <= 0) return null;
+        const pct = Math.round(((parseFloat(mrp) - parseFloat(price)) / parseFloat(mrp)) * 100);
+        return pct > 0 ? `${pct}% OFF` : null;
+    }
+
+    // ─────────────────────────────────────────
+    //  MAIN INIT
+    // ─────────────────────────────────────────
+    async function init() {
+        const productId = getProductId();
+
+        if (!productId) {
+            // Demo mode – show placeholder content
+            renderPage(null, null, [], null);
+            return;
+        }
+
+        try {
+            // 1. Fetch product
+            const prodSnap = await getDoc(doc(db, 'products', productId));
+            if (!prodSnap.exists()) {
+                document.getElementById('loading-state').innerHTML = '<p style="color:#e74c3c;">Product not found.</p>';
+                return;
+            }
+            const product = { id: prodSnap.id, ...prodSnap.data() };
+
+            // 2. Fetch related products from the same category
+            let related = [];
+            if (product.categoryId) {
+                const catSnap = await getDoc(doc(db, 'categories', product.categoryId));
+                if (catSnap.exists()) {
+                    const catData = catSnap.data();
+                    const productsMap = catData.products || {};
+                    related = Object.entries(productsMap)
+                        .map(([id, d]) => ({ id, ...d }))
+                        .filter(p => p.id !== productId)
+                        .slice(0, 4);
+                }
+            }
+
+            // 3. Fetch combo
+            let combo = null;
+            const combosSnap = await getDocs(collection(db, 'combos'));
+            if (!combosSnap.empty) {
+                const comboDoc = combosSnap.docs[0];
+                const comboData = comboDoc.data();
+                if (comboData.isActive !== false) {
+                    combo = comboData;
+                }
+            }
+
+            // 4. Render
+            renderPage(product, product.categoryId, related, combo);
+
+        } catch (err) {
+            console.error('Failed to load product:', err);
+            document.getElementById('loading-state').innerHTML = `<p style="color:#e74c3c;">Failed to load product. Please try again.</p>`;
+        }
+    }
+
+    // ─────────────────────────────────────────
+    //  RENDER
+    // ─────────────────────────────────────────
+    function renderPage(product, categoryId, related, combo) {
+        const container = document.getElementById('page-content');
+
+        // Build all images (main + additional)
+        const allImages = [];
+        if (product) {
+            if (product.image) allImages.push(product.image);
+            if (product.additionalImages?.length) allImages.push(...product.additionalImages);
+        }
+        // Fallback if no images
+        if (!allImages.length) {
+            allImages.push('https://placehold.co/600x420/fef3c7/b45309?text=Pickle+Image');
+        }
+
+        // Variants
+        const variants = product?.variants?.length
+            ? product.variants
+            : [{ weight: '250g', mrp: 199, price: 149 }];
+
+        const firstVariant = variants[0];
+        const discount = calcDiscount(firstVariant.mrp, firstVariant.price);
+
+        // Badges HTML
+        let badgesHtml = '';
+        if (product?.badges?.length) {
+            badgesHtml = product.badges.map(k => {
+                const def = BADGE_DEFS.find(d => d.key === k);
+                return def ? `<span class="product-badge ${def.cls}">${def.icon} ${def.label}</span>` : '';
+            }).join('');
+        }
+
+        // Tags HTML
+        let tagsHtml = '';
+        if (product?.tags?.length) {
+            tagsHtml = product.tags.map(t => `<span class="tag-chip">${t}</span>`).join('');
+        }
+
+        // Thumbnails HTML
+        const thumbsHtml = allImages.slice(0, 4).map((url, i) =>
+            `<img src="${url}" alt="View ${i+1}" class="thumb ${i === 0 ? 'active' : ''}" onclick="changeImage(this)">`
+        ).join('');
+
+        // Variants HTML
+        const variantsHtml = variants.map((v, i) => {
+            const disc = calcDiscount(v.mrp, v.price);
+            return `
+                <label class="quantity-card">
+                    <input type="radio" name="weight" value="${v.weight}" ${i === 0 ? 'checked' : ''}
+                        onclick="updatePrice('${formatPrice(v.price)}', '${formatPrice(v.mrp)}', '${disc || ''}')">
+                    <div class="card-content">
+                        <span class="weight">${v.weight}</span>
+                        <div class="card-prices">${formatPrice(v.price)} <span class="strike">${formatPrice(v.mrp)}</span></div>
+                        ${disc ? `<div class="card-discount">${disc}</div>` : ''}
+                    </div>
+                </label>`;
+        }).join('');
+
+        // Related products HTML
+        let relatedHtml = '';
+        if (related.length) {
+            relatedHtml = `
+            <hr>
+            <div class="related-products-section">
+                <h2>Related Pickles You May Like</h2>
+                <div class="related-grid">
+                    ${related.map(p => {
+                        const img = p.image || 'https://placehold.co/250x180/fef3c7/b45309?text=Pickle';
+                        const priceVal = p.minPrice || p.price || 0;
+                        const mrpVal   = p.maxPrice  || p.mrp   || 0;
+                        const relDisc  = calcDiscount(mrpVal, priceVal);
+                        return `
+                        <div class="related-card" onclick="window.location.href='product-page.html?id=${p.id}'">
+                            ${relDisc ? `<div class="related-discount-tag">${relDisc}</div>` : ''}
+                            <div class="related-img-box"><img src="${img}" alt="${p.name}" onerror="this.src='https://placehold.co/250x180/fef3c7/b45309?text=Pickle'"></div>
+                            <div class="related-name">${p.name}</div>
+                            <div class="related-stars">★★★★☆</div>
+                            <div class="related-price-box">
+                                <span class="related-price">${priceVal ? formatPrice(priceVal) : '—'}</span>
+                                ${mrpVal && mrpVal > priceVal ? `<span class="related-mrp">${formatPrice(mrpVal)}</span>` : ''}
+                            </div>
+                            <button class="view-product-btn">View Product</button>
+                        </div>`;
+                    }).join('')}
+                </div>
+            </div>`;
+        }
+
+        // Combo section HTML
+        let comboHtml = '';
+        if (combo && combo.items?.length) {
+            const maxItems = combo.items.length;
+            const requiredCount = Math.min(4, maxItems);
+            const comboItemsHtml = combo.items.map(item => `
+                <label class="combo-tag-item">
+                    <input type="checkbox" onchange="handleComboSelection(${requiredCount})">
+                    <div class="combo-tag-content">
+                        <div class="combo-img-circle">
+                            <img src="${item.image || 'https://placehold.co/64/fef3c7/b45309?text=P'}"
+                                 alt="${item.name}"
+                                 onerror="this.src='https://placehold.co/64/fef3c7/b45309?text=P'">
+                        </div>
+                        <span class="combo-name">${item.name}</span>
+                    </div>
+                </label>`).join('');
+
+            // Banner image: use first combo item's image as combo banner if no dedicated image
+            const bannerImg = combo.bannerImage || combo.items[0]?.image || 'https://placehold.co/300x250/fef3c7/b45309?text=Combo+Pack';
+
+            comboHtml = `
+            <hr>
+            <div class="combo-section">
+                <h2>Build Your Combo</h2>
+                <div class="combo-layout">
+                    <div class="combo-banner">
+                        <h3>Best of ${requiredCount} Pickles</h3>
+                        <p>${combo.comboPrice ? `Only at ₹${combo.comboPrice}` : 'Special Combo Price'}</p>
+                        <img src="${bannerImg}" alt="Combo Pack" onerror="this.src='https://placehold.co/300x250/fef3c7/b45309?text=Combo+Pack'">
+                    </div>
+                    <div class="combo-selector">
+                        <div class="combo-header">
+                            <span>Select any ${requiredCount} Pickles</span>
+                            <span class="combo-counter" id="comboCounter">0/${requiredCount} Selected</span>
+                        </div>
+                        <div class="combo-grid" id="comboGrid" data-required="${requiredCount}">
+                            ${comboItemsHtml}
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // ── Build full page HTML ──
+        container.innerHTML = `
+            <!-- 1. PRODUCT DETAILS -->
+            <div class="split-layout">
+                <div class="sticky-image-column">
+                    <div class="image-section">
+                        <div class="thumbnail-column">
+                            ${thumbsHtml}
+                        </div>
+                        <div class="main-image-container">
+                            <img src="${allImages[0]}" alt="${product?.name || 'Pickle'}" id="mainImage"
+                                 onerror="this.src='https://placehold.co/600x420/fef3c7/b45309?text=Image'">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="scrollable-content-column">
+                    <div class="details-section">
+                        <div class="product-header">
+                            ${product?.longName ? `<div class="product-long-name">${product.longName}</div>` : ''}
+                            <h1 class="product-title">${product?.name || 'Premium Pickle'}</h1>
+
+                            <div class="price-container">
+                                <span class="current-price-display" id="dynamicPrice">${formatPrice(firstVariant.price)}</span>
+                                <span class="mrp-price" id="dynamicMRP">${formatPrice(firstVariant.mrp)}</span>
+                                ${discount ? `<span class="discount-badge" id="dynamicDiscount">${discount}</span>` : '<span class="discount-badge" id="dynamicDiscount" style="display:none"></span>'}
+                            </div>
+
+                            <div class="rating-container">
+                                <span class="stars">★★★★★</span>
+                                <span class="rating-text">(4.9 out of 5 stars)</span>
+                            </div>
+
+                            ${badgesHtml ? `<div class="badges-container">${badgesHtml}</div>` : ''}
+                            ${tagsHtml ? `<div class="tags-container">${tagsHtml}</div>` : ''}
+                        </div>
+                        <hr>
+
+                        <!-- Variants -->
+                        <div class="pricing-section">
+                            <h3>Select Quantity:</h3>
+                            <div class="quantity-options">${variantsHtml}</div>
+                        </div>
+
+                        <!-- Qty Selector -->
+                        <div class="item-quantity">
+                            <span>Quantity:</span>
+                            <div class="qty-controls">
+                                <button type="button" onclick="changeQty(-1)">-</button>
+                                <input type="text" id="qtyInput" value="1" readonly>
+                                <button type="button" onclick="changeQty(1)">+</button>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-container">
+                            <div class="cart-wishlist-row">
+                                <button class="cart-btn">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle>
+                                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                    </svg>
+                                    Add to cart
+                                </button>
+                                <button class="wishlist-btn"><span style="font-size:1.3rem;">♥</span> Wishlist</button>
+                            </div>
+                            <button class="buy-now-btn">
+                                BUY NOW
+                                <div class="payment-icons">
+                                    <div class="pay-icon" title="PhonePe"><img src="https://via.placeholder.com/30/5f259f/ffffff?text=Pe" alt="PhonePe"></div>
+                                    <div class="pay-icon" title="GPay"><img src="https://via.placeholder.com/30/ffffff/4285F4?text=G" alt="GPay"></div>
+                                    <div class="pay-icon" title="Paytm"><img src="https://via.placeholder.com/30/00baf2/ffffff?text=Pt" alt="Paytm"></div>
+                                </div>
+                            </button>
+                        </div>
+
+                        <details class="policy-accordion">
+                            <summary>Shipping &amp; Return Policy</summary>
+                            <p>Free shipping on orders over ₹499. Eligible for return and replacement within <strong>7 days</strong> of delivery. Terms and conditions apply.</p>
+                        </details>
+                    </div>
+
+                    <hr>
+
+                    <div class="description-section">
+                        <h2>Product Description</h2>
+                        <p>${product?.description || 'A delicious, authentic pickle made with the finest ingredients.'}</p>
+                    </div>
+                </div>
+            </div>
+
+            ${relatedHtml}
+            ${comboHtml}
+        `;
+
+        // Start slideshow after render
+        startSlideShow();
+    }
+
+    // ─────────────────────────────────────────
+    //  Start
+    // ─────────────────────────────────────────
+    init();
+</script>
+
+<script>
+    // ─────────────────────────────────────────
+    //  SLIDESHOW (vanilla, runs after render)
+    // ─────────────────────────────────────────
+    let currentImgIndex = 0;
+    let slideInterval = null;
+
+    function getThumbs() {
+        return document.getElementsByClassName('thumb');
+    }
+
+    function startSlideShow() {
+        if (slideInterval) clearInterval(slideInterval);
+        slideInterval = setInterval(() => {
+            const thumbs = getThumbs();
+            if (!thumbs.length) return;
+            currentImgIndex = (currentImgIndex + 1) % thumbs.length;
+            updateMainImage(thumbs[currentImgIndex]);
+        }, 5000);
+    }
+
+    function updateMainImage(element) {
+        const mainImg = document.getElementById('mainImage');
+        if (!mainImg) return;
+        mainImg.src = element.src;
+        const thumbs = getThumbs();
+        for (let i = 0; i < thumbs.length; i++) thumbs[i].classList.remove('active');
+        element.classList.add('active');
+    }
+
+    function changeImage(element) {
+        const thumbs = getThumbs();
+        for (let i = 0; i < thumbs.length; i++) {
+            if (thumbs[i] === element) { currentImgIndex = i; break; }
+        }
+        updateMainImage(element);
+        clearInterval(slideInterval);
+        startSlideShow();
+    }
+
+    // ─────────────────────────────────────────
+    //  PRICE UPDATER
+    // ─────────────────────────────────────────
+    function updatePrice(current, mrp, discount) {
+        const priceEl    = document.getElementById('dynamicPrice');
+        const mrpEl      = document.getElementById('dynamicMRP');
+        const discountEl = document.getElementById('dynamicDiscount');
+        if (priceEl) priceEl.textContent = current;
+        if (mrpEl)   mrpEl.textContent   = mrp;
+        if (discountEl) {
+            if (discount) { discountEl.textContent = discount; discountEl.style.display = ''; }
+            else { discountEl.style.display = 'none'; }
+        }
+    }
+
+    // ─────────────────────────────────────────
+    //  QUANTITY SELECTOR
+    // ─────────────────────────────────────────
+    function changeQty(amount) {
+        const qtyInput = document.getElementById('qtyInput');
+        if (!qtyInput) return;
+        const newVal = Math.max(1, parseInt(qtyInput.value) + amount);
+        qtyInput.value = newVal;
+    }
+
+    // ─────────────────────────────────────────
+    //  COMBO SELECTION
+    // ─────────────────────────────────────────
+    function handleComboSelection(required) {
+        const grid = document.getElementById('comboGrid');
+        if (!grid) return;
+        const req = required || parseInt(grid.dataset.required) || 4;
+        const checkboxes = grid.querySelectorAll('input[type="checkbox"]');
+        const counter    = document.getElementById('comboCounter');
+        let checkedCount = 0;
+        checkboxes.forEach(cb => { if (cb.checked) checkedCount++; });
+        if (counter) counter.textContent = `${checkedCount}/${req} Selected`;
+        if (checkedCount >= req) {
+            checkboxes.forEach(cb => {
+                if (!cb.checked) cb.closest('.combo-tag-item')?.classList.add('dimmed');
+            });
+        } else {
+            checkboxes.forEach(cb => cb.closest('.combo-tag-item')?.classList.remove('dimmed'));
+        }
+    }
+</script>
+
+</body>
+</html>
