@@ -208,7 +208,11 @@
     /* ═══════════════════════════════════════════
        SECTION SHARED
     ═══════════════════════════════════════════ */
-    .section { padding: 80px 5vw; }
+    /* Added scroll-margin-top to prevent the fixed nav from hiding the section header when scrolling */
+    .section { 
+      padding: 80px 5vw; 
+      scroll-margin-top: var(--nav-h); 
+    }
     .section-label {
       display:inline-flex; align-items:center; gap:8px;
       font-size:11px; font-weight:700; letter-spacing:3px;
@@ -761,7 +765,18 @@
         const card = document.createElement('div');
         card.className = 'cat-card reveal';
         card.style.transitionDelay = `${i * 80}ms`;
-        card.onclick = () => window.location.href = `products.html?categoryId=${cat.id}`;
+        
+        // --- NEW CLICK HANDLER: Smooth scroll to the specific category section below ---
+        card.onclick = () => {
+          const targetSection = document.getElementById(`category-section-${cat.id}`);
+          if (targetSection) {
+            targetSection.scrollIntoView({ behavior: 'smooth' });
+          } else {
+            // Fallback in case the category section didn't render (e.g. no products)
+            window.location.href = `products.html?categoryId=${cat.id}`;
+          }
+        };
+
         card.innerHTML = `
           <img src="${img}" alt="${cat.name}" loading="lazy"
                onerror="this.src='${fallback(300,400,cat.name)}'">
@@ -819,6 +834,9 @@
         // Build dynamically styled block
         const sectionWrapper = document.createElement('section');
         sectionWrapper.className = 'section category-products-wrapper reveal';
+        
+        // --- NEW ID ASSIGNMENT: Give each section a unique ID to scroll to ---
+        sectionWrapper.id = `category-section-${cat.id}`;
         
         const sectionHeader = `
           <div class="section-label">${cat.name} Collection</div>
