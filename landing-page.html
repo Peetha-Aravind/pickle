@@ -556,7 +556,8 @@
       const card = document.createElement('div');
       card.className = 'product-card reveal';
       card.style.transitionDelay = `${(index % 6) * 70}ms`;
-      card.onclick = () => window.location.href = `product-page.html?id=${prod.id}`;
+      // ✅ CHANGED: now links to view.html instead of product-page.html
+      card.onclick = () => window.location.href = `view.html?id=${prod.id}`;
       card.innerHTML = `
         <div class="product-card-img">
           ${disc ? `<div class="card-ribbon">${disc}</div>` : ''}
@@ -578,7 +579,7 @@
     }
 
     /* ─────────────────────────────────────────
-       HERO SLIDER
+       HERO SLIDER (unchanged)
     ───────────────────────────────────────── */
     const HERO_INTERVAL = 5000;
     let heroSlides = [], heroIndex = 0, heroTimer = null;
@@ -766,13 +767,12 @@
         card.className = 'cat-card reveal';
         card.style.transitionDelay = `${i * 80}ms`;
         
-        // --- NEW CLICK HANDLER: Smooth scroll to the specific category section below ---
         card.onclick = () => {
           const targetSection = document.getElementById(`category-section-${cat.id}`);
           if (targetSection) {
             targetSection.scrollIntoView({ behavior: 'smooth' });
           } else {
-            // Fallback in case the category section didn't render (e.g. no products)
+            // Fallback: if category section missing, you could link to a category page
             window.location.href = `products.html?categoryId=${cat.id}`;
           }
         };
@@ -803,13 +803,11 @@
       const container = document.getElementById('allCategoryProductsContainer');
       container.innerHTML = '';
 
-      // Create an array mapping the admin-configured order
       const visible = landingCats.filter(c => c.isVisible !== false);
       let orderedCats = visible
         .map(lc => allCategories.find(c => c.id === lc.id))
         .filter(c => c && c.isavailable !== false);
 
-      // Fallback if no admin config was found
       if (!orderedCats.length && !landingCats.length) {
         orderedCats = allCategories.filter(c => c.isavailable !== false);
       }
@@ -817,25 +815,16 @@
       if (!orderedCats.length) return;
 
       orderedCats.forEach((cat) => {
-        // Find products belonging to this category
         let catProducts = allProducts.filter(p => p.categoryId === cat.id || p.category === cat.name);
-        
-        // Fallback: Check if category document stores an object map of product keys
         if (catProducts.length === 0 && cat.products) {
           const productIds = Object.keys(cat.products);
           catProducts = allProducts.filter(p => productIds.includes(p.id));
         }
-
-        // Filter out unavailable items
         catProducts = catProducts.filter(p => p.isavailable !== false);
+        if (catProducts.length === 0) return;
 
-        if (catProducts.length === 0) return; // Hide category sections that have no active products
-
-        // Build dynamically styled block
         const sectionWrapper = document.createElement('section');
         sectionWrapper.className = 'section category-products-wrapper reveal';
-        
-        // --- NEW ID ASSIGNMENT: Give each section a unique ID to scroll to ---
         sectionWrapper.id = `category-section-${cat.id}`;
         
         const sectionHeader = `
@@ -847,14 +836,12 @@
         const grid = document.createElement('div');
         grid.className = 'product-grid';
         
-        // Append cards to grid
         catProducts.forEach((prod, idx) => {
           grid.appendChild(createProductCard(prod, idx));
         });
 
         sectionWrapper.innerHTML = sectionHeader;
         sectionWrapper.appendChild(grid);
-        
         container.appendChild(sectionWrapper);
       });
 
@@ -862,7 +849,7 @@
     }
 
     /* ─────────────────────────────────────────
-       MAIN INIT — parallel fetches
+       MAIN INIT
     ───────────────────────────────────────── */
     async function init() {
       buildMarquee();
@@ -878,25 +865,20 @@
         const allProducts  = productsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
         const allCategories= categoriesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-        // 2. Hero
         await loadHero(masterData);
 
-        // 3. Best sellers
         const bestIds      = masterData?.config?.bestPickles || [];
         const picksToShow  = bestIds.length
           ? bestIds
           : allProducts.filter(p => p.isavailable !== false).slice(0, 6).map(p => p.id);
         await loadBestSellers(picksToShow, allProducts);
 
-        // 4. Categories (get admin order array)
         const landingCats  = masterData?.config?.categories || [];
         const catsToShow   = landingCats.length
           ? landingCats
           : allCategories.map(c => ({ id: c.id, isVisible: true }));
         
         await loadCategories(catsToShow, allCategories);
-
-        // 5. Build dynamic category-wise product listings using the same admin order
         loadAllCategoryProducts(catsToShow, allCategories, allProducts);
 
       } catch (err) {
@@ -943,7 +925,6 @@
       }, { threshold: 0.08 });
       document.querySelectorAll('.reveal:not(.visible)').forEach(el => io.observe(el));
     }
-    /* observe sections themselves on load */
     observeReveal();
   </script>
 
