@@ -36,6 +36,20 @@
             gap: 40px;
         }
 
+        /* Back to shop link */
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #e67e22;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .back-link:hover {
+            color: #c0392b;
+            text-decoration: underline;
+        }
+
         /* Loading & error */
         .loading-state, .error-state {
             text-align: center;
@@ -302,7 +316,7 @@
         .description-section h2 { font-size: 1.5rem; color: #2c3e50; margin-bottom: 15px; }
         .description-section p { color: #555; line-height: 1.7; font-size: 1.05rem; }
 
-        /* Related & combo sections (unchanged styles) */
+        /* Related & combo sections */
         .related-products-section { width: 100%; }
         .related-products-section h2 { font-size: 1.8rem; color: #2c3e50; margin-bottom: 25px; }
         .related-grid {
@@ -314,6 +328,7 @@
             border: 1px solid #eaeaea; border-radius: 8px; background: #fff;
             transition: transform 0.2s, box-shadow 0.2s; text-align: center; padding-bottom: 15px;
             cursor: pointer;
+            position: relative;
         }
         .related-card:hover { transform: translateY(-5px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
         .related-discount-tag {
@@ -365,19 +380,20 @@
             .combo-grid { grid-template-columns: 1fr; }
         }
     </style>
-    <!-- Firebase SDK (v9 modular, but we'll use compat for simplicity) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 <div class="page-wrapper">
     <div class="single-box" id="productContainer">
+        <!-- Loading state will be replaced -->
         <div class="loading-state">Loading product...</div>
     </div>
 </div>
 
 <script>
-    // Firebase config (same as landing page)
+    // Firebase config
     const firebaseConfig = {
         apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
         authDomain: "pickle-fdc54.firebaseapp.com",
@@ -390,19 +406,19 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Helper: get product ID from URL
+    // Get product ID from URL
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
 
-    // DOM elements we'll fill later
-    let mainImageEl, thumbContainer, productTitleEl, currentPriceEl, mrpPriceEl, discountBadgeEl, starsEl, ratingTextEl, variantsContainer, qtyInput, cartBtn, buyNowBtn, descriptionEl;
+    // DOM references
+    let mainImageEl, currentPriceEl, mrpPriceEl, discountBadgeEl, qtyInput;
 
     // Slideshow variables
     let currentImgIndex = 0;
     let slideInterval;
     let productImages = [];
 
-    // Price updater for variants
+    // Helper functions
     function updatePrice(price, mrp, discountPercent = null) {
         if (currentPriceEl) currentPriceEl.innerText = `₹${price}`;
         if (mrpPriceEl) mrpPriceEl.innerText = `₹${mrp}`;
@@ -451,7 +467,6 @@
         startSlideShow();
     }
 
-    // Handle combo selection (unchanged)
     function handleComboSelection() {
         const grid = document.getElementById('comboGrid');
         if (!grid) return;
@@ -467,7 +482,49 @@
         });
     }
 
-    // Main render function: build product page from Firestore data
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // Generate related cards (UPDATED to view.html)
+    function generateStaticRelatedCards() {
+        return `
+            <div class="related-card" onclick="window.location.href='view.html?id=lime_pickle'">
+                <div class="related-discount-tag">25% OFF</div>
+                <div class="related-img-box"><img src="https://via.placeholder.com/250x180?text=Lime+Pickle"></div>
+                <div class="related-name">Spicy Tangy Lime Pickle</div>
+                <div><span class="related-price">₹129</span><span class="related-mrp">₹172</span></div>
+                <button class="view-product-btn">View Product</button>
+            </div>
+            <div class="related-card" onclick="window.location.href='view.html?id=garlic_pickle'">
+                <div class="related-discount-tag">25% OFF</div>
+                <div class="related-img-box"><img src="https://via.placeholder.com/250x180?text=Garlic+Pickle"></div>
+                <div class="related-name">Hot Garlic & Chili Pickle</div>
+                <div><span class="related-price">₹169</span><span class="related-mrp">₹225</span></div>
+                <button class="view-product-btn">View Product</button>
+            </div>
+        `;
+    }
+
+    function generateStaticComboItems() {
+        const items = ["Spicy Mango", "Tangy Lime", "Hot Garlic", "Mixed Veg", "Sweet Mango", "Green Chili", "Zesty Amla", "Ginger Garlic"];
+        return items.map(name => `
+            <label class="combo-tag-item">
+                <input type="checkbox" onchange="handleComboSelection()">
+                <div class="combo-tag-content">
+                    <div class="combo-img-circle"><img src="https://via.placeholder.com/64?text=${name[0]}"></div>
+                    <span class="combo-name">${name}</span>
+                </div>
+            </label>
+        `).join('');
+    }
+
+    // Main load function
     async function loadProduct() {
         const container = document.getElementById('productContainer');
         if (!productId) {
@@ -483,10 +540,8 @@
             }
             const product = { id: docSnap.id, ...docSnap.data() };
             
-            // Extract data with fallbacks
             const name = product.name || "Traditional Pickle";
             const variants = product.variants || [];
-            // Default first variant
             const defaultVariant = variants.length ? variants[0] : { weight: "250g", price: 149, mrp: 199 };
             const images = product.images && product.images.length ? product.images : ["https://via.placeholder.com/600x420?text=Product+Image"];
             productImages = images;
@@ -494,7 +549,6 @@
             const ratingStars = "★".repeat(Math.floor(rating)) + "☆".repeat(5-Math.floor(rating));
             const description = product.description || "Handcrafted with authentic spices and love. No artificial preservatives.";
             
-            // Build variant radios HTML
             let variantsHtml = '';
             variants.forEach((v, idx) => {
                 const isChecked = idx === 0 ? 'checked' : '';
@@ -510,18 +564,15 @@
                     </label>
                 `;
             });
-            if (!variants.length) {
-                variantsHtml = `<p class="error-state">No size variants available.</p>`;
-            }
+            if (!variants.length) variantsHtml = `<p class="error-state">No size variants available.</p>`;
 
-            // Build thumbnails
             let thumbsHtml = '';
             images.forEach((img, idx) => {
                 thumbsHtml += `<img src="${img}" alt="View ${idx+1}" class="thumb ${idx===0 ? 'active' : ''}" onclick="changeImage(this, ${idx})">`;
             });
 
-            // Full HTML structure
             const fullHtml = `
+                <a href="landing.html" class="back-link">← Back to Shop</a>
                 <div class="split-layout">
                     <div class="sticky-image-column">
                         <div class="image-section">
@@ -582,7 +633,6 @@
                     </div>
                 </div>
                 <hr>
-                <!-- Related Products (static for now, can be dynamic later) -->
                 <div class="related-products-section">
                     <h2>You May Also Like</h2>
                     <div class="related-grid">
@@ -611,7 +661,7 @@
             `;
             container.innerHTML = fullHtml;
             
-            // Re-attach global references
+            // Re-attach references
             mainImageEl = document.getElementById('mainImage');
             currentPriceEl = document.getElementById('dynamicPrice');
             mrpPriceEl = document.getElementById('dynamicMRP');
@@ -622,10 +672,8 @@
             const comboChecks = document.querySelectorAll('#comboGrid input[type="checkbox"]');
             comboChecks.forEach(cb => cb.addEventListener('change', handleComboSelection));
             
-            // Slideshow start
             startSlideShow();
             
-            // Add to cart / buy now alerts (optional)
             document.getElementById('cartBtn')?.addEventListener('click', () => alert(`Added ${qtyInput.value} item(s) to cart!`));
             document.getElementById('buyNowBtn')?.addEventListener('click', () => alert('Proceeding to checkout...'));
         } catch (err) {
@@ -634,51 +682,7 @@
         }
     }
 
-    function escapeHtml(str) {
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-            return c;
-        });
-    }
-
-    function generateStaticRelatedCards() {
-        // Keep your existing static related products or replace with dynamic query later
-        return `
-            <div class="related-card" onclick="window.location.href='product-page.html?id=lime_pickle'">
-                <div class="related-discount-tag">25% OFF</div>
-                <div class="related-img-box"><img src="https://via.placeholder.com/250x180?text=Lime+Pickle"></div>
-                <div class="related-name">Spicy Tangy Lime Pickle</div>
-                <div><span class="related-price">₹129</span><span class="related-mrp">₹172</span></div>
-                <button class="view-product-btn">View Product</button>
-            </div>
-            <div class="related-card" onclick="window.location.href='product-page.html?id=garlic_pickle'">
-                <div class="related-discount-tag">25% OFF</div>
-                <div class="related-img-box"><img src="https://via.placeholder.com/250x180?text=Garlic+Pickle"></div>
-                <div class="related-name">Hot Garlic & Chili Pickle</div>
-                <div><span class="related-price">₹169</span><span class="related-mrp">₹225</span></div>
-                <button class="view-product-btn">View Product</button>
-            </div>
-        `;
-    }
-
-    function generateStaticComboItems() {
-        const items = ["Spicy Mango", "Tangy Lime", "Hot Garlic", "Mixed Veg", "Sweet Mango", "Green Chili", "Zesty Amla", "Ginger Garlic"];
-        return items.map(name => `
-            <label class="combo-tag-item">
-                <input type="checkbox" onchange="handleComboSelection()">
-                <div class="combo-tag-content">
-                    <div class="combo-img-circle"><img src="https://via.placeholder.com/64?text=${name[0]}"></div>
-                    <span class="combo-name">${name}</span>
-                </div>
-            </label>
-        `).join('');
-    }
-
-    // Make functions globally available for inline onclick
+    // Expose global functions for inline event handlers
     window.updatePrice = updatePrice;
     window.changeQty = changeQty;
     window.changeImage = changeImage;
