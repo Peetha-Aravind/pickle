@@ -1,768 +1,720 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Page | Happy NonVeg Pickles</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Happy NonVeg Pickles – Product Detail</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            background-color: #f9f9f9;
-            padding: 40px 20px;
-        }
+    :root {
+      --rust: #C0392B;
+      --rust-dark: #962d22;
+      --rust-light: #f5e9e7;
+      --turmeric: #E8A020;
+      --cream: #FDF6EC;
+      --ink: #1C1009;
+      --ash: #6b5b4e;
+      --border: rgba(28, 16, 9, 0.1);
+      --shadow-sm: 0 2px 8px rgba(28, 16, 9, 0.08);
+      --shadow-md: 0 8px 32px rgba(28, 16, 9, 0.12);
+      --r-card: 16px;
+      --r-pill: 999px;
+      --ff-display: 'Playfair Display', Georgia, serif;
+      --ff-body: 'DM Sans', sans-serif;
+      --nav-h: 68px;
+    }
 
-        /* Back to shop link */
-        .back-link {
-            display: inline-block;
-            margin-bottom: 24px;
-            color: #e67e22;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: color 0.2s;
-        }
-        .back-link:hover {
-            color: #c0392b;
-            text-decoration: underline;
-        }
+    body {
+      background-color: var(--cream);
+      color: var(--ink);
+      font-family: var(--ff-body);
+      line-height: 1.5;
+      padding-top: var(--nav-h);
+    }
 
-        /* Main content area (no card) */
-        .product-detail-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: transparent;
-            padding: 0;
-        }
+    /* Navigation (reusing landing style) */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 900;
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5vw;
+      background: rgba(253, 246, 236, 0.94);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      transition: box-shadow 0.3s;
+    }
+    .nav.scrolled { box-shadow: var(--shadow-md); }
+    .nav-logo {
+      font-family: var(--ff-display);
+      font-size: 1.45rem;
+      font-weight: 900;
+      color: var(--rust);
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-logo .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--turmeric);
+      border-radius: 50%;
+    }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--ash);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--rust); }
+    .nav-cta {
+      background: var(--rust);
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: var(--r-pill);
+      font-weight: 600;
+    }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
 
-        /* Loading & error */
-        .loading-state, .error-state {
-            text-align: center;
-            padding: 60px 20px;
-            font-size: 1.2rem;
-            color: #e67e22;
-        }
-        .error-state { color: #d32f2f; }
+    /* Main product layout */
+    .product-container {
+      max-width: 1280px;
+      margin: 30px auto 60px;
+      padding: 0 5vw;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+    }
 
-        /* --- TOP SPLIT SECTION --- */
-        .split-layout {
-            display: flex;
-            gap: 50px;
-            align-items: flex-start;
-            margin-bottom: 40px;
-        }
+    /* Images */
+    .product-gallery {
+      position: sticky;
+      top: calc(var(--nav-h) + 20px);
+    }
+    .main-image {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #f0e7de;
+      border-radius: var(--r-card);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+    }
+    .main-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .thumbnail-list {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .thumbnail {
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border 0.2s, transform 0.2s;
+      background: #e9dfd5;
+    }
+    .thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .thumbnail.active {
+      border-color: var(--rust);
+      transform: scale(0.98);
+    }
 
-        .sticky-image-column {
-            flex: 1.5;
-            position: sticky;
-            top: 40px;
-        }
+    /* Product info */
+    .product-info {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .product-title {
+      font-family: var(--ff-display);
+      font-size: 2.4rem;
+      font-weight: 900;
+      line-height: 1.2;
+      color: var(--ink);
+    }
+    .rating {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .stars {
+      color: var(--turmeric);
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+    }
+    .review-count {
+      color: var(--ash);
+      font-size: 0.85rem;
+    }
+    .price-group {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      flex-wrap: wrap;
+      background: var(--rust-light);
+      padding: 12px 20px;
+      border-radius: 60px;
+      width: fit-content;
+    }
+    .current-price {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--rust);
+    }
+    .old-price {
+      text-decoration: line-through;
+      color: var(--ash);
+      font-size: 1rem;
+    }
+    .discount-badge {
+      background: var(--rust);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .description {
+      color: #3a2c22;
+      border-left: 4px solid var(--turmeric);
+      padding-left: 18px;
+      margin: 10px 0;
+    }
+    /* Variant selector */
+    .variants-section h3 {
+      font-size: 1rem;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    .variant-buttons {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .variant-btn {
+      border: 1.5px solid var(--border);
+      background: white;
+      border-radius: 60px;
+      padding: 10px 24px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .variant-btn.active {
+      border-color: var(--rust);
+      background: var(--rust-light);
+      color: var(--rust);
+    }
+    .qty-selector {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin: 8px 0 10px;
+    }
+    .qty-control {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 40px;
+      overflow: hidden;
+    }
+    .qty-control button {
+      background: #fff;
+      border: none;
+      padding: 8px 18px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .qty-control input {
+      width: 50px;
+      text-align: center;
+      border: none;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+    }
+    .btn-primary, .btn-secondary {
+      flex: 1;
+      padding: 14px;
+      border-radius: 40px;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-primary {
+      background: var(--rust);
+      color: white;
+      border: none;
+    }
+    .btn-primary:hover {
+      background: var(--rust-dark);
+      transform: translateY(-2px);
+    }
+    .btn-secondary {
+      background: transparent;
+      border: 1.5px solid var(--rust);
+      color: var(--rust);
+    }
+    .btn-secondary:hover {
+      background: var(--rust-light);
+    }
+    /* Related products */
+    .related-section {
+      max-width: 1280px;
+      margin: 80px auto 60px;
+      padding: 0 5vw;
+    }
+    .related-section h2 {
+      font-family: var(--ff-display);
+      font-size: 1.9rem;
+      margin-bottom: 28px;
+      position: relative;
+      display: inline-block;
+    }
+    .related-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 28px;
+    }
+    .related-card {
+      background: white;
+      border-radius: var(--r-card);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: transform 0.25s, box-shadow 0.25s;
+      cursor: pointer;
+    }
+    .related-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md);
+    }
+    .related-img {
+      aspect-ratio: 1 / 1;
+      background: #f3ede7;
+    }
+    .related-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .related-info {
+      padding: 14px;
+    }
+    .related-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    .related-price {
+      color: var(--rust);
+      font-weight: 800;
+      margin-top: 6px;
+    }
+    /* Loading & errors */
+    .loader {
+      text-align: center;
+      padding: 60px;
+      color: var(--ash);
+    }
+    .error-message {
+      background: #ffefef;
+      padding: 30px;
+      text-align: center;
+      border-radius: var(--r-card);
+      margin: 40px auto;
+      max-width: 600px;
+    }
+    footer {
+      background: var(--ink);
+      color: rgba(255, 255, 255, 0.6);
+      padding: 30px 5vw;
+      text-align: center;
+      margin-top: 50px;
+    }
 
-        .image-section {
-            display: flex;
-            gap: 15px;
-        }
-
-        .thumbnail-column {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            width: 90px;
-            flex-shrink: 0;
-        }
-
-        .thumb {
-            width: 100%;
-            height: 90px;
-            object-fit: cover;
-            border-radius: 6px;
-            cursor: pointer;
-            border: 2px solid transparent;
-            background-color: #e0e0e0;
-            transition: border 0.2s ease;
-        }
-
-        .thumb:hover, .thumb.active { border-color: red; }
-
-        /* Main image height changed to 600px */
-        .main-image-container {
-            flex: 1;
-            height: 600px;
-            background-color: #e0e0e0;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #eaeaea;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .main-image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: opacity 0.3s ease;
-        }
-
-        .scrollable-content-column {
-            flex: 1.2;
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-
-        .details-section {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        
-        .product-header {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .product-title {
-            font-size: 2.2rem;
-            color: #2c3e50;
-            line-height: 1.2;
-        }
-
-        .price-container {
-            display: flex;
-            align-items: baseline;
-            gap: 12px;
-            margin-top: 5px;
-            flex-wrap: wrap;
-        }
-
-        .current-price-display {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #e67e22;
-        }
-
-        .mrp-price {
-            font-size: 1.2rem;
-            color: #95a5a6;
-            text-decoration: line-through;
-        }
-        
-        .discount-badge {
-            background-color: #2ecc71;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            font-weight: bold;
-        }
-
-        .rating-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .stars { color: #f1c40f; font-size: 1.3rem; }
-        .rating-text { color: #7f8c8d; font-size: 0.95rem; }
-        
-        hr {
-            border: 0;
-            height: 1px;
-            background: #eaeaea;
-            width: 100%;
-            margin: 10px 0;
-        }
-
-        .pricing-section h3 {
-            font-size: 1.1rem;
-            color: #34495e;
-            margin-bottom: 12px;
-        }
-
-        .quantity-options {
-            display: flex;
-            gap: 15px; 
-            margin-bottom: 10px;
-            flex-wrap: wrap;
-        }
-
-        .quantity-card {
-            flex: 1;
-            cursor: pointer;
-            min-width: 100px;
-        }
-
-        .quantity-card input { display: none; }
-
-        .card-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 12px;
-            border: 2px solid #eaeaea;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            text-align: center;
-            background: #fff;
-        }
-
-        .card-content .weight {
-            font-weight: bold;
-            color: #2c3e50;
-            font-size: 1.1rem;
-            margin-bottom: 5px;
-        }
-
-        .card-prices { font-size: 0.9rem; color: #555; }
-        .card-prices .strike { text-decoration: line-through; color: #95a5a6; font-size: 0.8rem; }
-        .card-discount { color: #d32f2f; font-weight: bold; font-size: 0.8rem; margin-top: 3px; }
-
-        .quantity-card input:checked + .card-content {
-            border-color: red;
-            background-color: #fff5f5; 
-        }
-
-        .item-quantity {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 10px;
-        }
-
-        .item-quantity span { font-weight: bold; color: #34495e; }
-
-        .qty-controls {
-            display: flex;
-            align-items: center;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            overflow: hidden;
-            background: #fff;
-        }
-
-        .qty-controls button {
-            background: #f0f0f0; border: none; padding: 8px 15px;
-            font-size: 1.2rem; cursor: pointer; transition: background 0.2s;
-        }
-
-        .qty-controls button:hover { background: #e0e0e0; }
-        .qty-controls input {
-            width: 40px; text-align: center; border: none;
-            font-size: 1.1rem; font-weight: bold; outline: none; background: #fff;
-        }
-
-        .action-container { display: flex; flex-direction: column; gap: 15px; }
-        .cart-wishlist-row { display: flex; gap: 15px; width: 100%; }
-
-        .cart-btn, .wishlist-btn {
-            flex: 1; 
-            padding: 16px; font-size: 1.1rem; font-weight: bold;
-            border-radius: 8px; cursor: pointer; display: flex;
-            justify-content: center; align-items: center; gap: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .cart-btn { background-color: black; color: white; border: 2px solid black; }
-        .wishlist-btn { background-color: white; color: black; border: 2px solid black; }
-        .buy-now-btn {
-            width: 100%; background-color: #e67e22; color: white; border: none;
-            padding: 16px; font-size: 1.2rem; font-weight: bold; border-radius: 8px;
-            cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 15px;
-            transition: all 0.3s ease; text-transform: uppercase;
-        }
-
-        .cart-btn:hover, .wishlist-btn:hover, .buy-now-btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-        }
-        .cart-btn:hover { opacity: 0.85; }
-        .wishlist-btn:hover { border-color: red; color: red; }
-        .buy-now-btn:hover { background-color: #cf6d17; }
-
-        .policy-accordion { background: #fdfbf7; border-radius: 8px; border: 1px solid #e67e22; overflow: hidden; margin-top: 10px; }
-        .policy-accordion summary {
-            padding: 15px; font-weight: bold; color: #e67e22; cursor: pointer;
-            outline: none; list-style: none; display: flex; justify-content: space-between;
-        }
-        .policy-accordion summary::-webkit-details-marker { display: none; }
-        .policy-accordion summary::after { content: '+'; font-size: 1.2rem; }
-        .policy-accordion[open] summary::after { content: '-'; }
-        .policy-accordion p {
-            padding: 0 15px 15px 15px; color: #2c3e50; font-size: 0.95rem; line-height: 1.5;
-            border-top: 1px dashed #e67e22; padding-top: 15px;
-        }
-
-        .description-section h2 { font-size: 1.5rem; color: #2c3e50; margin-bottom: 15px; }
-        .description-section p { color: #555; line-height: 1.7; font-size: 1.05rem; }
-        .description-section {
-            background: transparent;
-            padding: 0;
-            margin-bottom: 40px;
-        }
-
-        /* --- NEW RELATED PRODUCTS CARD DESIGN --- */
-        .related-products-section {
-            margin-top: 40px;
-        }
-        .related-products-section h2 {
-            font-size: 1.8rem;
-            color: #2c3e50;
-            margin-bottom: 25px;
-        }
-
-        .related-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            padding: 10px 0;
-        }
-
-        .related-card {
-            border: 1px solid #f0f0f0;
-            border-radius: 12px;
-            background: #fff;
-            text-align: left;
-            cursor: pointer;
-            position: relative;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .related-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-        }
-
-        /* Ribbon style tag on the top left */
-        .related-discount-tag {
-            position: absolute;
-            top: 15px;
-            left: 0;
-            background-color: #b73839; /* Deep red matching the image */
-            color: white;
-            font-size: 0.75rem;
-            padding: 6px 16px 6px 12px;
-            font-weight: 700;
-            z-index: 10;
-            /* Creates the angled cut on the right side of the ribbon */
-            clip-path: polygon(0 0, 100% 0, 85% 50%, 100% 100%, 0 100%);
-        }
-
-        .related-img-box {
-            width: 100%;
-            height: 220px;
-            background-color: #fcf6de; /* Light cream background */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .related-img-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .related-content {
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .related-name {
-            font-size: 1.1rem;
-            color: #222;
-            margin: 0 0 4px 0;
-            font-weight: 700;
-            text-transform: lowercase;
-        }
-
-        .related-weight {
-            font-size: 0.85rem;
-            color: #888;
-            margin-bottom: 12px;
-        }
-
-        .related-price-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-
-        .related-price {
-            color: #b73839;
-            font-size: 1.25rem;
-            font-weight: 700;
-        }
-
-        .related-mrp {
-            text-decoration: line-through;
-            color: #999;
-            font-size: 0.9rem;
-        }
-
-        .related-discount-pill {
-            background-color: #faebeb;
-            color: #b73839;
-            font-size: 0.7rem;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-weight: 700;
-        }
-
-        .view-product-btn {
-            background-color: #251611; /* Dark brown/black */
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.2s ease;
-        }
-
-        .view-product-btn:hover {
-            background: #150c09;
-        }
-
-        .no-related-msg {
-            text-align: center;
-            color: #95a5a6;
-            font-style: italic;
-            padding: 20px;
-        }
-
-        @media (max-width: 900px) {
-            .split-layout { flex-direction: column; gap: 30px; }
-            .sticky-image-column { position: relative; top: 0; }
-            .thumbnail-column { flex-direction: row; width: 100%; }
-            .thumb { width: calc(25% - 9px); }
-            .main-image-container { height: 400px; }
-        }
-    </style>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    @media (max-width: 800px) {
+      .product-container { grid-template-columns: 1fr; gap: 32px; }
+      .product-gallery { position: relative; top: 0; }
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+    }
+    @media (max-width: 500px) {
+      .variant-buttons { gap: 10px; }
+      .variant-btn { padding: 6px 18px; font-size: 0.85rem; }
+      .thumbnail { width: 60px; height: 60px; }
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s, transform 0.6s;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
 </head>
 <body>
-<div class="page-wrapper">
-    <a href="landing.html" class="back-link">← Back to Shop</a>
-    <div class="product-detail-container" id="productContainer">
-        <div class="loading-state">Loading product...</div>
-    </div>
-</div>
 
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
-        authDomain: "pickle-fdc54.firebaseapp.com",
-        projectId: "pickle-fdc54",
-        storageBucket: "pickle-fdc54.firebasestorage.app",
-        messagingSenderId: "650348710985",
-        appId: "1:650348710985:web:b8eedb551a79b536578398",
-        measurementId: "G-B40NG5KQDL"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+<nav class="nav" id="mainNav">
+  <div class="nav-logo">
+    <span class="dot"></span> Happy NonVeg Pickles
+  </div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="index.html#bestsellers">Best Sellers</a>
+    <a href="index.html#categories">Shop</a>
+  </div>
+  <div class="nav-hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const productId = urlParams.get('id');
+<main id="productDetailRoot">
+  <div class="loader">Loading delicious details...</div>
+</main>
 
-    let mainImageEl, currentPriceEl, mrpPriceEl, discountBadgeEl, qtyInput;
-    let currentImgIndex = 0;
-    let slideInterval;
-    let productImages = [];
+<footer>
+  <p>© 2025 Happy NonVeg Pickles — handcrafted with tradition.</p>
+</footer>
 
-    const FALLBACK_IMG = "https://via.placeholder.com/600x420?text=Image+Not+Found";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { getFirestore, doc, getDoc, getDocs, collection, query, where, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    function updatePrice(price, mrp, discountPercent = null) {
-        if (currentPriceEl) currentPriceEl.innerText = `₹${price}`;
-        if (mrpPriceEl) mrpPriceEl.innerText = `₹${mrp}`;
-        if (discountBadgeEl) {
-            if (discountPercent !== null) {
-                discountBadgeEl.innerText = `${discountPercent}% OFF`;
-            } else if (mrp > price) {
-                const disc = Math.round((1 - price/mrp)*100);
-                discountBadgeEl.innerText = `${disc}% OFF`;
-            } else {
-                discountBadgeEl.innerText = '';
-            }
-        }
+  // Firebase config (same as landing page)
+  const firebaseConfig = {
+    apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
+    authDomain: "pickle-fdc54.firebaseapp.com",
+    projectId: "pickle-fdc54",
+    storageBucket: "pickle-fdc54.firebasestorage.app",
+    messagingSenderId: "650348710985",
+    appId: "1:650348710985:web:b8eedb551a79b536578398",
+    measurementId: "G-B40NG5KQDL"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Helper: get product ID from URL
+  function getProductId() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('id');
+  }
+
+  // Format price
+  function formatPrice(price) {
+    return `₹${Math.round(Number(price))}`;
+  }
+
+  // Calculate discount percent
+  function getDiscountPercent(mrp, price) {
+    if (!mrp || !price || mrp <= price) return null;
+    return Math.round(((mrp - price) / mrp) * 100);
+  }
+
+  // Render full product page
+  async function loadProductPage() {
+    const root = document.getElementById('productDetailRoot');
+    const productId = getProductId();
+    if (!productId) {
+      root.innerHTML = `<div class="error-message">❌ Product ID missing. Please go back to the shop.</div>`;
+      return;
     }
 
-    function changeQty(amount) {
-        let val = parseInt(qtyInput.value);
-        let newVal = val + amount;
-        if (newVal >= 1) qtyInput.value = newVal;
-    }
+    try {
+      // 1. Fetch product
+      const productRef = doc(db, "products", productId);
+      const productSnap = await getDoc(productRef);
+      if (!productSnap.exists()) {
+        root.innerHTML = `<div class="error-message">😕 Product not found. It may have been removed.</div>`;
+        return;
+      }
+      const product = { id: productSnap.id, ...productSnap.data() };
 
-    function startSlideShow() {
-        if (slideInterval) clearInterval(slideInterval);
-        if (!productImages.length) return;
-        slideInterval = setInterval(() => {
-            currentImgIndex = (currentImgIndex + 1) % productImages.length;
-            updateMainImageByIndex(currentImgIndex);
-        }, 5000);
-    }
-
-    function updateMainImageByIndex(index) {
-        if (!productImages[index]) return;
-        mainImageEl.src = productImages[index];
-        const thumbs = document.querySelectorAll('.thumb');
-        thumbs.forEach((thumb, i) => {
-            if (i === index) thumb.classList.add('active');
-            else thumb.classList.remove('active');
+      // 2. Fetch related products (same categoryId or category name)
+      let relatedProducts = [];
+      const categoryId = product.categoryId || product.category;
+      if (categoryId) {
+        const q = query(collection(db, "products"), where("categoryId", "==", categoryId), limit(5));
+        const querySnap = await getDocs(q);
+        querySnap.forEach(docSnap => {
+          if (docSnap.id !== product.id) {
+            relatedProducts.push({ id: docSnap.id, ...docSnap.data() });
+          }
         });
-    }
-
-    function changeImage(element, index) {
-        currentImgIndex = index;
-        mainImageEl.src = element.src;
-        const thumbs = document.querySelectorAll('.thumb');
-        thumbs.forEach((thumb, i) => {
-            if (i === index) thumb.classList.add('active');
-            else thumb.classList.remove('active');
+      }
+      // fallback: if less than 3, fetch some best sellers
+      if (relatedProducts.length < 3) {
+        const fallbackQ = query(collection(db, "products"), where("isavailable", "==", true), limit(4));
+        const fallbackSnap = await getDocs(fallbackQ);
+        fallbackSnap.forEach(docSnap => {
+          if (docSnap.id !== product.id && !relatedProducts.find(r => r.id === docSnap.id)) {
+            relatedProducts.push({ id: docSnap.id, ...docSnap.data() });
+          }
         });
-        clearInterval(slideInterval);
-        startSlideShow();
+      }
+      relatedProducts = relatedProducts.slice(0, 4);
+
+      // Render DOM with real data
+      renderProductPage(product, relatedProducts);
+      observeReveal();
+    } catch (err) {
+      console.error("Firestore error:", err);
+      root.innerHTML = `<div class="error-message">⚠️ Failed to load data. Please check your connection.</div>`;
     }
+  }
 
-    async function loadCategoryRelatedProducts(productCategoryId, productCategoryName, currentId) {
-        const grid = document.getElementById('relatedGrid');
-        if (!grid) return;
-        if (!productCategoryId && !productCategoryName) {
-            grid.innerHTML = '<p class="no-related-msg">No related products found.</p>';
-            return;
+  function renderProductPage(product, relatedProducts) {
+    const variants = product.variants || [];
+    const defaultVariant = variants[0] || { weight: "Standard", price: product.price || 249, mrp: product.mrp || 299 };
+    const mainImageUrl = product.mainImage || product.image || "https://placehold.co/600x600/f5e9e7/c0392b?text=Pickle";
+    const thumbImages = product.thumbnailImages || product.additionalImages || (mainImageUrl ? [mainImageUrl] : []);
+
+    // Create HTML skeleton
+    const html = `
+      <div class="product-container reveal">
+        <div class="product-gallery">
+          <div class="main-image" id="mainImageContainer">
+            <img id="mainProductImage" src="${mainImageUrl}" alt="${product.name}" onerror="this.src='https://placehold.co/600x600/f5e9e7/c0392b?text=Pickle'">
+          </div>
+          <div class="thumbnail-list" id="thumbnailList">
+            ${thumbImages.map((img, idx) => `
+              <div class="thumbnail ${idx === 0 ? 'active' : ''}" data-img="${img}">
+                <img src="${img}" alt="thumbnail">
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        <div class="product-info">
+          <h1 class="product-title">${escapeHtml(product.name)}</h1>
+          <div class="rating">
+            <div class="stars">${renderStars(product.rating || 4.7)}</div>
+            <span class="review-count">${product.reviewCount || '★ 100+ reviews'}</span>
+          </div>
+          <div class="price-group" id="priceGroup">
+            <span class="current-price" id="currentPrice">${formatPrice(defaultVariant.price)}</span>
+            ${defaultVariant.mrp ? `<span class="old-price" id="oldPrice">${formatPrice(defaultVariant.mrp)}</span>` : ''}
+            ${getDiscountPercent(defaultVariant.mrp, defaultVariant.price) ? `<span class="discount-badge" id="discountBadge">${getDiscountPercent(defaultVariant.mrp, defaultVariant.price)}% OFF</span>` : ''}
+          </div>
+          <div class="description">
+            <p>${escapeHtml(product.description || "Authentic homemade-style pickle made with sun-dried mangoes and secret spices. No artificial preservatives.")}</p>
+          </div>
+          ${variants.length > 0 ? `
+          <div class="variants-section">
+            <h3>Select Size:</h3>
+            <div class="variant-buttons" id="variantButtons">
+              ${variants.map((v, idx) => `
+                <button class="variant-btn ${idx === 0 ? 'active' : ''}" data-price="${v.price}" data-mrp="${v.mrp || ''}" data-weight="${v.weight}" data-discount="${getDiscountPercent(v.mrp, v.price) || ''}">
+                  ${v.weight}  ${formatPrice(v.price)}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+          ` : ''}
+          <div class="qty-selector">
+            <span style="font-weight:600;">Quantity:</span>
+            <div class="qty-control">
+              <button id="qtyMinus">-</button>
+              <input type="text" id="qtyInput" value="1" readonly>
+              <button id="qtyPlus">+</button>
+            </div>
+          </div>
+          <div class="action-buttons">
+            <div class="btn-primary" id="addToCartBtn">🛒 Add to Cart</div>
+            <div class="btn-secondary" id="wishlistBtn">❤️ Wishlist</div>
+          </div>
+        </div>
+      </div>
+      <div class="related-section reveal">
+        <h2>🔥 You may also like</h2>
+        <div class="related-grid" id="relatedGrid">
+          ${relatedProducts.map(prod => `
+            <div class="related-card" data-id="${prod.id}">
+              <div class="related-img"><img src="${prod.mainImage || 'https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle'}" alt="${prod.name}"></div>
+              <div class="related-info">
+                <div class="related-name">${escapeHtml(prod.name)}</div>
+                <div class="related-price">${formatPrice(prod.variants?.[0]?.price || prod.price)}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    document.getElementById('productDetailRoot').innerHTML = html;
+
+    // ---- Post-render interactions ----
+    // Thumbnail switcher
+    const thumbnails = document.querySelectorAll('.thumbnail');
+    const mainImg = document.getElementById('mainProductImage');
+    thumbnails.forEach(thumb => {
+      thumb.addEventListener('click', () => {
+        const newSrc = thumb.getAttribute('data-img');
+        if (newSrc) {
+          mainImg.src = newSrc;
+          thumbnails.forEach(t => t.classList.remove('active'));
+          thumb.classList.add('active');
         }
+      });
+    });
 
-        try {
-            const snapshot = await db.collection("products").get();
-            let related = [];
-            snapshot.forEach(doc => {
-                if (doc.id !== currentId) {
-                    const data = doc.data();
-                    const catMatch = (productCategoryId && data.categoryId === productCategoryId) ||
-                                     (productCategoryName && data.category === productCategoryName);
-                    if (catMatch) {
-                        related.push({ id: doc.id, ...data });
-                    }
-                }
-            });
-
-            related = related.slice(0, 4);
-
-            if (related.length === 0) {
-                grid.innerHTML = '<p class="no-related-msg">No other products in this category.</p>';
-                return;
-            }
-
-            let html = '';
-            related.forEach(p => {
-                const img = p.image || FALLBACK_IMG;
-                const name = p.name || "Pickle";
-                const defaultVariant = (p.variants && p.variants.length > 0) ? p.variants[0] : {};
-                const price = defaultVariant.price || p.price || 0;
-                const mrp = defaultVariant.mrp || p.mrp || price;
-                const weight = defaultVariant.weight || p.weight || '500g'; 
-                const discount = (mrp > price) ? Math.round((1 - price/mrp)*100) : 0;
-                
-                html += `
-                    <div class="related-card" onclick="window.location.href='view.html?id=${p.id}'">
-                        ${discount > 0 ? `<div class="related-discount-tag">${discount}% off</div>` : ''}
-                        <div class="related-img-box">
-                            <img src="${img}" alt="${escapeHtml(name)}" onerror="this.onerror=null;this.src='${FALLBACK_IMG}';">
-                        </div>
-                        <div class="related-content">
-                            <div class="related-name">${escapeHtml(name)}</div>
-                            <div class="related-weight">${weight}</div>
-                            <div class="related-price-row">
-                                <span class="related-price">₹${price}</span>
-                                <span class="related-mrp">₹${mrp}</span>
-                                ${discount > 0 ? `<span class="related-discount-pill">${discount}% off</span>` : ''}
-                            </div>
-                            <button class="view-product-btn" onclick="event.stopPropagation(); window.location.href='view.html?id=${p.id}'">View Product</button>
-                        </div>
-                    </div>
-                `;
-            });
-            grid.innerHTML = html;
-
-        } catch (err) {
-            console.error('Failed to load category related products:', err);
-            grid.innerHTML = '<p class="error-state">⚠️ Could not load related items.</p>';
-        }
-    }
-
-    function escapeHtml(str) {
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-
-    async function loadProduct() {
-        const container = document.getElementById('productContainer');
-        if (!productId) {
-            container.innerHTML = `<div class="error-state">❌ No product ID specified in URL.</div>`;
-            return;
-        }
-
-        try {
-            const docSnap = await db.collection("products").doc(productId).get();
-            if (!docSnap.exists) {
-                container.innerHTML = `<div class="error-state">❌ Product not found. Please check the link.</div>`;
-                return;
-            }
-            const product = { id: docSnap.id, ...docSnap.data() };
-            
-            const name = product.name || "Traditional Pickle";
-            const variants = product.variants || [];
-            const defaultPrice = variants.length ? variants[0].price : (product.price || 0);
-            const defaultMRP = variants.length ? variants[0].mrp : (product.mrp || defaultPrice);
-            
-            const singleImage = product.image || FALLBACK_IMG;
-            productImages = [singleImage];
-            
-            const rating = product.rating || 4.5;
-            const ratingStars = "★".repeat(Math.floor(rating)) + "☆".repeat(5-Math.floor(rating));
-            const description = product.description || "Handcrafted with authentic spices and love. No artificial preservatives.";
-
-            let variantsHtml = '';
-            if (variants.length > 0) {
-                variants.forEach((v, idx) => {
-                    const isChecked = idx === 0 ? 'checked' : '';
-                    const discountPercent = Math.round((1 - v.price/v.mrp)*100);
-                    variantsHtml += `
-                        <label class="quantity-card">
-                            <input type="radio" name="weight" value="${v.weight}" ${isChecked} onclick="updatePrice(${v.price}, ${v.mrp}, ${discountPercent})">
-                            <div class="card-content">
-                                <span class="weight">${v.weight}</span>
-                                <div class="card-prices">₹${v.price} <span class="strike">₹${v.mrp}</span></div>
-                                <div class="card-discount">${discountPercent}% OFF</div>
-                            </div>
-                        </label>
-                    `;
-                });
-            } else {
-                variantsHtml = '<p class="error-state">Only one size available.</p>';
-            }
-
-            const thumbsHtml = `<img src="${singleImage}" alt="Product image" class="thumb active" onclick="changeImage(this, 0)" onerror="this.onerror=null;this.src='${FALLBACK_IMG}';">`;
-
-            const fullHtml = `
-                <div class="split-layout">
-                    <div class="sticky-image-column">
-                        <div class="image-section">
-                            <div class="thumbnail-column" id="thumbnailColumn">
-                                ${thumbsHtml}
-                            </div>
-                            <div class="main-image-container">
-                                <img src="${singleImage}" alt="Main View" id="mainImage" onerror="this.onerror=null;this.src='${FALLBACK_IMG}';">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="scrollable-content-column">
-                        <div class="details-section">
-                            <div class="product-header">
-                                <h1 class="product-title">${escapeHtml(name)}</h1>
-                                <div class="price-container">
-                                    <span class="current-price-display" id="dynamicPrice">₹${defaultPrice}</span>
-                                    <span class="mrp-price" id="dynamicMRP">₹${defaultMRP}</span>
-                                    <span class="discount-badge" id="discountBadge">${Math.round((1 - defaultPrice/defaultMRP)*100)}% OFF</span>
-                                </div>
-                                <div class="rating-container">
-                                    <span class="stars">${ratingStars}</span>
-                                    <span class="rating-text">(${rating} out of 5 stars)</span>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="pricing-section">
-                                <h3>Select Quantity:</h3>
-                                <div class="quantity-options" id="variantsContainer">
-                                    ${variantsHtml}
-                                </div>
-                            </div>
-                            <div class="item-quantity">
-                                <span>Quantity:</span>
-                                <div class="qty-controls">
-                                    <button type="button" onclick="changeQty(-1)">-</button>
-                                    <input type="text" id="qtyInput" value="1" readonly>
-                                    <button type="button" onclick="changeQty(1)">+</button>
-                                </div>
-                            </div>
-                            <div class="action-container">
-                                <div class="cart-wishlist-row">
-                                    <button class="cart-btn" id="cartBtn">🛒 Add to cart</button>
-                                    <button class="wishlist-btn">❤️ Wishlist</button>
-                                </div>
-                                <button class="buy-now-btn" id="buyNowBtn">BUY NOW</button>
-                            </div>
-                            <details class="policy-accordion">
-                                <summary>Shipping & Return Policy</summary>
-                                <p>Free shipping on orders over ₹499. Eligible for return within 7 days.</p>
-                            </details>
-                        </div>
-                    </div>
-                </div>
-                <div class="description-section">
-                    <h2>Product Description</h2>
-                    <p>${escapeHtml(description)}</p>
-                </div>
-                <hr>
-                <div class="related-products-section">
-                    <h2>You May Also Like</h2>
-                    <div class="related-grid" id="relatedGrid">
-                        <p class="loading-state">Loading related products...</p>
-                    </div>
-                </div>
-            `;
-            container.innerHTML = fullHtml;
-
-            mainImageEl = document.getElementById('mainImage');
-            currentPriceEl = document.getElementById('dynamicPrice');
-            mrpPriceEl = document.getElementById('dynamicMRP');
-            discountBadgeEl = document.getElementById('discountBadge');
-            qtyInput = document.getElementById('qtyInput');
-            
-            startSlideShow();
-            
-            document.getElementById('cartBtn')?.addEventListener('click', () => {
-                alert(`Added ${qtyInput.value} item(s) to cart!`);
-            });
-            document.getElementById('buyNowBtn')?.addEventListener('click', () => {
-                alert('Proceeding to checkout...');
-            });
-
-            const catId = product.categoryId;
-            const catName = product.category;
-            loadCategoryRelatedProducts(catId, catName, productId);
-
-        } catch (err) {
-            console.error(err);
-            container.innerHTML = `<div class="error-state">⚠️ Failed to load product. Please try again later.</div>`;
-        }
-    }
-
-    window.updatePrice = updatePrice;
-    window.changeQty = changeQty;
-    window.changeImage = changeImage;
+    // Variant selection
+    const variantBtns = document.querySelectorAll('.variant-btn');
+    const currentPriceSpan = document.getElementById('currentPrice');
+    const oldPriceSpan = document.getElementById('oldPrice');
+    const discountSpan = document.getElementById('discountBadge');
     
-    loadProduct();
+    function updateVariant(btn) {
+      variantBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const price = btn.getAttribute('data-price');
+      const mrp = btn.getAttribute('data-mrp');
+      const discount = btn.getAttribute('data-discount');
+      if (currentPriceSpan) currentPriceSpan.innerText = formatPrice(price);
+      if (oldPriceSpan) {
+        if (mrp && mrp !== 'null') oldPriceSpan.innerText = formatPrice(mrp);
+        else oldPriceSpan.style.display = 'none';
+      }
+      if (discountSpan) {
+        if (discount && discount !== 'null' && discount > 0) {
+          discountSpan.innerText = `${discount}% OFF`;
+          discountSpan.style.display = 'inline-block';
+        } else {
+          discountSpan.style.display = 'none';
+        }
+      }
+    }
+
+    variantBtns.forEach(btn => {
+      btn.addEventListener('click', () => updateVariant(btn));
+    });
+
+    // Quantity
+    const qtyInput = document.getElementById('qtyInput');
+    document.getElementById('qtyMinus')?.addEventListener('click', () => {
+      let val = parseInt(qtyInput.value) || 1;
+      if (val > 1) qtyInput.value = val - 1;
+    });
+    document.getElementById('qtyPlus')?.addEventListener('click', () => {
+      let val = parseInt(qtyInput.value) || 1;
+      qtyInput.value = val + 1;
+    });
+
+    // Cart & wishlist actions
+    const getSelectedVariant = () => {
+      const activeBtn = document.querySelector('.variant-btn.active');
+      if (activeBtn) {
+        const weight = activeBtn.innerText.split(' ')[0];
+        const price = parseFloat(activeBtn.getAttribute('data-price'));
+        return { weight, price };
+      }
+      return { weight: variants[0]?.weight || 'Standard', price: variants[0]?.price || product.price };
+    };
+
+    document.getElementById('addToCartBtn')?.addEventListener('click', () => {
+      const qty = parseInt(qtyInput.value);
+      const variant = getSelectedVariant();
+      alert(`🛒 Added to cart: ${product.name} (${variant.weight}) x ${qty} — Total ${formatPrice(variant.price * qty)}`);
+    });
+    document.getElementById('wishlistBtn')?.addEventListener('click', () => {
+      alert(`❤️ ${product.name} saved to wishlist!`);
+    });
+
+    // Related products click
+    document.querySelectorAll('.related-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        const pid = card.getAttribute('data-id');
+        if (pid) window.location.href = `view.html?id=${pid}`;
+      });
+    });
+  }
+
+  function renderStars(rating) {
+    const full = Math.floor(rating);
+    const half = rating % 1 >= 0.5;
+    let stars = '';
+    for (let i = 0; i < full; i++) stars += '★';
+    if (half) stars += '½';
+    for (let i = 0; i < (5 - Math.ceil(rating)); i++) stars += '☆';
+    return stars;
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  function observeReveal() {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  }
+
+  // Sticky nav effect
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 10) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  });
+
+  // Hamburger (for mobile)
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.querySelector('.nav-links');
+  hamburger?.addEventListener('click', () => {
+    if (navLinks.style.display === 'flex') navLinks.style.display = '';
+    else navLinks.style.cssText = 'display: flex; flex-direction: column; position: fixed; top: var(--nav-h); left: 0; right: 0; background: rgba(253,246,236,0.98); backdrop-filter: blur(16px); padding: 24px 5vw; gap: 20px; z-index: 800;';
+  });
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.nav') && navLinks && navLinks.style.display === 'flex') {
+      navLinks.style.display = '';
+    }
+  });
+
+  // Start
+  loadProductPage();
 </script>
 </body>
 </html>
