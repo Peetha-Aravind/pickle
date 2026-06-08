@@ -40,7 +40,6 @@
       padding-top: var(--nav-h);
     }
 
-    /* Navigation */
     .nav {
       position: fixed;
       top: 0;
@@ -92,7 +91,6 @@
     }
     .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
 
-    /* Main product layout – two columns with sticky left */
     .product-container {
       max-width: 1280px;
       margin: 30px auto 60px;
@@ -103,7 +101,6 @@
       align-items: start;
     }
 
-    /* LEFT COLUMN – Sticky Images with thumbnails on left side */
     .product-gallery {
       position: sticky;
       top: calc(var(--nav-h) + 20px);
@@ -111,7 +108,6 @@
       gap: 20px;
       flex-direction: row;
     }
-    /* Thumbnails – vertical column on left */
     .thumbnail-strip {
       display: flex;
       flex-direction: column;
@@ -138,7 +134,6 @@
       border-color: var(--rust);
       transform: scale(0.96);
     }
-    /* Main image container */
     .main-image {
       flex: 1;
       aspect-ratio: 1 / 1;
@@ -151,10 +146,8 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.3s;
     }
 
-    /* RIGHT COLUMN – Scrollable content */
     .product-info {
       display: flex;
       flex-direction: column;
@@ -214,7 +207,6 @@
       padding-left: 18px;
       color: #3a2c22;
     }
-    /* Variants */
     .variants-section h3 {
       font-size: 1rem;
       margin-bottom: 12px;
@@ -239,7 +231,6 @@
       background: var(--rust-light);
       color: var(--rust);
     }
-    /* Quantity + buttons */
     .qty-selector {
       display: flex;
       align-items: center;
@@ -313,7 +304,6 @@
       background: #d48f1a;
       transform: translateY(-2px);
     }
-    /* Shipping & refund / full description */
     .extra-info {
       margin-top: 16px;
       padding-top: 16px;
@@ -337,7 +327,6 @@
       box-shadow: var(--shadow-sm);
     }
 
-    /* Related products section */
     .related-section {
       max-width: 1280px;
       margin: 80px auto 60px;
@@ -426,7 +415,6 @@
       background: var(--rust);
     }
 
-    /* Loading & errors */
     .loader {
       text-align: center;
       padding: 60px;
@@ -434,11 +422,21 @@
     }
     .error-message {
       background: #ffefef;
-      padding: 30px;
+      padding: 40px 30px;
       text-align: center;
       border-radius: var(--r-card);
       margin: 40px auto;
       max-width: 600px;
+    }
+    .error-message button {
+      background: var(--rust);
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 40px;
+      margin-top: 20px;
+      cursor: pointer;
+      font-weight: bold;
     }
     footer {
       background: var(--ink);
@@ -448,7 +446,6 @@
       margin-top: 50px;
     }
 
-    /* Responsive */
     @media (max-width: 800px) {
       .product-container {
         grid-template-columns: 1fr;
@@ -533,10 +530,11 @@
 
   function getProductId() {
     const params = new URLSearchParams(window.location.search);
-    return params.get('id');
+    return params.get('id') || params.get('productId');
   }
 
   function formatPrice(price) {
+    if (!price && price !== 0) return '₹0';
     return `₹${Math.round(Number(price))}`;
   }
 
@@ -546,12 +544,13 @@
   }
 
   function renderStars(rating) {
-    const full = Math.floor(rating);
-    const half = rating % 1 >= 0.5;
+    const num = Number(rating) || 4.5;
+    const full = Math.floor(num);
+    const half = num % 1 >= 0.5;
     let stars = '';
     for (let i = 0; i < full; i++) stars += '★';
     if (half) stars += '½';
-    for (let i = 0; i < (5 - Math.ceil(rating)); i++) stars += '☆';
+    for (let i = 0; i < (5 - Math.ceil(num)); i++) stars += '☆';
     return stars;
   }
 
@@ -568,45 +567,67 @@
   async function loadProductPage() {
     const root = document.getElementById('productDetailRoot');
     const productId = getProductId();
+    
     if (!productId) {
-      root.innerHTML = `<div class="error-message">❌ Product ID missing. Please go back to the shop.</div>`;
+      root.innerHTML = `
+        <div class="error-message">
+          <strong>❌ No product specified.</strong><br>
+          <button onclick="window.location.href='index.html'">Go to Shop</button>
+        </div>`;
       return;
     }
 
     try {
       const productRef = doc(db, "products", productId);
       const productSnap = await getDoc(productRef);
+      
       if (!productSnap.exists()) {
-        root.innerHTML = `<div class="error-message">😕 Product not found.</div>`;
+        root.innerHTML = `
+          <div class="error-message">
+            <strong>😕 Product not found.</strong><br>
+            The product you're looking for may have been removed.<br>
+            <button onclick="window.location.href='index.html'">Browse Pickles</button>
+          </div>`;
         return;
       }
+      
       const product = { id: productSnap.id, ...productSnap.data() };
-
-      // Fetch related products (same categoryId or category name)
+      
+      // Fetch related products (same category)
       let relatedProducts = [];
       const categoryId = product.categoryId || product.category;
       if (categoryId) {
-        const q = query(collection(db, "products"), where("categoryId", "==", categoryId), limit(6));
-        const querySnap = await getDocs(q);
-        querySnap.forEach(docSnap => {
-          if (docSnap.id !== product.id) relatedProducts.push({ id: docSnap.id, ...docSnap.data() });
-        });
+        try {
+          const q = query(collection(db, "products"), where("categoryId", "==", categoryId), limit(6));
+          const querySnap = await getDocs(q);
+          querySnap.forEach(docSnap => {
+            if (docSnap.id !== product.id) relatedProducts.push({ id: docSnap.id, ...docSnap.data() });
+          });
+        } catch(e) { console.warn("Related products error", e); }
       }
       if (relatedProducts.length < 3) {
-        const fallbackQ = query(collection(db, "products"), where("isavailable", "==", true), limit(5));
-        const fallbackSnap = await getDocs(fallbackQ);
-        fallbackSnap.forEach(docSnap => {
-          if (docSnap.id !== product.id && !relatedProducts.find(r => r.id === docSnap.id))
-            relatedProducts.push({ id: docSnap.id, ...docSnap.data() });
-        });
+        try {
+          const fallbackQ = query(collection(db, "products"), where("isavailable", "==", true), limit(5));
+          const fallbackSnap = await getDocs(fallbackQ);
+          fallbackSnap.forEach(docSnap => {
+            if (docSnap.id !== product.id && !relatedProducts.find(r => r.id === docSnap.id))
+              relatedProducts.push({ id: docSnap.id, ...docSnap.data() });
+          });
+        } catch(e) {}
       }
       relatedProducts = relatedProducts.slice(0, 4);
-
+      
       renderProductPage(product, relatedProducts);
       observeReveal();
     } catch (err) {
-      console.error(err);
-      root.innerHTML = `<div class="error-message">⚠️ Failed to load data. Please refresh.</div>`;
+      console.error("Firestore error:", err);
+      root.innerHTML = `
+        <div class="error-message">
+          <strong>⚠️ Failed to load data.</strong><br>
+          ${err.message || "Network or permission issue."}<br>
+          <button onclick="location.reload()">Retry</button>
+          <button onclick="window.location.href='index.html'" style="background:black; margin-left:10px;">Back to Home</button>
+        </div>`;
     }
   }
 
@@ -615,21 +636,18 @@
     const defaultVariant = variants[0] || { weight: "Standard", price: product.price || 249, mrp: product.mrp || 299 };
     const mainImageUrl = product.mainImage || product.image || "https://placehold.co/600x600/f5e9e7/c0392b?text=Pickle";
     const thumbImages = product.thumbnailImages || product.additionalImages || (mainImageUrl ? [mainImageUrl] : []);
-    // Use longName if admin provided, else product.name
-    const displayName = product.longName || product.name;
-
+    const displayName = product.longName || product.name || "Artisan Pickle";
     const fullDescription = product.fullDescription || product.description || "No description available. Handcrafted with authentic spices.";
     const shippingInfo = product.shippingPolicy || "Free shipping on orders above ₹499. Delivery within 3-5 business days.";
     const returnInfo = product.returnPolicy || "7-day return policy for unopened jars. Contact support for replacements.";
 
     const html = `
       <div class="product-container reveal">
-        <!-- LEFT: Sticky gallery with thumbnails on left side -->
         <div class="product-gallery">
           <div class="thumbnail-strip" id="thumbnailStrip">
             ${thumbImages.map((img, idx) => `
               <div class="thumbnail ${idx === 0 ? 'active' : ''}" data-img="${img}">
-                <img src="${img}" alt="thumbnail">
+                <img src="${img}" alt="thumbnail" onerror="this.src='https://placehold.co/85x85/f5e9e7/c0392b?text=img'">
               </div>
             `).join('')}
           </div>
@@ -638,7 +656,6 @@
           </div>
         </div>
 
-        <!-- RIGHT: Scrollable product info + extra sections -->
         <div class="product-info">
           <h1 class="product-title">${escapeHtml(displayName)}</h1>
           <div class="rating">
@@ -684,7 +701,6 @@
             <div class="btn-buynow" id="buyNowBtn">⚡ Buy Now</div>
           </div>
 
-          <!-- Shipping & Refund + Full Description (below buttons) -->
           <div class="extra-info">
             <div class="policy-block">
               <h4>🚚 Shipping & Return</h4>
@@ -726,10 +742,10 @@
       </div>
     `;
 
+    const root = document.getElementById('productDetailRoot');
     root.innerHTML = html;
 
     // --- Interactions ---
-    // Thumbnail click
     const thumbnails = document.querySelectorAll('.thumbnail');
     const mainImg = document.getElementById('mainProductImage');
     thumbnails.forEach(thumb => {
@@ -743,7 +759,6 @@
       });
     });
 
-    // Variant switch
     const variantBtns = document.querySelectorAll('.variant-btn');
     const currentPriceSpan = document.getElementById('currentPrice');
     const oldPriceSpan = document.getElementById('oldPrice');
@@ -769,7 +784,6 @@
     }
     variantBtns.forEach(btn => btn.addEventListener('click', () => updateVariant(btn)));
 
-    // Quantity controls
     const qtyInput = document.getElementById('qtyInput');
     document.getElementById('qtyMinus')?.addEventListener('click', () => {
       let val = parseInt(qtyInput.value) || 1;
@@ -780,7 +794,6 @@
       qtyInput.value = val + 1;
     });
 
-    // Get selected variant helper
     const getSelectedVariant = () => {
       const activeBtn = document.querySelector('.variant-btn.active');
       if (activeBtn) {
@@ -805,7 +818,6 @@
       alert(`⚡ Proceed to secure checkout: ${displayName} ${variant.weight} x ${qty} | Total ${formatPrice(variant.price * qty)}`);
     });
 
-    // Related products click
     document.querySelectorAll('.related-card').forEach(card => {
       card.addEventListener('click', (e) => {
         const pid = card.getAttribute('data-id');
@@ -826,14 +838,12 @@
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   }
 
-  // Nav scroll effect
   const nav = document.getElementById('mainNav');
   window.addEventListener('scroll', () => {
     if (window.scrollY > 10) nav.classList.add('scrolled');
     else nav.classList.remove('scrolled');
   });
 
-  // Mobile hamburger
   const hamburger = document.getElementById('hamburger');
   const navLinks = document.querySelector('.nav-links');
   hamburger?.addEventListener('click', () => {
