@@ -386,16 +386,24 @@
       if (active) return { weight: active.innerText.split(' ')[0], price: active.getAttribute('data-price') };
       return { weight: variants[0]?.weight || 'Standard', price: variants[0]?.price || product.price };
     };
+    
+    // Add to Cart (simple alert for demo)
     document.getElementById('addToCartBtn')?.addEventListener('click', () => {
       const qty = parseInt(qtyInput.value);
       const v = getActiveVariant();
       alert(`🛒 Added to cart: ${displayName} (${v.weight}) x ${qty} = ${formatPrice(v.price * qty)}`);
     });
+    
+    // Wishlist
     document.getElementById('wishlistBtn')?.addEventListener('click', () => alert(`❤️ ${displayName} saved to wishlist!`));
+    
+    // 🔥 BUY NOW: directly navigate to checkout.html with parameters (NO alert)
     document.getElementById('buyNowBtn')?.addEventListener('click', () => {
       const qty = parseInt(qtyInput.value);
       const v = getActiveVariant();
-      alert(`⚡ Proceed to checkout: ${displayName} ${v.weight} x ${qty} | Total ${formatPrice(v.price * qty)}`);
+      const checkoutUrl = `checkout.html?productId=${product.id}&quantity=${qty}&variant=${encodeURIComponent(v.weight)}`;
+      console.log('Redirecting to:', checkoutUrl); // for debugging
+      window.location.href = checkoutUrl;
     });
 
     // Related product click
