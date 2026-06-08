@@ -15,31 +15,16 @@
         body {
             background-color: #f9f9f9;
             padding: 40px 20px;
-            display: flex;
-            justify-content: center;
         }
 
-        .page-wrapper {
-            max-width: 1200px;
-            width: 100%;
-        }
-
-        .single-box {
-            background: #ffffff;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column; 
-            gap: 40px;
-        }
-
+        /* Back to shop link */
         .back-link {
             display: inline-block;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             color: #e67e22;
             text-decoration: none;
             font-weight: 500;
+            font-size: 0.95rem;
             transition: color 0.2s;
         }
         .back-link:hover {
@@ -47,6 +32,15 @@
             text-decoration: underline;
         }
 
+        /* Main content area (no card) */
+        .product-detail-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: transparent; /* no background, no shadow */
+            padding: 0;
+        }
+
+        /* Loading & error */
         .loading-state, .error-state {
             text-align: center;
             padding: 60px 20px;
@@ -55,16 +49,18 @@
         }
         .error-state { color: #d32f2f; }
 
+        /* --- TOP SPLIT SECTION --- */
         .split-layout {
             display: flex;
             gap: 50px;
             align-items: flex-start;
+            margin-bottom: 40px;
         }
 
         .sticky-image-column {
             flex: 1.5;
             position: sticky;
-            top: 40px; 
+            top: 40px;
         }
 
         .image-section {
@@ -95,7 +91,7 @@
 
         .main-image-container {
             flex: 1;
-            height: 600px;
+            height: 420px;
             background-color: #e0e0e0;
             border-radius: 8px;
             overflow: hidden;
@@ -180,6 +176,7 @@
             height: 1px;
             background: #eaeaea;
             width: 100%;
+            margin: 10px 0;
         }
 
         .pricing-section h3 {
@@ -213,6 +210,7 @@
             border-radius: 8px;
             transition: all 0.2s ease;
             text-align: center;
+            background: #fff;
         }
 
         .card-content .weight {
@@ -246,6 +244,7 @@
             border: 1px solid #ccc;
             border-radius: 6px;
             overflow: hidden;
+            background: #fff;
         }
 
         .qty-controls button {
@@ -287,7 +286,7 @@
         .wishlist-btn:hover { border-color: red; color: red; }
         .buy-now-btn:hover { background-color: #cf6d17; }
 
-        .policy-accordion { background: #fdfbf7; border-radius: 8px; border: 1px solid #e67e22; overflow: hidden; }
+        .policy-accordion { background: #fdfbf7; border-radius: 8px; border: 1px solid #e67e22; overflow: hidden; margin-top: 10px; }
         .policy-accordion summary {
             padding: 15px; font-weight: bold; color: #e67e22; cursor: pointer;
             outline: none; list-style: none; display: flex; justify-content: space-between;
@@ -302,35 +301,90 @@
 
         .description-section h2 { font-size: 1.5rem; color: #2c3e50; margin-bottom: 15px; }
         .description-section p { color: #555; line-height: 1.7; font-size: 1.05rem; }
+        .description-section {
+            background: transparent;
+            padding: 0;
+            margin-bottom: 40px;
+        }
 
         /* Related products section */
-        .related-products-section { width: 100%; }
-        .related-products-section h2 { font-size: 1.8rem; color: #2c3e50; margin-bottom: 25px; }
+        .related-products-section {
+            margin-top: 40px;
+        }
+        .related-products-section h2 {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 25px;
+        }
         .related-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
         }
         .related-card {
-            border: 1px solid #eaeaea; border-radius: 8px; background: #fff;
-            transition: transform 0.2s, box-shadow 0.2s; text-align: center; padding-bottom: 15px;
+            border: 1px solid #eaeaea;
+            border-radius: 12px;
+            background: #fff;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-align: center;
+            padding-bottom: 15px;
             cursor: pointer;
             position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
-        .related-card:hover { transform: translateY(-5px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
+        .related-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        }
         .related-discount-tag {
-            position: absolute; top: 10px; right: 10px; background: #d32f2f; color: white;
-            font-size: 0.8rem; padding: 4px 8px; border-radius: 4px; z-index: 10;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #d32f2f;
+            color: white;
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            z-index: 10;
         }
-        .related-img-box { width: 100%; height: 180px; background-color: #f0f0f0; }
-        .related-img-box img { width: 100%; height: 100%; object-fit: cover; }
-        .related-name { font-size: 1.05rem; color: #2c3e50; margin: 12px 10px 6px; font-weight: 600; }
+        .related-img-box {
+            width: 100%;
+            height: 180px;
+            background-color: #f0f0f0;
+            border-radius: 12px 12px 0 0;
+            overflow: hidden;
+        }
+        .related-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .related-name {
+            font-size: 1.05rem;
+            color: #2c3e50;
+            margin: 12px 10px 6px;
+            font-weight: 600;
+        }
         .related-price { color: #e67e22; font-weight: bold; }
-        .related-mrp { text-decoration: line-through; color: #95a5a6; font-size: 0.9rem; margin-left: 8px; }
-        .view-product-btn {
-            background-color: black; color: white; border: none; padding: 10px 15px;
-            margin: auto 15px 0; border-radius: 6px; font-weight: bold; cursor: pointer;
+        .related-mrp {
+            text-decoration: line-through;
+            color: #95a5a6;
+            font-size: 0.9rem;
+            margin-left: 8px;
         }
+        .view-product-btn {
+            background-color: black;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            margin: 12px 15px 0;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .view-product-btn:hover { background: #333; }
+
         .no-related-msg {
             text-align: center;
             color: #95a5a6;
@@ -352,7 +406,8 @@
 </head>
 <body>
 <div class="page-wrapper">
-    <div class="single-box" id="productContainer">
+    <a href="landing.html" class="back-link">← Back to Shop</a>
+    <div class="product-detail-container" id="productContainer">
         <div class="loading-state">Loading product...</div>
     </div>
 </div>
@@ -441,7 +496,6 @@
         }
 
         try {
-            // Fetch all products (since Firestore doesn't support OR queries easily)
             const snapshot = await db.collection("products").get();
             let related = [];
             snapshot.forEach(doc => {
@@ -455,7 +509,6 @@
                 }
             });
 
-            // Limit to 4 items
             related = related.slice(0, 4);
 
             if (related.length === 0) {
@@ -514,12 +567,9 @@
             
             const name = product.name || "Traditional Pickle";
             const variants = product.variants || [];
-            // Use top-level price/mrp as fallback if no variants
             const defaultPrice = variants.length ? variants[0].price : (product.price || 0);
             const defaultMRP = variants.length ? variants[0].mrp : (product.mrp || defaultPrice);
-            const defaultVariant = variants.length ? variants[0] : { weight: "Standard", price: defaultPrice, mrp: defaultMRP };
             
-            // Image handling: use product.image (single string), wrap as array for consistency
             const singleImage = product.image || FALLBACK_IMG;
             productImages = [singleImage];
             const images = productImages;
@@ -528,7 +578,6 @@
             const ratingStars = "★".repeat(Math.floor(rating)) + "☆".repeat(5-Math.floor(rating));
             const description = product.description || "Handcrafted with authentic spices and love. No artificial preservatives.";
 
-            // Build variants HTML
             let variantsHtml = '';
             if (variants.length > 0) {
                 variants.forEach((v, idx) => {
@@ -546,15 +595,12 @@
                     `;
                 });
             } else {
-                // No variants, show a simple message
                 variantsHtml = '<p class="error-state">Only one size available.</p>';
             }
 
-            // Build single thumbnail (just one image)
             const thumbsHtml = `<img src="${images[0]}" alt="Product image" class="thumb active" onclick="changeImage(this, 0)" onerror="this.onerror=null;this.src='${FALLBACK_IMG}';">`;
 
             const fullHtml = `
-                <a href="landing.html" class="back-link">← Back to Shop</a>
                 <div class="split-layout">
                     <div class="sticky-image-column">
                         <div class="image-section">
@@ -607,12 +653,11 @@
                                 <p>Free shipping on orders over ₹499. Eligible for return within 7 days.</p>
                             </details>
                         </div>
-                        <hr>
-                        <div class="description-section">
-                            <h2>Product Description</h2>
-                            <p>${escapeHtml(description)}</p>
-                        </div>
                     </div>
+                </div>
+                <div class="description-section">
+                    <h2>Product Description</h2>
+                    <p>${escapeHtml(description)}</p>
                 </div>
                 <hr>
                 <div class="related-products-section">
@@ -624,14 +669,12 @@
             `;
             container.innerHTML = fullHtml;
 
-            // Re-attach global references
             mainImageEl = document.getElementById('mainImage');
             currentPriceEl = document.getElementById('dynamicPrice');
             mrpPriceEl = document.getElementById('dynamicMRP');
             discountBadgeEl = document.getElementById('discountBadge');
             qtyInput = document.getElementById('qtyInput');
             
-            // Start slideshow (only one image, so no real sliding)
             startSlideShow();
             
             document.getElementById('cartBtn')?.addEventListener('click', () => {
@@ -641,7 +684,6 @@
                 alert('Proceeding to checkout...');
             });
 
-            // Load related products by category (using categoryId or category field)
             const catId = product.categoryId;
             const catName = product.category;
             loadCategoryRelatedProducts(catId, catName, productId);
@@ -652,7 +694,6 @@
         }
     }
 
-    // Expose global functions
     window.updatePrice = updatePrice;
     window.changeQty = changeQty;
     window.changeImage = changeImage;
