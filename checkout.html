@@ -157,7 +157,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-  import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
@@ -172,7 +172,6 @@
   const db = getFirestore(app);
 
   function formatPrice(p) { return `₹${Math.round(Number(p) || 0)}`; }
-  function unformatPrice(str) { return parseFloat(str.replace('₹', '')); }
 
   let checkoutItem = null;
   let appliedCoupon = null;   // { code, discountType, discountValue, minOrder }
@@ -198,7 +197,6 @@
         selectedVariant = product.variants[0];
       }
       const itemPrice = selectedVariant ? selectedVariant.price : (product.price || 0);
-      const itemMrp = selectedVariant ? selectedVariant.mrp : (product.mrp || 0);
       return {
         id: productId,
         name: product.longName || product.name,
@@ -206,7 +204,6 @@
         variant: selectedVariant ? selectedVariant.weight : (variant || "Standard"),
         quantity: quantity,
         price: itemPrice,
-        mrp: itemMrp,
       };
     } catch(e) { console.warn(e); return null; }
   }
@@ -231,7 +228,7 @@
     return { subtotal, discount, shipping, handlingFee, total };
   }
 
-  // Render right side (order summary)
+  // Render right side order summary
   function renderOrderSummary(item, totals) {
     const summaryContainer = document.getElementById('orderSummaryContainer');
     if (!summaryContainer) return;
