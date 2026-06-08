@@ -51,7 +51,6 @@
       max-width: 1200px; margin: 40px auto; padding: 0 5vw;
       display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px;
     }
-    /* Left column */
     .left-panel { background: white; border-radius: var(--r-card); box-shadow: var(--shadow-sm); overflow: hidden; }
     .section { padding: 24px; border-bottom: 1px solid var(--border); }
     .section-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 16px; color: var(--ink); }
@@ -76,14 +75,13 @@
     .coupon-section { display: flex; gap: 12px; margin: 20px 0 10px; }
     .coupon-section input { flex: 1; padding: 12px; border-radius: 60px; border: 1px solid var(--border); }
     .apply-btn { background: var(--ink); color: white; border: none; padding: 0 24px; border-radius: 60px; font-weight: 600; cursor: pointer; }
-    .discount-info { font-size: 0.8rem; color: #2e7d32; margin: 8px 0; }
+    .discount-info { font-size: 0.8rem; margin: 8px 0; }
     .pay-btn {
       width: 100%; background: var(--rust); color: white; border: none;
       padding: 16px; font-size: 1.1rem; font-weight: 700; border-radius: 40px;
       cursor: pointer; margin-top: 20px; transition: 0.2s;
     }
     .pay-btn:hover { background: var(--rust-dark); transform: translateY(-2px); }
-    /* Right column - order summary */
     .order-summary {
       background: white; border-radius: var(--r-card); box-shadow: var(--shadow-sm);
       overflow: hidden; position: sticky; top: calc(var(--nav-h) + 20px);
@@ -100,7 +98,6 @@
     .summary-totals { padding: 20px 24px; background: #faf7f2; }
     .totals-row { display: flex; justify-content: space-between; margin-bottom: 12px; }
     .totals-row.grand-total { font-weight: 800; font-size: 1.2rem; border-top: 2px solid var(--border); padding-top: 12px; margin-top: 8px; color: var(--rust); }
-    /* Modal */
     .modal {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;
@@ -160,7 +157,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-  import { getFirestore, doc, getDoc, getDocs, collection, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
@@ -182,7 +179,7 @@
   let selectedPayment = 'online'; // 'online' or 'cod'
   let savedAddress = null;
 
-  // Helper: get product from URL
+  // Get product from URL
   async function getCheckoutItem() {
     const params = new URLSearchParams(window.location.search);
     const productId = params.get('productId');
@@ -234,7 +231,7 @@
     return { subtotal, discount, shipping, handlingFee, total };
   }
 
-  // Render right side (order summary) and left side dynamic totals
+  // Render right side (order summary)
   function renderOrderSummary(item, totals) {
     const summaryContainer = document.getElementById('orderSummaryContainer');
     if (!summaryContainer) return;
@@ -270,35 +267,45 @@
     if (payBtn) payBtn.innerText = `Pay ${formatPrice(totals.total)}`;
   }
 
-  // Apply coupon from Firestore
+  // Apply coupon: fetch from Firestore where document ID equals coupon code
   async function applyCoupon(code) {
     if (!code) return { success: false, message: 'Enter a coupon code' };
+    const upperCode = code.toUpperCase();
     try {
-      const q = query(collection(db, "coupons"), where("code", "==", code.toUpperCase()));
-      const snap = await getDocs(q);
-      if (snap.empty) return { success: false, message: 'Invalid coupon code' };
-      const couponDoc = snap.docs[0];
-      const data = couponDoc.data();
-      const now = new Date();
-      const expiry = data.expiry ? data.expiry.toDate ? data.expiry.toDate() : new Date(data.expiry) : null;
-      if (expiry && expiry < now) return { success: false, message: 'Coupon expired' };
+      const couponRef = doc(db, "coupons", upperCode);
+      const couponSnap = await getDoc(couponRef);
+      if (!couponSnap.exists()) {
+        return { success: false, message: 'Invalid coupon code' };
+      }
+      const data = couponSnap.data();
+      // Check expiry if field exists
+      if (data.expiry) {
+        let expiryDate = data.expiry.toDate ? data.expiry.toDate() : new Date(data.expiry);
+        if (expiryDate < new Date()) {
+          return { success: false, message: 'Coupon expired' };
+        }
+      }
       const subtotal = checkoutItem.price * checkoutItem.quantity;
       if (data.minOrder && subtotal < data.minOrder) {
         return { success: false, message: `Minimum order ₹${data.minOrder} required` };
       }
       appliedCoupon = {
-        code: data.code,
+        code: upperCode,
         discountType: data.discountType,
         discountValue: data.discountValue,
         minOrder: data.minOrder
       };
       updateTotalsAndPayButton();
-      document.getElementById('discountMsg').innerHTML = `<span style="color:#2e7d32;">✅ Coupon applied! ${data.discountType === 'percentage' ? data.discountValue+'% off' : '₹'+data.discountValue+' off'}</span>`;
+      const discountText = data.discountType === 'percentage' ? `${data.discountValue}% off` : `₹${data.discountValue} off`;
+      document.getElementById('discountMsg').innerHTML = `<span style="color:#2e7d32;">✅ Coupon applied! ${discountText}</span>`;
       return { success: true };
-    } catch(e) { console.error(e); return { success: false, message: 'Error validating coupon' }; }
+    } catch(e) {
+      console.error(e);
+      return { success: false, message: 'Error validating coupon' };
+    }
   }
 
-  // Render left panel with address, payment, coupon
+  // Render left panel: address, payment, coupon
   function renderLeftPanel() {
     const leftContainer = document.getElementById('leftPanelContainer');
     if (!leftContainer) return;
@@ -404,7 +411,7 @@
     const root = document.getElementById('checkoutRoot');
     const item = await getCheckoutItem();
     if (!item) {
-      root.innerHTML = `<div class="error-message">❌ No item to checkout. <a href="index.html" style="color:var(--rust);">Continue Shopping</a></div>`;
+      root.innerHTML = `<div class="error-message" style="text-align:center; padding:40px;">❌ No item to checkout. <a href="index.html" style="color:var(--rust);">Continue Shopping</a></div>`;
       return;
     }
     checkoutItem = item;
