@@ -89,7 +89,7 @@
 
         .thumb:hover, .thumb.active { border-color: red; }
 
-        /* ✅ Main image height changed to 600px */
+        /* Main image height changed to 600px */
         .main-image-container {
             flex: 1;
             height: 600px;
@@ -308,7 +308,7 @@
             margin-bottom: 40px;
         }
 
-        /* Related products section */
+        /* --- NEW RELATED PRODUCTS CARD DESIGN --- */
         .related-products-section {
             margin-top: 40px;
         }
@@ -318,80 +318,126 @@
             margin-bottom: 25px;
         }
 
-        /* Default grid for multiple cards */
         .related-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 20px;
+            padding: 10px 0;
         }
 
-        /* Card base style */
         .related-card {
-            border: 1px solid #eaeaea;
+            border: 1px solid #f0f0f0;
             border-radius: 12px;
             background: #fff;
-            text-align: center;
-            padding-bottom: 15px;
+            text-align: left;
             cursor: pointer;
             position: relative;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .related-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
+        .related-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        /* Ribbon style tag on the top left */
         .related-discount-tag {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #d32f2f;
+            top: 15px;
+            left: 0;
+            background-color: #b73839; /* Deep red matching the image */
             color: white;
-            font-size: 0.8rem;
-            padding: 4px 8px;
-            border-radius: 4px;
+            font-size: 0.75rem;
+            padding: 6px 16px 6px 12px;
+            font-weight: 700;
             z-index: 10;
+            /* Creates the angled cut on the right side of the ribbon */
+            clip-path: polygon(0 0, 100% 0, 85% 50%, 100% 100%, 0 100%);
         }
 
         .related-img-box {
             width: 100%;
-            height: 180px;
-            background-color: #f0f0f0;
-            border-radius: 12px 12px 0 0;
-            overflow: hidden;
+            height: 220px;
+            background-color: #fcf6de; /* Light cream background */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
         .related-img-box img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        .related-name {
-            font-size: 1.05rem;
-            color: #2c3e50;
-            margin: 12px 10px 6px;
-            font-weight: 600;
+        .related-content {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
         }
-        .related-price { color: #e67e22; font-weight: bold; }
+
+        .related-name {
+            font-size: 1.1rem;
+            color: #222;
+            margin: 0 0 4px 0;
+            font-weight: 700;
+            text-transform: lowercase;
+        }
+
+        .related-weight {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 12px;
+        }
+
+        .related-price-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .related-price {
+            color: #b73839;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
         .related-mrp {
             text-decoration: line-through;
-            color: #95a5a6;
+            color: #999;
             font-size: 0.9rem;
-            margin-left: 8px;
         }
+
+        .related-discount-pill {
+            background-color: #faebeb;
+            color: #b73839;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 700;
+        }
+
         .view-product-btn {
-            background-color: black;
+            background-color: #251611; /* Dark brown/black */
             color: white;
             border: none;
-            padding: 10px 18px;
-            margin: 12px 15px 0;
-            border-radius: 6px;
-            font-weight: bold;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
             cursor: pointer;
-            transition: background 0.2s;
+            width: 100%;
+            transition: background 0.2s ease;
         }
-        .view-product-btn:hover { background: #333; }
+
+        .view-product-btn:hover {
+            background: #150c09;
+        }
 
         .no-related-msg {
             text-align: center;
@@ -400,52 +446,14 @@
             padding: 20px;
         }
 
-        /* ✅ Special style when only ONE related product exists */
-        .related-grid.single-related {
-            display: flex;
-            justify-content: center;
-        }
-        .related-grid.single-related .related-card {
-            width: 120px;
-            height: 240px;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .related-grid.single-related .related-img-box {
-            height: 100px;
-            border-radius: 12px 12px 0 0;
-        }
-        .related-grid.single-related .related-name {
-            font-size: 0.85rem;
-            margin: 6px 6px 2px;
-        }
-        .related-grid.single-related .related-price,
-        .related-grid.single-related .related-mrp {
-            font-size: 0.8rem;
-        }
-        .related-grid.single-related .view-product-btn {
-            padding: 6px 12px;
-            font-size: 0.75rem;
-            margin: 6px auto;
-        }
-        .related-grid.single-related .related-discount-tag {
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            top: 6px;
-            right: 6px;
-        }
-
         @media (max-width: 900px) {
             .split-layout { flex-direction: column; gap: 30px; }
             .sticky-image-column { position: relative; top: 0; }
             .thumbnail-column { flex-direction: row; width: 100%; }
             .thumb { width: calc(25% - 9px); }
-            .main-image-container { height: 400px; } /* slightly reduced on mobile */
+            .main-image-container { height: 400px; }
         }
     </style>
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
@@ -558,7 +566,6 @@
 
             if (related.length === 0) {
                 grid.innerHTML = '<p class="no-related-msg">No other products in this category.</p>';
-                grid.classList.remove('single-related');
                 return;
             }
 
@@ -569,30 +576,33 @@
                 const defaultVariant = (p.variants && p.variants.length > 0) ? p.variants[0] : {};
                 const price = defaultVariant.price || p.price || 0;
                 const mrp = defaultVariant.mrp || p.mrp || price;
+                const weight = defaultVariant.weight || p.weight || '500g'; 
                 const discount = (mrp > price) ? Math.round((1 - price/mrp)*100) : 0;
+                
                 html += `
                     <div class="related-card" onclick="window.location.href='view.html?id=${p.id}'">
-                        <div class="related-discount-tag">${discount}% OFF</div>
-                        <div class="related-img-box"><img src="${img}" alt="${escapeHtml(name)}" onerror="this.onerror=null;this.src='${FALLBACK_IMG}';"></div>
-                        <div class="related-name">${escapeHtml(name)}</div>
-                        <div><span class="related-price">₹${price}</span><span class="related-mrp">₹${mrp}</span></div>
-                        <button class="view-product-btn">View Product</button>
+                        ${discount > 0 ? `<div class="related-discount-tag">${discount}% off</div>` : ''}
+                        <div class="related-img-box">
+                            <img src="${img}" alt="${escapeHtml(name)}" onerror="this.onerror=null;this.src='${FALLBACK_IMG}';">
+                        </div>
+                        <div class="related-content">
+                            <div class="related-name">${escapeHtml(name)}</div>
+                            <div class="related-weight">${weight}</div>
+                            <div class="related-price-row">
+                                <span class="related-price">₹${price}</span>
+                                <span class="related-mrp">₹${mrp}</span>
+                                ${discount > 0 ? `<span class="related-discount-pill">${discount}% off</span>` : ''}
+                            </div>
+                            <button class="view-product-btn" onclick="event.stopPropagation(); window.location.href='view.html?id=${p.id}'">View Product</button>
+                        </div>
                     </div>
                 `;
             });
             grid.innerHTML = html;
 
-            // ✅ Apply single card class if only one item
-            if (related.length === 1) {
-                grid.classList.add('single-related');
-            } else {
-                grid.classList.remove('single-related');
-            }
-
         } catch (err) {
             console.error('Failed to load category related products:', err);
             grid.innerHTML = '<p class="error-state">⚠️ Could not load related items.</p>';
-            grid.classList.remove('single-related');
         }
     }
 
