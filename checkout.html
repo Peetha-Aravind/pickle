@@ -216,11 +216,14 @@
     if (!item) return { subtotal: 0, discount: 0, shipping: 0, total: 0, handlingFee: 0 };
     let subtotal = item.price * item.quantity;
     let discount = 0;
+    let discountText = '';
     if (coupon) {
       if (coupon.discountType === 'percentage') {
         discount = subtotal * (coupon.discountValue / 100);
+        discountText = `${coupon.discountValue}% off`;
       } else if (coupon.discountType === 'fixed') {
         discount = coupon.discountValue;
+        discountText = `₹${coupon.discountValue} off`;
       }
       discount = Math.min(discount, subtotal);
     }
@@ -228,13 +231,14 @@
     let handlingFee = 0;
     if (selectedPayment === 'cod') handlingFee = 100;
     const total = subtotal - discount + shipping + handlingFee;
-    return { subtotal, discount, shipping, handlingFee, total };
+    return { subtotal, discount, discountText, shipping, handlingFee, total };
   }
 
   function renderOrderSummary(item, totals) {
     const summaryContainer = document.getElementById('orderSummaryContainer');
     if (!summaryContainer) return;
     const discountAmount = totals.discount;
+    const discountText = totals.discountText;
     const html = `
       <div class="summary-header">Order Summary</div>
       <div class="summary-items">
@@ -249,7 +253,7 @@
       </div>
       <div class="summary-totals" id="totalsPanel">
         <div class="totals-row"><span>Subtotal</span><span>${formatPrice(totals.subtotal)}</span></div>
-        ${discountAmount > 0 ? `<div class="totals-row"><span>Coupon Discount</span><span>-${formatPrice(discountAmount)}</span></div>` : ''}
+        ${discountAmount > 0 ? `<div class="totals-row"><span>Coupon Discount (${discountText})</span><span>-${formatPrice(discountAmount)}</span></div>` : ''}
         <div class="totals-row"><span>Shipping</span><span>${totals.shipping === 0 ? 'FREE' : formatPrice(totals.shipping)}</span></div>
         ${selectedPayment === 'cod' ? `<div class="totals-row"><span>COD Handling Fee</span><span>${formatPrice(totals.handlingFee)}</span></div>` : ''}
         <div class="totals-row grand-total"><span>Total</span><span>${formatPrice(totals.total)}</span></div>
