@@ -432,43 +432,45 @@
         startSlideShow();
     }
 
-    async function loadCategoryRelatedProducts(category, currentId) {
+    async function loadCategoryRelatedProducts(productCategoryId, productCategoryName, currentId) {
         const grid = document.getElementById('relatedGrid');
         if (!grid) return;
-        if (!category) {
+        if (!productCategoryId && !productCategoryName) {
             grid.innerHTML = '<p class="no-related-msg">No related products found.</p>';
             return;
         }
 
         try {
-            const snapshot = await db.collection("products")
-                .where("category", "==", category)
-                .limit(5)  // fetch a few more to be safe after excluding current
-                .get();
-
-            let products = [];
+            // Fetch all products (since Firestore doesn't support OR queries easily)
+            const snapshot = await db.collection("products").get();
+            let related = [];
             snapshot.forEach(doc => {
                 if (doc.id !== currentId) {
-                    products.push({ id: doc.id, ...doc.data() });
+                    const data = doc.data();
+                    const catMatch = (productCategoryId && data.categoryId === productCategoryId) ||
+                                     (productCategoryName && data.category === productCategoryName);
+                    if (catMatch) {
+                        related.push({ id: doc.id, ...data });
+                    }
                 }
             });
 
-            // limit to 4 items
-            products = products.slice(0, 4);
+            // Limit to 4 items
+            related = related.slice(0, 4);
 
-            if (products.length === 0) {
+            if (related.length === 0) {
                 grid.innerHTML = '<p class="no-related-msg">No other products in this category.</p>';
                 return;
             }
 
             let html = '';
-            products.forEach(p => {
-                const img = (p.images && p.images.length > 0) ? p.images[0] : FALLBACK_IMG;
+            related.forEach(p => {
+                const img = p.image || FALLBACK_IMG;
                 const name = p.name || "Pickle";
-                const defaultVariant = (p.variants && p.variants.length > 0) ? p.variants[0] : { price: 149, mrp: 199 };
-                const price = defaultVariant.price;
-                const mrp = defaultVariant.mrp;
-                const discount = Math.round((1 - price/mrp)*100);
+                const defaultVariant = (p.variants && p.variants.length > 0) ? p.variants[0] : {};
+                const price = defaultVariant.price || p.price || 0;
+                const mrp = defaultVariant.mrp || p.mrp || price;
+                const discount = (mrp > price) ? Math.round((1 - price/mrp)*100) : 0;
                 html += `
                     <div class="related-card" onclick="window.location.href='view.html?id=${p.id}'">
                         <div class="related-discount-tag">${discount}% OFF</div>
@@ -512,36 +514,44 @@
             
             const name = product.name || "Traditional Pickle";
             const variants = product.variants || [];
-            const defaultVariant = variants.length ? variants[0] : { weight: "250g", price: 149, mrp: 199 };
-            const images = product.images && product.images.length ? product.images : [FALLBACK_IMG];
-            productImages = images;
+            // Use top-level price/mrp as fallback if no variants
+            const defaultPrice = variants.length ? variants[0].price : (product.price || 0);
+            const defaultMRP = variants.length ? variants[0].mrp : (product.mrp || defaultPrice);
+            const defaultVariant = variants.length ? variants[0] : { weight: "Standard", price: defaultPrice, mrp: defaultMRP };
+            
+            // Image handling: use product.image (single string), wrap as array for consistency
+            const singleImage = product.image || FALLBACK_IMG;
+            productImages = [singleImage];
+            const images = productImages;
+            
             const rating = product.rating || 4.5;
             const ratingStars = "★".repeat(Math.floor(rating)) + "☆".repeat(5-Math.floor(rating));
             const description = product.description || "Handcrafted with authentic spices and love. No artificial preservatives.";
 
             // Build variants HTML
             let variantsHtml = '';
-            variants.forEach((v, idx) => {
-                const isChecked = idx === 0 ? 'checked' : '';
-                const discountPercent = Math.round((1 - v.price/v.mrp)*100);
-                variantsHtml += `
-                    <label class="quantity-card">
-                        <input type="radio" name="weight" value="${v.weight}" ${isChecked} onclick="updatePrice(${v.price}, ${v.mrp}, ${discountPercent})">
-                        <div class="card-content">
-                            <span class="weight">${v.weight}</span>
-                            <div class="card-prices">₹${v.price} <span class="strike">₹${v.mrp}</span></div>
-                            <div class="card-discount">${discountPercent}% OFF</div>
-                        </div>
-                    </label>
-                `;
-            });
-            if (!variants.length) variantsHtml = `<p class="error-state">No size variants available.</p>`;
+            if (variants.length > 0) {
+                variants.forEach((v, idx) => {
+                    const isChecked = idx === 0 ? 'checked' : '';
+                    const discountPercent = Math.round((1 - v.price/v.mrp)*100);
+                    variantsHtml += `
+                        <label class="quantity-card">
+                            <input type="radio" name="weight" value="${v.weight}" ${isChecked} onclick="updatePrice(${v.price}, ${v.mrp}, ${discountPercent})">
+                            <div class="card-content">
+                                <span class="weight">${v.weight}</span>
+                                <div class="card-prices">₹${v.price} <span class="strike">₹${v.mrp}</span></div>
+                                <div class="card-discount">${discountPercent}% OFF</div>
+                            </div>
+                        </label>
+                    `;
+                });
+            } else {
+                // No variants, show a simple message
+                variantsHtml = '<p class="error-state">Only one size available.</p>';
+            }
 
-            // Build thumbnails
-            let thumbsHtml = '';
-            images.forEach((img, idx) => {
-                thumbsHtml += `<img src="${img}" alt="View ${idx+1}" class="thumb ${idx===0 ? 'active' : ''}" onclick="changeImage(this, ${idx})" onerror="this.onerror=null;this.src='${FALLBACK_IMG}';">`;
-            });
+            // Build single thumbnail (just one image)
+            const thumbsHtml = `<img src="${images[0]}" alt="Product image" class="thumb active" onclick="changeImage(this, 0)" onerror="this.onerror=null;this.src='${FALLBACK_IMG}';">`;
 
             const fullHtml = `
                 <a href="landing.html" class="back-link">← Back to Shop</a>
@@ -561,9 +571,9 @@
                             <div class="product-header">
                                 <h1 class="product-title">${escapeHtml(name)}</h1>
                                 <div class="price-container">
-                                    <span class="current-price-display" id="dynamicPrice">₹${defaultVariant.price}</span>
-                                    <span class="mrp-price" id="dynamicMRP">₹${defaultVariant.mrp}</span>
-                                    <span class="discount-badge" id="discountBadge">${Math.round((1 - defaultVariant.price/defaultVariant.mrp)*100)}% OFF</span>
+                                    <span class="current-price-display" id="dynamicPrice">₹${defaultPrice}</span>
+                                    <span class="mrp-price" id="dynamicMRP">₹${defaultMRP}</span>
+                                    <span class="discount-badge" id="discountBadge">${Math.round((1 - defaultPrice/defaultMRP)*100)}% OFF</span>
                                 </div>
                                 <div class="rating-container">
                                     <span class="stars">${ratingStars}</span>
@@ -621,6 +631,7 @@
             discountBadgeEl = document.getElementById('discountBadge');
             qtyInput = document.getElementById('qtyInput');
             
+            // Start slideshow (only one image, so no real sliding)
             startSlideShow();
             
             document.getElementById('cartBtn')?.addEventListener('click', () => {
@@ -630,9 +641,10 @@
                 alert('Proceeding to checkout...');
             });
 
-            // Load related products based on category
-            const category = product.category;
-            loadCategoryRelatedProducts(category, productId);
+            // Load related products by category (using categoryId or category field)
+            const catId = product.categoryId;
+            const catName = product.category;
+            loadCategoryRelatedProducts(catId, catName, productId);
 
         } catch (err) {
             console.error(err);
