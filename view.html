@@ -292,14 +292,6 @@
         .wishlist-btn:hover { border-color: red; color: red; }
         .buy-now-btn:hover { background-color: #cf6d17; }
 
-        .payment-icons { display: flex; gap: 8px; }
-        .pay-icon {
-            width: 26px; height: 26px; border-radius: 50%;
-            background-color: white; border: 1px solid #ccc;
-            display: flex; justify-content: center; align-items: center; overflow: hidden;
-        }
-        .pay-icon img { width: 100%; height: 100%; object-fit: cover; }
-
         .policy-accordion { background: #fdfbf7; border-radius: 8px; border: 1px solid #e67e22; overflow: hidden; }
         .policy-accordion summary {
             padding: 15px; font-weight: bold; color: #e67e22; cursor: pointer;
@@ -316,7 +308,7 @@
         .description-section h2 { font-size: 1.5rem; color: #2c3e50; margin-bottom: 15px; }
         .description-section p { color: #555; line-height: 1.7; font-size: 1.05rem; }
 
-        /* Related & combo sections */
+        /* Related products section */
         .related-products-section { width: 100%; }
         .related-products-section h2 { font-size: 1.8rem; color: #2c3e50; margin-bottom: 25px; }
         .related-grid {
@@ -344,40 +336,19 @@
             background-color: black; color: white; border: none; padding: 10px 15px;
             margin: auto 15px 0; border-radius: 6px; font-weight: bold; cursor: pointer;
         }
-
-        .combo-section h2 { font-size: 1.8rem; color: #2c3e50; margin-bottom: 25px; }
-        .combo-layout { display: flex; gap: 40px; align-items: stretch; }
-        .combo-banner {
-            flex: 1; border-radius: 8px; background-color: #fdf6f0; 
-            text-align: center; padding: 30px; border: 2px dashed #e67e22;
+        .no-related-msg {
+            text-align: center;
+            color: #95a5a6;
+            font-style: italic;
+            padding: 20px;
         }
-        .combo-banner h3 { font-size: 2rem; color: #d35400; }
-        .combo-selector { flex: 1.3; }
-        .combo-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold; }
-        .combo-counter { background: #2c3e50; color: white; padding: 5px 12px; border-radius: 20px; }
-        .combo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding-left: 25px; }
-        .combo-tag-item { cursor: pointer; }
-        .combo-tag-item input { display: none; }
-        .combo-tag-content {
-            display: flex; align-items: center; background: #f5f5f5; border: 2px solid transparent;
-            border-radius: 40px; padding: 8px 15px 8px 45px; position: relative;
-        }
-        .combo-img-circle {
-            width: 64px; height: 64px; border-radius: 50%; overflow: hidden;
-            position: absolute; left: -25px; top: 50%; transform: translateY(-50%);
-            background: #fff; box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-        }
-        .combo-name { font-weight: 600; text-align: center; }
-        .combo-tag-item input:checked + .combo-tag-content { border-color: red; background-color: #fff5f5; }
-        .combo-tag-item.dimmed { opacity: 0.4; pointer-events: none; }
 
         @media (max-width: 900px) {
-            .split-layout, .combo-layout { flex-direction: column; gap: 30px; }
+            .split-layout { flex-direction: column; gap: 30px; }
             .sticky-image-column { position: relative; top: 0; }
             .thumbnail-column { flex-direction: row; width: 100%; }
             .thumb { width: calc(25% - 9px); }
             .main-image-container { height: 350px; }
-            .combo-grid { grid-template-columns: 1fr; }
         }
     </style>
     <!-- Firebase SDK -->
@@ -387,13 +358,11 @@
 <body>
 <div class="page-wrapper">
     <div class="single-box" id="productContainer">
-        <!-- Loading state will be replaced -->
         <div class="loading-state">Loading product...</div>
     </div>
 </div>
 
 <script>
-    // Firebase config
     const firebaseConfig = {
         apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
         authDomain: "pickle-fdc54.firebaseapp.com",
@@ -406,27 +375,30 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Get product ID from URL
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
 
-    // DOM references
+    // Global references for dynamic elements
     let mainImageEl, currentPriceEl, mrpPriceEl, discountBadgeEl, qtyInput;
-
-    // Slideshow variables
     let currentImgIndex = 0;
     let slideInterval;
     let productImages = [];
 
-    // Helper functions
+    // Fallback image
+    const FALLBACK_IMG = "https://via.placeholder.com/600x420?text=Image+Not+Found";
+
     function updatePrice(price, mrp, discountPercent = null) {
         if (currentPriceEl) currentPriceEl.innerText = `₹${price}`;
         if (mrpPriceEl) mrpPriceEl.innerText = `₹${mrp}`;
-        if (discountBadgeEl && discountPercent) {
-            discountBadgeEl.innerText = `${discountPercent}% OFF`;
-        } else if (discountBadgeEl && mrp > price) {
-            const disc = Math.round((1 - price/mrp)*100);
-            discountBadgeEl.innerText = `${disc}% OFF`;
+        if (discountBadgeEl) {
+            if (discountPercent !== null) {
+                discountBadgeEl.innerText = `${discountPercent}% OFF`;
+            } else if (mrp > price) {
+                const disc = Math.round((1 - price/mrp)*100);
+                discountBadgeEl.innerText = `${disc}% OFF`;
+            } else {
+                discountBadgeEl.innerText = '';
+            }
         }
     }
 
@@ -467,19 +439,46 @@
         startSlideShow();
     }
 
-    function handleComboSelection() {
-        const grid = document.getElementById('comboGrid');
-        if (!grid) return;
-        const checkboxes = grid.querySelectorAll('input[type="checkbox"]');
-        let checkedCount = 0;
-        checkboxes.forEach(cb => { if(cb.checked) checkedCount++; });
-        const counter = document.getElementById('comboCounter');
-        if (counter) counter.innerText = checkedCount + "/4 Selected";
-        checkboxes.forEach(cb => {
-            const parent = cb.closest('.combo-tag-item');
-            if (checkedCount >= 4 && !cb.checked) parent.classList.add('dimmed');
-            else parent.classList.remove('dimmed');
-        });
+    async function loadRelatedProducts(relatedIds) {
+        const grid = document.getElementById('relatedGrid');
+        if (!grid || !relatedIds || relatedIds.length === 0) {
+            if (grid) grid.innerHTML = '<p class="no-related-msg">No related products found.</p>';
+            return;
+        }
+
+        try {
+            const snap = await db.collection("products")
+                .where(firebase.firestore.FieldPath.documentId(), "in", relatedIds)
+                .get();
+
+            let html = '';
+            if (snap.empty) {
+                html = '<p class="no-related-msg">Related products not available.</p>';
+            } else {
+                snap.forEach(doc => {
+                    const p = { id: doc.id, ...doc.data() };
+                    const img = (p.images && p.images.length > 0) ? p.images[0] : FALLBACK_IMG;
+                    const name = p.name || "Pickle";
+                    const defaultVariant = (p.variants && p.variants.length > 0) ? p.variants[0] : { price: 149, mrp: 199 };
+                    const price = defaultVariant.price;
+                    const mrp = defaultVariant.mrp;
+                    const discount = Math.round((1 - price/mrp)*100);
+                    html += `
+                        <div class="related-card" onclick="window.location.href='view.html?id=${p.id}'">
+                            <div class="related-discount-tag">${discount}% OFF</div>
+                            <div class="related-img-box"><img src="${img}" alt="${name}" onerror="this.onerror=null;this.src='${FALLBACK_IMG}';"></div>
+                            <div class="related-name">${escapeHtml(name)}</div>
+                            <div><span class="related-price">₹${price}</span><span class="related-mrp">₹${mrp}</span></div>
+                            <button class="view-product-btn">View Product</button>
+                        </div>
+                    `;
+                });
+            }
+            grid.innerHTML = html;
+        } catch (err) {
+            console.error('Failed to load related products:', err);
+            grid.innerHTML = '<p class="error-state">⚠️ Could not load related items.</p>';
+        }
     }
 
     function escapeHtml(str) {
@@ -491,40 +490,6 @@
         });
     }
 
-    // Generate related cards (UPDATED to view.html)
-    function generateStaticRelatedCards() {
-        return `
-            <div class="related-card" onclick="window.location.href='view.html?id=lime_pickle'">
-                <div class="related-discount-tag">25% OFF</div>
-                <div class="related-img-box"><img src="https://via.placeholder.com/250x180?text=Lime+Pickle"></div>
-                <div class="related-name">Spicy Tangy Lime Pickle</div>
-                <div><span class="related-price">₹129</span><span class="related-mrp">₹172</span></div>
-                <button class="view-product-btn">View Product</button>
-            </div>
-            <div class="related-card" onclick="window.location.href='view.html?id=garlic_pickle'">
-                <div class="related-discount-tag">25% OFF</div>
-                <div class="related-img-box"><img src="https://via.placeholder.com/250x180?text=Garlic+Pickle"></div>
-                <div class="related-name">Hot Garlic & Chili Pickle</div>
-                <div><span class="related-price">₹169</span><span class="related-mrp">₹225</span></div>
-                <button class="view-product-btn">View Product</button>
-            </div>
-        `;
-    }
-
-    function generateStaticComboItems() {
-        const items = ["Spicy Mango", "Tangy Lime", "Hot Garlic", "Mixed Veg", "Sweet Mango", "Green Chili", "Zesty Amla", "Ginger Garlic"];
-        return items.map(name => `
-            <label class="combo-tag-item">
-                <input type="checkbox" onchange="handleComboSelection()">
-                <div class="combo-tag-content">
-                    <div class="combo-img-circle"><img src="https://via.placeholder.com/64?text=${name[0]}"></div>
-                    <span class="combo-name">${name}</span>
-                </div>
-            </label>
-        `).join('');
-    }
-
-    // Main load function
     async function loadProduct() {
         const container = document.getElementById('productContainer');
         if (!productId) {
@@ -543,12 +508,13 @@
             const name = product.name || "Traditional Pickle";
             const variants = product.variants || [];
             const defaultVariant = variants.length ? variants[0] : { weight: "250g", price: 149, mrp: 199 };
-            const images = product.images && product.images.length ? product.images : ["https://via.placeholder.com/600x420?text=Product+Image"];
+            const images = product.images && product.images.length ? product.images : [FALLBACK_IMG];
             productImages = images;
             const rating = product.rating || 4.5;
             const ratingStars = "★".repeat(Math.floor(rating)) + "☆".repeat(5-Math.floor(rating));
             const description = product.description || "Handcrafted with authentic spices and love. No artificial preservatives.";
-            
+
+            // Build variants HTML
             let variantsHtml = '';
             variants.forEach((v, idx) => {
                 const isChecked = idx === 0 ? 'checked' : '';
@@ -566,9 +532,10 @@
             });
             if (!variants.length) variantsHtml = `<p class="error-state">No size variants available.</p>`;
 
+            // Build thumbnails
             let thumbsHtml = '';
             images.forEach((img, idx) => {
-                thumbsHtml += `<img src="${img}" alt="View ${idx+1}" class="thumb ${idx===0 ? 'active' : ''}" onclick="changeImage(this, ${idx})">`;
+                thumbsHtml += `<img src="${img}" alt="View ${idx+1}" class="thumb ${idx===0 ? 'active' : ''}" onclick="changeImage(this, ${idx})" onerror="this.onerror=null;this.src='${FALLBACK_IMG}';">`;
             });
 
             const fullHtml = `
@@ -580,7 +547,7 @@
                                 ${thumbsHtml}
                             </div>
                             <div class="main-image-container">
-                                <img src="${images[0]}" alt="Main View" id="mainImage">
+                                <img src="${images[0]}" alt="Main View" id="mainImage" onerror="this.onerror=null;this.src='${FALLBACK_IMG}';">
                             </div>
                         </div>
                     </div>
@@ -635,58 +602,47 @@
                 <hr>
                 <div class="related-products-section">
                     <h2>You May Also Like</h2>
-                    <div class="related-grid">
-                        ${generateStaticRelatedCards()}
-                    </div>
-                </div>
-                <hr>
-                <div class="combo-section">
-                    <h2>Build Your Combo</h2>
-                    <div class="combo-layout">
-                        <div class="combo-banner">
-                            <h3>Best of 4 Pickles</h3>
-                            <p>Only at ₹999</p>
-                        </div>
-                        <div class="combo-selector">
-                            <div class="combo-header">
-                                <span>Select any 4 Pickles</span>
-                                <span class="combo-counter" id="comboCounter">0/4 Selected</span>
-                            </div>
-                            <div class="combo-grid" id="comboGrid">
-                                ${generateStaticComboItems()}
-                            </div>
-                        </div>
+                    <div class="related-grid" id="relatedGrid">
+                        <p class="loading-state">Loading related products...</p>
                     </div>
                 </div>
             `;
             container.innerHTML = fullHtml;
-            
-            // Re-attach references
+
+            // Re-attach global references
             mainImageEl = document.getElementById('mainImage');
             currentPriceEl = document.getElementById('dynamicPrice');
             mrpPriceEl = document.getElementById('dynamicMRP');
             discountBadgeEl = document.getElementById('discountBadge');
             qtyInput = document.getElementById('qtyInput');
             
-            // Re-bind combo checkboxes
-            const comboChecks = document.querySelectorAll('#comboGrid input[type="checkbox"]');
-            comboChecks.forEach(cb => cb.addEventListener('change', handleComboSelection));
-            
             startSlideShow();
             
-            document.getElementById('cartBtn')?.addEventListener('click', () => alert(`Added ${qtyInput.value} item(s) to cart!`));
-            document.getElementById('buyNowBtn')?.addEventListener('click', () => alert('Proceeding to checkout...'));
+            document.getElementById('cartBtn')?.addEventListener('click', () => {
+                alert(`Added ${qtyInput.value} item(s) to cart!`);
+            });
+            document.getElementById('buyNowBtn')?.addEventListener('click', () => {
+                alert('Proceeding to checkout...');
+            });
+
+            // Load related products dynamically
+            const relatedIds = product.relatedProductIds;
+            if (relatedIds && Array.isArray(relatedIds) && relatedIds.length > 0) {
+                loadRelatedProducts(relatedIds);
+            } else {
+                document.getElementById('relatedGrid').innerHTML = '<p class="no-related-msg">No related products found.</p>';
+            }
+
         } catch (err) {
             console.error(err);
             container.innerHTML = `<div class="error-state">⚠️ Failed to load product. Please try again later.</div>`;
         }
     }
 
-    // Expose global functions for inline event handlers
+    // Expose functions for inline handlers
     window.updatePrice = updatePrice;
     window.changeQty = changeQty;
     window.changeImage = changeImage;
-    window.handleComboSelection = handleComboSelection;
     
     loadProduct();
 </script>
