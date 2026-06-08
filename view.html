@@ -36,7 +36,7 @@
         .product-detail-container {
             max-width: 1200px;
             margin: 0 auto;
-            background: transparent; /* no background, no shadow */
+            background: transparent;
             padding: 0;
         }
 
@@ -89,6 +89,7 @@
 
         .thumb:hover, .thumb.active { border-color: red; }
 
+        /* ✅ Main image height changed to 600px */
         .main-image-container {
             flex: 1;
             height: 600px;
@@ -316,26 +317,31 @@
             color: #2c3e50;
             margin-bottom: 25px;
         }
+
+        /* Default grid for multiple cards */
         .related-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
         }
+
+        /* Card base style */
         .related-card {
             border: 1px solid #eaeaea;
             border-radius: 12px;
             background: #fff;
-            transition: transform 0.2s, box-shadow 0.2s;
             text-align: center;
             padding-bottom: 15px;
             cursor: pointer;
             position: relative;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
         .related-card:hover {
             transform: translateY(-6px);
             box-shadow: 0 12px 24px rgba(0,0,0,0.1);
         }
+
         .related-discount-tag {
             position: absolute;
             top: 10px;
@@ -347,6 +353,7 @@
             border-radius: 4px;
             z-index: 10;
         }
+
         .related-img-box {
             width: 100%;
             height: 180px;
@@ -359,6 +366,7 @@
             height: 100%;
             object-fit: cover;
         }
+
         .related-name {
             font-size: 1.05rem;
             color: #2c3e50;
@@ -392,12 +400,49 @@
             padding: 20px;
         }
 
+        /* ✅ Special style when only ONE related product exists */
+        .related-grid.single-related {
+            display: flex;
+            justify-content: center;
+        }
+        .related-grid.single-related .related-card {
+            width: 120px;
+            height: 240px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .related-grid.single-related .related-img-box {
+            height: 100px;
+            border-radius: 12px 12px 0 0;
+        }
+        .related-grid.single-related .related-name {
+            font-size: 0.85rem;
+            margin: 6px 6px 2px;
+        }
+        .related-grid.single-related .related-price,
+        .related-grid.single-related .related-mrp {
+            font-size: 0.8rem;
+        }
+        .related-grid.single-related .view-product-btn {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            margin: 6px auto;
+        }
+        .related-grid.single-related .related-discount-tag {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            top: 6px;
+            right: 6px;
+        }
+
         @media (max-width: 900px) {
             .split-layout { flex-direction: column; gap: 30px; }
             .sticky-image-column { position: relative; top: 0; }
             .thumbnail-column { flex-direction: row; width: 100%; }
             .thumb { width: calc(25% - 9px); }
-            .main-image-container { height: 350px; }
+            .main-image-container { height: 400px; } /* slightly reduced on mobile */
         }
     </style>
     <!-- Firebase SDK -->
@@ -513,6 +558,7 @@
 
             if (related.length === 0) {
                 grid.innerHTML = '<p class="no-related-msg">No other products in this category.</p>';
+                grid.classList.remove('single-related');
                 return;
             }
 
@@ -535,9 +581,18 @@
                 `;
             });
             grid.innerHTML = html;
+
+            // ✅ Apply single card class if only one item
+            if (related.length === 1) {
+                grid.classList.add('single-related');
+            } else {
+                grid.classList.remove('single-related');
+            }
+
         } catch (err) {
             console.error('Failed to load category related products:', err);
             grid.innerHTML = '<p class="error-state">⚠️ Could not load related items.</p>';
+            grid.classList.remove('single-related');
         }
     }
 
@@ -572,7 +627,6 @@
             
             const singleImage = product.image || FALLBACK_IMG;
             productImages = [singleImage];
-            const images = productImages;
             
             const rating = product.rating || 4.5;
             const ratingStars = "★".repeat(Math.floor(rating)) + "☆".repeat(5-Math.floor(rating));
@@ -598,7 +652,7 @@
                 variantsHtml = '<p class="error-state">Only one size available.</p>';
             }
 
-            const thumbsHtml = `<img src="${images[0]}" alt="Product image" class="thumb active" onclick="changeImage(this, 0)" onerror="this.onerror=null;this.src='${FALLBACK_IMG}';">`;
+            const thumbsHtml = `<img src="${singleImage}" alt="Product image" class="thumb active" onclick="changeImage(this, 0)" onerror="this.onerror=null;this.src='${FALLBACK_IMG}';">`;
 
             const fullHtml = `
                 <div class="split-layout">
@@ -608,7 +662,7 @@
                                 ${thumbsHtml}
                             </div>
                             <div class="main-image-container">
-                                <img src="${images[0]}" alt="Main View" id="mainImage" onerror="this.onerror=null;this.src='${FALLBACK_IMG}';">
+                                <img src="${singleImage}" alt="Main View" id="mainImage" onerror="this.onerror=null;this.src='${FALLBACK_IMG}';">
                             </div>
                         </div>
                     </div>
