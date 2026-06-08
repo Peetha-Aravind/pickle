@@ -1,1 +1,452 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Checkout – Happy NonVeg Pickles</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --rust: #C0392B;
+      --rust-dark: #962d22;
+      --rust-light: #f5e9e7;
+      --turmeric: #E8A020;
+      --cream: #FDF6EC;
+      --ink: #1C1009;
+      --ash: #6b5b4e;
+      --border: rgba(28,16,9,0.1);
+      --shadow-sm: 0 2px 8px rgba(28,16,9,0.08);
+      --shadow-md: 0 8px 32px rgba(28,16,9,0.12);
+      --r-card: 16px;
+      --r-pill: 999px;
+      --ff-body: 'IBM Plex Sans', sans-serif;
+      --nav-h: 68px;
+    }
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: var(--ff-body);
+      font-size: 15px;
+      line-height: 1.5;
+      padding-top: var(--nav-h);
+    }
+    /* Navigation (same as other pages) */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+      height: var(--nav-h); display: flex; align-items: center;
+      justify-content: space-between; padding: 0 5vw;
+      background: rgba(253,246,236,0.94); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      transition: box-shadow 0.3s;
+    }
+    .nav.scrolled { box-shadow: var(--shadow-md); }
+    .nav-logo {
+      font-family: var(--ff-body);
+      font-size: 1.45rem; font-weight: 700;
+      color: var(--rust); letter-spacing: -0.5px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .nav-logo .dot { width: 8px; height: 8px; background: var(--turmeric); border-radius: 50%; }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a { font-weight: 600; font-size: 14px; color: var(--ash); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--rust); }
+    .nav-cta { background: var(--rust); color: #fff; padding: 10px 22px; border-radius: var(--r-pill); font-weight: 600; }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    /* Main checkout container */
+    .checkout-container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 5vw;
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 40px;
+    }
+    /* Order summary card */
+    .order-summary {
+      background: white;
+      border-radius: var(--r-card);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      position: sticky;
+      top: calc(var(--nav-h) + 20px);
+    }
+    .summary-header {
+      background: var(--rust);
+      color: white;
+      padding: 18px 24px;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+    .summary-items {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .cart-item {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px dashed var(--border);
+    }
+    .cart-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .cart-item-img {
+      width: 70px;
+      height: 70px;
+      border-radius: 12px;
+      background: #f0e7de;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .cart-item-img img { width: 100%; height: 100%; object-fit: cover; }
+    .cart-item-details { flex: 1; }
+    .cart-item-name { font-weight: 700; margin-bottom: 4px; }
+    .cart-item-variant { font-size: 0.8rem; color: var(--ash); margin-bottom: 6px; }
+    .cart-item-price-row { display: flex; justify-content: space-between; align-items: baseline; }
+    .cart-item-qty { font-size: 0.85rem; color: var(--ash); }
+    .cart-item-total { font-weight: 800; color: var(--rust); }
+    .summary-totals {
+      padding: 20px 24px;
+      background: #faf7f2;
+    }
+    .totals-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .totals-row.grand-total {
+      font-weight: 800;
+      font-size: 1.2rem;
+      border-top: 2px solid var(--border);
+      padding-top: 12px;
+      margin-top: 8px;
+      color: var(--rust);
+    }
+    /* Checkout form */
+    .checkout-form {
+      background: white;
+      border-radius: var(--r-card);
+      box-shadow: var(--shadow-sm);
+      padding: 28px 30px;
+    }
+    .form-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: var(--ink);
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-family: var(--ff-body);
+      font-size: 0.95rem;
+      transition: 0.2s;
+      background: white;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--rust);
+      box-shadow: 0 0 0 3px rgba(192,57,43,0.1);
+    }
+    .payment-options {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin: 15px 0 10px;
+    }
+    .payment-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .payment-option input {
+      width: auto;
+      margin-right: 4px;
+    }
+    .btn-place-order {
+      width: 100%;
+      background: var(--rust);
+      color: white;
+      border: none;
+      padding: 16px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 15px;
+    }
+    .btn-place-order:hover {
+      background: var(--rust-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 20px;
+      color: var(--ash);
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+    .back-link:hover { color: var(--rust); }
+    .error-message {
+      background: #ffe0e0;
+      padding: 20px;
+      border-radius: var(--r-card);
+      text-align: center;
+      max-width: 600px;
+      margin: 40px auto;
+    }
+    footer {
+      background: var(--ink);
+      color: rgba(255,255,255,0.6);
+      padding: 30px 5vw;
+      text-align: center;
+      margin-top: 60px;
+    }
+    @media (max-width: 800px) {
+      .checkout-container { grid-template-columns: 1fr; gap: 30px; }
+      .order-summary { position: relative; top: 0; }
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+    }
+    @media (max-width: 500px) {
+      .cart-item-img { width: 55px; height: 55px; }
+      .checkout-form { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav" id="mainNav">
+  <div class="nav-logo"><span class="dot"></span> Happy NonVeg Pickles</div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="index.html#bestsellers">Best Sellers</a>
+    <a href="index.html#categories">Shop</a>
+  </div>
+  <div class="nav-hamburger" id="hamburger"><span></span><span></span><span></span></div>
+</nav>
+
+<main id="checkoutRoot">
+  <div class="loader" style="text-align:center; padding:60px;">Loading checkout details...</div>
+</main>
+
+<footer><p>© 2025 Happy NonVeg Pickles — handcrafted with tradition.</p></footer>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
+    authDomain: "pickle-fdc54.firebaseapp.com",
+    projectId: "pickle-fdc54",
+    storageBucket: "pickle-fdc54.firebasestorage.app",
+    messagingSenderId: "650348710985",
+    appId: "1:650348710985:web:b8eedb551a79b536578398",
+    measurementId: "G-B40NG5KQDL"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  function formatPrice(p) { return `₹${Math.round(Number(p) || 0)}`; }
+
+  // Get URL parameters
+  function getQueryParams() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      productId: params.get('productId'),
+      quantity: parseInt(params.get('quantity')) || 1,
+      variant: params.get('variant') || '',
+      name: params.get('name'),
+      price: parseFloat(params.get('price')),
+    };
+  }
+
+  // Fetch product details if productId exists, else use passed params
+  async function getCheckoutItem() {
+    const { productId, quantity, variant, name, price } = getQueryParams();
+    
+    if (productId) {
+      try {
+        const prodSnap = await getDoc(doc(db, "products", productId));
+        if (prodSnap.exists()) {
+          const product = prodSnap.data();
+          // Determine selected variant
+          let selectedVariant = null;
+          if (variant && product.variants) {
+            selectedVariant = product.variants.find(v => v.weight === variant);
+          }
+          if (!selectedVariant && product.variants && product.variants.length > 0) {
+            selectedVariant = product.variants[0];
+          }
+          const itemPrice = selectedVariant ? selectedVariant.price : (product.price || 0);
+          const itemMrp = selectedVariant ? selectedVariant.mrp : (product.mrp || 0);
+          return {
+            id: productId,
+            name: product.longName || product.name,
+            image: product.mainImage || product.image || "https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle",
+            variant: selectedVariant ? selectedVariant.weight : (variant || "Standard"),
+            quantity: quantity,
+            price: itemPrice,
+            mrp: itemMrp,
+          };
+        }
+      } catch(e) { console.warn(e); }
+    }
+    
+    // Fallback: use query params directly
+    if (name && price) {
+      return {
+        id: null,
+        name: name,
+        image: "https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle",
+        variant: variant || "Standard",
+        quantity: quantity,
+        price: price,
+        mrp: price * 1.25, // fake mrp for discount display
+      };
+    }
+    return null;
+  }
+
+  async function renderCheckout() {
+    const root = document.getElementById('checkoutRoot');
+    const item = await getCheckoutItem();
+    
+    if (!item) {
+      root.innerHTML = `<div class="error-message">❌ No item to checkout. Please go back and add a product to cart.<br><a href="index.html" style="color:var(--rust);">Continue Shopping</a></div>`;
+      return;
+    }
+    
+    const subtotal = item.price * item.quantity;
+    const shipping = subtotal > 499 ? 0 : 40;
+    const total = subtotal + shipping;
+    const discountAmount = item.mrp ? (item.mrp - item.price) * item.quantity : 0;
+    
+    const html = `
+      <div class="checkout-container">
+        <!-- Order Summary Column -->
+        <div class="order-summary">
+          <div class="summary-header">Order Summary</div>
+          <div class="summary-items">
+            <div class="cart-item">
+              <div class="cart-item-img"><img src="${item.image}" alt="${item.name}" onerror="this.src='https://placehold.co/70x70/f5e9e7/c0392b?text=Pickle'"></div>
+              <div class="cart-item-details">
+                <div class="cart-item-name">${escapeHtml(item.name)}</div>
+                <div class="cart-item-variant">${escapeHtml(item.variant)}</div>
+                <div class="cart-item-price-row">
+                  <span class="cart-item-qty">Qty: ${item.quantity}</span>
+                  <span class="cart-item-total">${formatPrice(item.price * item.quantity)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="summary-totals">
+            <div class="totals-row"><span>Subtotal</span><span>${formatPrice(subtotal)}</span></div>
+            ${discountAmount > 0 ? `<div class="totals-row"><span>Discount</span><span>-${formatPrice(discountAmount)}</span></div>` : ''}
+            <div class="totals-row"><span>Shipping</span><span>${shipping === 0 ? 'FREE' : formatPrice(shipping)}</span></div>
+            <div class="totals-row grand-total"><span>Total</span><span>${formatPrice(total)}</span></div>
+          </div>
+        </div>
+        
+        <!-- Checkout Form -->
+        <div class="checkout-form">
+          <div class="form-title">Shipping & Payment</div>
+          <form id="checkoutForm">
+            <div class="form-group">
+              <label>Full Name *</label>
+              <input type="text" id="fullName" required placeholder="John Doe">
+            </div>
+            <div class="form-group">
+              <label>Email Address *</label>
+              <input type="email" id="email" required placeholder="you@example.com">
+            </div>
+            <div class="form-group">
+              <label>Phone Number *</label>
+              <input type="tel" id="phone" required placeholder="9876543210">
+            </div>
+            <div class="form-group">
+              <label>Delivery Address *</label>
+              <textarea id="address" rows="3" required placeholder="Street, City, PIN code"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Payment Method *</label>
+              <div class="payment-options">
+                <label class="payment-option"><input type="radio" name="payment" value="cod" checked> Cash on Delivery</label>
+                <label class="payment-option"><input type="radio" name="payment" value="card"> Credit/Debit Card</label>
+                <label class="payment-option"><input type="radio" name="payment" value="upi"> UPI (Google Pay, PhonePe)</label>
+              </div>
+            </div>
+            <button type="submit" class="btn-place-order">Place Order</button>
+          </form>
+          <a href="javascript:history.back()" class="back-link">← Back to product</a>
+        </div>
+      </div>
+    `;
+    root.innerHTML = html;
+    
+    // Attach form submit handler
+    const form = document.getElementById('checkoutForm');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('fullName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const address = document.getElementById('address').value.trim();
+      const payment = document.querySelector('input[name="payment"]:checked').value;
+      
+      if (!name || !email || !phone || !address) {
+        alert('Please fill all required fields.');
+        return;
+      }
+      if (!email.includes('@')) {
+        alert('Enter a valid email address.');
+        return;
+      }
+      // Simulate order placement
+      alert(`✅ Order placed successfully!\n\nThank you ${name}, your order for ${item.name} (${item.variant}, Qty:${item.quantity}) will be delivered soon.\nPayment method: ${payment.toUpperCase()}\nTotal: ${formatPrice(total)}`);
+      // In real app, you would send data to Firestore or backend
+      // Redirect to confirmation or home page
+      window.location.href = 'index.html';
+    });
+  }
+  
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+  }
+  
+  // Navbar scroll effect + hamburger (same as product page)
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 10));
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.querySelector('.nav-links');
+  hamburger?.addEventListener('click', () => {
+    if (navLinks.style.display === 'flex') navLinks.style.display = '';
+    else navLinks.style.cssText = 'display:flex; flex-direction:column; position:fixed; top:var(--nav-h); left:0; right:0; background:rgba(253,246,236,0.98); backdrop-filter:blur(16px); padding:24px 5vw; gap:20px; z-index:800;';
+  });
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.nav') && navLinks && navLinks.style.display === 'flex') navLinks.style.display = '';
+  });
+  
+  renderCheckout();
+</script>
+</body>
+</html>
