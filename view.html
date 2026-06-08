@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Page | Happy NonVeg Pickles</title>
     <style>
-        /* Reset basic styles */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -25,7 +24,6 @@
             width: 100%;
         }
 
-        /* Unified Single Container */
         .single-box {
             background: #ffffff;
             padding: 40px;
@@ -36,7 +34,6 @@
             gap: 40px;
         }
 
-        /* Back to shop link */
         .back-link {
             display: inline-block;
             margin-bottom: 20px;
@@ -50,7 +47,6 @@
             text-decoration: underline;
         }
 
-        /* Loading & error */
         .loading-state, .error-state {
             text-align: center;
             padding: 60px 20px;
@@ -59,7 +55,6 @@
         }
         .error-state { color: #d32f2f; }
 
-        /* --- TOP SPLIT SECTION --- */
         .split-layout {
             display: flex;
             gap: 50px;
@@ -378,13 +373,11 @@
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
 
-    // Global references for dynamic elements
     let mainImageEl, currentPriceEl, mrpPriceEl, discountBadgeEl, qtyInput;
     let currentImgIndex = 0;
     let slideInterval;
     let productImages = [];
 
-    // Fallback image
     const FALLBACK_IMG = "https://via.placeholder.com/600x420?text=Image+Not+Found";
 
     function updatePrice(price, mrp, discountPercent = null) {
@@ -439,44 +432,56 @@
         startSlideShow();
     }
 
-    async function loadRelatedProducts(relatedIds) {
+    async function loadCategoryRelatedProducts(category, currentId) {
         const grid = document.getElementById('relatedGrid');
-        if (!grid || !relatedIds || relatedIds.length === 0) {
-            if (grid) grid.innerHTML = '<p class="no-related-msg">No related products found.</p>';
+        if (!grid) return;
+        if (!category) {
+            grid.innerHTML = '<p class="no-related-msg">No related products found.</p>';
             return;
         }
 
         try {
-            const snap = await db.collection("products")
-                .where(firebase.firestore.FieldPath.documentId(), "in", relatedIds)
+            const snapshot = await db.collection("products")
+                .where("category", "==", category)
+                .limit(5)  // fetch a few more to be safe after excluding current
                 .get();
 
-            let html = '';
-            if (snap.empty) {
-                html = '<p class="no-related-msg">Related products not available.</p>';
-            } else {
-                snap.forEach(doc => {
-                    const p = { id: doc.id, ...doc.data() };
-                    const img = (p.images && p.images.length > 0) ? p.images[0] : FALLBACK_IMG;
-                    const name = p.name || "Pickle";
-                    const defaultVariant = (p.variants && p.variants.length > 0) ? p.variants[0] : { price: 149, mrp: 199 };
-                    const price = defaultVariant.price;
-                    const mrp = defaultVariant.mrp;
-                    const discount = Math.round((1 - price/mrp)*100);
-                    html += `
-                        <div class="related-card" onclick="window.location.href='view.html?id=${p.id}'">
-                            <div class="related-discount-tag">${discount}% OFF</div>
-                            <div class="related-img-box"><img src="${img}" alt="${name}" onerror="this.onerror=null;this.src='${FALLBACK_IMG}';"></div>
-                            <div class="related-name">${escapeHtml(name)}</div>
-                            <div><span class="related-price">₹${price}</span><span class="related-mrp">₹${mrp}</span></div>
-                            <button class="view-product-btn">View Product</button>
-                        </div>
-                    `;
-                });
+            let products = [];
+            snapshot.forEach(doc => {
+                if (doc.id !== currentId) {
+                    products.push({ id: doc.id, ...doc.data() });
+                }
+            });
+
+            // limit to 4 items
+            products = products.slice(0, 4);
+
+            if (products.length === 0) {
+                grid.innerHTML = '<p class="no-related-msg">No other products in this category.</p>';
+                return;
             }
+
+            let html = '';
+            products.forEach(p => {
+                const img = (p.images && p.images.length > 0) ? p.images[0] : FALLBACK_IMG;
+                const name = p.name || "Pickle";
+                const defaultVariant = (p.variants && p.variants.length > 0) ? p.variants[0] : { price: 149, mrp: 199 };
+                const price = defaultVariant.price;
+                const mrp = defaultVariant.mrp;
+                const discount = Math.round((1 - price/mrp)*100);
+                html += `
+                    <div class="related-card" onclick="window.location.href='view.html?id=${p.id}'">
+                        <div class="related-discount-tag">${discount}% OFF</div>
+                        <div class="related-img-box"><img src="${img}" alt="${escapeHtml(name)}" onerror="this.onerror=null;this.src='${FALLBACK_IMG}';"></div>
+                        <div class="related-name">${escapeHtml(name)}</div>
+                        <div><span class="related-price">₹${price}</span><span class="related-mrp">₹${mrp}</span></div>
+                        <button class="view-product-btn">View Product</button>
+                    </div>
+                `;
+            });
             grid.innerHTML = html;
         } catch (err) {
-            console.error('Failed to load related products:', err);
+            console.error('Failed to load category related products:', err);
             grid.innerHTML = '<p class="error-state">⚠️ Could not load related items.</p>';
         }
     }
@@ -625,13 +630,9 @@
                 alert('Proceeding to checkout...');
             });
 
-            // Load related products dynamically
-            const relatedIds = product.relatedProductIds;
-            if (relatedIds && Array.isArray(relatedIds) && relatedIds.length > 0) {
-                loadRelatedProducts(relatedIds);
-            } else {
-                document.getElementById('relatedGrid').innerHTML = '<p class="no-related-msg">No related products found.</p>';
-            }
+            // Load related products based on category
+            const category = product.category;
+            loadCategoryRelatedProducts(category, productId);
 
         } catch (err) {
             console.error(err);
@@ -639,7 +640,7 @@
         }
     }
 
-    // Expose functions for inline handlers
+    // Expose global functions
     window.updatePrice = updatePrice;
     window.changeQty = changeQty;
     window.changeImage = changeImage;
