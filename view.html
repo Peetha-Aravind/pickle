@@ -40,7 +40,7 @@
       padding-top: var(--nav-h);
     }
 
-    /* Navigation (reusing landing style) */
+    /* Navigation */
     .nav {
       position: fixed;
       top: 0;
@@ -92,44 +92,36 @@
     }
     .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
 
-    /* Main product layout */
+    /* Main product layout – two columns with sticky left */
     .product-container {
       max-width: 1280px;
       margin: 30px auto 60px;
       padding: 0 5vw;
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 0.9fr 1.1fr;
       gap: 48px;
+      align-items: start;
     }
 
-    /* Images */
+    /* LEFT COLUMN – Sticky Images with thumbnails on left side */
     .product-gallery {
       position: sticky;
       top: calc(var(--nav-h) + 20px);
-    }
-    .main-image {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      background: #f0e7de;
-      border-radius: var(--r-card);
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
-      margin-bottom: 20px;
-    }
-    .main-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s;
-    }
-    .thumbnail-list {
       display: flex;
+      gap: 20px;
+      flex-direction: row;
+    }
+    /* Thumbnails – vertical column on left */
+    .thumbnail-strip {
+      display: flex;
+      flex-direction: column;
       gap: 14px;
-      flex-wrap: wrap;
+      width: 85px;
+      flex-shrink: 0;
     }
     .thumbnail {
-      width: 80px;
-      height: 80px;
+      width: 85px;
+      height: 85px;
       border-radius: 12px;
       overflow: hidden;
       cursor: pointer;
@@ -144,10 +136,25 @@
     }
     .thumbnail.active {
       border-color: var(--rust);
-      transform: scale(0.98);
+      transform: scale(0.96);
+    }
+    /* Main image container */
+    .main-image {
+      flex: 1;
+      aspect-ratio: 1 / 1;
+      background: #f0e7de;
+      border-radius: var(--r-card);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .main-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
     }
 
-    /* Product info */
+    /* RIGHT COLUMN – Scrollable content */
     .product-info {
       display: flex;
       flex-direction: column;
@@ -202,13 +209,12 @@
       font-size: 0.8rem;
       font-weight: 700;
     }
-    .description {
-      color: #3a2c22;
+    .short-description {
       border-left: 4px solid var(--turmeric);
       padding-left: 18px;
-      margin: 10px 0;
+      color: #3a2c22;
     }
-    /* Variant selector */
+    /* Variants */
     .variants-section h3 {
       font-size: 1rem;
       margin-bottom: 12px;
@@ -233,6 +239,7 @@
       background: var(--rust-light);
       color: var(--rust);
     }
+    /* Quantity + buttons */
     .qty-selector {
       display: flex;
       align-items: center;
@@ -262,10 +269,15 @@
     }
     .action-buttons {
       display: flex;
-      gap: 16px;
+      flex-direction: column;
+      gap: 12px;
       margin-top: 12px;
     }
-    .btn-primary, .btn-secondary {
+    .button-row {
+      display: flex;
+      gap: 16px;
+    }
+    .btn-cart, .btn-wishlist, .btn-buynow {
       flex: 1;
       padding: 14px;
       border-radius: 40px;
@@ -274,24 +286,58 @@
       cursor: pointer;
       transition: 0.2s;
     }
-    .btn-primary {
-      background: var(--rust);
+    .btn-cart {
+      background: black;
       color: white;
       border: none;
     }
-    .btn-primary:hover {
-      background: var(--rust-dark);
+    .btn-cart:hover {
+      background: #2c2c2c;
       transform: translateY(-2px);
     }
-    .btn-secondary {
+    .btn-wishlist {
       background: transparent;
       border: 1.5px solid var(--rust);
       color: var(--rust);
     }
-    .btn-secondary:hover {
+    .btn-wishlist:hover {
       background: var(--rust-light);
     }
-    /* Related products */
+    .btn-buynow {
+      background: var(--turmeric);
+      color: var(--ink);
+      border: none;
+      font-weight: 800;
+    }
+    .btn-buynow:hover {
+      background: #d48f1a;
+      transform: translateY(-2px);
+    }
+    /* Shipping & refund / full description */
+    .extra-info {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .policy-block {
+      background: #fff8f0;
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 20px;
+    }
+    .policy-block h4 {
+      font-size: 1rem;
+      margin-bottom: 8px;
+      color: var(--rust);
+    }
+    .full-description {
+      background: white;
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Related products section */
     .related-section {
       max-width: 1280px;
       margin: 80px auto 60px;
@@ -301,8 +347,6 @@
       font-family: var(--ff-display);
       font-size: 1.9rem;
       margin-bottom: 28px;
-      position: relative;
-      display: inline-block;
     }
     .related-grid {
       display: grid;
@@ -316,6 +360,8 @@
       border: 1px solid var(--border);
       transition: transform 0.25s, box-shadow 0.25s;
       cursor: pointer;
+      display: flex;
+      flex-direction: column;
     }
     .related-card:hover {
       transform: translateY(-5px);
@@ -332,16 +378,54 @@
     }
     .related-info {
       padding: 14px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
     .related-name {
       font-weight: 700;
       font-size: 0.95rem;
     }
+    .related-stars {
+      font-size: 0.75rem;
+      color: var(--turmeric);
+      letter-spacing: 1px;
+    }
+    .related-pricing {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 4px 0;
+    }
     .related-price {
       color: var(--rust);
       font-weight: 800;
-      margin-top: 6px;
+      font-size: 1rem;
     }
+    .related-mrp {
+      text-decoration: line-through;
+      font-size: 0.8rem;
+      color: var(--ash);
+    }
+    .related-view-btn {
+      background: black;
+      color: white;
+      border: none;
+      border-radius: 40px;
+      padding: 8px 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-top: 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.2s;
+    }
+    .related-view-btn:hover {
+      background: var(--rust);
+    }
+
     /* Loading & errors */
     .loader {
       text-align: center;
@@ -364,16 +448,36 @@
       margin-top: 50px;
     }
 
+    /* Responsive */
     @media (max-width: 800px) {
-      .product-container { grid-template-columns: 1fr; gap: 32px; }
-      .product-gallery { position: relative; top: 0; }
+      .product-container {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+      .product-gallery {
+        position: relative;
+        top: 0;
+        flex-direction: column;
+      }
+      .thumbnail-strip {
+        flex-direction: row;
+        width: 100%;
+        order: 2;
+        justify-content: center;
+      }
+      .main-image {
+        order: 1;
+      }
       .nav-links { display: none; }
       .nav-hamburger { display: flex; }
+      .button-row {
+        flex-direction: column;
+      }
     }
     @media (max-width: 500px) {
-      .variant-buttons { gap: 10px; }
+      .thumbnail-strip { gap: 8px; }
+      .thumbnail { width: 65px; height: 65px; }
       .variant-btn { padding: 6px 18px; font-size: 0.85rem; }
-      .thumbnail { width: 60px; height: 60px; }
     }
     .reveal {
       opacity: 0;
@@ -414,7 +518,6 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
   import { getFirestore, doc, getDoc, getDocs, collection, query, where, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-  // Firebase config (same as landing page)
   const firebaseConfig = {
     apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
     authDomain: "pickle-fdc54.firebaseapp.com",
@@ -428,237 +531,18 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // Helper: get product ID from URL
   function getProductId() {
     const params = new URLSearchParams(window.location.search);
     return params.get('id');
   }
 
-  // Format price
   function formatPrice(price) {
     return `₹${Math.round(Number(price))}`;
   }
 
-  // Calculate discount percent
   function getDiscountPercent(mrp, price) {
     if (!mrp || !price || mrp <= price) return null;
     return Math.round(((mrp - price) / mrp) * 100);
-  }
-
-  // Render full product page
-  async function loadProductPage() {
-    const root = document.getElementById('productDetailRoot');
-    const productId = getProductId();
-    if (!productId) {
-      root.innerHTML = `<div class="error-message">❌ Product ID missing. Please go back to the shop.</div>`;
-      return;
-    }
-
-    try {
-      // 1. Fetch product
-      const productRef = doc(db, "products", productId);
-      const productSnap = await getDoc(productRef);
-      if (!productSnap.exists()) {
-        root.innerHTML = `<div class="error-message">😕 Product not found. It may have been removed.</div>`;
-        return;
-      }
-      const product = { id: productSnap.id, ...productSnap.data() };
-
-      // 2. Fetch related products (same categoryId or category name)
-      let relatedProducts = [];
-      const categoryId = product.categoryId || product.category;
-      if (categoryId) {
-        const q = query(collection(db, "products"), where("categoryId", "==", categoryId), limit(5));
-        const querySnap = await getDocs(q);
-        querySnap.forEach(docSnap => {
-          if (docSnap.id !== product.id) {
-            relatedProducts.push({ id: docSnap.id, ...docSnap.data() });
-          }
-        });
-      }
-      // fallback: if less than 3, fetch some best sellers
-      if (relatedProducts.length < 3) {
-        const fallbackQ = query(collection(db, "products"), where("isavailable", "==", true), limit(4));
-        const fallbackSnap = await getDocs(fallbackQ);
-        fallbackSnap.forEach(docSnap => {
-          if (docSnap.id !== product.id && !relatedProducts.find(r => r.id === docSnap.id)) {
-            relatedProducts.push({ id: docSnap.id, ...docSnap.data() });
-          }
-        });
-      }
-      relatedProducts = relatedProducts.slice(0, 4);
-
-      // Render DOM with real data
-      renderProductPage(product, relatedProducts);
-      observeReveal();
-    } catch (err) {
-      console.error("Firestore error:", err);
-      root.innerHTML = `<div class="error-message">⚠️ Failed to load data. Please check your connection.</div>`;
-    }
-  }
-
-  function renderProductPage(product, relatedProducts) {
-    const variants = product.variants || [];
-    const defaultVariant = variants[0] || { weight: "Standard", price: product.price || 249, mrp: product.mrp || 299 };
-    const mainImageUrl = product.mainImage || product.image || "https://placehold.co/600x600/f5e9e7/c0392b?text=Pickle";
-    const thumbImages = product.thumbnailImages || product.additionalImages || (mainImageUrl ? [mainImageUrl] : []);
-
-    // Create HTML skeleton
-    const html = `
-      <div class="product-container reveal">
-        <div class="product-gallery">
-          <div class="main-image" id="mainImageContainer">
-            <img id="mainProductImage" src="${mainImageUrl}" alt="${product.name}" onerror="this.src='https://placehold.co/600x600/f5e9e7/c0392b?text=Pickle'">
-          </div>
-          <div class="thumbnail-list" id="thumbnailList">
-            ${thumbImages.map((img, idx) => `
-              <div class="thumbnail ${idx === 0 ? 'active' : ''}" data-img="${img}">
-                <img src="${img}" alt="thumbnail">
-              </div>
-            `).join('')}
-          </div>
-        </div>
-        <div class="product-info">
-          <h1 class="product-title">${escapeHtml(product.name)}</h1>
-          <div class="rating">
-            <div class="stars">${renderStars(product.rating || 4.7)}</div>
-            <span class="review-count">${product.reviewCount || '★ 100+ reviews'}</span>
-          </div>
-          <div class="price-group" id="priceGroup">
-            <span class="current-price" id="currentPrice">${formatPrice(defaultVariant.price)}</span>
-            ${defaultVariant.mrp ? `<span class="old-price" id="oldPrice">${formatPrice(defaultVariant.mrp)}</span>` : ''}
-            ${getDiscountPercent(defaultVariant.mrp, defaultVariant.price) ? `<span class="discount-badge" id="discountBadge">${getDiscountPercent(defaultVariant.mrp, defaultVariant.price)}% OFF</span>` : ''}
-          </div>
-          <div class="description">
-            <p>${escapeHtml(product.description || "Authentic homemade-style pickle made with sun-dried mangoes and secret spices. No artificial preservatives.")}</p>
-          </div>
-          ${variants.length > 0 ? `
-          <div class="variants-section">
-            <h3>Select Size:</h3>
-            <div class="variant-buttons" id="variantButtons">
-              ${variants.map((v, idx) => `
-                <button class="variant-btn ${idx === 0 ? 'active' : ''}" data-price="${v.price}" data-mrp="${v.mrp || ''}" data-weight="${v.weight}" data-discount="${getDiscountPercent(v.mrp, v.price) || ''}">
-                  ${v.weight}  ${formatPrice(v.price)}
-                </button>
-              `).join('')}
-            </div>
-          </div>
-          ` : ''}
-          <div class="qty-selector">
-            <span style="font-weight:600;">Quantity:</span>
-            <div class="qty-control">
-              <button id="qtyMinus">-</button>
-              <input type="text" id="qtyInput" value="1" readonly>
-              <button id="qtyPlus">+</button>
-            </div>
-          </div>
-          <div class="action-buttons">
-            <div class="btn-primary" id="addToCartBtn">🛒 Add to Cart</div>
-            <div class="btn-secondary" id="wishlistBtn">❤️ Wishlist</div>
-          </div>
-        </div>
-      </div>
-      <div class="related-section reveal">
-        <h2>🔥 You may also like</h2>
-        <div class="related-grid" id="relatedGrid">
-          ${relatedProducts.map(prod => `
-            <div class="related-card" data-id="${prod.id}">
-              <div class="related-img"><img src="${prod.mainImage || 'https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle'}" alt="${prod.name}"></div>
-              <div class="related-info">
-                <div class="related-name">${escapeHtml(prod.name)}</div>
-                <div class="related-price">${formatPrice(prod.variants?.[0]?.price || prod.price)}</div>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
-    document.getElementById('productDetailRoot').innerHTML = html;
-
-    // ---- Post-render interactions ----
-    // Thumbnail switcher
-    const thumbnails = document.querySelectorAll('.thumbnail');
-    const mainImg = document.getElementById('mainProductImage');
-    thumbnails.forEach(thumb => {
-      thumb.addEventListener('click', () => {
-        const newSrc = thumb.getAttribute('data-img');
-        if (newSrc) {
-          mainImg.src = newSrc;
-          thumbnails.forEach(t => t.classList.remove('active'));
-          thumb.classList.add('active');
-        }
-      });
-    });
-
-    // Variant selection
-    const variantBtns = document.querySelectorAll('.variant-btn');
-    const currentPriceSpan = document.getElementById('currentPrice');
-    const oldPriceSpan = document.getElementById('oldPrice');
-    const discountSpan = document.getElementById('discountBadge');
-    
-    function updateVariant(btn) {
-      variantBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const price = btn.getAttribute('data-price');
-      const mrp = btn.getAttribute('data-mrp');
-      const discount = btn.getAttribute('data-discount');
-      if (currentPriceSpan) currentPriceSpan.innerText = formatPrice(price);
-      if (oldPriceSpan) {
-        if (mrp && mrp !== 'null') oldPriceSpan.innerText = formatPrice(mrp);
-        else oldPriceSpan.style.display = 'none';
-      }
-      if (discountSpan) {
-        if (discount && discount !== 'null' && discount > 0) {
-          discountSpan.innerText = `${discount}% OFF`;
-          discountSpan.style.display = 'inline-block';
-        } else {
-          discountSpan.style.display = 'none';
-        }
-      }
-    }
-
-    variantBtns.forEach(btn => {
-      btn.addEventListener('click', () => updateVariant(btn));
-    });
-
-    // Quantity
-    const qtyInput = document.getElementById('qtyInput');
-    document.getElementById('qtyMinus')?.addEventListener('click', () => {
-      let val = parseInt(qtyInput.value) || 1;
-      if (val > 1) qtyInput.value = val - 1;
-    });
-    document.getElementById('qtyPlus')?.addEventListener('click', () => {
-      let val = parseInt(qtyInput.value) || 1;
-      qtyInput.value = val + 1;
-    });
-
-    // Cart & wishlist actions
-    const getSelectedVariant = () => {
-      const activeBtn = document.querySelector('.variant-btn.active');
-      if (activeBtn) {
-        const weight = activeBtn.innerText.split(' ')[0];
-        const price = parseFloat(activeBtn.getAttribute('data-price'));
-        return { weight, price };
-      }
-      return { weight: variants[0]?.weight || 'Standard', price: variants[0]?.price || product.price };
-    };
-
-    document.getElementById('addToCartBtn')?.addEventListener('click', () => {
-      const qty = parseInt(qtyInput.value);
-      const variant = getSelectedVariant();
-      alert(`🛒 Added to cart: ${product.name} (${variant.weight}) x ${qty} — Total ${formatPrice(variant.price * qty)}`);
-    });
-    document.getElementById('wishlistBtn')?.addEventListener('click', () => {
-      alert(`❤️ ${product.name} saved to wishlist!`);
-    });
-
-    // Related products click
-    document.querySelectorAll('.related-card').forEach(card => {
-      card.addEventListener('click', (e) => {
-        const pid = card.getAttribute('data-id');
-        if (pid) window.location.href = `view.html?id=${pid}`;
-      });
-    });
   }
 
   function renderStars(rating) {
@@ -681,6 +565,255 @@
     });
   }
 
+  async function loadProductPage() {
+    const root = document.getElementById('productDetailRoot');
+    const productId = getProductId();
+    if (!productId) {
+      root.innerHTML = `<div class="error-message">❌ Product ID missing. Please go back to the shop.</div>`;
+      return;
+    }
+
+    try {
+      const productRef = doc(db, "products", productId);
+      const productSnap = await getDoc(productRef);
+      if (!productSnap.exists()) {
+        root.innerHTML = `<div class="error-message">😕 Product not found.</div>`;
+        return;
+      }
+      const product = { id: productSnap.id, ...productSnap.data() };
+
+      // Fetch related products (same categoryId or category name)
+      let relatedProducts = [];
+      const categoryId = product.categoryId || product.category;
+      if (categoryId) {
+        const q = query(collection(db, "products"), where("categoryId", "==", categoryId), limit(6));
+        const querySnap = await getDocs(q);
+        querySnap.forEach(docSnap => {
+          if (docSnap.id !== product.id) relatedProducts.push({ id: docSnap.id, ...docSnap.data() });
+        });
+      }
+      if (relatedProducts.length < 3) {
+        const fallbackQ = query(collection(db, "products"), where("isavailable", "==", true), limit(5));
+        const fallbackSnap = await getDocs(fallbackQ);
+        fallbackSnap.forEach(docSnap => {
+          if (docSnap.id !== product.id && !relatedProducts.find(r => r.id === docSnap.id))
+            relatedProducts.push({ id: docSnap.id, ...docSnap.data() });
+        });
+      }
+      relatedProducts = relatedProducts.slice(0, 4);
+
+      renderProductPage(product, relatedProducts);
+      observeReveal();
+    } catch (err) {
+      console.error(err);
+      root.innerHTML = `<div class="error-message">⚠️ Failed to load data. Please refresh.</div>`;
+    }
+  }
+
+  function renderProductPage(product, relatedProducts) {
+    const variants = product.variants || [];
+    const defaultVariant = variants[0] || { weight: "Standard", price: product.price || 249, mrp: product.mrp || 299 };
+    const mainImageUrl = product.mainImage || product.image || "https://placehold.co/600x600/f5e9e7/c0392b?text=Pickle";
+    const thumbImages = product.thumbnailImages || product.additionalImages || (mainImageUrl ? [mainImageUrl] : []);
+    // Use longName if admin provided, else product.name
+    const displayName = product.longName || product.name;
+
+    const fullDescription = product.fullDescription || product.description || "No description available. Handcrafted with authentic spices.";
+    const shippingInfo = product.shippingPolicy || "Free shipping on orders above ₹499. Delivery within 3-5 business days.";
+    const returnInfo = product.returnPolicy || "7-day return policy for unopened jars. Contact support for replacements.";
+
+    const html = `
+      <div class="product-container reveal">
+        <!-- LEFT: Sticky gallery with thumbnails on left side -->
+        <div class="product-gallery">
+          <div class="thumbnail-strip" id="thumbnailStrip">
+            ${thumbImages.map((img, idx) => `
+              <div class="thumbnail ${idx === 0 ? 'active' : ''}" data-img="${img}">
+                <img src="${img}" alt="thumbnail">
+              </div>
+            `).join('')}
+          </div>
+          <div class="main-image" id="mainImageContainer">
+            <img id="mainProductImage" src="${mainImageUrl}" alt="${displayName}" onerror="this.src='https://placehold.co/600x600/f5e9e7/c0392b?text=Pickle'">
+          </div>
+        </div>
+
+        <!-- RIGHT: Scrollable product info + extra sections -->
+        <div class="product-info">
+          <h1 class="product-title">${escapeHtml(displayName)}</h1>
+          <div class="rating">
+            <div class="stars">${renderStars(product.rating || 4.7)}</div>
+            <span class="review-count">${product.reviewCount || '★ 100+ reviews'}</span>
+          </div>
+          <div class="price-group" id="priceGroup">
+            <span class="current-price" id="currentPrice">${formatPrice(defaultVariant.price)}</span>
+            ${defaultVariant.mrp ? `<span class="old-price" id="oldPrice">${formatPrice(defaultVariant.mrp)}</span>` : ''}
+            ${getDiscountPercent(defaultVariant.mrp, defaultVariant.price) ? `<span class="discount-badge" id="discountBadge">${getDiscountPercent(defaultVariant.mrp, defaultVariant.price)}% OFF</span>` : ''}
+          </div>
+          <div class="short-description">
+            <p>${escapeHtml(product.shortDescription || product.description || "Authentic homemade-style pickle made with sun-dried mangoes and secret spices.")}</p>
+          </div>
+
+          ${variants.length > 0 ? `
+          <div class="variants-section">
+            <h3>Select Size:</h3>
+            <div class="variant-buttons" id="variantButtons">
+              ${variants.map((v, idx) => `
+                <button class="variant-btn ${idx === 0 ? 'active' : ''}" data-price="${v.price}" data-mrp="${v.mrp || ''}" data-weight="${v.weight}" data-discount="${getDiscountPercent(v.mrp, v.price) || ''}">
+                  ${v.weight}  ${formatPrice(v.price)}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+          ` : ''}
+
+          <div class="qty-selector">
+            <span style="font-weight:600;">Quantity:</span>
+            <div class="qty-control">
+              <button id="qtyMinus">-</button>
+              <input type="text" id="qtyInput" value="1" readonly>
+              <button id="qtyPlus">+</button>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <div class="button-row">
+              <div class="btn-cart" id="addToCartBtn">🛒 Add to Cart</div>
+              <div class="btn-wishlist" id="wishlistBtn">❤️ Wishlist</div>
+            </div>
+            <div class="btn-buynow" id="buyNowBtn">⚡ Buy Now</div>
+          </div>
+
+          <!-- Shipping & Refund + Full Description (below buttons) -->
+          <div class="extra-info">
+            <div class="policy-block">
+              <h4>🚚 Shipping & Return</h4>
+              <p>${escapeHtml(shippingInfo)}</p>
+              <p style="margin-top:8px;">${escapeHtml(returnInfo)}</p>
+            </div>
+            <div class="full-description">
+              <h4>📖 Full Description</h4>
+              <p>${escapeHtml(fullDescription)}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="related-section reveal">
+        <h2>🔥 You may also like</h2>
+        <div class="related-grid" id="relatedGrid">
+          ${relatedProducts.map(prod => {
+            const firstVar = prod.variants?.[0] || {};
+            const price = firstVar.price || prod.price || 0;
+            const mrp = firstVar.mrp || prod.mrp || 0;
+            const rating = prod.rating || 4.5;
+            return `
+              <div class="related-card" data-id="${prod.id}">
+                <div class="related-img"><img src="${prod.mainImage || 'https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle'}" alt="${prod.name}"></div>
+                <div class="related-info">
+                  <div class="related-name">${escapeHtml(prod.name)}</div>
+                  <div class="related-stars">${renderStars(rating)}</div>
+                  <div class="related-pricing">
+                    <span class="related-price">${formatPrice(price)}</span>
+                    ${mrp && mrp > price ? `<span class="related-mrp">${formatPrice(mrp)}</span>` : ''}
+                  </div>
+                  <div class="related-view-btn">View Product</div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+
+    root.innerHTML = html;
+
+    // --- Interactions ---
+    // Thumbnail click
+    const thumbnails = document.querySelectorAll('.thumbnail');
+    const mainImg = document.getElementById('mainProductImage');
+    thumbnails.forEach(thumb => {
+      thumb.addEventListener('click', () => {
+        const newSrc = thumb.getAttribute('data-img');
+        if (newSrc) {
+          mainImg.src = newSrc;
+          thumbnails.forEach(t => t.classList.remove('active'));
+          thumb.classList.add('active');
+        }
+      });
+    });
+
+    // Variant switch
+    const variantBtns = document.querySelectorAll('.variant-btn');
+    const currentPriceSpan = document.getElementById('currentPrice');
+    const oldPriceSpan = document.getElementById('oldPrice');
+    const discountSpan = document.getElementById('discountBadge');
+
+    function updateVariant(btn) {
+      variantBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const price = btn.getAttribute('data-price');
+      const mrp = btn.getAttribute('data-mrp');
+      const discount = btn.getAttribute('data-discount');
+      if (currentPriceSpan) currentPriceSpan.innerText = formatPrice(price);
+      if (oldPriceSpan) {
+        if (mrp && mrp !== 'null') oldPriceSpan.innerText = formatPrice(mrp);
+        else oldPriceSpan.style.display = 'none';
+      }
+      if (discountSpan) {
+        if (discount && discount !== 'null' && discount > 0) {
+          discountSpan.innerText = `${discount}% OFF`;
+          discountSpan.style.display = 'inline-block';
+        } else discountSpan.style.display = 'none';
+      }
+    }
+    variantBtns.forEach(btn => btn.addEventListener('click', () => updateVariant(btn)));
+
+    // Quantity controls
+    const qtyInput = document.getElementById('qtyInput');
+    document.getElementById('qtyMinus')?.addEventListener('click', () => {
+      let val = parseInt(qtyInput.value) || 1;
+      if (val > 1) qtyInput.value = val - 1;
+    });
+    document.getElementById('qtyPlus')?.addEventListener('click', () => {
+      let val = parseInt(qtyInput.value) || 1;
+      qtyInput.value = val + 1;
+    });
+
+    // Get selected variant helper
+    const getSelectedVariant = () => {
+      const activeBtn = document.querySelector('.variant-btn.active');
+      if (activeBtn) {
+        const weight = activeBtn.innerText.split(' ')[0];
+        const price = parseFloat(activeBtn.getAttribute('data-price'));
+        return { weight, price };
+      }
+      return { weight: variants[0]?.weight || 'Standard', price: variants[0]?.price || product.price };
+    };
+
+    document.getElementById('addToCartBtn')?.addEventListener('click', () => {
+      const qty = parseInt(qtyInput.value);
+      const variant = getSelectedVariant();
+      alert(`🛒 Added to cart: ${displayName} (${variant.weight}) x ${qty} — Total ${formatPrice(variant.price * qty)}`);
+    });
+    document.getElementById('wishlistBtn')?.addEventListener('click', () => {
+      alert(`❤️ ${displayName} saved to wishlist!`);
+    });
+    document.getElementById('buyNowBtn')?.addEventListener('click', () => {
+      const qty = parseInt(qtyInput.value);
+      const variant = getSelectedVariant();
+      alert(`⚡ Proceed to secure checkout: ${displayName} ${variant.weight} x ${qty} | Total ${formatPrice(variant.price * qty)}`);
+    });
+
+    // Related products click
+    document.querySelectorAll('.related-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        const pid = card.getAttribute('data-id');
+        if (pid) window.location.href = `view.html?id=${pid}`;
+      });
+    });
+  }
+
   function observeReveal() {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -693,14 +826,14 @@
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   }
 
-  // Sticky nav effect
+  // Nav scroll effect
   const nav = document.getElementById('mainNav');
   window.addEventListener('scroll', () => {
     if (window.scrollY > 10) nav.classList.add('scrolled');
     else nav.classList.remove('scrolled');
   });
 
-  // Hamburger (for mobile)
+  // Mobile hamburger
   const hamburger = document.getElementById('hamburger');
   const navLinks = document.querySelector('.nav-links');
   hamburger?.addEventListener('click', () => {
@@ -708,12 +841,9 @@
     else navLinks.style.cssText = 'display: flex; flex-direction: column; position: fixed; top: var(--nav-h); left: 0; right: 0; background: rgba(253,246,236,0.98); backdrop-filter: blur(16px); padding: 24px 5vw; gap: 20px; z-index: 800;';
   });
   document.addEventListener('click', (e) => {
-    if (!e.target.closest('.nav') && navLinks && navLinks.style.display === 'flex') {
-      navLinks.style.display = '';
-    }
+    if (!e.target.closest('.nav') && navLinks && navLinks.style.display === 'flex') navLinks.style.display = '';
   });
 
-  // Start
   loadProductPage();
 </script>
 </body>
