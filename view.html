@@ -6,7 +6,7 @@
   <title>Happy NonVeg Pickles – Product Detail</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
@@ -16,14 +16,14 @@
       --shadow-sm: 0 2px 8px rgba(28,16,9,0.08);
       --shadow-md: 0 8px 32px rgba(28,16,9,0.12);
       --r-card: 16px; --r-pill: 999px;
-      --ff-display: 'Playfair Display', Georgia, serif;
-      --ff-body: 'DM Sans', sans-serif;
+      --ff-body: 'IBM Plex Sans', sans-serif;
       --nav-h: 68px;
     }
     body {
       background-color: var(--cream);
       color: var(--ink);
       font-family: var(--ff-body);
+      font-size: 15px;
       line-height: 1.5;
       padding-top: var(--nav-h);
     }
@@ -37,7 +37,8 @@
     }
     .nav.scrolled { box-shadow: var(--shadow-md); }
     .nav-logo {
-      font-family: var(--ff-display); font-size: 1.45rem; font-weight: 900;
+      font-family: var(--ff-body);
+      font-size: 1.45rem; font-weight: 700;
       color: var(--rust); letter-spacing: -0.5px;
       display: flex; align-items: center; gap: 10px;
     }
@@ -74,7 +75,8 @@
     .main-image img { width: 100%; height: 100%; object-fit: cover; }
     .product-info { display: flex; flex-direction: column; gap: 24px; }
     .product-title {
-      font-family: var(--ff-display); font-size: 2.4rem; font-weight: 900;
+      font-family: var(--ff-body);
+      font-size: 2.4rem; font-weight: 700;
       line-height: 1.2; color: var(--ink);
     }
     .rating { display: flex; align-items: center; gap: 12px; }
@@ -88,7 +90,6 @@
     .current-price { font-size: 2rem; font-weight: 800; color: var(--rust); }
     .old-price { text-decoration: line-through; color: var(--ash); font-size: 1rem; }
     .discount-badge { background: var(--rust); color: white; padding: 4px 12px; border-radius: 30px; font-size: 0.8rem; font-weight: 700; }
-    .short-description { border-left: 4px solid var(--turmeric); padding-left: 18px; color: #3a2c22; }
     .variants-section h3 { font-size: 1rem; margin-bottom: 12px; font-weight: 600; }
     .variant-buttons { display: flex; gap: 16px; flex-wrap: wrap; }
     .variant-btn {
@@ -117,7 +118,7 @@
     .policy-block h4 { font-size: 1rem; margin-bottom: 8px; color: var(--rust); }
     .full-description { background: white; border-radius: 20px; padding: 18px; box-shadow: var(--shadow-sm); }
     .related-section { max-width: 1280px; margin: 80px auto 60px; padding: 0 5vw; }
-    .related-section h2 { font-family: var(--ff-display); font-size: 1.9rem; margin-bottom: 28px; }
+    .related-section h2 { font-family: var(--ff-body); font-weight: 700; font-size: 1.9rem; margin-bottom: 28px; }
     .related-grid {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 28px;
@@ -126,6 +127,7 @@
       background: white; border-radius: var(--r-card); overflow: hidden;
       border: 1px solid var(--border); transition: transform 0.25s, box-shadow 0.25s;
       cursor: pointer; display: flex; flex-direction: column;
+      position: relative;
     }
     .related-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
     .related-img { aspect-ratio: 1 / 1; background: #f3ede7; }
@@ -136,6 +138,13 @@
     .related-pricing { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin: 4px 0; }
     .related-price { color: var(--rust); font-weight: 800; font-size: 1rem; }
     .related-mrp { text-decoration: line-through; font-size: 0.8rem; color: var(--ash); }
+    .related-discount-tag {
+      position: absolute; top: 12px; left: 12px;
+      background: var(--rust); color: white;
+      padding: 4px 10px; border-radius: 30px;
+      font-size: 0.7rem; font-weight: 700;
+      z-index: 2;
+    }
     .related-view-btn {
       background: black; color: white; border: none; border-radius: 40px;
       padding: 8px 12px; font-size: 0.75rem; font-weight: 600;
@@ -191,7 +200,6 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
   import { getFirestore, doc, getDoc, getDocs, collection, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-  // Firebase configuration (same as landing page)
   const firebaseConfig = {
     apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
     authDomain: "pickle-fdc54.firebaseapp.com",
@@ -204,7 +212,6 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // Helper functions
   function getProductId() {
     const params = new URLSearchParams(window.location.search);
     return params.get('id') || params.get('productId');
@@ -225,16 +232,13 @@
     return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
   }
 
-  // Main load function
   async function loadProductPage() {
     const root = document.getElementById('productDetailRoot');
     const productId = getProductId();
-
     if (!productId) {
       root.innerHTML = `<div class="error-message"><strong>❌ No product specified.</strong><br><button onclick="location.href='index.html'">Go to Shop</button></div>`;
       return;
     }
-
     try {
       const productSnap = await getDoc(doc(db, "products", productId));
       if (!productSnap.exists()) {
@@ -242,18 +246,14 @@
         return;
       }
       const product = { id: productSnap.id, ...productSnap.data() };
-
-      // ----- Strict category-based related products -----
       let relatedProducts = [];
       const categoryValue = product.categoryId || product.category;
       if (categoryValue) {
-        // Query using categoryId first (recommended)
         const q1 = query(collection(db, "products"), where("categoryId", "==", categoryValue));
         const snap1 = await getDocs(q1);
         snap1.forEach(docSnap => {
           if (docSnap.id !== product.id) relatedProducts.push({ id: docSnap.id, ...docSnap.data() });
         });
-        // If none found, try category field as fallback
         if (relatedProducts.length === 0) {
           const q2 = query(collection(db, "products"), where("category", "==", categoryValue));
           const snap2 = await getDocs(q2);
@@ -262,13 +262,12 @@
           });
         }
       }
-      relatedProducts = relatedProducts.slice(0, 4);  // max 4 items
-
+      relatedProducts = relatedProducts.slice(0, 4);
       renderProductPage(product, relatedProducts);
       observeReveal();
     } catch (err) {
-      console.error("Firestore error:", err);
-      root.innerHTML = `<div class="error-message"><strong>⚠️ Failed to load data.</strong><br>${err.message || "Check network or Firestore permissions"}<br><button onclick="location.reload()">Retry</button></div>`;
+      console.error(err);
+      root.innerHTML = `<div class="error-message"><strong>⚠️ Failed to load data.</strong><br>${err.message || "Check network"}<br><button onclick="location.reload()">Retry</button></div>`;
     }
   }
 
@@ -284,15 +283,12 @@
 
     const html = `
       <div class="product-container reveal">
-        <!-- LEFT COLUMN: Sticky gallery with thumbnails on the left -->
         <div class="product-gallery">
           <div class="thumbnail-strip" id="thumbnailStrip">
             ${thumbImages.map((img, idx) => `<div class="thumbnail ${idx === 0 ? 'active' : ''}" data-img="${img}"><img src="${img}" loading="lazy" onerror="this.src='https://placehold.co/85x85/f5e9e7/c0392b?text=img'"></div>`).join('')}
           </div>
           <div class="main-image"><img id="mainProductImage" src="${mainImageUrl}" onerror="this.src='https://placehold.co/600x600/f5e9e7/c0392b?text=Pickle'"></div>
         </div>
-
-        <!-- RIGHT COLUMN: Scrollable product info -->
         <div class="product-info">
           <h1 class="product-title">${escapeHtml(displayName)}</h1>
           <div class="rating"><div class="stars">${renderStars(product.rating || 4.7)}</div><span class="review-count">${product.reviewCount || '★ 100+ reviews'}</span></div>
@@ -301,7 +297,6 @@
             ${defaultVariant.mrp ? `<span class="old-price" id="oldPrice">${formatPrice(defaultVariant.mrp)}</span>` : ''}
             ${getDiscountPercent(defaultVariant.mrp, defaultVariant.price) ? `<span class="discount-badge" id="discountBadge">${getDiscountPercent(defaultVariant.mrp, defaultVariant.price)}% OFF</span>` : ''}
           </div>
-          <div class="short-description"><p>${escapeHtml(product.shortDescription || product.description || "Authentic homemade-style pickle made with sun-dried mangoes and secret spices.")}</p></div>
           ${variants.length ? `
           <div class="variants-section"><h3>Select Size:</h3><div class="variant-buttons" id="variantButtons">
             ${variants.map((v, idx) => `<button class="variant-btn ${idx === 0 ? 'active' : ''}" data-price="${v.price}" data-mrp="${v.mrp || ''}" data-weight="${v.weight}">${v.weight} ${formatPrice(v.price)}</button>`).join('')}
@@ -317,7 +312,6 @@
           </div>
         </div>
       </div>
-
       <div class="related-section reveal">
         <h2>🔥 More from the same category</h2>
         <div class="related-grid" id="relatedGrid">
@@ -325,7 +319,9 @@
             const firstVar = prod.variants?.[0] || {};
             const price = firstVar.price || prod.price || 0;
             const mrp = firstVar.mrp || prod.mrp || 0;
+            const discPercent = getDiscountPercent(mrp, price);
             return `<div class="related-card" data-id="${prod.id}">
+              ${discPercent ? `<div class="related-discount-tag">${discPercent}% OFF</div>` : ''}
               <div class="related-img"><img src="${prod.mainImage || 'https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle'}" alt="${prod.name}" loading="lazy"></div>
               <div class="related-info">
                 <div class="related-name">${escapeHtml(prod.name)}</div>
@@ -342,7 +338,6 @@
     const root = document.getElementById('productDetailRoot');
     root.innerHTML = html;
 
-    // ----- Post-render interactions -----
     // Thumbnail click
     const thumbs = document.querySelectorAll('.thumbnail');
     const mainImg = document.getElementById('mainProductImage');
@@ -375,7 +370,7 @@
       }
     }));
 
-    // Quantity controls
+    // Quantity
     const qtyInput = document.getElementById('qtyInput');
     document.getElementById('qtyMinus')?.addEventListener('click', () => {
       let v = parseInt(qtyInput.value);
@@ -386,7 +381,6 @@
       qtyInput.value = v + 1;
     });
 
-    // Action buttons (add to cart, wishlist, buy now)
     const getActiveVariant = () => {
       const active = document.querySelector('.variant-btn.active');
       if (active) return { weight: active.innerText.split(' ')[0], price: active.getAttribute('data-price') };
@@ -404,7 +398,7 @@
       alert(`⚡ Proceed to checkout: ${displayName} ${v.weight} x ${qty} | Total ${formatPrice(v.price * qty)}`);
     });
 
-    // Related product navigation
+    // Related product click
     document.querySelectorAll('.related-card').forEach(card => {
       card.addEventListener('click', (e) => {
         const pid = card.getAttribute('data-id');
@@ -413,7 +407,6 @@
     });
   }
 
-  // Scroll reveal observer
   function observeReveal() {
     const obs = new IntersectionObserver(entries => {
       entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
@@ -421,7 +414,6 @@
     document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
   }
 
-  // Navigation scroll effect & hamburger
   const nav = document.getElementById('mainNav');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 10));
   const hamburger = document.getElementById('hamburger');
@@ -434,7 +426,6 @@
     if (!e.target.closest('.nav') && navLinks && navLinks.style.display === 'flex') navLinks.style.display = '';
   });
 
-  // Start the app
   loadProductPage();
 </script>
 </body>
