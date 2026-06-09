@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Happy NonVeg Pickles – Desktop Logo Left</title>
+  <title>Happy NonVeg Pickles – Desktop Layout Adjacent</title>
   <!-- Font & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
   <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet" />
@@ -26,7 +26,7 @@
       position: sticky;
       top: 0;
       z-index: 1000;
-      padding: 0.75rem 0;          /* remove horizontal padding so logo touches left */
+      padding: 0.75rem 0;          /* no horizontal padding – logo touches edge */
       overflow: hidden;
     }
     .nav-container {
@@ -38,7 +38,7 @@
       flex-wrap: wrap;
       gap: 1rem;
       position: relative;
-      padding: 0 1.2rem;           /* keep padding for other items */
+      padding: 0 1.2rem;           /* padding for other elements */
     }
     .left-group {
       display: flex;
@@ -133,7 +133,7 @@
       transform: translateY(-2px);
     }
 
-    /* Mobile search icon */
+    /* Mobile search icon (hidden on desktop) */
     .search-icon-mobile {
       display: none;
       background: #f5efe8;
@@ -454,29 +454,35 @@
     .cart-qty-btn, .cart-remove { cursor: pointer; }
 
     /* ----- RESPONSIVE ----- */
-    /* Desktop: logo flush left, no extra space */
+    /* Desktop adjustments */
     @media (min-width: 881px) {
-      .navbar {
-        padding: 0.75rem 0;       /* remove side padding so logo truly touches edge */
-      }
-      .nav-container {
-        padding: 0 1.2rem;        /* keep other items padded */
-      }
+      .navbar { padding: 0.75rem 0; }
+      .nav-container { padding: 0 1.2rem; }
+
+      /* Logo flush left, no extra auto margin */
       .logo-center {
-        margin-right: auto;       /* pushes everything else to the right */
-        padding-left: 0;          /* no left padding */
+        margin-right: 0;
+        padding-left: 0;
       }
-      .logo-desktop {
-        display: block;
-        height: 50px;
-        margin-left: 0;           /* ensures it's exactly at left edge of container */
+      .logo-desktop { display: block; height: 50px; margin-left: 0; }
+
+      /* Nav links sit immediately after the logo */
+      .nav-links {
+        margin-left: 2rem;        /* space between logo and links */
+        gap: 2rem;
       }
+
+      /* Search bar wider, takes remaining space */
+      .desktop-search {
+        flex: 1;
+        max-width: 450px;         /* increased from 300px */
+        min-width: 200px;
+      }
+
       .hamburger { display: none; }
       .search-icon-mobile { display: none; }
-      .desktop-search { display: block; }
       .search-overlay { display: none; }
       .cart-slide-overlay, .cart-slide-panel { display: none !important; }
-      .popup-fixed { } /* keep popups for desktop */
     }
 
     /* Tablet / Mobile */
@@ -978,7 +984,7 @@
         });
       }
 
-      // No demo products anymore, so we don't attach their listeners.
+      // No demo products – cart starts empty
 
       document.addEventListener('click', (e) => {
         if (!e.target.closest('.icon-btn') && !e.target.closest('.popup-fixed')) {
