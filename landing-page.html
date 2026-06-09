@@ -2,15 +2,199 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>Happy NonVeg Pickles – Bold Flavours, Every Bite</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Boxicons CSS -->
+  <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
+  
   <style>
-    /* ═══════════════════════════════════════════
-       TOKENS & RESET
-    ═══════════════════════════════════════════ */
+    /* ---------- GLOBAL RESET & BASE (from navbar, merged) ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #fffaf3;
+      color: #2c1a0e;
+      overflow-x: hidden;
+    }
+
+    /* navbar uses Inter for its own elements – we keep that via specific rules */
+    
+    /* ---------- NAVBAR STYLES (from first file, fully namespaced to avoid conflicts) ---------- */
+    .navbar {
+      background: white;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      padding: 0.75rem 1.2rem;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .left-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .hamburger {
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      color: #4e3622;
+      cursor: pointer;
+      display: none;
+      padding: 0.2rem;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+    .logo-desktop {
+      display: block;
+      height: 50px;
+      width: auto;
+    }
+    .logo-mobile {
+      display: none;
+      height: 40px;
+      width: auto;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #4a3220;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover {
+      color: #c94f2c;
+    }
+
+    .search-wrapper {
+      flex: 1;
+      max-width: 300px;
+      min-width: 180px;
+    }
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background: #f5efe8;
+      border-radius: 60px;
+      padding: 0.5rem 1rem;
+      border: 1px solid #e2d6ca;
+      transition: all 0.2s;
+    }
+    .search-bar:focus-within {
+      border-color: #c94f2c;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(201, 79, 44, 0.15);
+    }
+    .search-bar i {
+      color: #b28b65;
+      font-size: 1.1rem;
+    }
+    .search-bar input {
+      border: none;
+      background: transparent;
+      padding: 0.3rem 0.8rem;
+      width: 100%;
+      font-size: 0.9rem;
+      outline: none;
+      font-family: inherit;
+    }
+    .search-bar input::placeholder {
+      color: #b79b7c;
+      font-weight: 400;
+    }
+
+    .icon-group {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .icon-btn {
+      background: none;
+      border: none;
+      font-size: 1.6rem;
+      color: #4e3622;
+      cursor: pointer;
+      transition: transform 0.2s, color 0.2s;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+    .icon-btn:hover {
+      color: #c94f2c;
+      transform: translateY(-2px);
+    }
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -12px;
+      background: #c94f2c;
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 40px;
+      line-height: 1;
+      min-width: 18px;
+      text-align: center;
+      border: 1px solid white;
+    }
+
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      background: white;
+      padding: 1rem 1.5rem;
+      border-top: 1px solid #f0e2d4;
+      margin-top: 0.8rem;
+      gap: 1rem;
+    }
+    .mobile-menu a {
+      text-decoration: none;
+      font-weight: 600;
+      color: #4a3220;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f3e9e0;
+    }
+    .mobile-menu a:last-child {
+      border-bottom: none;
+    }
+    .mobile-menu.show {
+      display: flex;
+    }
+
+    /* ---------- LANDING PAGE STYLES (scoped to main content, nav removed) ---------- */
     :root {
       --rust:       #C0392B;
       --rust-dark:  #962d22;
@@ -27,76 +211,32 @@
       --r-pill:     999px;
       --ff-display: 'Playfair Display', Georgia, serif;
       --ff-body:    'DM Sans', sans-serif;
-      --nav-h:      68px;
+      --nav-h:      70px;  /* matches navbar height */
     }
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      background: var(--cream);
-      color: var(--ink);
-      font-family: var(--ff-body);
-      font-size: 15px;
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-    img { display:block; max-width:100%; }
-    a { text-decoration:none; color:inherit; }
-    button { font-family: var(--ff-body); cursor:pointer; border:none; outline:none; }
 
-    /* ═══════════════════════════════════════════
-       NOISE TEXTURE OVERLAY (subtle grain)
-    ═══════════════════════════════════════════ */
+    /* body texture overlay – lower z-index so navbar stays above */
     body::before {
       content:'';
-      position:fixed; inset:0; z-index:1000; pointer-events:none;
+      position:fixed;
+      inset:0;
+      z-index:1;
+      pointer-events:none;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
       opacity: .4;
     }
 
-    /* ═══════════════════════════════════════════
-       NAV
-    ═══════════════════════════════════════════ */
-    .nav {
-      position: fixed; top:0; left:0; right:0; z-index:900;
-      height: var(--nav-h);
-      display: flex; align-items:center; justify-content:space-between;
-      padding: 0 5vw;
-      background: rgba(253,246,236,.88);
-      backdrop-filter: blur(16px) saturate(1.4);
-      border-bottom: 1px solid var(--border);
-      transition: box-shadow .3s;
-    }
-    .nav.scrolled { box-shadow: var(--shadow-md); }
-    .nav-logo {
-      font-family: var(--ff-display);
-      font-size: 1.45rem;
-      font-weight: 900;
-      color: var(--rust);
-      letter-spacing: -.5px;
-      display:flex; align-items:center; gap:10px;
-    }
-    .nav-logo .dot { width:8px; height:8px; border-radius:50%; background:var(--turmeric); display:inline-block; }
-    .nav-links { display:flex; align-items:center; gap:32px; }
-    .nav-links a { font-size:14px; font-weight:600; color:var(--ash); transition:color .2s; }
-    .nav-links a:hover { color:var(--rust); }
-    .nav-cta {
-      background: var(--rust); color:#fff;
-      padding: 10px 22px; border-radius: var(--r-pill);
-      font-size:14px; font-weight:600;
-      transition: background .2s, transform .15s;
-    }
-    .nav-cta:hover { background:var(--rust-dark); transform:translateY(-1px); }
-    .nav-hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:4px; }
-    .nav-hamburger span { width:22px; height:2px; background:var(--ink); border-radius:2px; transition:.3s; display:block; }
+    img { display:block; max-width:100%; }
+    a { text-decoration:none; color:inherit; }
+    button { font-family: var(--ff-body); cursor:pointer; border:none; outline:none; }
 
-    /* ═══════════════════════════════════════════
-       HERO SLIDER
-    ═══════════════════════════════════════════ */
+    /* Hero */
     .hero {
       margin-top: var(--nav-h);
-      position:relative; overflow:hidden;
+      position:relative;
+      overflow:hidden;
       height: calc(100svh - var(--nav-h));
-      min-height: 480px; max-height: 860px;
+      min-height: 480px;
+      max-height: 860px;
       background: var(--ink);
     }
     .hero-slide {
@@ -109,16 +249,10 @@
       width:100%; height:100%;
       object-fit:cover; object-position:center;
     }
-    /* gradient scrim for text legibility */
     .hero-slide::after {
       content:'';
       position:absolute; inset:0;
-      background: linear-gradient(
-        110deg,
-        rgba(28,16,9,.72) 0%,
-        rgba(28,16,9,.3) 55%,
-        transparent 100%
-      );
+      background: linear-gradient(110deg, rgba(28,16,9,.72) 0%, rgba(28,16,9,.3) 55%, transparent 100%);
     }
     .hero-slide-content {
       position:absolute; inset:0; z-index:2;
@@ -131,7 +265,6 @@
       text-transform:uppercase; color:var(--turmeric);
       margin-bottom:16px;
       opacity:0; transform:translateY(20px);
-      animation: none;
     }
     .hero-slide.active .hero-eyebrow {
       animation: slideUp .6s .15s ease forwards;
@@ -166,7 +299,6 @@
       to { opacity:1; transform:translateY(0); }
     }
 
-    /* Dots */
     .hero-dots {
       position:absolute; bottom:28px; left:50%; transform:translateX(-50%);
       display:flex; gap:8px; z-index:10;
@@ -179,7 +311,6 @@
     }
     .hero-dot.active { background:#fff; transform:scale(1.3); }
 
-    /* Arrows */
     .hero-arrow {
       position:absolute; top:50%; transform:translateY(-50%);
       z-index:10; background:rgba(255,255,255,.15);
@@ -194,7 +325,6 @@
     .hero-arrow.prev { left:24px; }
     .hero-arrow.next { right:24px; }
 
-    /* Hero skeleton (while loading) */
     .hero-skeleton {
       position:absolute; inset:0;
       background: linear-gradient(90deg, #2a1a10 0%, #3d2518 50%, #2a1a10 100%);
@@ -205,10 +335,7 @@
     .hero-skeleton-text { color:rgba(255,255,255,.2); font-size:1rem; }
     @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-    /* ═══════════════════════════════════════════
-       SECTION SHARED
-    ═══════════════════════════════════════════ */
-    /* Added scroll-margin-top to prevent the fixed nav from hiding the section header when scrolling */
+    /* Sections */
     .section { 
       padding: 80px 5vw; 
       scroll-margin-top: var(--nav-h); 
@@ -230,20 +357,7 @@
     }
     .section-sub { font-size:15px; color:var(--ash); margin-bottom:48px; max-width:500px; }
 
-    /* Skeleton card */
-    .skel {
-      background:linear-gradient(90deg,#ede8e1 0%,#f5f0e8 50%,#ede8e1 100%);
-      background-size:200% 100%;
-      animation:shimmer 1.6s infinite;
-      border-radius:var(--r-card);
-    }
-
-    /* ═══════════════════════════════════════════
-       BEST SELLERS / CATEGORY PRODUCTS
-    ═══════════════════════════════════════════ */
-    .bestsellers, .category-products-wrapper { background:#fff; }
-    .category-products-wrapper:nth-child(even) { background: var(--cream); }
-    
+    /* Product grid */
     .product-grid {
       display:grid;
       grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -270,8 +384,6 @@
       transition:transform .4s ease;
     }
     .product-card:hover .product-card-img img { transform:scale(1.07); }
-
-    /* badge ribbon */
     .card-ribbon {
       position:absolute; top:12px; left:0;
       background:var(--rust); color:#fff;
@@ -279,7 +391,6 @@
       padding:4px 12px 4px 10px;
       clip-path: polygon(0 0,100% 0,calc(100% - 8px) 50%,100% 100%,0 100%);
     }
-
     .product-card-body { padding:16px; flex:1; display:flex; flex-direction:column; gap:6px; }
     .product-card-name { font-weight:700; font-size:15px; color:var(--ink); line-height:1.3; }
     .product-card-weight { font-size:12px; color:var(--ash); }
@@ -287,7 +398,6 @@
     .product-card-price { font-size:1.25rem; font-weight:800; color:var(--rust); }
     .product-card-mrp { font-size:12px; color:#aaa; text-decoration:line-through; }
     .product-card-discount { font-size:11px; font-weight:700; background:var(--rust-light); color:var(--rust); padding:2px 8px; border-radius:var(--r-pill); }
-
     .product-card-cta {
       margin:0 16px 16px;
       background:var(--ink); color:#fff;
@@ -298,17 +408,7 @@
     }
     .product-card:hover .product-card-cta { background:var(--rust); }
 
-    /* Skeleton product card */
-    .skel-card { border-radius:var(--r-card); border:1px solid var(--border); overflow:hidden; }
-    .skel-img  { aspect-ratio:1/1; }
-    .skel-line { height:14px; border-radius:4px; margin:12px 16px 6px; }
-    .skel-line.short { width:55%; }
-    .skel-line.medium { width:75%; margin-bottom:0; }
-    .skel-price { height:20px; width:40%; border-radius:4px; margin:10px 16px 16px; }
-
-    /* ═══════════════════════════════════════════
-       DIVIDER BANNER
-    ═══════════════════════════════════════════ */
+    /* Divider banner */
     .divider-banner {
       background: var(--rust);
       padding: 24px 5vw;
@@ -329,10 +429,7 @@
     .divider-item::before { content:'✦'; color:var(--turmeric); font-style:normal; }
     @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
-    /* ═══════════════════════════════════════════
-       CATEGORIES
-    ═══════════════════════════════════════════ */
-    .categories { background:var(--cream); }
+    /* Categories */
     .categories-grid {
       display:grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -378,21 +475,21 @@
     .cat-card:hover .cat-card-arrow { background:var(--rust); transform:scale(1.1); }
     .cat-card-arrow svg { stroke:#fff; }
 
-    /* Skeleton cat card */
-    .skel-cat { aspect-ratio:3/4; }
-
-    /* ═══════════════════════════════════════════
-       EMPTY / ERROR STATES
-    ═══════════════════════════════════════════ */
+    /* Empty states & skeletons */
     .empty-state {
       grid-column:1/-1; text-align:center;
       padding:60px 20px; color:var(--ash);
       font-size:.95rem;
     }
+    .skel-card { border-radius:var(--r-card); border:1px solid var(--border); overflow:hidden; }
+    .skel-img  { aspect-ratio:1/1; background:linear-gradient(90deg,#ede8e1 0%,#f5f0e8 50%,#ede8e1 100%); background-size:200% 100%; animation:shimmer 1.6s infinite; }
+    .skel-line { height:14px; border-radius:4px; margin:12px 16px 6px; background:#ede8e1; }
+    .skel-line.short { width:55%; }
+    .skel-line.medium { width:75%; margin-bottom:0; }
+    .skel-price { height:20px; width:40%; border-radius:4px; margin:10px 16px 16px; background:#ede8e1; }
+    .skel-cat { aspect-ratio:3/4; background:linear-gradient(90deg,#ede8e1 0%,#f5f0e8 50%,#ede8e1 100%); background-size:200% 100%; animation:shimmer 1.6s infinite; }
 
-    /* ═══════════════════════════════════════════
-       FOOTER
-    ═══════════════════════════════════════════ */
+    /* Footer */
     .footer {
       background:var(--ink); color:rgba(255,255,255,.6);
       padding:40px 5vw;
@@ -408,12 +505,27 @@
     .footer-links a { transition:color .2s; }
     .footer-links a:hover { color:#fff; }
 
-    /* ═══════════════════════════════════════════
-       MOBILE
-    ═══════════════════════════════════════════ */
+    /* Reveal animation */
+    .reveal { opacity:0; transform:translateY(30px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+
+    /* Responsive */
+    @media (max-width: 880px) {
+      .navbar { padding: 0.75rem 1rem; }
+      .nav-links { display: none; }
+      .hamburger { display: block; }
+      .logo-desktop { display: none; }
+      .logo-mobile { display: block; }
+      .search-wrapper { max-width: 220px; }
+      .icon-group { gap: 1rem; }
+    }
+    @media (max-width: 640px) {
+      .nav-container { flex-wrap: wrap; }
+      .search-wrapper { order: 3; max-width: 100%; width: 100%; margin-top: 0.6rem; }
+      .icon-group { margin-left: auto; }
+      .left-group { flex: 1; }
+    }
     @media (max-width:768px) {
-      .nav-links { display:none; }
-      .nav-hamburger { display:flex; }
       .hero { max-height:580px; }
       .hero-arrow { display:none; }
       .hero-slide-content { padding:0 6vw; }
@@ -427,506 +539,377 @@
       .product-grid { grid-template-columns:1fr 1fr; gap:12px; }
       .categories-grid  { grid-template-columns:1fr 1fr; gap:12px; }
     }
-
-    /* ═══════════════════════════════════════════
-       SCROLL-REVEAL UTILITY
-    ═══════════════════════════════════════════ */
-    .reveal { opacity:0; transform:translateY(30px); transition: opacity .6s ease, transform .6s ease; }
-    .reveal.visible { opacity:1; transform:translateY(0); }
   </style>
 </head>
 <body>
 
-  <nav class="nav" id="mainNav">
-    <div class="nav-logo">
-      <span class="dot"></span> Happy NonVeg Pickles
+<!-- ===================== NAVBAR (from first file, unchanged) ===================== -->
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="left-group">
+      <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+        <i class="bx bx-menu"></i>
+      </button>
+      <a href="#" class="logo-area">
+        <img src="./assets/logo.png" alt="Happy NonVeg Pickles" class="logo-desktop">
+        <img src="./assets/logo-small.png" alt="Happy NonVeg Pickles" class="logo-mobile">
+      </a>
     </div>
     <div class="nav-links">
-      <a href="#bestsellers">Best Sellers</a>
-      <a href="#categories">Shop</a>
-      <a href="#bestsellers" class="nav-cta">Order Now</a>
+      <a href="#">Home</a>
+      <a href="#">Shop</a>
+      <a href="#">Categories</a>
     </div>
-    <div class="nav-hamburger" id="hamburger" onclick="toggleMenu()">
-      <span></span><span></span><span></span>
-    </div>
-  </nav>
-
-  <section class="hero" id="heroSection">
-    <div class="hero-skeleton" id="heroSkeleton">
-      <span class="hero-skeleton-text">Loading…</span>
-    </div>
-
-    <div id="heroSlides"></div>
-
-    <button class="hero-arrow prev" id="heroPrev" aria-label="Previous slide" style="display:none">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M15 18l-6-6 6-6"/>
-      </svg>
-    </button>
-    <button class="hero-arrow next" id="heroNext" aria-label="Next slide" style="display:none">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9 18l6-6-6-6"/>
-      </svg>
-    </button>
-    <div class="hero-dots" id="heroDots"></div>
-  </section>
-
-  <div class="divider-banner" aria-hidden="true">
-    <div class="divider-track" id="marqueeTrack">
+    <div class="search-wrapper">
+      <div class="search-bar">
+        <i class="bx bx-search"></i>
+        <input type="text" placeholder="search product" aria-label="Search products">
       </div>
+    </div>
+    <div class="icon-group">
+      <button class="icon-btn" aria-label="Wishlist">
+        <i class="bx bx-heart"></i>
+      </button>
+      <button class="icon-btn" aria-label="Cart">
+        <i class="bx bx-cart"></i>
+        <span class="cart-badge">0</span>
+      </button>
+      <button class="icon-btn" aria-label="Profile">
+        <i class="bx bx-user"></i>
+      </button>
+    </div>
   </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#">Home</a>
+    <a href="#">Shop</a>
+    <a href="#">Categories</a>
+  </div>
+</nav>
 
-  <section class="section bestsellers reveal" id="bestsellers">
-    <div class="section-label">Our Favourites</div>
-    <h2 class="section-heading">Best Sellers</h2>
-    <p class="section-sub">Hand-picked by thousands of happy customers — the flavours that keep coming back.</p>
-    <div class="product-grid" id="bestsellersGrid">
-      ${Array(6).fill(0).map(()=>`
-        <div class="skel-card">
-          <div class="skel skel-img"></div>
-          <div class="skel skel-line medium"></div>
-          <div class="skel skel-line short"></div>
-          <div class="skel skel-price"></div>
-        </div>`).join('')}
-    </div>
-  </section>
+<!-- ===================== LANDING PAGE CONTENT (original nav removed) ===================== -->
+<section class="hero" id="heroSection">
+  <div class="hero-skeleton" id="heroSkeleton">
+    <span class="hero-skeleton-text">Loading…</span>
+  </div>
+  <div id="heroSlides"></div>
+  <button class="hero-arrow prev" id="heroPrev" aria-label="Previous slide" style="display:none">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 18l-6-6 6-6"/>
+    </svg>
+  </button>
+  <button class="hero-arrow next" id="heroNext" aria-label="Next slide" style="display:none">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 18l6-6-6-6"/>
+    </svg>
+  </button>
+  <div class="hero-dots" id="heroDots"></div>
+</section>
 
-  <section class="section categories reveal" id="categories">
-    <div class="section-label">Explore</div>
-    <h2 class="section-heading">Shop by Category</h2>
-    <p class="section-sub">From fiery non-veg to tangy classics — every palate finds its match.</p>
-    <div class="categories-grid" id="categoriesGrid">
-      ${Array(4).fill(0).map(()=>`<div class="skel skel-cat"></div>`).join('')}
-    </div>
-  </section>
+<div class="divider-banner" aria-hidden="true">
+  <div class="divider-track" id="marqueeTrack"></div>
+</div>
 
-  <div id="allCategoryProductsContainer"></div>
+<section class="section bestsellers reveal" id="bestsellers">
+  <div class="section-label">Our Favourites</div>
+  <h2 class="section-heading">Best Sellers</h2>
+  <p class="section-sub">Hand-picked by thousands of happy customers — the flavours that keep coming back.</p>
+  <div class="product-grid" id="bestsellersGrid">
+    <!-- Skeletons injected by JS -->
+  </div>
+</section>
 
-  <footer class="footer">
-    <div class="footer-brand">Happy NonVeg Pickles</div>
-    <div class="footer-links">
-      <a href="#bestsellers">Best Sellers</a>
-      <a href="#categories">Categories</a>
-    </div>
-    <div>© 2025 Happy NonVeg Pickles. All rights reserved.</div>
-  </footer>
+<section class="section categories reveal" id="categories">
+  <div class="section-label">Explore</div>
+  <h2 class="section-heading">Shop by Category</h2>
+  <p class="section-sub">From fiery non-veg to tangy classics — every palate finds its match.</p>
+  <div class="categories-grid" id="categoriesGrid"></div>
+</section>
 
-  <script type="module">
-    import { initializeApp }  from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getFirestore, doc, getDoc, getDocs, collection }
-      from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+<div id="allCategoryProductsContainer"></div>
 
-    const firebaseConfig = {
-      apiKey:            "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
-      authDomain:        "pickle-fdc54.firebaseapp.com",
-      projectId:         "pickle-fdc54",
-      storageBucket:     "pickle-fdc54.firebasestorage.app",
-      messagingSenderId: "650348710985",
-      appId:             "1:650348710985:web:b8eedb551a79b536578398",
-      measurementId:     "G-B40NG5KQDL"
-    };
+<footer class="footer">
+  <div class="footer-brand">Happy NonVeg Pickles</div>
+  <div class="footer-links">
+    <a href="#bestsellers">Best Sellers</a>
+    <a href="#categories">Categories</a>
+  </div>
+  <div>© 2025 Happy NonVeg Pickles. All rights reserved.</div>
+</footer>
 
-    const fbApp = initializeApp(firebaseConfig);
-    const db    = getFirestore(fbApp);
+<!-- ===================== JAVASCRIPT ===================== -->
+<script>
+  // ---------- Navbar hamburger toggle (original) ----------
+  const hamburger = document.getElementById('hamburgerBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  if (hamburger && mobileMenu) {
+    hamburger.addEventListener('click', () => {
+      mobileMenu.classList.toggle('show');
+    });
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('show');
+      });
+    });
+  }
+</script>
 
-    /* ─── helpers ─── */
-    const isMobile = () => window.innerWidth <= 768;
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { getFirestore, doc, getDoc, getDocs, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    function fmt(price) {
-      return `₹${Math.round(parseFloat(price))}`;
-    }
-    function discount(mrp, price) {
-      if (!mrp || !price || +mrp <= 0) return null;
-      const p = Math.round((1 - price / mrp) * 100);
-      return p > 0 ? `${p}% off` : null;
-    }
-    function fallback(w, h, text) {
-      return `https://placehold.co/${w}x${h}/f5e9e7/c0392b?text=${encodeURIComponent(text||'Pickle')}`;
-    }
+  const firebaseConfig = {
+    apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
+    authDomain: "pickle-fdc54.firebaseapp.com",
+    projectId: "pickle-fdc54",
+    storageBucket: "pickle-fdc54.firebasestorage.app",
+    messagingSenderId: "650348710985",
+    appId: "1:650348710985:web:b8eedb551a79b536578398",
+    measurementId: "G-B40NG5KQDL"
+  };
 
-    /* ─── REUSABLE PRODUCT CARD GENERATOR ─── */
-    function createProductCard(prod, index = 0) {
-      const variants = prod.variants || [];
-      const v0 = variants[0] || {};
-      const price = v0.price ?? prod.price ?? 0;
-      const mrp   = v0.mrp   ?? prod.mrp   ?? 0;
-      const disc  = discount(mrp, price);
-      const img   = prod.image || fallback(400, 400, prod.name);
+  const fbApp = initializeApp(firebaseConfig);
+  const db = getFirestore(fbApp);
 
-      const card = document.createElement('div');
-      card.className = 'product-card reveal';
-      card.style.transitionDelay = `${(index % 6) * 70}ms`;
-      // ✅ CHANGED: now links to view.html instead of product-page.html
-      card.onclick = () => window.location.href = `view.html?id=${prod.id}`;
-      card.innerHTML = `
-        <div class="product-card-img">
-          ${disc ? `<div class="card-ribbon">${disc}</div>` : ''}
-          <img src="${img}" alt="${prod.name}"
-               loading="lazy"
-               onerror="this.src='${fallback(400,400,prod.name)}'">
+  const isMobile = () => window.innerWidth <= 768;
+
+  function fmt(price) {
+    return `₹${Math.round(parseFloat(price))}`;
+  }
+  function discount(mrp, price) {
+    if (!mrp || !price || +mrp <= 0) return null;
+    const p = Math.round((1 - price / mrp) * 100);
+    return p > 0 ? `${p}% off` : null;
+  }
+  function fallback(w, h, text) {
+    return `https://placehold.co/${w}x${h}/f5e9e7/c0392b?text=${encodeURIComponent(text || 'Pickle')}`;
+  }
+
+  function createProductCard(prod, index = 0) {
+    const variants = prod.variants || [];
+    const v0 = variants[0] || {};
+    const price = v0.price ?? prod.price ?? 0;
+    const mrp = v0.mrp ?? prod.mrp ?? 0;
+    const disc = discount(mrp, price);
+    const img = prod.image || fallback(400, 400, prod.name);
+    const card = document.createElement('div');
+    card.className = 'product-card reveal';
+    card.style.transitionDelay = `${(index % 6) * 70}ms`;
+    card.onclick = () => window.location.href = `view.html?id=${prod.id}`;
+    card.innerHTML = `
+      <div class="product-card-img">
+        ${disc ? `<div class="card-ribbon">${disc}</div>` : ''}
+        <img src="${img}" alt="${prod.name}" loading="lazy" onerror="this.src='${fallback(400,400,prod.name)}'">
+      </div>
+      <div class="product-card-body">
+        <div class="product-card-name">${prod.name}</div>
+        ${v0.weight ? `<div class="product-card-weight">${v0.weight}${variants.length > 1 ? ` · ${variants.length} sizes` : ''}</div>` : ''}
+        <div class="product-card-pricing">
+          <span class="product-card-price">${fmt(price)}</span>
+          ${mrp && +mrp > +price ? `<span class="product-card-mrp">${fmt(mrp)}</span>` : ''}
+          ${disc ? `<span class="product-card-discount">${disc}</span>` : ''}
         </div>
-        <div class="product-card-body">
-          <div class="product-card-name">${prod.name}</div>
-          ${v0.weight ? `<div class="product-card-weight">${v0.weight}${variants.length > 1 ? ` · ${variants.length} sizes` : ''}</div>` : ''}
-          <div class="product-card-pricing">
-            <span class="product-card-price">${fmt(price)}</span>
-            ${mrp && +mrp > +price ? `<span class="product-card-mrp">${fmt(mrp)}</span>` : ''}
-            ${disc ? `<span class="product-card-discount">${disc}</span>` : ''}
-          </div>
-        </div>
-        <div class="product-card-cta">View Product</div>`;
-      return card;
+      </div>
+      <div class="product-card-cta">View Product</div>`;
+    return card;
+  }
+
+  // Hero slider
+  const HERO_INTERVAL = 5000;
+  let heroSlides = [], heroIndex = 0, heroTimer = null;
+
+  function buildHeroSlide(slide, idx) {
+    const imgSrc = isMobile() && slide.mobileImg ? slide.mobileImg : slide.desktopImg;
+    const div = document.createElement('div');
+    div.className = `hero-slide${idx === 0 ? ' active' : ''}`;
+    div.innerHTML = `
+      <img src="${imgSrc}" alt="Slide ${idx + 1}" onerror="this.src='${fallback(1400,700,'')}'">
+      <div class="hero-slide-content">
+        <div class="hero-eyebrow">Fresh & Flavourful</div>
+        <h1 class="hero-heading">${slide.heading || 'Taste the Tradition'}</h1>
+        ${slide.btnName ? `<a href="${slide.btnLink || '#bestsellers'}" class="hero-btn">${slide.btnName}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>` : `<a href="#bestsellers" class="hero-btn">Shop Now<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>`}
+      </div>`;
+    return div;
+  }
+
+  function buildDot(idx) {
+    const btn = document.createElement('button');
+    btn.className = `hero-dot${idx === 0 ? ' active' : ''}`;
+    btn.setAttribute('aria-label', `Slide ${idx + 1}`);
+    btn.onclick = () => goToSlide(idx);
+    return btn;
+  }
+
+  function goToSlide(idx) {
+    const slides = document.querySelectorAll('.hero-slide');
+    const dots = document.querySelectorAll('.hero-dot');
+    slides[heroIndex]?.classList.remove('active');
+    dots[heroIndex]?.classList.remove('active');
+    heroIndex = (idx + heroSlides.length) % heroSlides.length;
+    slides[heroIndex]?.classList.add('active');
+    dots[heroIndex]?.classList.add('active');
+    resetTimer();
+  }
+
+  function resetTimer() {
+    clearInterval(heroTimer);
+    if (heroSlides.length > 1) heroTimer = setInterval(() => goToSlide(heroIndex + 1), HERO_INTERVAL);
+  }
+
+  async function loadHero(masterData) {
+    const skeleton = document.getElementById('heroSkeleton');
+    const slidesEl = document.getElementById('heroSlides');
+    const dotsEl = document.getElementById('heroDots');
+    const prevBtn = document.getElementById('heroPrev');
+    const nextBtn = document.getElementById('heroNext');
+
+    if (masterData?.config?.isHeroEnabled === false) {
+      skeleton.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;"><p style="color:rgba(255,255,255,.4);font-size:1rem;">Hero section is currently disabled.</p></div>`;
+      return;
     }
-
-    /* ─────────────────────────────────────────
-       HERO SLIDER (unchanged)
-    ───────────────────────────────────────── */
-    const HERO_INTERVAL = 5000;
-    let heroSlides = [], heroIndex = 0, heroTimer = null;
-
-    function buildHeroSlide(slide, idx) {
-      const imgSrc = isMobile() && slide.mobileImg ? slide.mobileImg : slide.desktopImg;
-      const div = document.createElement('div');
-      div.className = `hero-slide${idx === 0 ? ' active' : ''}`;
-      div.innerHTML = `
-        <img
-          src="${imgSrc}"
-          alt="Slide ${idx + 1}"
-          onerror="this.src='${fallback(1400,700,'')}'">
-        <div class="hero-slide-content">
-          <div class="hero-eyebrow">Fresh & Flavourful</div>
-          <h1 class="hero-heading">${slide.heading || 'Taste the Tradition'}</h1>
-          ${slide.btnName
-            ? `<a href="${slide.btnLink || '#bestsellers'}" class="hero-btn">
-                ${slide.btnName}
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2.5"
-                  stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-              </a>`
-            : `<a href="#bestsellers" class="hero-btn">
-                Shop Now
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2.5"
-                  stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-              </a>`}
-        </div>`;
-      return div;
+    const rawSlides = masterData?.hero_slides?.slides || [];
+    heroSlides = rawSlides.filter(s => s.isActive !== false);
+    if (!heroSlides.length) {
+      skeleton.style.background = 'linear-gradient(120deg, #2a1a10 0%, #5a2e1a 50%, #2a1a10 100%)';
+      skeleton.innerHTML = `<div style="text-align:center;padding:0 40px;"><div style="font-family:'Playfair Display',serif;font-size:clamp(2rem,6vw,4rem);font-weight:900;color:#fff;line-height:1.1;margin-bottom:20px;">Bold Flavours,<br>Every Bite.</div><a href="#bestsellers" style="display:inline-flex;align-items:center;gap:8px;background:#C0392B;color:#fff;padding:14px 32px;border-radius:999px;font-weight:700;font-size:15px;text-decoration:none;">Shop Now</a></div>`;
+      return;
     }
-
-    function buildDot(idx) {
-      const btn = document.createElement('button');
-      btn.className = `hero-dot${idx === 0 ? ' active' : ''}`;
-      btn.setAttribute('aria-label', `Slide ${idx + 1}`);
-      btn.onclick = () => goToSlide(idx);
-      return btn;
-    }
-
-    function goToSlide(idx) {
-      const slides = document.querySelectorAll('.hero-slide');
-      const dots   = document.querySelectorAll('.hero-dot');
-      slides[heroIndex]?.classList.remove('active');
-      dots[heroIndex]?.classList.remove('active');
-      heroIndex = (idx + heroSlides.length) % heroSlides.length;
-      slides[heroIndex]?.classList.add('active');
-      dots[heroIndex]?.classList.add('active');
+    skeleton.style.display = 'none';
+    heroSlides.forEach((slide, i) => {
+      slidesEl.appendChild(buildHeroSlide(slide, i));
+      dotsEl.appendChild(buildDot(i));
+    });
+    if (heroSlides.length > 1) {
+      prevBtn.style.display = 'flex';
+      nextBtn.style.display = 'flex';
+      prevBtn.onclick = () => goToSlide(heroIndex - 1);
+      nextBtn.onclick = () => goToSlide(heroIndex + 1);
       resetTimer();
     }
-
-    function resetTimer() {
-      clearInterval(heroTimer);
-      if (heroSlides.length > 1) heroTimer = setInterval(() => goToSlide(heroIndex + 1), HERO_INTERVAL);
-    }
-
-    async function loadHero(masterData) {
-      const skeleton = document.getElementById('heroSkeleton');
-      const slidesEl = document.getElementById('heroSlides');
-      const dotsEl   = document.getElementById('heroDots');
-      const prevBtn  = document.getElementById('heroPrev');
-      const nextBtn  = document.getElementById('heroNext');
-
-      if (masterData?.config?.isHeroEnabled === false) {
-        skeleton.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;">
-          <p style="color:rgba(255,255,255,.4);font-size:1rem;">Hero section is currently disabled.</p>
-        </div>`;
-        return;
-      }
-
-      const rawSlides = masterData?.hero_slides?.slides || [];
-      heroSlides = rawSlides.filter(s => s.isActive !== false);
-
-      if (!heroSlides.length) {
-        skeleton.style.background = 'linear-gradient(120deg, #2a1a10 0%, #5a2e1a 50%, #2a1a10 100%)';
-        skeleton.innerHTML = `
-          <div style="text-align:center;padding:0 40px;">
-            <div style="font-family:'Playfair Display',serif;font-size:clamp(2rem,6vw,4rem);font-weight:900;color:#fff;line-height:1.1;margin-bottom:20px;">
-              Bold Flavours,<br>Every Bite.
-            </div>
-            <a href="#bestsellers" style="display:inline-flex;align-items:center;gap:8px;background:#C0392B;color:#fff;padding:14px 32px;border-radius:999px;font-weight:700;font-size:15px;text-decoration:none;">
-              Shop Now
-            </a>
-          </div>`;
-        return;
-      }
-
-      skeleton.style.display = 'none';
-
-      heroSlides.forEach((slide, i) => {
-        slidesEl.appendChild(buildHeroSlide(slide, i));
-        dotsEl.appendChild(buildDot(i));
+    let lastMobile = isMobile();
+    window.addEventListener('resize', () => {
+      const nowMobile = isMobile();
+      if (nowMobile === lastMobile) return;
+      lastMobile = nowMobile;
+      document.querySelectorAll('.hero-slide').forEach((el, i) => {
+        const slide = heroSlides[i];
+        const img = el.querySelector('img');
+        if (img && slide) img.src = (nowMobile && slide.mobileImg) ? slide.mobileImg : slide.desktopImg;
       });
-
-      if (heroSlides.length > 1) {
-        prevBtn.style.display = 'flex';
-        nextBtn.style.display = 'flex';
-        prevBtn.onclick = () => goToSlide(heroIndex - 1);
-        nextBtn.onclick = () => goToSlide(heroIndex + 1);
-        resetTimer();
-      }
-
-      let lastMobile = isMobile();
-      window.addEventListener('resize', () => {
-        const nowMobile = isMobile();
-        if (nowMobile === lastMobile) return;
-        lastMobile = nowMobile;
-        document.querySelectorAll('.hero-slide').forEach((el, i) => {
-          const slide = heroSlides[i];
-          const img   = el.querySelector('img');
-          if (img && slide) {
-            img.src = (nowMobile && slide.mobileImg) ? slide.mobileImg : slide.desktopImg;
-          }
-        });
-      });
-    }
-
-    /* ─────────────────────────────────────────
-       MARQUEE
-    ───────────────────────────────────────── */
-    function buildMarquee() {
-      const items = [
-        'Authentic Recipes', 'Sun-dried Mangoes', 'No Preservatives',
-        'Handcrafted Daily', 'Ships Pan-India', 'Family Secret Spices',
-        'Authentic Recipes', 'Sun-dried Mangoes', 'No Preservatives',
-        'Handcrafted Daily', 'Ships Pan-India', 'Family Secret Spices',
-      ];
-      const track = document.getElementById('marqueeTrack');
-      track.innerHTML = items.map(t =>
-        `<span class="divider-item">${t}</span>`
-      ).join('');
-    }
-
-    /* ─────────────────────────────────────────
-       BEST SELLERS
-    ───────────────────────────────────────── */
-    async function loadBestSellers(bestPickleIds, allProducts) {
-      const grid = document.getElementById('bestsellersGrid');
-      grid.innerHTML = '';
-
-      const picks = bestPickleIds
-        .map(id => allProducts.find(p => p.id === id))
-        .filter(Boolean)
-        .filter(p => p.isavailable !== false);
-
-      if (!picks.length) {
-        grid.innerHTML = `<div class="empty-state">No best sellers configured yet.</div>`;
-        return;
-      }
-
-      picks.forEach((prod, i) => {
-        grid.appendChild(createProductCard(prod, i));
-      });
-
-      observeReveal();
-    }
-
-    /* ─────────────────────────────────────────
-       CATEGORIES
-    ───────────────────────────────────────── */
-    async function loadCategories(landingCats, allCategories) {
-      const grid = document.getElementById('categoriesGrid');
-      grid.innerHTML = '';
-
-      const visible = landingCats.filter(c => c.isVisible !== false);
-      const orderedCats = visible
-        .map(lc => allCategories.find(c => c.id === lc.id))
-        .filter(c => c && c.isavailable !== false);
-
-      if (!orderedCats.length) {
-        grid.innerHTML = `<div class="empty-state">No categories available.</div>`;
-        return;
-      }
-
-      orderedCats.forEach((cat, i) => {
-        const img      = cat.image || fallback(300, 400, cat.name);
-        const prodCount = cat.products ? Object.keys(cat.products).length : null;
-
-        const card = document.createElement('div');
-        card.className = 'cat-card reveal';
-        card.style.transitionDelay = `${i * 80}ms`;
-        
-        card.onclick = () => {
-          const targetSection = document.getElementById(`category-section-${cat.id}`);
-          if (targetSection) {
-            targetSection.scrollIntoView({ behavior: 'smooth' });
-          } else {
-            // Fallback: if category section missing, you could link to a category page
-            window.location.href = `products.html?categoryId=${cat.id}`;
-          }
-        };
-
-        card.innerHTML = `
-          <img src="${img}" alt="${cat.name}" loading="lazy"
-               onerror="this.src='${fallback(300,400,cat.name)}'">
-          <div class="cat-card-arrow">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </div>
-          <div class="cat-card-label">
-            <div class="cat-card-name">${cat.name}</div>
-            ${prodCount !== null ? `<div class="cat-card-count">${prodCount} product${prodCount !== 1 ? 's' : ''}</div>` : ''}
-          </div>`;
-        grid.appendChild(card);
-      });
-
-      observeReveal();
-    }
-
-    /* ─────────────────────────────────────────
-       ALL CATEGORY PRODUCTS LISTINGS
-    ───────────────────────────────────────── */
-    function loadAllCategoryProducts(landingCats, allCategories, allProducts) {
-      const container = document.getElementById('allCategoryProductsContainer');
-      container.innerHTML = '';
-
-      const visible = landingCats.filter(c => c.isVisible !== false);
-      let orderedCats = visible
-        .map(lc => allCategories.find(c => c.id === lc.id))
-        .filter(c => c && c.isavailable !== false);
-
-      if (!orderedCats.length && !landingCats.length) {
-        orderedCats = allCategories.filter(c => c.isavailable !== false);
-      }
-
-      if (!orderedCats.length) return;
-
-      orderedCats.forEach((cat) => {
-        let catProducts = allProducts.filter(p => p.categoryId === cat.id || p.category === cat.name);
-        if (catProducts.length === 0 && cat.products) {
-          const productIds = Object.keys(cat.products);
-          catProducts = allProducts.filter(p => productIds.includes(p.id));
-        }
-        catProducts = catProducts.filter(p => p.isavailable !== false);
-        if (catProducts.length === 0) return;
-
-        const sectionWrapper = document.createElement('section');
-        sectionWrapper.className = 'section category-products-wrapper reveal';
-        sectionWrapper.id = `category-section-${cat.id}`;
-        
-        const sectionHeader = `
-          <div class="section-label">${cat.name} Collection</div>
-          <h2 class="section-heading">Best of ${cat.name}</h2>
-          <p class="section-sub">Explore our top picks carefully curated for our ${cat.name} lovers.</p>
-        `;
-
-        const grid = document.createElement('div');
-        grid.className = 'product-grid';
-        
-        catProducts.forEach((prod, idx) => {
-          grid.appendChild(createProductCard(prod, idx));
-        });
-
-        sectionWrapper.innerHTML = sectionHeader;
-        sectionWrapper.appendChild(grid);
-        container.appendChild(sectionWrapper);
-      });
-
-      observeReveal();
-    }
-
-    /* ─────────────────────────────────────────
-       MAIN INIT
-    ───────────────────────────────────────── */
-    async function init() {
-      buildMarquee();
-
-      try {
-        const [masterSnap, productsSnap, categoriesSnap] = await Promise.all([
-          getDoc(doc(db, 'landing_page', 'master')),
-          getDocs(collection(db, 'products')),
-          getDocs(collection(db, 'categories')),
-        ]);
-
-        const masterData   = masterSnap.exists() ? masterSnap.data() : {};
-        const allProducts  = productsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-        const allCategories= categoriesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-        await loadHero(masterData);
-
-        const bestIds      = masterData?.config?.bestPickles || [];
-        const picksToShow  = bestIds.length
-          ? bestIds
-          : allProducts.filter(p => p.isavailable !== false).slice(0, 6).map(p => p.id);
-        await loadBestSellers(picksToShow, allProducts);
-
-        const landingCats  = masterData?.config?.categories || [];
-        const catsToShow   = landingCats.length
-          ? landingCats
-          : allCategories.map(c => ({ id: c.id, isVisible: true }));
-        
-        await loadCategories(catsToShow, allCategories);
-        loadAllCategoryProducts(catsToShow, allCategories, allProducts);
-
-      } catch (err) {
-        console.error('Firebase load error:', err);
-        document.getElementById('bestsellersGrid').innerHTML =
-          `<div class="empty-state">Failed to load products. Please refresh.</div>`;
-        document.getElementById('categoriesGrid').innerHTML =
-          `<div class="empty-state">Failed to load categories. Please refresh.</div>`;
-      }
-    }
-
-    init();
-  </script>
-
-  <script>
-    /* sticky nav shadow */
-    const nav = document.getElementById('mainNav');
-    window.addEventListener('scroll', () => {
-      nav.classList.toggle('scrolled', window.scrollY > 10);
-    }, { passive: true });
-
-    /* mobile nav toggle */
-    function toggleMenu() {
-      const links = document.querySelector('.nav-links');
-      if (!links) return;
-      const open = links.style.display === 'flex';
-      links.style.cssText = open
-        ? ''
-        : 'display:flex;flex-direction:column;position:fixed;top:var(--nav-h);left:0;right:0;background:rgba(253,246,236,.97);backdrop-filter:blur(16px);padding:24px 5vw 32px;gap:20px;border-bottom:1px solid rgba(28,16,9,.08);z-index:800;';
-    }
-    document.addEventListener('click', e => {
-      if (!e.target.closest('.nav') && !e.target.closest('#hamburger')) {
-        const links = document.querySelector('.nav-links');
-        if (links && links.style.display === 'flex') links.style.cssText = '';
-      }
     });
+  }
 
-    /* scroll-reveal via IntersectionObserver */
-    function observeReveal() {
-      const io = new IntersectionObserver((entries) => {
-        entries.forEach(en => {
-          if (en.isIntersecting) { en.target.classList.add('visible'); io.unobserve(en.target); }
-        });
-      }, { threshold: 0.08 });
-      document.querySelectorAll('.reveal:not(.visible)').forEach(el => io.observe(el));
-    }
+  function buildMarquee() {
+    const items = ['Authentic Recipes', 'Sun-dried Mangoes', 'No Preservatives', 'Handcrafted Daily', 'Ships Pan-India', 'Family Secret Spices', 'Authentic Recipes', 'Sun-dried Mangoes', 'No Preservatives', 'Handcrafted Daily', 'Ships Pan-India', 'Family Secret Spices'];
+    const track = document.getElementById('marqueeTrack');
+    track.innerHTML = items.map(t => `<span class="divider-item">${t}</span>`).join('');
+  }
+
+  async function loadBestSellers(bestPickleIds, allProducts) {
+    const grid = document.getElementById('bestsellersGrid');
+    grid.innerHTML = '';
+    const picks = bestPickleIds.map(id => allProducts.find(p => p.id === id)).filter(Boolean).filter(p => p.isavailable !== false);
+    if (!picks.length) { grid.innerHTML = `<div class="empty-state">No best sellers configured yet.</div>`; return; }
+    picks.forEach((prod, i) => grid.appendChild(createProductCard(prod, i)));
     observeReveal();
-  </script>
+  }
+
+  async function loadCategories(landingCats, allCategories) {
+    const grid = document.getElementById('categoriesGrid');
+    grid.innerHTML = '';
+    const visible = landingCats.filter(c => c.isVisible !== false);
+    const orderedCats = visible.map(lc => allCategories.find(c => c.id === lc.id)).filter(c => c && c.isavailable !== false);
+    if (!orderedCats.length) { grid.innerHTML = `<div class="empty-state">No categories available.</div>`; return; }
+    orderedCats.forEach((cat, i) => {
+      const img = cat.image || fallback(300, 400, cat.name);
+      const prodCount = cat.products ? Object.keys(cat.products).length : null;
+      const card = document.createElement('div');
+      card.className = 'cat-card reveal';
+      card.style.transitionDelay = `${i * 80}ms`;
+      card.onclick = () => {
+        const targetSection = document.getElementById(`category-section-${cat.id}`);
+        if (targetSection) targetSection.scrollIntoView({ behavior: 'smooth' });
+        else window.location.href = `products.html?categoryId=${cat.id}`;
+      };
+      card.innerHTML = `<img src="${img}" alt="${cat.name}" loading="lazy" onerror="this.src='${fallback(300,400,cat.name)}'"><div class="cat-card-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div><div class="cat-card-label"><div class="cat-card-name">${cat.name}</div>${prodCount !== null ? `<div class="cat-card-count">${prodCount} product${prodCount !== 1 ? 's' : ''}</div>` : ''}</div>`;
+      grid.appendChild(card);
+    });
+    observeReveal();
+  }
+
+  function loadAllCategoryProducts(landingCats, allCategories, allProducts) {
+    const container = document.getElementById('allCategoryProductsContainer');
+    container.innerHTML = '';
+    const visible = landingCats.filter(c => c.isVisible !== false);
+    let orderedCats = visible.map(lc => allCategories.find(c => c.id === lc.id)).filter(c => c && c.isavailable !== false);
+    if (!orderedCats.length && !landingCats.length) orderedCats = allCategories.filter(c => c.isavailable !== false);
+    if (!orderedCats.length) return;
+    orderedCats.forEach((cat) => {
+      let catProducts = allProducts.filter(p => p.categoryId === cat.id || p.category === cat.name);
+      if (catProducts.length === 0 && cat.products) {
+        const productIds = Object.keys(cat.products);
+        catProducts = allProducts.filter(p => productIds.includes(p.id));
+      }
+      catProducts = catProducts.filter(p => p.isavailable !== false);
+      if (catProducts.length === 0) return;
+      const sectionWrapper = document.createElement('section');
+      sectionWrapper.className = 'section category-products-wrapper reveal';
+      sectionWrapper.id = `category-section-${cat.id}`;
+      const sectionHeader = `<div class="section-label">${cat.name} Collection</div><h2 class="section-heading">Best of ${cat.name}</h2><p class="section-sub">Explore our top picks carefully curated for our ${cat.name} lovers.</p>`;
+      const grid = document.createElement('div');
+      grid.className = 'product-grid';
+      catProducts.forEach((prod, idx) => grid.appendChild(createProductCard(prod, idx)));
+      sectionWrapper.innerHTML = sectionHeader;
+      sectionWrapper.appendChild(grid);
+      container.appendChild(sectionWrapper);
+    });
+    observeReveal();
+  }
+
+  function observeReveal() {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('visible'); io.unobserve(en.target); } });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal:not(.visible)').forEach(el => io.observe(el));
+  }
+
+  async function init() {
+    buildMarquee();
+    try {
+      const [masterSnap, productsSnap, categoriesSnap] = await Promise.all([
+        getDoc(doc(db, 'landing_page', 'master')),
+        getDocs(collection(db, 'products')),
+        getDocs(collection(db, 'categories')),
+      ]);
+      const masterData = masterSnap.exists() ? masterSnap.data() : {};
+      const allProducts = productsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const allCategories = categoriesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      await loadHero(masterData);
+      const bestIds = masterData?.config?.bestPickles || [];
+      const picksToShow = bestIds.length ? bestIds : allProducts.filter(p => p.isavailable !== false).slice(0, 6).map(p => p.id);
+      await loadBestSellers(picksToShow, allProducts);
+      const landingCats = masterData?.config?.categories || [];
+      const catsToShow = landingCats.length ? landingCats : allCategories.map(c => ({ id: c.id, isVisible: true }));
+      await loadCategories(catsToShow, allCategories);
+      loadAllCategoryProducts(catsToShow, allCategories, allProducts);
+    } catch (err) {
+      console.error('Firebase load error:', err);
+      document.getElementById('bestsellersGrid').innerHTML = `<div class="empty-state">Failed to load products. Please refresh.</div>`;
+      document.getElementById('categoriesGrid').innerHTML = `<div class="empty-state">Failed to load categories. Please refresh.</div>`;
+    }
+  }
+  init();
+</script>
+
+<script>
+  // Scroll reveal for initial elements
+  function observeReveal() {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('visible'); io.unobserve(en.target); } });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal:not(.visible)').forEach(el => io.observe(el));
+  }
+  observeReveal();
+</script>
 
 </body>
 </html>
