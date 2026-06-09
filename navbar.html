@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Happy NonVeg Pickles – Popup Always Visible</title>
+  <title>Happy NonVeg Pickles – Full Navbar Search</title>
   <!-- Font & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
   <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet" />
@@ -18,6 +18,7 @@
       background: #faf7f2;
       min-height: 150vh;
     }
+
     /* ----- NAVBAR ----- */
     .navbar {
       background: white;
@@ -35,7 +36,7 @@
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 1rem;
-      position: relative;         /* for mobile logo centering */
+      position: relative;
     }
     .left-group {
       display: flex;
@@ -58,17 +59,11 @@
     }
     .logo-desktop { display: block; height: 50px; width: auto; }
     .logo-mobile { display: none; height: 40px; width: auto; }
-    /* new: mobile‑only centered logo */
-    .logo-mobile-center {
-      display: none;                /* hidden on desktop */
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
+    .logo-center {
+      display: flex;
+      align-items: center;
     }
-    .logo-mobile-center img {
-      height: 40px;
-      width: auto;
-    }
+
     .nav-links {
       display: flex;
       align-items: center;
@@ -82,10 +77,13 @@
       transition: color 0.2s;
     }
     .nav-links a:hover { color: #c94f2c; }
+
+    /* Desktop search bar */
     .search-wrapper {
       flex: 1;
       max-width: 300px;
       min-width: 180px;
+      position: relative;
     }
     .search-bar {
       display: flex;
@@ -95,6 +93,7 @@
       padding: 0.5rem 1rem;
       border: 1px solid #e2d6ca;
       transition: all 0.2s;
+      width: 100%;
     }
     .search-bar:focus-within {
       border-color: #c94f2c;
@@ -112,6 +111,61 @@
       font-family: inherit;
     }
     .search-bar input::placeholder { color: #b79b7c; font-weight: 400; }
+
+    /* Mobile: square search icon + full‑navbar search mode */
+    .search-icon-btn {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.6rem;
+      color: #4e3622;
+      cursor: pointer;
+      transition: transform 0.2s, color 0.2s;
+      align-items: center;
+    }
+    .search-icon-btn:hover {
+      color: #c94f2c;
+      transform: translateY(-2px);
+    }
+
+    /* Full-navbar search overlay (mobile) */
+    .navbar-search-overlay {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: white;
+      align-items: center;
+      padding: 0 1rem;
+      z-index: 1010;
+    }
+    .navbar-search-overlay.active {
+      display: flex;
+    }
+    .navbar-search-overlay .back-arrow {
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      color: #4e3622;
+      cursor: pointer;
+      margin-right: 0.5rem;
+      display: flex;
+      align-items: center;
+    }
+    .navbar-search-overlay input {
+      flex: 1;
+      border: none;
+      background: #f5efe8;
+      border-radius: 60px;
+      padding: 0.5rem 1rem;
+      font-size: 0.95rem;
+      outline: none;
+      font-family: inherit;
+    }
+    .navbar-search-overlay input::placeholder { color: #b79b7c; }
+
     .icon-group {
       display: flex;
       align-items: center;
@@ -133,7 +187,105 @@
       transform: translateY(-2px);
     }
 
-    /* ----- POPUP FIXED ----- */
+    /* ----- OVERLAY & SLIDE‑OUT PANEL ----- */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      display: none;
+      transition: opacity 0.3s;
+    }
+    .overlay.show { display: block; }
+
+    .side-panel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 280px;
+      max-width: 80vw;
+      background: white;
+      z-index: 2100;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+    }
+    .side-panel.open { transform: translateX(0); }
+    .side-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid #f0e2d4;
+    }
+    .close-panel {
+      background: none;
+      border: none;
+      font-size: 2rem;
+      color: #4e3622;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .side-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem 0;
+    }
+    .side-nav a {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      text-decoration: none;
+      font-weight: 600;
+      color: #4a3220;
+      padding: 0.8rem 1.5rem;
+      transition: background 0.2s;
+      font-size: 1rem;
+    }
+    .side-nav a i {
+      font-size: 1.3rem;
+      width: 20px;
+      text-align: center;
+    }
+    .side-nav a:hover,
+    .side-nav a.active {
+      background: #fef7f0;
+      color: #c94f2c;
+      border-left: 4px solid #c94f2c;
+    }
+    .side-user-section {
+      border-top: 1px solid #f0e2d4;
+      padding: 1rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .side-user-section a,
+    .side-user-section button {
+      background: none;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #4a3220;
+      cursor: pointer;
+      text-decoration: none;
+      padding: 0.3rem 0;
+      transition: color 0.2s;
+    }
+    .side-user-section a:hover,
+    .side-user-section button:hover { color: #c94f2c; }
+    .signout-btn { color: #c94f2c !important; }
+
+    /* ----- POPUP (cart / desktop profile) ----- */
     .popup-fixed {
       position: fixed;
       background: white;
@@ -181,38 +333,7 @@
     .cart-item-price { color: #c94f2c; }
     .empty-cart { padding: 20px; text-align: center; color: #b79b7c; }
     .profile-option i { width: 20px; font-size: 1.2rem; }
-    .signout-btn { color: #c94f2c; }
     .cart-qty-btn, .cart-remove { cursor: pointer; }
-
-    /* mobile menu */
-    .mobile-menu {
-      display: none;
-      flex-direction: column;
-      background: white;
-      padding: 1rem 1.5rem;
-      border-top: 1px solid #f0e2d4;
-      margin-top: 0.8rem;
-      gap: 0.8rem;
-    }
-    .mobile-menu .menu-logo {
-      text-align: center;
-      margin-bottom: 0.5rem;
-    }
-    .mobile-menu .menu-logo img {
-      height: 45px;
-    }
-    .mobile-menu a {
-      text-decoration: none;
-      font-weight: 600;
-      color: #4a3220;
-      padding: 0.5rem 0;
-      border-bottom: 1px solid #f3e9e0;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .mobile-menu a:last-child { border-bottom: none; }
-    .mobile-menu.show { display: flex; }
 
     /* demo products */
     .demo-products {
@@ -242,101 +363,127 @@
 
     /* ----- RESPONSIVE ----- */
     @media (max-width: 880px) {
-      .navbar { padding: 0.75rem 1rem; }
+      .navbar { padding: 0.75rem 1rem; position: relative; }
       .nav-links { display: none; }
       .hamburger { display: block; }
+      .left-group { gap: 0.5rem; }
+      .logo-center {
+        flex: 1;
+        justify-content: center;
+      }
       .logo-desktop { display: none; }
-      .logo-mobile { display: none; }     /* hide original mobile logo (used only inside left-group) */
-      .logo-mobile-center { display: block; }   /* show centred logo */
-      .search-wrapper { max-width: 220px; min-width: auto; }
+      .logo-mobile { display: block; height: 40px; }
+
+      /* Hide desktop search bar, show square search icon */
+      .search-wrapper {
+        max-width: none;
+        min-width: auto;
+        flex: 0;
+      }
+      .search-bar {
+        display: none;           /* never used on mobile */
+      }
+      .search-icon-btn {
+        display: flex;
+      }
+
+      /* Hide wishlist and profile icons from top bar */
+      .wishlist-icon-btn,
+      .profile-icon-btn {
+        display: none !important;
+      }
+      .icon-group { gap: 1rem; }
+
+      /* When search is active, hide normal navbar contents */
+      .navbar.search-active .logo-center,
+      .navbar.search-active .hamburger,
+      .navbar.search-active .icon-group,
+      .navbar.search-active .search-wrapper {
+        display: none;
+      }
+      /* The full-width search overlay is shown */
+      .navbar.search-active .navbar-search-overlay {
+        display: flex;
+      }
+
       .popup-fixed { width: 260px; }
     }
     @media (max-width: 640px) {
-      .nav-container { flex-wrap: nowrap; }    /* prevent wrapping */
-      .logo-mobile-center { display: block; }
-      .search-wrapper {
-        width: 40px;                /* small square */
-        max-width: 40px;
-        min-width: 40px;
-        margin: 0;
-        order: 2;                   /* placed between left group and icon group */
-        flex: none;
-      }
-      .search-bar {
-        border-radius: 8px;
-        padding: 0.45rem;
-        justify-content: center;
-        background: #f5efe8;
-        border: 1px solid #e2d6ca;
-      }
-      .search-bar input {
-        display: none;              /* hide the text input */
-      }
-      .icon-group {
-        order: 3;
-        margin-left: 0;
-      }
-      .left-group {
-        order: 1;
-        flex: 0 1 auto;
-      }
-      /* keep logo centred */
-      .nav-container {
-        justify-content: space-between;
-      }
+      .nav-container { flex-wrap: wrap; }
+      .icon-group { margin-left: auto; }
+      .left-group { flex: 0; }
     }
   </style>
 </head>
 <body>
 
   <!-- ===================== NAVBAR ===================== -->
-  <nav class="navbar">
+  <nav class="navbar" id="navbar">
     <div class="nav-container">
-      <!-- Left group: hamburger + original logo (hidden on mobile) -->
       <div class="left-group">
         <button class="hamburger" id="hamburgerBtn" aria-label="Menu"><i class="bx bx-menu"></i></button>
+      </div>
+      <!-- Logo centered -->
+      <div class="logo-center">
         <a href="#" class="logo-area">
           <img src="/assets/logo.png" alt="Happy NonVeg Pickles" class="logo-desktop" />
           <img src="./assets/logo-small.png" alt="Happy NonVeg Pickles" class="logo-mobile" />
         </a>
       </div>
-
-      <!-- Centered mobile logo (visible only on small screens) -->
-      <div class="logo-mobile-center">
-        <img src="./assets/logo-small.png" alt="Happy NonVeg Pickles" />
-      </div>
-
       <div class="nav-links">
         <a href="#">Home</a>
         <a href="#">Shop</a>
         <a href="#">Categories</a>
       </div>
-      <div class="search-wrapper">
-        <div class="search-bar">
+
+      <!-- Search: desktop bar (hidden on mobile) + mobile square icon -->
+      <div class="search-wrapper" id="searchWrapper">
+        <div class="search-bar" id="searchBar">
           <i class="bx bx-search"></i>
-          <input type="text" placeholder="search product" />
+          <input type="text" placeholder="search product" id="searchInput" />
         </div>
+        <button class="search-icon-btn" id="searchIconBtn" aria-label="Search">
+          <i class="bx bx-search"></i>
+        </button>
       </div>
+
       <div class="icon-group">
-        <a href="wishlist.html" class="icon-btn" aria-label="Wishlist"><i class="bx bx-heart"></i></a>
+        <a href="#" class="icon-btn wishlist-icon-btn" aria-label="Wishlist"><i class="bx bx-heart"></i></a>
         <button class="icon-btn" id="cartIconBtn" aria-label="Cart"><i class="bx bx-cart"></i></button>
-        <button class="icon-btn" id="profileIconBtn" aria-label="Profile"><i class="bx bx-user"></i></button>
+        <button class="icon-btn profile-icon-btn" id="profileIconBtn" aria-label="Profile"><i class="bx bx-user"></i></button>
       </div>
-    </div>
-    <!-- Mobile side menu -->
-    <div class="mobile-menu" id="mobileMenu">
-      <div class="menu-logo">
-        <img src="./assets/logo-small.png" alt="Happy NonVeg Pickles" />
+
+      <!-- FULL‑WIDTH SEARCH OVERLAY (mobile only) -->
+      <div class="navbar-search-overlay" id="navbarSearchOverlay">
+        <button class="back-arrow" id="searchBackBtn" aria-label="Close search">
+          <i class="bx bx-arrow-back"></i>
+        </button>
+        <input type="text" placeholder="search product" id="mobileSearchInput" />
       </div>
-      <a href="#"><i class="bx bx-home"></i> Home</a>
-      <a href="#"><i class="bx bx-store"></i> Shop</a>
-      <a href="#"><i class="bx bx-category"></i> Categories</a>
-      <a href="wishlist.html"><i class="bx bx-heart"></i> Wishlist</a>
-      <a href="login.html"><i class="bx bx-user"></i> Sign In / Sign Up</a>
     </div>
   </nav>
 
-  <!-- Fixed popups -->
+  <!-- ===================== OVERLAY + SLIDE‑OUT PANEL ===================== -->
+  <div class="overlay" id="overlay"></div>
+  <aside class="side-panel" id="sidePanel">
+    <div class="side-panel-header">
+      <span style="font-weight:700; font-size:1.1rem;">Menu</span>
+      <button class="close-panel" id="closePanelBtn" aria-label="Close menu">&times;</button>
+    </div>
+    <nav class="side-nav">
+      <a href="#" class="active" data-page="home"><i class="bx bx-home"></i> Home</a>
+      <a href="#" data-page="shop"><i class="bx bx-store"></i> Shop</a>
+      <a href="#" data-page="categories"><i class="bx bx-category"></i> Categories</a>
+      <a href="#" data-page="wishlist"><i class="bx bx-heart"></i> Wishlist</a>
+    </nav>
+    <div class="side-user-section">
+      <a href="#" id="sideProfileLink"><i class="bx bx-user-circle"></i> My Profile</a>
+      <a href="#" id="sideOrdersLink"><i class="bx bx-package"></i> My Orders</a>
+      <button id="sideSignoutBtn" class="signout-btn"><i class="bx bx-log-out"></i> Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- Fixed popups (cart and desktop profile) -->
   <div id="cartPopup" class="popup-fixed">
     <div class="popup-header">🛒 Your Cart</div>
     <div id="cartPopupContent">Loading...</div>
@@ -468,7 +615,7 @@
       }
     }
 
-    // ---------- POPUP POSITIONING ----------
+    // ---------- POPUP POSITIONING (cart & desktop profile) ----------
     let activePopup = null;
 
     function positionPopup(popupElement, buttonElement) {
@@ -504,15 +651,12 @@
     function showPopup(popupId, buttonElement) {
       const popup = document.getElementById(popupId);
       if (!popup) return;
-
       if (activePopup === popup && popup.style.display === 'block') {
         popup.style.display = 'none';
         activePopup = null;
         return;
       }
-
       if (activePopup) activePopup.style.display = 'none';
-
       popup.style.display = 'block';
       positionPopup(popup, buttonElement);
       activePopup = popup;
@@ -530,20 +674,82 @@
       return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
     }
 
+    // ---------- SLIDE‑OUT PANEL LOGIC ----------
+    function openSidePanel() {
+      document.getElementById('sidePanel').classList.add('open');
+      document.getElementById('overlay').classList.add('show');
+    }
+    function closeSidePanel() {
+      document.getElementById('sidePanel').classList.remove('open');
+      document.getElementById('overlay').classList.remove('show');
+    }
+
+    function setActiveNavLink(page) {
+      document.querySelectorAll('.side-nav a').forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('data-page') === page) link.classList.add('active');
+      });
+    }
+
+    // ---------- MOBILE FULL‑NAVBAR SEARCH TOGGLE ----------
+    function openMobileSearch() {
+      document.getElementById('navbar').classList.add('search-active');
+      document.getElementById('mobileSearchInput').focus();
+    }
+    function closeMobileSearch() {
+      document.getElementById('navbar').classList.remove('search-active');
+      document.getElementById('mobileSearchInput').value = '';
+    }
+
     // ---------- INITIALIZE ----------
     document.addEventListener('DOMContentLoaded', () => {
       loadCart();
       renderCartPopup();
 
-      const hamburger = document.getElementById('hamburgerBtn');
-      const mobileMenu = document.getElementById('mobileMenu');
-      if (hamburger && mobileMenu) {
-        hamburger.addEventListener('click', () => mobileMenu.classList.toggle('show'));
-        mobileMenu.querySelectorAll('a').forEach(link => {
-          link.addEventListener('click', () => mobileMenu.classList.remove('show'));
-        });
-      }
+      // Hamburger opens slide-out panel
+      document.getElementById('hamburgerBtn').addEventListener('click', openSidePanel);
 
+      // Close panel: X button, overlay click
+      document.getElementById('closePanelBtn').addEventListener('click', closeSidePanel);
+      document.getElementById('overlay').addEventListener('click', closeSidePanel);
+
+      // Side-nav link clicks
+      document.querySelectorAll('.side-nav a').forEach(link => {
+        link.addEventListener('click', (e) => {
+          const page = link.getAttribute('data-page');
+          setActiveNavLink(page);
+          closeSidePanel();
+        });
+      });
+
+      // Side user actions
+      document.getElementById('sideProfileLink').addEventListener('click', (e) => {
+        e.preventDefault();
+        handleProfileAction('profile');
+        closeSidePanel();
+      });
+      document.getElementById('sideOrdersLink').addEventListener('click', (e) => {
+        e.preventDefault();
+        handleProfileAction('orders');
+        closeSidePanel();
+      });
+      document.getElementById('sideSignoutBtn').addEventListener('click', () => {
+        handleProfileAction('signout');
+        closeSidePanel();
+      });
+
+      // Mobile search: square icon opens full search overlay
+      document.getElementById('searchIconBtn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        openMobileSearch();
+      });
+
+      // Back arrow closes full search overlay
+      document.getElementById('searchBackBtn').addEventListener('click', () => {
+        closeMobileSearch();
+      });
+
+      // Cart icon popup
       const cartBtn = document.getElementById('cartIconBtn');
       if (cartBtn) {
         cartBtn.addEventListener('click', (e) => {
@@ -553,6 +759,7 @@
         });
       }
 
+      // Profile icon popup (desktop only, hidden on mobile)
       const profileBtn = document.getElementById('profileIconBtn');
       if (profileBtn) {
         profileBtn.addEventListener('click', (e) => {
@@ -561,6 +768,7 @@
         });
       }
 
+      // Profile popup option clicks
       const profilePopup = document.getElementById('profilePopup');
       if (profilePopup) {
         profilePopup.addEventListener('click', (e) => {
@@ -573,6 +781,7 @@
         });
       }
 
+      // Demo add-to-cart
       document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const product = {
@@ -585,12 +794,14 @@
         });
       });
 
+      // Close popups when clicking outside
       document.addEventListener('click', (e) => {
         if (!e.target.closest('.icon-btn') && !e.target.closest('.popup-fixed')) {
           closeAllPopups();
         }
       });
 
+      // Reposition active popup on scroll/resize
       function repositionActivePopup() {
         if (!activePopup) return;
         let btnId = null;
