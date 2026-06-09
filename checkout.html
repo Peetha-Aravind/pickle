@@ -75,10 +75,6 @@
     .payment-radio .label { flex: 1; }
     .payment-radio .name { font-weight: 700; display: block; }
     .payment-radio .fee { font-size: 0.7rem; color: var(--ash); }
-    .coupon-section { display: flex; gap: 12px; margin: 20px 0 10px; }
-    .coupon-section input { flex: 1; padding: 12px; border-radius: 60px; border: 1px solid var(--border); }
-    .apply-btn { background: var(--ink); color: white; border: none; padding: 0 24px; border-radius: 60px; font-weight: 600; cursor: pointer; }
-    .discount-info { font-size: 0.8rem; margin: 8px 0; }
     .order-summary {
       background: white; border-radius: var(--r-card); box-shadow: var(--shadow-sm);
       overflow: hidden; position: sticky; top: calc(var(--nav-h) + 20px);
@@ -93,7 +89,43 @@
     .cart-item-name { font-weight: 700; margin-bottom: 4px; }
     .cart-item-variant { font-size: 0.8rem; color: var(--ash); margin-bottom: 6px; }
     .cart-item-price-row { display: flex; justify-content: space-between; align-items: baseline; }
-    .summary-totals { padding: 20px 24px; background: #faf7f2; flex: 1; }
+    
+    /* Coupon section inside order summary */
+    .coupon-section {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      background: #fffef8;
+    }
+    .coupon-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .coupon-row input {
+      flex: 1;
+      padding: 12px;
+      border-radius: 60px;
+      border: 1px solid var(--border);
+      font-family: var(--ff-body);
+    }
+    .apply-coupon-btn {
+      background: var(--ink);
+      color: white;
+      border: none;
+      padding: 0 20px;
+      border-radius: 60px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .apply-coupon-btn:hover { background: var(--rust); }
+    .discount-msg {
+      font-size: 0.8rem;
+      margin-top: 6px;
+      min-height: 32px;
+    }
+    
+    .summary-totals { padding: 20px 24px; background: #faf7f2; }
     .totals-row { display: flex; justify-content: space-between; margin-bottom: 12px; }
     .totals-row.grand-total { font-weight: 800; font-size: 1.2rem; border-top: 2px solid var(--border); padding-top: 12px; margin-top: 8px; color: var(--rust); }
     .pay-btn {
@@ -251,6 +283,13 @@
           </div>
         </div>
       </div>
+      <div class="coupon-section">
+        <div class="coupon-row">
+          <input type="text" id="couponInputRight" placeholder="Enter coupon code">
+          <button class="apply-coupon-btn" id="applyCouponBtnRight">Apply</button>
+        </div>
+        <div id="discountMsgRight" class="discount-msg"></div>
+      </div>
       <div class="summary-totals" id="totalsPanel">
         <div class="totals-row"><span>Subtotal</span><span>${formatPrice(totals.subtotal)}</span></div>
         ${discountAmount > 0 ? `<div class="totals-row"><span>Coupon Discount (${discountText})</span><span>-${formatPrice(discountAmount)}</span></div>` : ''}
@@ -262,6 +301,21 @@
     summaryContainer.innerHTML = html;
     const payBtn = document.getElementById('payNowBtn');
     if (payBtn) payBtn.innerText = `Pay ${formatPrice(totals.total)}`;
+
+    // Attach coupon event listeners inside the right column
+    const couponInput = document.getElementById('couponInputRight');
+    const applyBtn = document.getElementById('applyCouponBtnRight');
+    if (applyBtn) {
+      applyBtn.onclick = async () => {
+        const code = couponInput.value.trim();
+        const result = await applyCoupon(code);
+        if (!result.success) {
+          document.getElementById('discountMsgRight').innerHTML = `<span style="color:#d32f2f;">❌ ${result.message}</span>`;
+        } else {
+          document.getElementById('discountMsgRight').innerHTML = `<span style="color:#2e7d32;">✅ Coupon applied! ${result.discountText}</span>`;
+        }
+      };
+    }
   }
 
   function updateTotals() {
@@ -298,8 +352,7 @@
       };
       updateTotals();
       const discountText = data.discountType === 'percentage' ? `${data.discountValue}% off` : `₹${data.discountValue} off`;
-      document.getElementById('discountMsg').innerHTML = `<span style="color:#2e7d32;">✅ Coupon applied! ${discountText}</span>`;
-      return { success: true };
+      return { success: true, discountText };
     } catch(e) {
       console.error(e);
       return { success: false, message: 'Error validating coupon' };
@@ -342,14 +395,6 @@
           </div>
         </div>
       </div>
-      <div class="card">
-        <div class="card-title">🎟️ Apply Coupon</div>
-        <div class="coupon-section">
-          <input type="text" id="couponInput" placeholder="Enter coupon code">
-          <button class="apply-btn" id="applyCouponBtn">Apply</button>
-        </div>
-        <div id="discountMsg" class="discount-info"></div>
-      </div>
     `;
     leftContainer.innerHTML = html;
     document.getElementById('openAddressBtn')?.addEventListener('click', () => openAddressModal());
@@ -364,13 +409,6 @@
         if (inp) inp.checked = true;
         updateTotals();
       });
-    });
-    document.getElementById('applyCouponBtn')?.addEventListener('click', async () => {
-      const code = document.getElementById('couponInput').value.trim();
-      const result = await applyCoupon(code);
-      if (!result.success) {
-        document.getElementById('discountMsg').innerHTML = `<span style="color:#d32f2f;">❌ ${result.message}</span>`;
-      }
     });
   }
 
