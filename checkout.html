@@ -26,9 +26,49 @@
       line-height: 1.5;
     }
     
+    /* ----- Back Button (top left) ----- */
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1100;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 40px;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+      cursor: pointer;
+      font-family: var(--ff-body);
+    }
+    .back-button:hover {
+      background: var(--rust-light);
+      border-color: var(--rust);
+      color: var(--rust);
+      transform: translateX(-2px);
+    }
+    .back-button svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      stroke-width: 2.5;
+      fill: none;
+    }
+
     .checkout-container {
-      max-width: 1200px; margin: 40px auto; padding: 0 5vw;
-      display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px;
+      max-width: 1200px;
+      margin: 80px auto 40px;  /* extra top margin to clear fixed back button */
+      padding: 0 5vw;
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 40px;
     }
     .left-panel { background: white; border-radius: var(--r-card); box-shadow: var(--shadow-sm); overflow: hidden; }
     .card { padding: 24px; border-bottom: 1px solid var(--border); }
@@ -69,7 +109,7 @@
     .cart-item-variant { font-size: 0.8rem; color: var(--ash); margin-bottom: 6px; }
     .cart-item-price-row { display: flex; justify-content: space-between; align-items: baseline; }
     
-    /* Coupon section inside order summary */
+    /* Coupon section */
     .coupon-section {
       padding: 16px 24px;
       border-bottom: 1px solid var(--border);
@@ -114,6 +154,8 @@
       cursor: pointer; transition: 0.2s;
     }
     .pay-btn:hover { background: var(--rust-dark); transform: translateY(-2px); }
+    
+    /* Address Modal */
     .modal {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;
@@ -132,15 +174,31 @@
     .modal-buttons button { padding: 10px 20px; border-radius: 40px; border: none; cursor: pointer; }
     .save-address { background: var(--rust); color: white; }
     .close-modal { background: #ccc; }
-    footer { background: var(--ink); color: rgba(255,255,255,0.6); padding: 30px 5vw; text-align: center; margin-top: 60px; }
+    
+    footer {
+      background: var(--ink);
+      color: rgba(255,255,255,0.6);
+      padding: 30px 5vw;
+      text-align: center;
+      margin-top: 60px;
+    }
     
     @media (max-width: 800px) {
-      .checkout-container { grid-template-columns: 1fr; gap: 30px; }
+      .checkout-container { grid-template-columns: 1fr; gap: 30px; margin-top: 70px; }
       .order-summary { position: relative; top: 0; }
+      .back-button { top: 12px; left: 12px; padding: 6px 12px; font-size: 13px; }
     }
   </style>
 </head>
 <body>
+
+<!-- Back button at top left corner -->
+<button class="back-button" onclick="goBack()">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M15 18l-6-6 6-6"/>
+  </svg>
+  Back
+</button>
 
 <main id="checkoutRoot"><div style="text-align:center; padding:60px;">Loading checkout...</div></main>
 
@@ -161,6 +219,17 @@
 </div>
 
 <footer><p>© 2025 Happy NonVeg Pickles — handcrafted with tradition.</p></footer>
+
+<script>
+  // Back navigation function
+  function goBack() {
+    if (document.referrer && document.referrer !== "") {
+      window.history.back();
+    } else {
+      window.location.href = 'index.html';
+    }
+  }
+</script>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
