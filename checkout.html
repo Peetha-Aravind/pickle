@@ -244,18 +244,19 @@
     } catch(e) { console.warn(e); return null; }
   }
 
-  function calculateTotals(item, coupon) {
-    if (!item) return { subtotal: 0, discount: 0, shipping: 0, total: 0, handlingFee: 0 };
-    let subtotal = item.price * item.quantity;
+  // Calculate totals based on current item, coupon, and payment method
+  function getCurrentTotals() {
+    if (!checkoutItem) return { subtotal: 0, discount: 0, shipping: 0, total: 0, handlingFee: 0, discountText: '' };
+    let subtotal = checkoutItem.price * checkoutItem.quantity;
     let discount = 0;
     let discountText = '';
-    if (coupon) {
-      if (coupon.discountType === 'percentage') {
-        discount = subtotal * (coupon.discountValue / 100);
-        discountText = `${coupon.discountValue}% off`;
-      } else if (coupon.discountType === 'fixed') {
-        discount = coupon.discountValue;
-        discountText = `₹${coupon.discountValue} off`;
+    if (appliedCoupon) {
+      if (appliedCoupon.discountType === 'percentage') {
+        discount = subtotal * (appliedCoupon.discountValue / 100);
+        discountText = `${appliedCoupon.discountValue}% off`;
+      } else if (appliedCoupon.discountType === 'fixed') {
+        discount = appliedCoupon.discountValue;
+        discountText = `₹${appliedCoupon.discountValue} off`;
       }
       discount = Math.min(discount, subtotal);
     }
@@ -266,83 +267,28 @@
     return { subtotal, discount, discountText, shipping, handlingFee, total };
   }
 
-  // Function to update the totals panel and button without re-rendering the whole summary
-  function updateTotalsPanel() {
-    if (!checkoutItem) return;
-    const totals = calculateTotals(checkoutItem, appliedCoupon);
+  // Update the totals display and the Pay button
+  function updateTotalsAndButton() {
+    const totals = getCurrentTotals();
     
-    // Update the totals panel content
+    // Update the totals panel if it exists
     const totalsPanel = document.getElementById('totalsPanel');
     if (totalsPanel) {
-      const discountAmount = totals.discount;
-      const discountText = totals.discountText;
       totalsPanel.innerHTML = `
         <div class="totals-row"><span>Subtotal</span><span>${formatPrice(totals.subtotal)}</span></div>
-        ${discountAmount > 0 ? `<div class="totals-row"><span>Coupon Discount (${discountText})</span><span>-${formatPrice(discountAmount)}</span></div>` : ''}
+        ${totals.discount > 0 ? `<div class="totals-row"><span>Coupon Discount (${totals.discountText})</span><span>-${formatPrice(totals.discount)}</span></div>` : ''}
         <div class="totals-row"><span>Shipping</span><span>${totals.shipping === 0 ? 'FREE' : formatPrice(totals.shipping)}</span></div>
         ${selectedPayment === 'cod' ? `<div class="totals-row"><span>COD Handling Fee</span><span>${formatPrice(totals.handlingFee)}</span></div>` : ''}
         <div class="totals-row grand-total"><span>Total</span><span>${formatPrice(totals.total)}</span></div>
       `;
     }
     
-    // Update the Pay button text
+    // Update the Pay button
     const payBtn = document.getElementById('payNowBtn');
     if (payBtn) payBtn.innerText = `Pay ${formatPrice(totals.total)}`;
-    
-    return totals;
   }
 
-  function renderOrderSummary() {
-    if (!checkoutItem) return;
-    const totals = calculateTotals(checkoutItem, appliedCoupon);
-    const summaryContainer = document.getElementById('orderSummaryContainer');
-    if (!summaryContainer) return;
-    
-    const html = `
-      <div class="summary-header">Order Summary</div>
-      <div class="summary-items">
-        <div class="cart-item">
-          <div class="cart-item-img"><img src="${checkoutItem.image}" alt="${checkoutItem.name}" onerror="this.src='https://placehold.co/70x70/f5e9e7/c0392b?text=Pickle'"></div>
-          <div class="cart-item-details">
-            <div class="cart-item-name">${escapeHtml(checkoutItem.name)}</div>
-            <div class="cart-item-variant">${escapeHtml(checkoutItem.variant)}</div>
-            <div class="cart-item-price-row"><span class="cart-item-qty">Qty: ${checkoutItem.quantity}</span><span class="cart-item-total">${formatPrice(checkoutItem.price * checkoutItem.quantity)}</span></div>
-          </div>
-        </div>
-      </div>
-      <div class="coupon-section">
-        <div class="coupon-row">
-          <input type="text" id="couponInputRight" placeholder="Enter coupon code">
-          <button class="apply-coupon-btn" id="applyCouponBtnRight">Apply</button>
-        </div>
-        <div id="discountMsgRight" class="discount-msg"></div>
-      </div>
-      <div class="summary-totals" id="totalsPanel"></div>
-    `;
-    summaryContainer.innerHTML = html;
-    
-    // Attach event listener to the new apply button
-    const applyBtn = document.getElementById('applyCouponBtnRight');
-    const couponInput = document.getElementById('couponInputRight');
-    if (applyBtn) {
-      applyBtn.onclick = async () => {
-        const code = couponInput.value.trim();
-        const result = await applyCoupon(code);
-        const msgDiv = document.getElementById('discountMsgRight');
-        if (result.success) {
-          msgDiv.innerHTML = `<span style="color:#2e7d32;">✅ ${result.message}</span>`;
-          // Update the totals after successful coupon application
-          updateTotalsPanel();
-        } else {
-          msgDiv.innerHTML = `<span style="color:#d32f2f;">❌ ${result.message}</span>`;
-        }
-      };
-    }
-    
-    // Initialize totals panel
-    updateTotalsPanel();
-  }
-
+  // Apply coupon from Firestore
   async function applyCoupon(code) {
     if (!code) return { success: false, message: 'Enter a coupon code' };
     const upperCode = code.toUpperCase();
@@ -353,6 +299,7 @@
         return { success: false, message: 'Invalid coupon code' };
       }
       const data = couponSnap.data();
+      // Check expiry
       if (data.expiry) {
         let expiryDate = data.expiry.toDate ? data.expiry.toDate() : new Date(data.expiry);
         if (expiryDate < new Date()) {
@@ -363,6 +310,7 @@
       if (data.minOrder && subtotal < data.minOrder) {
         return { success: false, message: `Minimum order ₹${data.minOrder} required` };
       }
+      // Store coupon details
       appliedCoupon = {
         code: upperCode,
         discountType: data.discountType,
@@ -370,6 +318,10 @@
         minOrder: data.minOrder
       };
       const discountText = data.discountType === 'percentage' ? `${data.discountValue}% off` : `₹${data.discountValue} off`;
+      
+      // Immediately update the totals and button
+      updateTotalsAndButton();
+      
       return { success: true, message: `Coupon applied! ${discountText}` };
     } catch(e) {
       console.error(e);
@@ -377,6 +329,7 @@
     }
   }
 
+  // Render the left panel (address + payment methods)
   function renderLeftPanel() {
     const leftContainer = document.getElementById('leftPanelContainer');
     if (!leftContainer) return;
@@ -425,22 +378,65 @@
         radio.classList.add('active');
         const inp = radio.querySelector('input');
         if (inp) inp.checked = true;
-        updateTotalsPanel(); // Update totals when payment method changes
+        // Update totals when payment method changes (handling fee may apply)
+        updateTotalsAndButton();
       });
     });
   }
 
-  function renderRightColumnWithPayButton() {
+  // Render the right side: order summary with coupon input and totals
+  function renderRightColumn() {
     const rightContainer = document.getElementById('rightColumnContainer');
     if (!rightContainer) return;
+    // Build the structure
     rightContainer.innerHTML = `
       <div class="order-summary">
-        <div id="orderSummaryContainer"></div>
+        <div class="summary-header">Order Summary</div>
+        <div class="summary-items">
+          <div class="cart-item">
+            <div class="cart-item-img"><img src="${checkoutItem.image}" alt="${checkoutItem.name}" onerror="this.src='https://placehold.co/70x70/f5e9e7/c0392b?text=Pickle'"></div>
+            <div class="cart-item-details">
+              <div class="cart-item-name">${escapeHtml(checkoutItem.name)}</div>
+              <div class="cart-item-variant">${escapeHtml(checkoutItem.variant)}</div>
+              <div class="cart-item-price-row"><span class="cart-item-qty">Qty: ${checkoutItem.quantity}</span><span class="cart-item-total">${formatPrice(checkoutItem.price * checkoutItem.quantity)}</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="coupon-section">
+          <div class="coupon-row">
+            <input type="text" id="couponInputRight" placeholder="Enter coupon code">
+            <button class="apply-coupon-btn" id="applyCouponBtnRight">Apply</button>
+          </div>
+          <div id="discountMsgRight" class="discount-msg"></div>
+        </div>
+        <div class="summary-totals" id="totalsPanel"></div>
         <button class="pay-btn" id="payNowBtn">Pay Now</button>
       </div>
     `;
+    
+    // Attach coupon apply event
+    const applyBtn = document.getElementById('applyCouponBtnRight');
+    const couponInput = document.getElementById('couponInputRight');
+    if (applyBtn) {
+      applyBtn.onclick = async () => {
+        const code = couponInput.value.trim();
+        const result = await applyCoupon(code);
+        const msgDiv = document.getElementById('discountMsgRight');
+        if (result.success) {
+          msgDiv.innerHTML = `<span style="color:#2e7d32;">✅ ${result.message}</span>`;
+          // Totals already updated inside applyCoupon, but ensure button updates
+          updateTotalsAndButton();
+        } else {
+          msgDiv.innerHTML = `<span style="color:#d32f2f;">❌ ${result.message}</span>`;
+        }
+      };
+    }
+    
+    // Initialize totals display
+    updateTotalsAndButton();
+    
+    // Pay button event
     document.getElementById('payNowBtn')?.addEventListener('click', () => processOrder());
-    renderOrderSummary();
   }
 
   function openAddressModal() {
@@ -474,7 +470,7 @@
   function processOrder() {
     if (!savedAddress) { alert('Please add a delivery address first'); return; }
     if (!checkoutItem) { alert('No product in checkout'); return; }
-    const totals = calculateTotals(checkoutItem, appliedCoupon);
+    const totals = getCurrentTotals();
     const paymentMethod = selectedPayment === 'online' ? 'Online Payment' : 'Cash on Delivery';
     alert(`✅ Order placed successfully!\n\nDeliver to: ${savedAddress.name}, ${savedAddress.address}, ${savedAddress.city}\nProduct: ${checkoutItem.name} (${checkoutItem.variant}) x ${checkoutItem.quantity}\nTotal: ${formatPrice(totals.total)}\nPayment: ${paymentMethod}\n\nThank you for shopping!`);
     window.location.href = 'index.html';
@@ -497,7 +493,7 @@
       </div>
     `;
     renderLeftPanel();
-    renderRightColumnWithPayButton();
+    renderRightColumn();
   }
 
   const nav = document.getElementById('mainNav');
