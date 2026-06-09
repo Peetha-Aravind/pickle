@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Happy NonVeg Pickles – Full Navbar Search</title>
+  <title>Happy NonVeg Pickles – Custom Icons in Slide Menu</title>
   <!-- Font & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
   <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet" />
@@ -27,6 +27,7 @@
       top: 0;
       z-index: 1000;
       padding: 0.75rem 1.2rem;
+      overflow: hidden;
     }
     .nav-container {
       max-width: 1400px;
@@ -79,11 +80,10 @@
     .nav-links a:hover { color: #c94f2c; }
 
     /* Desktop search bar */
-    .search-wrapper {
+    .desktop-search {
       flex: 1;
       max-width: 300px;
       min-width: 180px;
-      position: relative;
     }
     .search-bar {
       display: flex;
@@ -93,7 +93,6 @@
       padding: 0.5rem 1rem;
       border: 1px solid #e2d6ca;
       transition: all 0.2s;
-      width: 100%;
     }
     .search-bar:focus-within {
       border-color: #c94f2c;
@@ -111,60 +110,6 @@
       font-family: inherit;
     }
     .search-bar input::placeholder { color: #b79b7c; font-weight: 400; }
-
-    /* Mobile: square search icon + full‑navbar search mode */
-    .search-icon-btn {
-      display: none;
-      background: none;
-      border: none;
-      font-size: 1.6rem;
-      color: #4e3622;
-      cursor: pointer;
-      transition: transform 0.2s, color 0.2s;
-      align-items: center;
-    }
-    .search-icon-btn:hover {
-      color: #c94f2c;
-      transform: translateY(-2px);
-    }
-
-    /* Full-navbar search overlay (mobile) */
-    .navbar-search-overlay {
-      display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: white;
-      align-items: center;
-      padding: 0 1rem;
-      z-index: 1010;
-    }
-    .navbar-search-overlay.active {
-      display: flex;
-    }
-    .navbar-search-overlay .back-arrow {
-      background: none;
-      border: none;
-      font-size: 1.8rem;
-      color: #4e3622;
-      cursor: pointer;
-      margin-right: 0.5rem;
-      display: flex;
-      align-items: center;
-    }
-    .navbar-search-overlay input {
-      flex: 1;
-      border: none;
-      background: #f5efe8;
-      border-radius: 60px;
-      padding: 0.5rem 1rem;
-      font-size: 0.95rem;
-      outline: none;
-      font-family: inherit;
-    }
-    .navbar-search-overlay input::placeholder { color: #b79b7c; }
 
     .icon-group {
       display: flex;
@@ -187,7 +132,56 @@
       transform: translateY(-2px);
     }
 
-    /* ----- OVERLAY & SLIDE‑OUT PANEL ----- */
+    /* Mobile search icon (hidden on desktop) – with a small square background */
+    .search-icon-mobile {
+      display: none;
+      background: #f5efe8;
+      border-radius: 8px;
+      padding: 0.4rem;
+      font-size: 1.4rem;
+    }
+    .search-icon-mobile:hover {
+      background: #e8d9cc;
+    }
+
+    /* ----- SEARCH OVERLAY (slides from right on mobile) ----- */
+    .search-overlay {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      background: white;
+      z-index: 1100;
+      display: flex;
+      align-items: center;
+      padding: 0 1rem;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+    }
+    .search-overlay.active {
+      transform: translateX(0);
+    }
+    .search-overlay .close-search {
+      background: none;
+      border: none;
+      font-size: 2rem;
+      color: #4e3622;
+      cursor: pointer;
+      margin-right: 0.5rem;
+      line-height: 1;
+    }
+    .search-overlay input {
+      flex: 1;
+      border: none;
+      font-size: 1rem;
+      padding: 0.5rem 0;
+      outline: none;
+      font-family: inherit;
+      background: transparent;
+    }
+
+    /* ----- LEFT SLIDE‑OUT PANEL ----- */
     .overlay {
       position: fixed;
       top: 0;
@@ -197,7 +191,6 @@
       background: rgba(0,0,0,0.5);
       z-index: 2000;
       display: none;
-      transition: opacity 0.3s;
     }
     .overlay.show { display: block; }
 
@@ -248,6 +241,12 @@
       transition: background 0.2s;
       font-size: 1rem;
     }
+    /* Style SVGs within side-nav links */
+    .side-nav a svg {
+      width: 1.3rem;
+      height: 1.3rem;
+      flex-shrink: 0;
+    }
     .side-nav a i {
       font-size: 1.3rem;
       width: 20px;
@@ -285,7 +284,129 @@
     .side-user-section button:hover { color: #c94f2c; }
     .signout-btn { color: #c94f2c !important; }
 
-    /* ----- POPUP (cart / desktop profile) ----- */
+    /* ----- RIGHT SLIDE CART (mobile) ----- */
+    .cart-slide-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 2200;
+      display: none;
+    }
+    .cart-slide-overlay.show { display: block; }
+
+    .cart-slide-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100%;
+      width: 320px;
+      max-width: 85vw;
+      background: white;
+      z-index: 2300;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -4px 0 15px rgba(0,0,0,0.1);
+    }
+    .cart-slide-panel.open {
+      transform: translateX(0);
+    }
+    .cart-slide-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid #f0e2d4;
+      font-weight: 700;
+    }
+    .cart-slide-items {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+    .cart-slide-footer {
+      border-top: 1px solid #f0e2d4;
+      padding: 1rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      background: #fffaf5;
+    }
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    .checkout-btn {
+      background: #c94f2c;
+      color: white;
+      border: none;
+      padding: 0.75rem;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.2s;
+    }
+    .checkout-btn:hover { background: #a83d22; }
+
+    .cart-slide-item {
+      display: flex;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f3e9e0;
+      align-items: center;
+    }
+    .cart-slide-img {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      background: #f5efe8;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .cart-slide-img img { width: 100%; height: 100%; object-fit: cover; }
+    .cart-slide-details { flex: 1; font-size: 0.9rem; }
+    .cart-slide-name { font-weight: 600; }
+    .cart-slide-price { color: #c94f2c; font-weight: 600; }
+    .cart-slide-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .cart-slide-actions button {
+      background: #f0e2d4;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cart-slide-remove {
+      background: none !important;
+      color: #c94f2c;
+      font-weight: 600;
+      margin-left: auto;
+      width: auto !important;
+    }
+    .empty-cart-slide {
+      text-align: center;
+      padding: 2rem;
+      color: #b79b7c;
+    }
+
+    /* ----- DESKTOP CART POPUP (unchanged) ----- */
     .popup-fixed {
       position: fixed;
       background: white;
@@ -331,7 +452,6 @@
     .cart-item-details { flex: 1; font-size: 0.85rem; }
     .cart-item-name { font-weight: 600; }
     .cart-item-price { color: #c94f2c; }
-    .empty-cart { padding: 20px; text-align: center; color: #b79b7c; }
     .profile-option i { width: 20px; font-size: 1.2rem; }
     .cart-qty-btn, .cart-remove { cursor: pointer; }
 
@@ -363,7 +483,7 @@
 
     /* ----- RESPONSIVE ----- */
     @media (max-width: 880px) {
-      .navbar { padding: 0.75rem 1rem; position: relative; }
+      .navbar { padding: 0.75rem 1rem; }
       .nav-links { display: none; }
       .hamburger { display: block; }
       .left-group { gap: 0.5rem; }
@@ -374,56 +494,40 @@
       .logo-desktop { display: none; }
       .logo-mobile { display: block; height: 40px; }
 
-      /* Hide desktop search bar, show square search icon */
-      .search-wrapper {
-        max-width: none;
-        min-width: auto;
-        flex: 0;
-      }
-      .search-bar {
-        display: none;           /* never used on mobile */
-      }
-      .search-icon-btn {
-        display: flex;
-      }
+      .desktop-search { display: none; }
+      .search-icon-mobile { display: flex; }
 
-      /* Hide wishlist and profile icons from top bar */
       .wishlist-icon-btn,
       .profile-icon-btn {
         display: none !important;
       }
       .icon-group { gap: 1rem; }
 
-      /* When search is active, hide normal navbar contents */
-      .navbar.search-active .logo-center,
-      .navbar.search-active .hamburger,
-      .navbar.search-active .icon-group,
-      .navbar.search-active .search-wrapper {
-        display: none;
-      }
-      /* The full-width search overlay is shown */
-      .navbar.search-active .navbar-search-overlay {
-        display: flex;
-      }
-
-      .popup-fixed { width: 260px; }
+      .popup-fixed { display: none !important; }
     }
     @media (max-width: 640px) {
       .nav-container { flex-wrap: wrap; }
-      .icon-group { margin-left: auto; }
+      .search-icon-mobile { order: 3; margin-left: auto; }
+      .icon-group { order: 4; }
       .left-group { flex: 0; }
+    }
+
+    @media (min-width: 881px) {
+      .search-icon-mobile { display: none; }
+      .desktop-search { display: block; }
+      .search-overlay { display: none; }
+      .cart-slide-overlay, .cart-slide-panel { display: none !important; }
     }
   </style>
 </head>
 <body>
 
   <!-- ===================== NAVBAR ===================== -->
-  <nav class="navbar" id="navbar">
+  <nav class="navbar">
     <div class="nav-container">
       <div class="left-group">
         <button class="hamburger" id="hamburgerBtn" aria-label="Menu"><i class="bx bx-menu"></i></button>
       </div>
-      <!-- Logo centered -->
       <div class="logo-center">
         <a href="#" class="logo-area">
           <img src="/assets/logo.png" alt="Happy NonVeg Pickles" class="logo-desktop" />
@@ -436,34 +540,31 @@
         <a href="#">Categories</a>
       </div>
 
-      <!-- Search: desktop bar (hidden on mobile) + mobile square icon -->
-      <div class="search-wrapper" id="searchWrapper">
-        <div class="search-bar" id="searchBar">
+      <div class="desktop-search">
+        <div class="search-bar">
           <i class="bx bx-search"></i>
-          <input type="text" placeholder="search product" id="searchInput" />
+          <input type="text" placeholder="search product" />
         </div>
-        <button class="search-icon-btn" id="searchIconBtn" aria-label="Search">
-          <i class="bx bx-search"></i>
-        </button>
       </div>
 
       <div class="icon-group">
+        <button class="icon-btn search-icon-mobile" id="searchIconMobile" aria-label="Search">
+          <i class="bx bx-search"></i>
+        </button>
+
         <a href="#" class="icon-btn wishlist-icon-btn" aria-label="Wishlist"><i class="bx bx-heart"></i></a>
         <button class="icon-btn" id="cartIconBtn" aria-label="Cart"><i class="bx bx-cart"></i></button>
         <button class="icon-btn profile-icon-btn" id="profileIconBtn" aria-label="Profile"><i class="bx bx-user"></i></button>
       </div>
 
-      <!-- FULL‑WIDTH SEARCH OVERLAY (mobile only) -->
-      <div class="navbar-search-overlay" id="navbarSearchOverlay">
-        <button class="back-arrow" id="searchBackBtn" aria-label="Close search">
-          <i class="bx bx-arrow-back"></i>
-        </button>
-        <input type="text" placeholder="search product" id="mobileSearchInput" />
+      <div class="search-overlay" id="searchOverlay">
+        <button class="close-search" id="closeSearchBtn">&times;</button>
+        <input type="text" placeholder="Search products..." id="mobileSearchInput" />
       </div>
     </div>
   </nav>
 
-  <!-- ===================== OVERLAY + SLIDE‑OUT PANEL ===================== -->
+  <!-- ===================== LEFT SLIDE‑OUT PANEL ===================== -->
   <div class="overlay" id="overlay"></div>
   <aside class="side-panel" id="sidePanel">
     <div class="side-panel-header">
@@ -471,9 +572,28 @@
       <button class="close-panel" id="closePanelBtn" aria-label="Close menu">&times;</button>
     </div>
     <nav class="side-nav">
-      <a href="#" class="active" data-page="home"><i class="bx bx-home"></i> Home</a>
-      <a href="#" data-page="shop"><i class="bx bx-store"></i> Shop</a>
-      <a href="#" data-page="categories"><i class="bx bx-category"></i> Categories</a>
+      <!-- Home with custom SVG -->
+      <a href="#" class="active" data-page="home">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="2 2 20 20">
+          <path d="M3 13h1v7c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-7h1c.4 0 .77-.24.92-.62.15-.37.07-.8-.22-1.09l-8.99-9a.996.996 0 0 0-1.41 0l-9.01 9c-.29.29-.37.72-.22 1.09s.52.62.92.62Zm7 7v-5h4v5zm2-15.59 6 6V20h-2v-5c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v5H6v-9.59z"></path>
+        </svg>
+        Home
+      </a>
+      <!-- Shop with custom SVG -->
+      <a href="#" data-page="shop">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="2 2 20 20">
+          <path d="M17.31 14H9.72L5.95 2.68A1 1 0 0 0 5 2H2v2h2.28l3.54 10.63A2 2 0 0 0 9.72 16h7.59a2 2 0 0 0 1.87-1.3l2.76-7.35-1.87-.7zM10 18a2 2 0 1 0 0 4 2 2 0 1 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 1 0 0-4"></path><path d="m11.71 7.29-1.42 1.42 2.71 2.7 4.71-4.7-1.42-1.42L13 8.59z"></path>
+        </svg>
+        Shop
+      </a>
+      <!-- Categories with grid SVG (already provided) -->
+      <a href="#" data-page="categories">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="2 2 20 20">
+          <path d="M3 3h4v4H3zm7 0h4v4h-4z"></path><path d="M10 3h4v4h-4zm7 0h4v4h-4zM3 17h4v4H3zm7 0h4v4h-4z"></path><path d="M10 17h4v4h-4zm7 0h4v4h-4zM3 10h4v4H3zm7 0h4v4h-4z"></path><path d="M10 10h4v4h-4zm7 0h4v4h-4z"></path>
+        </svg>
+        Categories
+      </a>
+      <!-- Wishlist keeps heart icon -->
       <a href="#" data-page="wishlist"><i class="bx bx-heart"></i> Wishlist</a>
     </nav>
     <div class="side-user-section">
@@ -483,7 +603,24 @@
     </div>
   </aside>
 
-  <!-- Fixed popups (cart and desktop profile) -->
+  <!-- ===================== RIGHT CART SLIDE (mobile) ===================== -->
+  <div class="cart-slide-overlay" id="cartSlideOverlay"></div>
+  <div class="cart-slide-panel" id="cartSlidePanel">
+    <div class="cart-slide-header">
+      <span>🛒 Your Cart</span>
+      <button class="close-panel" id="closeCartSlideBtn">&times;</button>
+    </div>
+    <div class="cart-slide-items" id="cartSlideItems"></div>
+    <div class="cart-slide-footer" id="cartSlideFooter">
+      <div class="cart-total">
+        <span>Total</span>
+        <span id="cartTotalAmount">₹0</span>
+      </div>
+      <button class="checkout-btn" id="checkoutBtn">Checkout Now</button>
+    </div>
+  </div>
+
+  <!-- ===================== DESKTOP CART POPUP ===================== -->
   <div id="cartPopup" class="popup-fixed">
     <div class="popup-header">🛒 Your Cart</div>
     <div id="cartPopupContent">Loading...</div>
@@ -540,12 +677,14 @@
       }
       saveCart();
       renderCartPopup();
+      renderMobileCart();
     };
 
     function removeFromCart(productId) {
       cart = cart.filter(item => item.id !== productId);
       saveCart();
       renderCartPopup();
+      renderMobileCart();
     }
 
     function updateQuantity(productId, delta) {
@@ -557,10 +696,12 @@
         } else {
           saveCart();
           renderCartPopup();
+          renderMobileCart();
         }
       }
     }
 
+    // ---------- DESKTOP CART POPUP ----------
     function renderCartPopup() {
       const container = document.getElementById('cartPopupContent');
       if (!container) return;
@@ -606,6 +747,65 @@
       });
     }
 
+    // ---------- MOBILE CART SLIDE PANEL ----------
+    function renderMobileCart() {
+      const itemsContainer = document.getElementById('cartSlideItems');
+      const totalSpan = document.getElementById('cartTotalAmount');
+      if (!itemsContainer || !totalSpan) return;
+
+      if (cart.length === 0) {
+        itemsContainer.innerHTML = '<div class="empty-cart-slide">Your cart is empty.</div>';
+        totalSpan.textContent = '₹0';
+        return;
+      }
+
+      let total = 0;
+      let html = '';
+      cart.forEach(item => {
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+        html += `
+          <div class="cart-slide-item">
+            <div class="cart-slide-img">
+              <img src="${item.image || 'https://placehold.co/50x50/f5e9e7/c0392b?text=P'}" alt="${escapeHtml(item.name)}" />
+            </div>
+            <div class="cart-slide-details">
+              <div class="cart-slide-name">${escapeHtml(item.name)}</div>
+              <div class="cart-slide-price">₹${Math.round(item.price)}</div>
+              <div class="cart-slide-actions">
+                <button class="qty-dec" data-id="${item.id}">−</button>
+                <span>${item.quantity}</span>
+                <button class="qty-inc" data-id="${item.id}">+</button>
+                <button class="cart-slide-remove" data-id="${item.id}">Remove</button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      itemsContainer.innerHTML = html;
+      totalSpan.textContent = '₹' + Math.round(total);
+
+      document.querySelectorAll('.cart-slide-actions .qty-dec').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = btn.dataset.id;
+          updateQuantity(id, -1);
+        });
+      });
+      document.querySelectorAll('.cart-slide-actions .qty-inc').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = btn.dataset.id;
+          updateQuantity(id, 1);
+        });
+      });
+      document.querySelectorAll('.cart-slide-remove').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = btn.dataset.id;
+          removeFromCart(id);
+        });
+      });
+    }
+
     function handleProfileAction(action) {
       if (action === 'profile') alert("My Profile – coming soon");
       else if (action === 'orders') alert("My Orders – coming soon");
@@ -615,9 +815,8 @@
       }
     }
 
-    // ---------- POPUP POSITIONING (cart & desktop profile) ----------
+    // ---------- POPUP POSITIONING (desktop profile) ----------
     let activePopup = null;
-
     function positionPopup(popupElement, buttonElement) {
       const rect = buttonElement.getBoundingClientRect();
       const popupWidth = popupElement.offsetWidth;
@@ -674,7 +873,7 @@
       return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
     }
 
-    // ---------- SLIDE‑OUT PANEL LOGIC ----------
+    // ---------- LEFT SLIDE PANEL ----------
     function openSidePanel() {
       document.getElementById('sidePanel').classList.add('open');
       document.getElementById('overlay').classList.add('show');
@@ -683,7 +882,6 @@
       document.getElementById('sidePanel').classList.remove('open');
       document.getElementById('overlay').classList.remove('show');
     }
-
     function setActiveNavLink(page) {
       document.querySelectorAll('.side-nav a').forEach(link => {
         link.classList.remove('active');
@@ -691,29 +889,47 @@
       });
     }
 
-    // ---------- MOBILE FULL‑NAVBAR SEARCH TOGGLE ----------
-    function openMobileSearch() {
-      document.getElementById('navbar').classList.add('search-active');
+    // ---------- MOBILE SEARCH OVERLAY ----------
+    function toggleSearchOverlay() {
+      const overlay = document.getElementById('searchOverlay');
+      if (overlay.classList.contains('active')) {
+        closeSearchOverlay();
+      } else {
+        openSearchOverlay();
+      }
+    }
+    function openSearchOverlay() {
+      document.getElementById('searchOverlay').classList.add('active');
       document.getElementById('mobileSearchInput').focus();
     }
-    function closeMobileSearch() {
-      document.getElementById('navbar').classList.remove('search-active');
-      document.getElementById('mobileSearchInput').value = '';
+    function closeSearchOverlay() {
+      document.getElementById('searchOverlay').classList.remove('active');
+    }
+
+    // ---------- MOBILE CART SLIDE ----------
+    function openCartSlide() {
+      document.getElementById('cartSlidePanel').classList.add('open');
+      document.getElementById('cartSlideOverlay').classList.add('show');
+    }
+    function closeCartSlide() {
+      document.getElementById('cartSlidePanel').classList.remove('open');
+      document.getElementById('cartSlideOverlay').classList.remove('show');
+    }
+
+    function isMobile() {
+      return window.innerWidth <= 880;
     }
 
     // ---------- INITIALIZE ----------
     document.addEventListener('DOMContentLoaded', () => {
       loadCart();
       renderCartPopup();
+      renderMobileCart();
 
-      // Hamburger opens slide-out panel
       document.getElementById('hamburgerBtn').addEventListener('click', openSidePanel);
-
-      // Close panel: X button, overlay click
       document.getElementById('closePanelBtn').addEventListener('click', closeSidePanel);
       document.getElementById('overlay').addEventListener('click', closeSidePanel);
 
-      // Side-nav link clicks
       document.querySelectorAll('.side-nav a').forEach(link => {
         link.addEventListener('click', (e) => {
           const page = link.getAttribute('data-page');
@@ -722,7 +938,6 @@
         });
       });
 
-      // Side user actions
       document.getElementById('sideProfileLink').addEventListener('click', (e) => {
         e.preventDefault();
         handleProfileAction('profile');
@@ -738,28 +953,42 @@
         closeSidePanel();
       });
 
-      // Mobile search: square icon opens full search overlay
-      document.getElementById('searchIconBtn').addEventListener('click', (e) => {
+      document.getElementById('searchIconMobile').addEventListener('click', (e) => {
         e.stopPropagation();
-        openMobileSearch();
+        toggleSearchOverlay();
+      });
+      document.getElementById('closeSearchBtn').addEventListener('click', closeSearchOverlay);
+
+      document.addEventListener('click', (e) => {
+        const overlay = document.getElementById('searchOverlay');
+        if (overlay.classList.contains('active') && !overlay.contains(e.target) && e.target !== document.getElementById('searchIconMobile')) {
+          closeSearchOverlay();
+        }
       });
 
-      // Back arrow closes full search overlay
-      document.getElementById('searchBackBtn').addEventListener('click', () => {
-        closeMobileSearch();
-      });
-
-      // Cart icon popup
       const cartBtn = document.getElementById('cartIconBtn');
-      if (cartBtn) {
-        cartBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
+      cartBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (isMobile()) {
+          openCartSlide();
+        } else {
           showPopup('cartPopup', cartBtn);
           renderCartPopup();
-        });
-      }
+        }
+      });
 
-      // Profile icon popup (desktop only, hidden on mobile)
+      document.getElementById('closeCartSlideBtn').addEventListener('click', closeCartSlide);
+      document.getElementById('cartSlideOverlay').addEventListener('click', closeCartSlide);
+
+      document.getElementById('checkoutBtn').addEventListener('click', () => {
+        if (cart.length === 0) {
+          alert('Your cart is empty!');
+          return;
+        }
+        alert('Proceeding to checkout...');
+        closeCartSlide();
+      });
+
       const profileBtn = document.getElementById('profileIconBtn');
       if (profileBtn) {
         profileBtn.addEventListener('click', (e) => {
@@ -767,8 +996,6 @@
           showPopup('profilePopup', profileBtn);
         });
       }
-
-      // Profile popup option clicks
       const profilePopup = document.getElementById('profilePopup');
       if (profilePopup) {
         profilePopup.addEventListener('click', (e) => {
@@ -781,7 +1008,6 @@
         });
       }
 
-      // Demo add-to-cart
       document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const product = {
@@ -794,14 +1020,12 @@
         });
       });
 
-      // Close popups when clicking outside
       document.addEventListener('click', (e) => {
         if (!e.target.closest('.icon-btn') && !e.target.closest('.popup-fixed')) {
           closeAllPopups();
         }
       });
 
-      // Reposition active popup on scroll/resize
       function repositionActivePopup() {
         if (!activePopup) return;
         let btnId = null;
@@ -813,7 +1037,15 @@
         }
       }
       window.addEventListener('scroll', repositionActivePopup);
-      window.addEventListener('resize', repositionActivePopup);
+      window.addEventListener('resize', () => {
+        repositionActivePopup();
+        if (isMobile()) {
+          closeAllPopups();
+          if (document.getElementById('cartSlidePanel').classList.contains('open')) {
+            closeCartSlide();
+          }
+        }
+      });
     });
   </script>
 </body>
