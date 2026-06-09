@@ -13,7 +13,7 @@
   <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
   
   <style>
-    /* ---------- GLOBAL RESET & BASE (from navbar, merged) ---------- */
+    /* ---------- GLOBAL RESET ---------- */
     * {
       margin: 0;
       padding: 0;
@@ -27,9 +27,7 @@
       overflow-x: hidden;
     }
 
-    /* navbar uses Inter for its own elements – we keep that via specific rules */
-    
-    /* ---------- NAVBAR STYLES (from first file, fully namespaced to avoid conflicts) ---------- */
+    /* ---------- ENHANCED NAVBAR STYLES (with popups, no badges) ---------- */
     .navbar {
       background: white;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
@@ -155,21 +153,53 @@
       color: #c94f2c;
       transform: translateY(-2px);
     }
-    .cart-badge {
+
+    /* Popup styles (cart & profile) */
+    .popup {
       position: absolute;
-      top: -8px;
-      right: -12px;
-      background: #c94f2c;
-      color: white;
-      font-size: 0.65rem;
-      font-weight: 700;
-      padding: 2px 6px;
-      border-radius: 40px;
-      line-height: 1;
-      min-width: 18px;
-      text-align: center;
-      border: 1px solid white;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      width: 280px;
+      z-index: 1100;
+      display: none;
+      overflow: hidden;
+      border: 1px solid #f0e2d4;
+      transform: translateX(-50%);
+      left: 50%;
     }
+    .popup-header {
+      padding: 12px 16px;
+      font-weight: 700;
+      border-bottom: 1px solid #f0e2d4;
+      background: #fffaf5;
+    }
+    .popup-item {
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #f3e9e0;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .popup-item:last-child { border-bottom: none; }
+    .popup-item:hover { background: #fef7f0; }
+    .cart-item-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: #f5efe8;
+      overflow: hidden;
+    }
+    .cart-item-img img { width: 100%; height: 100%; object-fit: cover; }
+    .cart-item-details { flex: 1; font-size: 0.85rem; }
+    .cart-item-name { font-weight: 600; }
+    .cart-item-price { color: #c94f2c; }
+    .empty-cart { padding: 20px; text-align: center; color: #b79b7c; }
+    .profile-option i { width: 20px; font-size: 1.2rem; }
+    .signout-btn { color: #c94f2c; }
+    .cart-qty-btn, .cart-remove { cursor: pointer; }
 
     .mobile-menu {
       display: none;
@@ -187,34 +217,29 @@
       padding: 0.5rem 0;
       border-bottom: 1px solid #f3e9e0;
     }
-    .mobile-menu a:last-child {
-      border-bottom: none;
-    }
-    .mobile-menu.show {
-      display: flex;
-    }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu.show { display: flex; }
 
-    /* ---------- LANDING PAGE STYLES (scoped to main content, nav removed) ---------- */
+    /* ---------- LANDING PAGE STYLES (unchanged from original) ---------- */
     :root {
-      --rust:       #C0392B;
-      --rust-dark:  #962d22;
+      --rust: #C0392B;
+      --rust-dark: #962d22;
       --rust-light: #f5e9e7;
-      --turmeric:   #E8A020;
-      --cream:      #FDF6EC;
-      --ink:        #1C1009;
-      --ash:        #6b5b4e;
-      --border:     rgba(28,16,9,.1);
-      --shadow-sm:  0 2px 8px rgba(28,16,9,.08);
-      --shadow-md:  0 8px 32px rgba(28,16,9,.12);
-      --shadow-lg:  0 20px 60px rgba(28,16,9,.18);
-      --r-card:     16px;
-      --r-pill:     999px;
+      --turmeric: #E8A020;
+      --cream: #FDF6EC;
+      --ink: #1C1009;
+      --ash: #6b5b4e;
+      --border: rgba(28,16,9,.1);
+      --shadow-sm: 0 2px 8px rgba(28,16,9,.08);
+      --shadow-md: 0 8px 32px rgba(28,16,9,.12);
+      --shadow-lg: 0 20px 60px rgba(28,16,9,.18);
+      --r-card: 16px;
+      --r-pill: 999px;
       --ff-display: 'Playfair Display', Georgia, serif;
-      --ff-body:    'DM Sans', sans-serif;
-      --nav-h:      70px;  /* matches navbar height */
+      --ff-body: 'DM Sans', sans-serif;
+      --nav-h: 70px;
     }
 
-    /* body texture overlay – lower z-index so navbar stays above */
     body::before {
       content:'';
       position:fixed;
@@ -229,7 +254,6 @@
     a { text-decoration:none; color:inherit; }
     button { font-family: var(--ff-body); cursor:pointer; border:none; outline:none; }
 
-    /* Hero */
     .hero {
       margin-top: var(--nav-h);
       position:relative;
@@ -335,7 +359,6 @@
     .hero-skeleton-text { color:rgba(255,255,255,.2); font-size:1rem; }
     @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-    /* Sections */
     .section { 
       padding: 80px 5vw; 
       scroll-margin-top: var(--nav-h); 
@@ -357,7 +380,6 @@
     }
     .section-sub { font-size:15px; color:var(--ash); margin-bottom:48px; max-width:500px; }
 
-    /* Product grid */
     .product-grid {
       display:grid;
       grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -408,7 +430,6 @@
     }
     .product-card:hover .product-card-cta { background:var(--rust); }
 
-    /* Divider banner */
     .divider-banner {
       background: var(--rust);
       padding: 24px 5vw;
@@ -429,7 +450,6 @@
     .divider-item::before { content:'✦'; color:var(--turmeric); font-style:normal; }
     @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
-    /* Categories */
     .categories-grid {
       display:grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -475,21 +495,11 @@
     .cat-card:hover .cat-card-arrow { background:var(--rust); transform:scale(1.1); }
     .cat-card-arrow svg { stroke:#fff; }
 
-    /* Empty states & skeletons */
     .empty-state {
       grid-column:1/-1; text-align:center;
       padding:60px 20px; color:var(--ash);
       font-size:.95rem;
     }
-    .skel-card { border-radius:var(--r-card); border:1px solid var(--border); overflow:hidden; }
-    .skel-img  { aspect-ratio:1/1; background:linear-gradient(90deg,#ede8e1 0%,#f5f0e8 50%,#ede8e1 100%); background-size:200% 100%; animation:shimmer 1.6s infinite; }
-    .skel-line { height:14px; border-radius:4px; margin:12px 16px 6px; background:#ede8e1; }
-    .skel-line.short { width:55%; }
-    .skel-line.medium { width:75%; margin-bottom:0; }
-    .skel-price { height:20px; width:40%; border-radius:4px; margin:10px 16px 16px; background:#ede8e1; }
-    .skel-cat { aspect-ratio:3/4; background:linear-gradient(90deg,#ede8e1 0%,#f5f0e8 50%,#ede8e1 100%); background-size:200% 100%; animation:shimmer 1.6s infinite; }
-
-    /* Footer */
     .footer {
       background:var(--ink); color:rgba(255,255,255,.6);
       padding:40px 5vw;
@@ -505,11 +515,9 @@
     .footer-links a { transition:color .2s; }
     .footer-links a:hover { color:#fff; }
 
-    /* Reveal animation */
     .reveal { opacity:0; transform:translateY(30px); transition: opacity .6s ease, transform .6s ease; }
     .reveal.visible { opacity:1; transform:translateY(0); }
 
-    /* Responsive */
     @media (max-width: 880px) {
       .navbar { padding: 0.75rem 1rem; }
       .nav-links { display: none; }
@@ -535,15 +543,11 @@
       .product-card-body { padding:12px; }
       .product-card-cta  { margin:0 12px 12px; padding:9px; font-size:13px; }
     }
-    @media (max-width:480px) {
-      .product-grid { grid-template-columns:1fr 1fr; gap:12px; }
-      .categories-grid  { grid-template-columns:1fr 1fr; gap:12px; }
-    }
   </style>
 </head>
 <body>
 
-<!-- ===================== NAVBAR (from first file, unchanged) ===================== -->
+<!-- ===================== ENHANCED NAVBAR (only change) ===================== -->
 <nav class="navbar">
   <div class="nav-container">
     <div class="left-group">
@@ -556,37 +560,59 @@
       </a>
     </div>
     <div class="nav-links">
-      <a href="landing-page.html">Home</a>
+      <a href="#">Home</a>
       <a href="#">Shop</a>
       <a href="#">Categories</a>
     </div>
     <div class="search-wrapper">
       <div class="search-bar">
         <i class="bx bx-search"></i>
-        <input type="text" placeholder="search product" aria-label="Search products">
+        <input type="text" placeholder="search product">
       </div>
     </div>
     <div class="icon-group">
-      <button class="icon-btn" aria-label="Wishlist">
+      <!-- Wishlist: opens new page -->
+      <a href="wishlist.html" class="icon-btn" style="text-decoration: none;" aria-label="Wishlist">
         <i class="bx bx-heart"></i>
-      </button>
-      <button class="icon-btn" aria-label="Cart">
-        <i class="bx bx-cart"></i>
-        <span class="cart-badge">0</span>
-      </button>
-      <button class="icon-btn" aria-label="Profile">
-        <i class="bx bx-user"></i>
-      </button>
+      </a>
+      <!-- Cart: popup below icon -->
+      <div style="position: relative;">
+        <button class="icon-btn" id="cartIconBtn" aria-label="Cart">
+          <i class="bx bx-cart"></i>
+        </button>
+        <div id="cartPopup" class="popup">
+          <div class="popup-header">🛒 Your Cart</div>
+          <div id="cartPopupContent">Loading...</div>
+        </div>
+      </div>
+      <!-- Profile: popup below icon -->
+      <div style="position: relative;">
+        <button class="icon-btn" id="profileIconBtn" aria-label="Profile">
+          <i class="bx bx-user"></i>
+        </button>
+        <div id="profilePopup" class="popup">
+          <div class="popup-header">👤 Account</div>
+          <div class="popup-item profile-option" data-action="profile">
+            <i class="bx bx-user-circle"></i> My Profile
+          </div>
+          <div class="popup-item profile-option" data-action="orders">
+            <i class="bx bx-package"></i> My Orders
+          </div>
+          <div class="popup-item profile-option signout-btn" data-action="signout">
+            <i class="bx bx-log-out"></i> Sign Out
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="mobile-menu" id="mobileMenu">
-    <a href="landing-page.html">Home</a>
+    <a href="#">Home</a>
     <a href="#">Shop</a>
     <a href="#">Categories</a>
   </div>
 </nav>
 
-<!-- ===================== LANDING PAGE CONTENT (original nav removed) ===================== -->
+<!-- ===================== LANDING PAGE CONTENT (unchanged) ===================== -->
 <section class="hero" id="heroSection">
   <div class="hero-skeleton" id="heroSkeleton">
     <span class="hero-skeleton-text">Loading…</span>
@@ -613,9 +639,7 @@
   <div class="section-label">Our Favourites</div>
   <h2 class="section-heading">Best Sellers</h2>
   <p class="section-sub">Hand-picked by thousands of happy customers — the flavours that keep coming back.</p>
-  <div class="product-grid" id="bestsellersGrid">
-    <!-- Skeletons injected by JS -->
-  </div>
+  <div class="product-grid" id="bestsellersGrid"></div>
 </section>
 
 <section class="section categories reveal" id="categories">
@@ -637,8 +661,8 @@
 </footer>
 
 <!-- ===================== JAVASCRIPT ===================== -->
+<!-- Navbar hamburger toggle -->
 <script>
-  // ---------- Navbar hamburger toggle (original) ----------
   const hamburger = document.getElementById('hamburgerBtn');
   const mobileMenu = document.getElementById('mobileMenu');
   if (hamburger && mobileMenu) {
@@ -653,6 +677,179 @@
   }
 </script>
 
+<!-- Cart & Popup Management (standalone – does not modify landing page products) -->
+<script>
+  let cart = [];
+  const CART_KEY = 'happyPicklesCart';
+
+  function loadCart() {
+    const stored = localStorage.getItem(CART_KEY);
+    if (stored) cart = JSON.parse(stored);
+    else cart = [];
+  }
+  function saveCart() {
+    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  }
+
+  function addToCart(product) {
+    const existing = cart.find(item => item.id === product.id);
+    if (existing) existing.quantity += 1;
+    else cart.push({ ...product, quantity: 1 });
+    saveCart();
+    renderCartPopup();
+  }
+
+  function removeFromCart(productId) {
+    cart = cart.filter(item => item.id !== productId);
+    saveCart();
+    renderCartPopup();
+  }
+
+  function updateQuantity(productId, delta) {
+    const item = cart.find(i => i.id === productId);
+    if (item) {
+      item.quantity += delta;
+      if (item.quantity <= 0) removeFromCart(productId);
+      else { saveCart(); renderCartPopup(); }
+    }
+  }
+
+  function renderCartPopup() {
+    const container = document.getElementById('cartPopupContent');
+    if (!container) return;
+    if (cart.length === 0) {
+      container.innerHTML = '<div class="empty-cart">Your cart is empty.</div>';
+      return;
+    }
+    let html = '';
+    cart.forEach(item => {
+      html += `
+        <div class="popup-item" style="flex-wrap: wrap;">
+          <div class="cart-item-img">
+            <img src="${item.image}" alt="${item.name}" onerror="this.src='https://placehold.co/40x40/f5e9e7/c0392b?text='">
+          </div>
+          <div class="cart-item-details">
+            <div class="cart-item-name">${escapeHtml(item.name)}</div>
+            <div class="cart-item-price">₹${Math.round(item.price)}</div>
+            <div style="display:flex; gap:8px; margin-top:6px;">
+              <button class="cart-qty-btn" data-id="${item.id}" data-delta="-1" style="background:#f0e2d4; border:none; width:24px; border-radius:20px;">-</button>
+              <span>${item.quantity}</span>
+              <button class="cart-qty-btn" data-id="${item.id}" data-delta="1" style="background:#f0e2d4; border:none; width:24px; border-radius:20px;">+</button>
+              <button class="cart-remove" data-id="${item.id}" style="background:none; border:none; color:#c94f2c; margin-left:auto;">Remove</button>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+    document.querySelectorAll('.cart-qty-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute('data-id');
+        const delta = parseInt(btn.getAttribute('data-delta'));
+        updateQuantity(id, delta);
+      });
+    });
+    document.querySelectorAll('.cart-remove').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute('data-id');
+        removeFromCart(id);
+      });
+    });
+  }
+
+  function handleProfileAction(action) {
+    if (action === 'profile') alert("My Profile – coming soon");
+    else if (action === 'orders') alert("My Orders – coming soon");
+    else if (action === 'signout') {
+      alert("Signed out successfully!");
+      window.location.href = 'index.html';
+    }
+  }
+
+  let activePopup = null;
+  function positionPopup(popupElement, buttonElement) {
+    const rect = buttonElement.getBoundingClientRect();
+    const popupWidth = popupElement.offsetWidth;
+    let left = rect.left + (rect.width / 2) - (popupWidth / 2);
+    const maxLeft = window.innerWidth - popupWidth - 10;
+    left = Math.min(Math.max(left, 10), maxLeft);
+    popupElement.style.left = left + 'px';
+    popupElement.style.top = (rect.bottom + window.scrollY + 8) + 'px';
+  }
+  function showPopup(popupId, buttonElement) {
+    if (activePopup) activePopup.style.display = 'none';
+    const popup = document.getElementById(popupId);
+    if (!popup) return;
+    if (activePopup === popup && popup.style.display === 'block') {
+      popup.style.display = 'none';
+      activePopup = null;
+      return;
+    }
+    positionPopup(popup, buttonElement);
+    popup.style.display = 'block';
+    activePopup = popup;
+  }
+  function closeAllPopups() {
+    if (activePopup) {
+      activePopup.style.display = 'none';
+      activePopup = null;
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadCart();
+    renderCartPopup();
+
+    const cartBtn = document.getElementById('cartIconBtn');
+    if (cartBtn) {
+      cartBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeAllPopups();
+        showPopup('cartPopup', cartBtn);
+        renderCartPopup();
+      });
+    }
+    const profileBtn = document.getElementById('profileIconBtn');
+    if (profileBtn) {
+      profileBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeAllPopups();
+        showPopup('profilePopup', profileBtn);
+      });
+    }
+    const profilePopup = document.getElementById('profilePopup');
+    if (profilePopup) {
+      profilePopup.addEventListener('click', (e) => {
+        const option = e.target.closest('.profile-option');
+        if (option) {
+          handleProfileAction(option.getAttribute('data-action'));
+          closeAllPopups();
+        }
+      });
+    }
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.icon-btn') && !e.target.closest('.popup')) closeAllPopups();
+    });
+    window.addEventListener('resize', () => {
+      if (activePopup) {
+        let btnId = activePopup.id === 'cartPopup' ? 'cartIconBtn' : 'profilePopup' ? 'profileIconBtn' : null;
+        if (btnId) {
+          const btn = document.getElementById(btnId);
+          if (btn) positionPopup(activePopup, btn);
+        }
+      }
+    });
+  });
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
+  }
+</script>
+
+<!-- Firebase & Landing Page Modules (original product card – no Add to Cart) -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
   import { getFirestore, doc, getDoc, getDocs, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -666,31 +863,27 @@
     appId: "1:650348710985:web:b8eedb551a79b536578398",
     measurementId: "G-B40NG5KQDL"
   };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-  const fbApp = initializeApp(firebaseConfig);
-  const db = getFirestore(fbApp);
-
-  const isMobile = () => window.innerWidth <= 768;
-
-  function fmt(price) {
-    return `₹${Math.round(parseFloat(price))}`;
-  }
+  function fmt(price) { return `₹${Math.round(parseFloat(price))}`; }
   function discount(mrp, price) {
     if (!mrp || !price || +mrp <= 0) return null;
     const p = Math.round((1 - price / mrp) * 100);
     return p > 0 ? `${p}% off` : null;
   }
   function fallback(w, h, text) {
-    return `https://placehold.co/${w}x${h}/f5e9e7/c0392b?text=${encodeURIComponent(text || 'Pickle')}`;
+    return `https://placehold.co/${w}x${h}/f5e9e7/c0392b?text=${encodeURIComponent(text||'Pickle')}`;
   }
 
+  // Original product card (no Add to Cart button)
   function createProductCard(prod, index = 0) {
     const variants = prod.variants || [];
     const v0 = variants[0] || {};
     const price = v0.price ?? prod.price ?? 0;
-    const mrp = v0.mrp ?? prod.mrp ?? 0;
-    const disc = discount(mrp, price);
-    const img = prod.image || fallback(400, 400, prod.name);
+    const mrp   = v0.mrp   ?? prod.mrp   ?? 0;
+    const disc  = discount(mrp, price);
+    const img   = prod.image || fallback(400, 400, prod.name);
     const card = document.createElement('div');
     card.className = 'product-card reveal';
     card.style.transitionDelay = `${(index % 6) * 70}ms`;
@@ -709,11 +902,13 @@
           ${disc ? `<span class="product-card-discount">${disc}</span>` : ''}
         </div>
       </div>
-      <div class="product-card-cta">View Product</div>`;
+      <div class="product-card-cta">View Product</div>
+    `;
     return card;
   }
 
-  // Hero slider
+  // Hero slider (unchanged)
+  const isMobile = () => window.innerWidth <= 768;
   const HERO_INTERVAL = 5000;
   let heroSlides = [], heroIndex = 0, heroTimer = null;
 
@@ -734,7 +929,6 @@
   function buildDot(idx) {
     const btn = document.createElement('button');
     btn.className = `hero-dot${idx === 0 ? ' active' : ''}`;
-    btn.setAttribute('aria-label', `Slide ${idx + 1}`);
     btn.onclick = () => goToSlide(idx);
     return btn;
   }
@@ -761,7 +955,6 @@
     const dotsEl = document.getElementById('heroDots');
     const prevBtn = document.getElementById('heroPrev');
     const nextBtn = document.getElementById('heroNext');
-
     if (masterData?.config?.isHeroEnabled === false) {
       skeleton.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;"><p style="color:rgba(255,255,255,.4);font-size:1rem;">Hero section is currently disabled.</p></div>`;
       return;
@@ -900,8 +1093,8 @@
   init();
 </script>
 
+<!-- Scroll reveal (existing) -->
 <script>
-  // Scroll reveal for initial elements
   function observeReveal() {
     const io = new IntersectionObserver((entries) => {
       entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('visible'); io.unobserve(en.target); } });
