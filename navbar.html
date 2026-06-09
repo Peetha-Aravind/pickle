@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Happy NonVeg Pickles – Custom Icons in Slide Menu</title>
+  <title>Happy NonVeg Pickles – Desktop Logo Left</title>
   <!-- Font & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
   <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet" />
@@ -26,7 +26,7 @@
       position: sticky;
       top: 0;
       z-index: 1000;
-      padding: 0.75rem 1.2rem;
+      padding: 0.75rem 0;          /* remove horizontal padding so logo touches left */
       overflow: hidden;
     }
     .nav-container {
@@ -38,6 +38,7 @@
       flex-wrap: wrap;
       gap: 1rem;
       position: relative;
+      padding: 0 1.2rem;           /* keep padding for other items */
     }
     .left-group {
       display: flex;
@@ -132,7 +133,7 @@
       transform: translateY(-2px);
     }
 
-    /* Mobile search icon (hidden on desktop) – with a small square background */
+    /* Mobile search icon */
     .search-icon-mobile {
       display: none;
       background: #f5efe8;
@@ -241,7 +242,6 @@
       transition: background 0.2s;
       font-size: 1rem;
     }
-    /* Style SVGs within side-nav links */
     .side-nav a svg {
       width: 1.3rem;
       height: 1.3rem;
@@ -312,9 +312,7 @@
       flex-direction: column;
       box-shadow: -4px 0 15px rgba(0,0,0,0.1);
     }
-    .cart-slide-panel.open {
-      transform: translateX(0);
-    }
+    .cart-slide-panel.open { transform: translateX(0); }
     .cart-slide-header {
       display: flex;
       align-items: center;
@@ -406,7 +404,7 @@
       color: #b79b7c;
     }
 
-    /* ----- DESKTOP CART POPUP (unchanged) ----- */
+    /* ----- DESKTOP CART POPUP ----- */
     .popup-fixed {
       position: fixed;
       background: white;
@@ -455,33 +453,33 @@
     .profile-option i { width: 20px; font-size: 1.2rem; }
     .cart-qty-btn, .cart-remove { cursor: pointer; }
 
-    /* demo products */
-    .demo-products {
-      max-width: 800px;
-      margin: 3rem auto;
-      padding: 0 1rem;
-    }
-    .demo-product {
-      background: white;
-      border-radius: 16px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .add-to-cart-btn {
-      background: #c94f2c;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 30px;
-      font-weight: 600;
-      cursor: pointer;
+    /* ----- RESPONSIVE ----- */
+    /* Desktop: logo flush left, no extra space */
+    @media (min-width: 881px) {
+      .navbar {
+        padding: 0.75rem 0;       /* remove side padding so logo truly touches edge */
+      }
+      .nav-container {
+        padding: 0 1.2rem;        /* keep other items padded */
+      }
+      .logo-center {
+        margin-right: auto;       /* pushes everything else to the right */
+        padding-left: 0;          /* no left padding */
+      }
+      .logo-desktop {
+        display: block;
+        height: 50px;
+        margin-left: 0;           /* ensures it's exactly at left edge of container */
+      }
+      .hamburger { display: none; }
+      .search-icon-mobile { display: none; }
+      .desktop-search { display: block; }
+      .search-overlay { display: none; }
+      .cart-slide-overlay, .cart-slide-panel { display: none !important; }
+      .popup-fixed { } /* keep popups for desktop */
     }
 
-    /* ----- RESPONSIVE ----- */
+    /* Tablet / Mobile */
     @media (max-width: 880px) {
       .navbar { padding: 0.75rem 1rem; }
       .nav-links { display: none; }
@@ -511,13 +509,6 @@
       .icon-group { order: 4; }
       .left-group { flex: 0; }
     }
-
-    @media (min-width: 881px) {
-      .search-icon-mobile { display: none; }
-      .desktop-search { display: block; }
-      .search-overlay { display: none; }
-      .cart-slide-overlay, .cart-slide-panel { display: none !important; }
-    }
   </style>
 </head>
 <body>
@@ -528,6 +519,7 @@
       <div class="left-group">
         <button class="hamburger" id="hamburgerBtn" aria-label="Menu"><i class="bx bx-menu"></i></button>
       </div>
+      <!-- Logo – flush left on desktop, centered on mobile -->
       <div class="logo-center">
         <a href="#" class="logo-area">
           <img src="/assets/logo.png" alt="Happy NonVeg Pickles" class="logo-desktop" />
@@ -551,7 +543,6 @@
         <button class="icon-btn search-icon-mobile" id="searchIconMobile" aria-label="Search">
           <i class="bx bx-search"></i>
         </button>
-
         <a href="#" class="icon-btn wishlist-icon-btn" aria-label="Wishlist"><i class="bx bx-heart"></i></a>
         <button class="icon-btn" id="cartIconBtn" aria-label="Cart"><i class="bx bx-cart"></i></button>
         <button class="icon-btn profile-icon-btn" id="profileIconBtn" aria-label="Profile"><i class="bx bx-user"></i></button>
@@ -572,28 +563,24 @@
       <button class="close-panel" id="closePanelBtn" aria-label="Close menu">&times;</button>
     </div>
     <nav class="side-nav">
-      <!-- Home with custom SVG -->
       <a href="#" class="active" data-page="home">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="2 2 20 20">
           <path d="M3 13h1v7c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-7h1c.4 0 .77-.24.92-.62.15-.37.07-.8-.22-1.09l-8.99-9a.996.996 0 0 0-1.41 0l-9.01 9c-.29.29-.37.72-.22 1.09s.52.62.92.62Zm7 7v-5h4v5zm2-15.59 6 6V20h-2v-5c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v5H6v-9.59z"></path>
         </svg>
         Home
       </a>
-      <!-- Shop with custom SVG -->
       <a href="#" data-page="shop">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="2 2 20 20">
           <path d="M17.31 14H9.72L5.95 2.68A1 1 0 0 0 5 2H2v2h2.28l3.54 10.63A2 2 0 0 0 9.72 16h7.59a2 2 0 0 0 1.87-1.3l2.76-7.35-1.87-.7zM10 18a2 2 0 1 0 0 4 2 2 0 1 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 1 0 0-4"></path><path d="m11.71 7.29-1.42 1.42 2.71 2.7 4.71-4.7-1.42-1.42L13 8.59z"></path>
         </svg>
         Shop
       </a>
-      <!-- Categories with grid SVG (already provided) -->
       <a href="#" data-page="categories">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="2 2 20 20">
           <path d="M3 3h4v4H3zm7 0h4v4h-4z"></path><path d="M10 3h4v4h-4zm7 0h4v4h-4zM3 17h4v4H3zm7 0h4v4h-4z"></path><path d="M10 17h4v4h-4zm7 0h4v4h-4zM3 10h4v4H3zm7 0h4v4h-4z"></path><path d="M10 10h4v4h-4zm7 0h4v4h-4z"></path>
         </svg>
         Categories
       </a>
-      <!-- Wishlist keeps heart icon -->
       <a href="#" data-page="wishlist"><i class="bx bx-heart"></i> Wishlist</a>
     </nav>
     <div class="side-user-section">
@@ -635,23 +622,6 @@
     </div>
     <div class="popup-item profile-option signout-btn" data-action="signout">
       <i class="bx bx-log-out"></i> Sign Out
-    </div>
-  </div>
-
-  <!-- Demo products -->
-  <div class="demo-products">
-    <h2 style="margin-bottom:1rem; color:#4a3220;">🔥 Sample Products (click Add to Cart)</h2>
-    <div class="demo-product">
-      <span><strong>Chicken Pickle</strong> – ₹250</span>
-      <button class="add-to-cart-btn" data-id="1" data-name="Chicken Pickle" data-price="250" data-image="https://placehold.co/80/f5e9e7/c0392b?text=Chicken">Add to Cart</button>
-    </div>
-    <div class="demo-product">
-      <span><strong>Mutton Pickle</strong> – ₹350</span>
-      <button class="add-to-cart-btn" data-id="2" data-name="Mutton Pickle" data-price="350" data-image="https://placehold.co/80/f5e9e7/c0392b?text=Mutton">Add to Cart</button>
-    </div>
-    <div class="demo-product">
-      <span><strong>Prawn Pickle</strong> – ₹400</span>
-      <button class="add-to-cart-btn" data-id="3" data-name="Prawn Pickle" data-price="400" data-image="https://placehold.co/80/f5e9e7/c0392b?text=Prawn">Add to Cart</button>
     </div>
   </div>
 
@@ -1008,17 +978,7 @@
         });
       }
 
-      document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const product = {
-            id: btn.getAttribute('data-id'),
-            name: btn.getAttribute('data-name'),
-            price: parseFloat(btn.getAttribute('data-price')),
-            image: btn.getAttribute('data-image'),
-          };
-          addToCart(product);
-        });
-      });
+      // No demo products anymore, so we don't attach their listeners.
 
       document.addEventListener('click', (e) => {
         if (!e.target.closest('.icon-btn') && !e.target.closest('.popup-fixed')) {
