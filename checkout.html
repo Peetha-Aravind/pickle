@@ -4,93 +4,359 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>Checkout – Happy NonVeg Pickles</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <!-- Google Fonts (Navbar + Checkout) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Boxicons for navbar icons -->
+  <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
+  
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --rust: #C0392B; --rust-dark: #962d22; --rust-light: #f5e9e7;
-      --turmeric: #E8A020; --cream: #FDF6EC; --ink: #1C1009;
-      --ash: #6b5b4e; --border: rgba(28,16,9,0.1);
-      --shadow-sm: 0 2px 8px rgba(28,16,9,0.08);
-      --shadow-md: 0 8px 32px rgba(28,16,9,0.12);
-      --r-card: 16px; --r-pill: 999px;
-      --ff-body: 'IBM Plex Sans', sans-serif;
-      --nav-h: 68px;
+    /* ---------- GLOBAL RESET ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
+
     body {
-      background: var(--cream);
-      color: var(--ink);
-      font-family: var(--ff-body);
+      background: #FDF6EC;
+      color: #1C1009;
+      font-family: 'IBM Plex Sans', sans-serif;
       font-size: 15px;
       line-height: 1.5;
-      padding-top: var(--nav-h);
     }
-    .nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
-      height: var(--nav-h); display: flex; align-items: center;
-      justify-content: space-between; padding: 0 5vw;
-      background: rgba(253,246,236,0.94); backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-      transition: box-shadow 0.3s;
+
+    /* ---------- NAVBAR STYLES (from first file, unmodified) ---------- */
+    .navbar {
+      background: white;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      padding: 0.75rem 1.2rem;
+      font-family: 'Inter', sans-serif;
     }
-    .nav.scrolled { box-shadow: var(--shadow-md); }
-    .nav-logo {
-      font-family: var(--ff-body); font-size: 1.45rem; font-weight: 700;
-      color: var(--rust); letter-spacing: -0.5px;
-      display: flex; align-items: center; gap: 10px;
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
-    .nav-logo .dot { width: 8px; height: 8px; background: var(--turmeric); border-radius: 50%; }
-    .nav-links { display: flex; gap: 32px; }
-    .nav-links a { font-weight: 600; font-size: 14px; color: var(--ash); text-decoration: none; transition: color 0.2s; }
-    .nav-links a:hover { color: var(--rust); }
-    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
-    
+
+    .left-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .hamburger {
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      color: #4e3622;
+      cursor: pointer;
+      display: none;
+      padding: 0.2rem;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+    .logo-desktop {
+      display: block;
+      height: 50px;
+      width: auto;
+    }
+    .logo-mobile {
+      display: none;
+      height: 40px;
+      width: auto;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #4a3220;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover {
+      color: #c94f2c;
+    }
+
+    .search-wrapper {
+      flex: 1;
+      max-width: 300px;
+      min-width: 180px;
+    }
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background: #f5efe8;
+      border-radius: 60px;
+      padding: 0.5rem 1rem;
+      border: 1px solid #e2d6ca;
+      transition: all 0.2s;
+    }
+    .search-bar:focus-within {
+      border-color: #c94f2c;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(201, 79, 44, 0.15);
+    }
+    .search-bar i {
+      color: #b28b65;
+      font-size: 1.1rem;
+    }
+    .search-bar input {
+      border: none;
+      background: transparent;
+      padding: 0.3rem 0.8rem;
+      width: 100%;
+      font-size: 0.9rem;
+      outline: none;
+      font-family: inherit;
+    }
+    .search-bar input::placeholder {
+      color: #b79b7c;
+      font-weight: 400;
+    }
+
+    .icon-group {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .icon-btn {
+      background: none;
+      border: none;
+      font-size: 1.6rem;
+      color: #4e3622;
+      cursor: pointer;
+      transition: transform 0.2s, color 0.2s;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+    .icon-btn:hover {
+      color: #c94f2c;
+      transform: translateY(-2px);
+    }
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -12px;
+      background: #c94f2c;
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 40px;
+      line-height: 1;
+      min-width: 18px;
+      text-align: center;
+      border: 1px solid white;
+    }
+
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      background: white;
+      padding: 1rem 1.5rem;
+      border-top: 1px solid #f0e2d4;
+      margin-top: 0.8rem;
+      gap: 1rem;
+    }
+    .mobile-menu a {
+      text-decoration: none;
+      font-weight: 600;
+      color: #4a3220;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f3e9e0;
+    }
+    .mobile-menu a:last-child {
+      border-bottom: none;
+    }
+    .mobile-menu.show {
+      display: flex;
+    }
+
+    /* ---------- CHECKOUT PAGE STYLES (original, minus old nav) ---------- */
+    :root {
+      --rust: #C0392B;
+      --rust-dark: #962d22;
+      --rust-light: #f5e9e7;
+      --turmeric: #E8A020;
+      --cream: #FDF6EC;
+      --ink: #1C1009;
+      --ash: #6b5b4e;
+      --border: rgba(28,16,9,0.1);
+      --shadow-sm: 0 2px 8px rgba(28,16,9,0.08);
+      --shadow-md: 0 8px 32px rgba(28,16,9,0.12);
+      --r-card: 16px;
+      --r-pill: 999px;
+      --ff-body: 'IBM Plex Sans', sans-serif;
+      --nav-h: 70px;          /* matches navbar height */
+    }
+
     .checkout-container {
-      max-width: 1200px; margin: 40px auto; padding: 0 5vw;
-      display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px;
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 5vw;
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 40px;
     }
-    .left-panel { background: white; border-radius: var(--r-card); box-shadow: var(--shadow-sm); overflow: hidden; }
-    .card { padding: 24px; border-bottom: 1px solid var(--border); }
-    .card-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 16px; color: var(--ink); }
+
+    .left-panel {
+      background: white;
+      border-radius: var(--r-card);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .card {
+      padding: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .card-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+      color: var(--ink);
+    }
     .add-address-btn {
-      background: white; border: 2px dashed var(--rust); border-radius: 60px;
-      padding: 12px; width: 100%; text-align: center; font-weight: 600;
-      color: var(--rust); cursor: pointer; transition: 0.2s;
+      background: white;
+      border: 2px dashed var(--rust);
+      border-radius: 60px;
+      padding: 12px;
+      width: 100%;
+      text-align: center;
+      font-weight: 600;
+      color: var(--rust);
+      cursor: pointer;
+      transition: 0.2s;
     }
-    .add-address-btn:hover { background: var(--rust-light); }
+    .add-address-btn:hover {
+      background: var(--rust-light);
+    }
     .address-display {
-      background: #f9f5f0; border-radius: 16px; padding: 14px;
-      margin-top: 12px; font-size: 0.85rem; line-height: 1.4;
+      background: #f9f5f0;
+      border-radius: 16px;
+      padding: 14px;
+      margin-top: 12px;
+      font-size: 0.85rem;
+      line-height: 1.4;
     }
-    .payment-options { display: flex; flex-direction: column; gap: 14px; margin-top: 8px; }
+    .payment-options {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 8px;
+    }
     .payment-radio {
-      display: flex; align-items: center; gap: 12px;
-      border: 2px solid var(--border); border-radius: 16px;
-      padding: 14px; cursor: pointer; transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      cursor: pointer;
+      transition: 0.2s;
     }
-    .payment-radio.active { border-color: var(--rust); background: var(--rust-light); }
-    .payment-radio input { width: 18px; height: 18px; margin: 0; cursor: pointer; }
-    .payment-radio .label { flex: 1; }
-    .payment-radio .name { font-weight: 700; display: block; }
-    .payment-radio .fee { font-size: 0.7rem; color: var(--ash); }
+    .payment-radio.active {
+      border-color: var(--rust);
+      background: var(--rust-light);
+    }
+    .payment-radio input {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      cursor: pointer;
+    }
+    .payment-radio .label {
+      flex: 1;
+    }
+    .payment-radio .name {
+      font-weight: 700;
+      display: block;
+    }
+    .payment-radio .fee {
+      font-size: 0.7rem;
+      color: var(--ash);
+    }
+
     .order-summary {
-      background: white; border-radius: var(--r-card); box-shadow: var(--shadow-sm);
-      overflow: hidden; position: sticky; top: calc(var(--nav-h) + 20px);
-      display: flex; flex-direction: column;
+      background: white;
+      border-radius: var(--r-card);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      position: sticky;
+      top: calc(var(--nav-h) + 20px);
+      display: flex;
+      flex-direction: column;
     }
-    .summary-header { background: var(--rust); color: white; padding: 18px 24px; font-weight: 700; font-size: 1.2rem; }
-    .summary-items { padding: 20px 24px; border-bottom: 1px solid var(--border); }
-    .cart-item { display: flex; gap: 16px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px dashed var(--border); }
-    .cart-item-img { width: 70px; height: 70px; border-radius: 12px; background: #f0e7de; overflow: hidden; flex-shrink: 0; }
-    .cart-item-img img { width: 100%; height: 100%; object-fit: cover; }
-    .cart-item-details { flex: 1; }
-    .cart-item-name { font-weight: 700; margin-bottom: 4px; }
-    .cart-item-variant { font-size: 0.8rem; color: var(--ash); margin-bottom: 6px; }
-    .cart-item-price-row { display: flex; justify-content: space-between; align-items: baseline; }
-    
-    /* Coupon section inside order summary */
+    .summary-header {
+      background: var(--rust);
+      color: white;
+      padding: 18px 24px;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+    .summary-items {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .cart-item {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px dashed var(--border);
+    }
+    .cart-item-img {
+      width: 70px;
+      height: 70px;
+      border-radius: 12px;
+      background: #f0e7de;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .cart-item-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .cart-item-details {
+      flex: 1;
+    }
+    .cart-item-name {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .cart-item-variant {
+      font-size: 0.8rem;
+      color: var(--ash);
+      margin-bottom: 6px;
+    }
+    .cart-item-price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
     .coupon-section {
       padding: 16px 24px;
       border-bottom: 1px solid var(--border);
@@ -118,61 +384,217 @@
       cursor: pointer;
       transition: 0.2s;
     }
-    .apply-coupon-btn:hover { background: var(--rust); }
+    .apply-coupon-btn:hover {
+      background: var(--rust);
+    }
     .discount-msg {
       font-size: 0.8rem;
       margin-top: 6px;
       min-height: 32px;
     }
-    
-    .summary-totals { padding: 20px 24px; background: #faf7f2; }
-    .totals-row { display: flex; justify-content: space-between; margin-bottom: 12px; }
-    .totals-row.grand-total { font-weight: 800; font-size: 1.2rem; border-top: 2px solid var(--border); padding-top: 12px; margin-top: 8px; color: var(--rust); }
-    .pay-btn {
-      width: calc(100% - 48px); margin: 0 24px 24px 24px;
-      background: var(--rust); color: white; border: none;
-      padding: 16px; font-size: 1.1rem; font-weight: 700; border-radius: 40px;
-      cursor: pointer; transition: 0.2s;
+
+    .summary-totals {
+      padding: 20px 24px;
+      background: #faf7f2;
     }
-    .pay-btn:hover { background: var(--rust-dark); transform: translateY(-2px); }
+    .totals-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .totals-row.grand-total {
+      font-weight: 800;
+      font-size: 1.2rem;
+      border-top: 2px solid var(--border);
+      padding-top: 12px;
+      margin-top: 8px;
+      color: var(--rust);
+    }
+    .pay-btn {
+      width: calc(100% - 48px);
+      margin: 0 24px 24px 24px;
+      background: var(--rust);
+      color: white;
+      border: none;
+      padding: 16px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .pay-btn:hover {
+      background: var(--rust-dark);
+      transform: translateY(-2px);
+    }
+
+    /* Modal */
     .modal {
-      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1001;
+      justify-content: center;
+      align-items: center;
     }
     .modal-content {
-      background: white; max-width: 500px; width: 90%; border-radius: 24px;
-      padding: 28px; position: relative;
+      background: white;
+      max-width: 500px;
+      width: 90%;
+      border-radius: 24px;
+      padding: 28px;
+      position: relative;
     }
-    .modal-content h3 { margin-bottom: 20px; }
-    .modal-content input, .modal-content textarea {
-      width: 100%; margin-bottom: 16px; padding: 12px; border: 1px solid var(--border);
+    .modal-content h3 {
+      margin-bottom: 20px;
+    }
+    .modal-content input,
+    .modal-content textarea {
+      width: 100%;
+      margin-bottom: 16px;
+      padding: 12px;
+      border: 1px solid var(--border);
       border-radius: 12px;
+      font-family: var(--ff-body);
     }
-    .modal-buttons { display: flex; gap: 12px; justify-content: flex-end; margin-top: 12px; }
-    .modal-buttons button { padding: 10px 20px; border-radius: 40px; border: none; cursor: pointer; }
-    .save-address { background: var(--rust); color: white; }
-    .close-modal { background: #ccc; }
-    footer { background: var(--ink); color: rgba(255,255,255,0.6); padding: 30px 5vw; text-align: center; margin-top: 60px; }
+    .modal-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 12px;
+    }
+    .modal-buttons button {
+      padding: 10px 20px;
+      border-radius: 40px;
+      border: none;
+      cursor: pointer;
+    }
+    .save-address {
+      background: var(--rust);
+      color: white;
+    }
+    .close-modal {
+      background: #ccc;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--ink);
+      color: rgba(255,255,255,0.6);
+      padding: 30px 5vw;
+      text-align: center;
+      margin-top: 60px;
+      font-size: 13px;
+    }
+
+    /* Responsive */
+    @media (max-width: 880px) {
+      .navbar {
+        padding: 0.75rem 1rem;
+      }
+      .nav-links {
+        display: none;
+      }
+      .hamburger {
+        display: block;
+      }
+      .logo-desktop {
+        display: none;
+      }
+      .logo-mobile {
+        display: block;
+      }
+      .search-wrapper {
+        max-width: 220px;
+      }
+      .icon-group {
+        gap: 1rem;
+      }
+    }
+
     @media (max-width: 800px) {
-      .checkout-container { grid-template-columns: 1fr; gap: 30px; }
-      .order-summary { position: relative; top: 0; }
-      .nav-links { display: none; }
-      .nav-hamburger { display: flex; }
+      .checkout-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+      .order-summary {
+        position: relative;
+        top: 0;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .nav-container {
+        flex-wrap: wrap;
+      }
+      .search-wrapper {
+        order: 3;
+        max-width: 100%;
+        width: 100%;
+        margin-top: 0.6rem;
+      }
+      .icon-group {
+        margin-left: auto;
+      }
+      .left-group {
+        flex: 1;
+      }
     }
   </style>
 </head>
 <body>
-<nav class="nav" id="mainNav">
-  <div class="nav-logo"><span class="dot"></span> Happy NonVeg Pickles</div>
-  <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a href="index.html#bestsellers">Best Sellers</a>
-    <a href="index.html#categories">Shop</a>
+
+<!-- ===================== UNIFIED NAVBAR (from first file) ===================== -->
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="left-group">
+      <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+        <i class="bx bx-menu"></i>
+      </button>
+      <a href="index.html" class="logo-area">
+        <img src="./assets/logo.png" alt="Happy NonVeg Pickles" class="logo-desktop">
+        <img src="./assets/logo-small.png" alt="Happy NonVeg Pickles" class="logo-mobile">
+      </a>
+    </div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="index.html#bestsellers">Shop</a>
+      <a href="index.html#categories">Categories</a>
+    </div>
+    <div class="search-wrapper">
+      <div class="search-bar">
+        <i class="bx bx-search"></i>
+        <input type="text" placeholder="search product" aria-label="Search products">
+      </div>
+    </div>
+    <div class="icon-group">
+      <button class="icon-btn" aria-label="Wishlist">
+        <i class="bx bx-heart"></i>
+      </button>
+      <button class="icon-btn" aria-label="Cart">
+        <i class="bx bx-cart"></i>
+        <span class="cart-badge">0</span>
+      </button>
+      <button class="icon-btn" aria-label="Profile">
+        <i class="bx bx-user"></i>
+      </button>
+    </div>
   </div>
-  <div class="nav-hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="index.html#bestsellers">Shop</a>
+    <a href="index.html#categories">Categories</a>
+  </div>
 </nav>
 
-<main id="checkoutRoot"><div style="text-align:center; padding:60px;">Loading checkout...</div></main>
+<!-- ===================== CHECKOUT MAIN CONTENT ===================== -->
+<main id="checkoutRoot">
+  <div style="text-align:center; padding:60px;">Loading checkout...</div>
+</main>
 
 <!-- Address Modal -->
 <div id="addressModal" class="modal">
@@ -190,8 +612,28 @@
   </div>
 </div>
 
-<footer><p>© 2025 Happy NonVeg Pickles — handcrafted with tradition.</p></footer>
+<footer>
+  <p>© 2025 Happy NonVeg Pickles — handcrafted with tradition.</p>
+</footer>
 
+<!-- ===================== JAVASCRIPT ===================== -->
+<!-- Navbar toggle script (original, unchanged) -->
+<script>
+  const hamburger = document.getElementById('hamburgerBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  if (hamburger && mobileMenu) {
+    hamburger.addEventListener('click', () => {
+      mobileMenu.classList.toggle('show');
+    });
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('show');
+      });
+    });
+  }
+</script>
+
+<!-- Checkout Module Script (Firebase + logic, old nav handling removed) -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
   import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -244,7 +686,6 @@
     } catch(e) { console.warn(e); return null; }
   }
 
-  // Calculate totals based on current item, coupon, and payment method
   function getCurrentTotals() {
     if (!checkoutItem) return { subtotal: 0, discount: 0, shipping: 0, total: 0, handlingFee: 0, discountText: '' };
     let subtotal = checkoutItem.price * checkoutItem.quantity;
@@ -267,11 +708,8 @@
     return { subtotal, discount, discountText, shipping, handlingFee, total };
   }
 
-  // Update the totals display and the Pay button
   function updateTotalsAndButton() {
     const totals = getCurrentTotals();
-    
-    // Update the totals panel if it exists
     const totalsPanel = document.getElementById('totalsPanel');
     if (totalsPanel) {
       totalsPanel.innerHTML = `
@@ -282,13 +720,10 @@
         <div class="totals-row grand-total"><span>Total</span><span>${formatPrice(totals.total)}</span></div>
       `;
     }
-    
-    // Update the Pay button
     const payBtn = document.getElementById('payNowBtn');
     if (payBtn) payBtn.innerText = `Pay ${formatPrice(totals.total)}`;
   }
 
-  // Apply coupon from Firestore
   async function applyCoupon(code) {
     if (!code) return { success: false, message: 'Enter a coupon code' };
     const upperCode = code.toUpperCase();
@@ -299,7 +734,6 @@
         return { success: false, message: 'Invalid coupon code' };
       }
       const data = couponSnap.data();
-      // Check expiry
       if (data.expiry) {
         let expiryDate = data.expiry.toDate ? data.expiry.toDate() : new Date(data.expiry);
         if (expiryDate < new Date()) {
@@ -310,7 +744,6 @@
       if (data.minOrder && subtotal < data.minOrder) {
         return { success: false, message: `Minimum order ₹${data.minOrder} required` };
       }
-      // Store coupon details
       appliedCoupon = {
         code: upperCode,
         discountType: data.discountType,
@@ -318,10 +751,7 @@
         minOrder: data.minOrder
       };
       const discountText = data.discountType === 'percentage' ? `${data.discountValue}% off` : `₹${data.discountValue} off`;
-      
-      // Immediately update the totals and button
       updateTotalsAndButton();
-      
       return { success: true, message: `Coupon applied! ${discountText}` };
     } catch(e) {
       console.error(e);
@@ -329,7 +759,6 @@
     }
   }
 
-  // Render the left panel (address + payment methods)
   function renderLeftPanel() {
     const leftContainer = document.getElementById('leftPanelContainer');
     if (!leftContainer) return;
@@ -378,17 +807,14 @@
         radio.classList.add('active');
         const inp = radio.querySelector('input');
         if (inp) inp.checked = true;
-        // Update totals when payment method changes (handling fee may apply)
         updateTotalsAndButton();
       });
     });
   }
 
-  // Render the right side: order summary with coupon input and totals
   function renderRightColumn() {
     const rightContainer = document.getElementById('rightColumnContainer');
     if (!rightContainer) return;
-    // Build the structure
     rightContainer.innerHTML = `
       <div class="order-summary">
         <div class="summary-header">Order Summary</div>
@@ -413,8 +839,6 @@
         <button class="pay-btn" id="payNowBtn">Pay Now</button>
       </div>
     `;
-    
-    // Attach coupon apply event
     const applyBtn = document.getElementById('applyCouponBtnRight');
     const couponInput = document.getElementById('couponInputRight');
     if (applyBtn) {
@@ -424,18 +848,13 @@
         const msgDiv = document.getElementById('discountMsgRight');
         if (result.success) {
           msgDiv.innerHTML = `<span style="color:#2e7d32;">✅ ${result.message}</span>`;
-          // Totals already updated inside applyCoupon, but ensure button updates
           updateTotalsAndButton();
         } else {
           msgDiv.innerHTML = `<span style="color:#d32f2f;">❌ ${result.message}</span>`;
         }
       };
     }
-    
-    // Initialize totals display
     updateTotalsAndButton();
-    
-    // Pay button event
     document.getElementById('payNowBtn')?.addEventListener('click', () => processOrder());
   }
 
@@ -496,19 +915,8 @@
     renderRightColumn();
   }
 
-  const nav = document.getElementById('mainNav');
-  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 10));
-  const hamburger = document.getElementById('hamburger');
-  const navLinks = document.querySelector('.nav-links');
-  hamburger?.addEventListener('click', () => {
-    if (navLinks.style.display === 'flex') navLinks.style.display = '';
-    else navLinks.style.cssText = 'display:flex; flex-direction:column; position:fixed; top:var(--nav-h); left:0; right:0; background:rgba(253,246,236,0.98); backdrop-filter:blur(16px); padding:24px 5vw; gap:20px; z-index:800;';
-  });
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.nav') && navLinks && navLinks.style.display === 'flex') navLinks.style.display = '';
-  });
-
   initCheckout();
 </script>
+
 </body>
 </html>
