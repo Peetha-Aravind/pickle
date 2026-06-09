@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +17,6 @@
       --shadow-md: 0 8px 32px rgba(28,16,9,0.12);
       --r-card: 16px; --r-pill: 999px;
       --ff-body: 'IBM Plex Sans', sans-serif;
-      --nav-h: 68px;
     }
     body {
       background: var(--cream);
@@ -26,27 +24,7 @@
       font-family: var(--ff-body);
       font-size: 15px;
       line-height: 1.5;
-      padding-top: var(--nav-h);
     }
-    .nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
-      height: var(--nav-h); display: flex; align-items: center;
-      justify-content: space-between; padding: 0 5vw;
-      background: rgba(253,246,236,0.94); backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-      transition: box-shadow 0.3s;
-    }
-    .nav.scrolled { box-shadow: var(--shadow-md); }
-    .nav-logo {
-      font-family: var(--ff-body); font-size: 1.45rem; font-weight: 700;
-      color: var(--rust); letter-spacing: -0.5px;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .nav-logo .dot { width: 8px; height: 8px; background: var(--turmeric); border-radius: 50%; }
-    .nav-links { display: flex; gap: 32px; }
-    .nav-links a { font-weight: 600; font-size: 14px; color: var(--ash); text-decoration: none; transition: color 0.2s; }
-    .nav-links a:hover { color: var(--rust); }
-    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
     
     .checkout-container {
       max-width: 1200px; margin: 40px auto; padding: 0 5vw;
@@ -78,7 +56,7 @@
     .payment-radio .fee { font-size: 0.7rem; color: var(--ash); }
     .order-summary {
       background: white; border-radius: var(--r-card); box-shadow: var(--shadow-sm);
-      overflow: hidden; position: sticky; top: calc(var(--nav-h) + 20px);
+      overflow: hidden; position: sticky; top: 20px;
       display: flex; flex-direction: column;
     }
     .summary-header { background: var(--rust); color: white; padding: 18px 24px; font-weight: 700; font-size: 1.2rem; }
@@ -148,30 +126,21 @@
     .modal-content input, .modal-content textarea {
       width: 100%; margin-bottom: 16px; padding: 12px; border: 1px solid var(--border);
       border-radius: 12px;
+      font-family: var(--ff-body);
     }
     .modal-buttons { display: flex; gap: 12px; justify-content: flex-end; margin-top: 12px; }
     .modal-buttons button { padding: 10px 20px; border-radius: 40px; border: none; cursor: pointer; }
     .save-address { background: var(--rust); color: white; }
     .close-modal { background: #ccc; }
     footer { background: var(--ink); color: rgba(255,255,255,0.6); padding: 30px 5vw; text-align: center; margin-top: 60px; }
+    
     @media (max-width: 800px) {
       .checkout-container { grid-template-columns: 1fr; gap: 30px; }
       .order-summary { position: relative; top: 0; }
-      .nav-links { display: none; }
-      .nav-hamburger { display: flex; }
     }
   </style>
 </head>
 <body>
-<nav class="nav" id="mainNav">
-  <div class="nav-logo"><span class="dot"></span> Happy NonVeg Pickles</div>
-  <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a href="index.html#bestsellers">Best Sellers</a>
-    <a href="index.html#categories">Shop</a>
-  </div>
-  <div class="nav-hamburger" id="hamburger"><span></span><span></span><span></span></div>
-</nav>
 
 <main id="checkoutRoot"><div style="text-align:center; padding:60px;">Loading checkout...</div></main>
 
@@ -245,7 +214,6 @@
     } catch(e) { console.warn(e); return null; }
   }
 
-  // Calculate totals based on current item, coupon, and payment method
   function getCurrentTotals() {
     if (!checkoutItem) return { subtotal: 0, discount: 0, shipping: 0, total: 0, handlingFee: 0, discountText: '' };
     let subtotal = checkoutItem.price * checkoutItem.quantity;
@@ -268,11 +236,8 @@
     return { subtotal, discount, discountText, shipping, handlingFee, total };
   }
 
-  // Update the totals display and the Pay button
   function updateTotalsAndButton() {
     const totals = getCurrentTotals();
-    
-    // Update the totals panel if it exists
     const totalsPanel = document.getElementById('totalsPanel');
     if (totalsPanel) {
       totalsPanel.innerHTML = `
@@ -283,13 +248,10 @@
         <div class="totals-row grand-total"><span>Total</span><span>${formatPrice(totals.total)}</span></div>
       `;
     }
-    
-    // Update the Pay button
     const payBtn = document.getElementById('payNowBtn');
     if (payBtn) payBtn.innerText = `Pay ${formatPrice(totals.total)}`;
   }
 
-  // Apply coupon from Firestore
   async function applyCoupon(code) {
     if (!code) return { success: false, message: 'Enter a coupon code' };
     const upperCode = code.toUpperCase();
@@ -300,7 +262,6 @@
         return { success: false, message: 'Invalid coupon code' };
       }
       const data = couponSnap.data();
-      // Check expiry
       if (data.expiry) {
         let expiryDate = data.expiry.toDate ? data.expiry.toDate() : new Date(data.expiry);
         if (expiryDate < new Date()) {
@@ -311,7 +272,6 @@
       if (data.minOrder && subtotal < data.minOrder) {
         return { success: false, message: `Minimum order ₹${data.minOrder} required` };
       }
-      // Store coupon details
       appliedCoupon = {
         code: upperCode,
         discountType: data.discountType,
@@ -319,10 +279,7 @@
         minOrder: data.minOrder
       };
       const discountText = data.discountType === 'percentage' ? `${data.discountValue}% off` : `₹${data.discountValue} off`;
-      
-      // Immediately update the totals and button
       updateTotalsAndButton();
-      
       return { success: true, message: `Coupon applied! ${discountText}` };
     } catch(e) {
       console.error(e);
@@ -330,7 +287,6 @@
     }
   }
 
-  // Render the left panel (address + payment methods)
   function renderLeftPanel() {
     const leftContainer = document.getElementById('leftPanelContainer');
     if (!leftContainer) return;
@@ -379,17 +335,14 @@
         radio.classList.add('active');
         const inp = radio.querySelector('input');
         if (inp) inp.checked = true;
-        // Update totals when payment method changes (handling fee may apply)
         updateTotalsAndButton();
       });
     });
   }
 
-  // Render the right side: order summary with coupon input and totals
   function renderRightColumn() {
     const rightContainer = document.getElementById('rightColumnContainer');
     if (!rightContainer) return;
-    // Build the structure
     rightContainer.innerHTML = `
       <div class="order-summary">
         <div class="summary-header">Order Summary</div>
@@ -414,8 +367,6 @@
         <button class="pay-btn" id="payNowBtn">Pay Now</button>
       </div>
     `;
-    
-    // Attach coupon apply event
     const applyBtn = document.getElementById('applyCouponBtnRight');
     const couponInput = document.getElementById('couponInputRight');
     if (applyBtn) {
@@ -425,18 +376,13 @@
         const msgDiv = document.getElementById('discountMsgRight');
         if (result.success) {
           msgDiv.innerHTML = `<span style="color:#2e7d32;">✅ ${result.message}</span>`;
-          // Totals already updated inside applyCoupon, but ensure button updates
           updateTotalsAndButton();
         } else {
           msgDiv.innerHTML = `<span style="color:#d32f2f;">❌ ${result.message}</span>`;
         }
       };
     }
-    
-    // Initialize totals display
     updateTotalsAndButton();
-    
-    // Pay button event
     document.getElementById('payNowBtn')?.addEventListener('click', () => processOrder());
   }
 
@@ -496,18 +442,6 @@
     renderLeftPanel();
     renderRightColumn();
   }
-
-  const nav = document.getElementById('mainNav');
-  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 10));
-  const hamburger = document.getElementById('hamburger');
-  const navLinks = document.querySelector('.nav-links');
-  hamburger?.addEventListener('click', () => {
-    if (navLinks.style.display === 'flex') navLinks.style.display = '';
-    else navLinks.style.cssText = 'display:flex; flex-direction:column; position:fixed; top:var(--nav-h); left:0; right:0; background:rgba(253,246,236,0.98); backdrop-filter:blur(16px); padding:24px 5vw; gap:20px; z-index:800;';
-  });
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.nav') && navLinks && navLinks.style.display === 'flex') navLinks.style.display = '';
-  });
 
   initCheckout();
 </script>
