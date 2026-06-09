@@ -1,333 +1,223 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Happy NonVeg Pickles – Navbar</title>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-  <!-- Boxicons CSS -->
-  <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<!-- ===================== STANDALONE NAVBAR (Popups always visible) ===================== -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
+<style>
+  /* ----- NAVBAR STYLES (no badges) ----- */
+  .navbar {
+    background: white;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 0.75rem 1.2rem;
+    font-family: 'Inter', sans-serif;
+  }
+  .nav-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .left-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .hamburger {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    color: #4e3622;
+    cursor: pointer;
+    display: none;
+    padding: 0.2rem;
+  }
+  .logo-area {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+  }
+  .logo-desktop { display: block; height: 50px; width: auto; }
+  .logo-mobile { display: none; height: 40px; width: auto; }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+  .nav-links a {
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #4a3220;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: #c94f2c; }
+  .search-wrapper {
+    flex: 1;
+    max-width: 300px;
+    min-width: 180px;
+  }
+  .search-bar {
+    display: flex;
+    align-items: center;
+    background: #f5efe8;
+    border-radius: 60px;
+    padding: 0.5rem 1rem;
+    border: 1px solid #e2d6ca;
+    transition: all 0.2s;
+  }
+  .search-bar:focus-within {
+    border-color: #c94f2c;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(201, 79, 44, 0.15);
+  }
+  .search-bar i { color: #b28b65; font-size: 1.1rem; }
+  .search-bar input {
+    border: none;
+    background: transparent;
+    padding: 0.3rem 0.8rem;
+    width: 100%;
+    font-size: 0.9rem;
+    outline: none;
+    font-family: inherit;
+  }
+  .search-bar input::placeholder { color: #b79b7c; font-weight: 400; }
+  .icon-group {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .icon-btn {
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    color: #4e3622;
+    cursor: pointer;
+    transition: transform 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+  .icon-btn:hover {
+    color: #c94f2c;
+    transform: translateY(-2px);
+  }
+  /* Popup styles - FIXED positioning (relative to viewport) */
+  .popup-fixed {
+    position: fixed;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    width: 280px;
+    z-index: 1100;
+    display: none;
+    overflow: hidden;
+    border: 1px solid #f0e2d4;
+  }
+  .popup-header {
+    padding: 12px 16px;
+    font-weight: 700;
+    border-bottom: 1px solid #f0e2d4;
+    background: #fffaf5;
+  }
+  .popup-item {
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid #f3e9e0;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .popup-item:last-child { border-bottom: none; }
+  .popup-item:hover { background: #fef7f0; }
+  .cart-item-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: #f5efe8;
+    overflow: hidden;
+  }
+  .cart-item-img img { width: 100%; height: 100%; object-fit: cover; }
+  .cart-item-details { flex: 1; font-size: 0.85rem; }
+  .cart-item-name { font-weight: 600; }
+  .cart-item-price { color: #c94f2c; }
+  .empty-cart { padding: 20px; text-align: center; color: #b79b7c; }
+  .profile-option i { width: 20px; font-size: 1.2rem; }
+  .signout-btn { color: #c94f2c; }
+  .cart-qty-btn, .cart-remove { cursor: pointer; }
+  .mobile-menu {
+    display: none;
+    flex-direction: column;
+    background: white;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #f0e2d4;
+    margin-top: 0.8rem;
+    gap: 1rem;
+  }
+  .mobile-menu a {
+    text-decoration: none;
+    font-weight: 600;
+    color: #4a3220;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f3e9e0;
+  }
+  .mobile-menu a:last-child { border-bottom: none; }
+  .mobile-menu.show { display: flex; }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #fffaf3;
-      color: #2c1a0e;
-    }
-
-    /* ----- NAVBAR STYLES ----- */
-    .navbar {
-      background: white;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      padding: 0.75rem 1.2rem;
-    }
-
-    .nav-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    /* left group: hamburger + logo */
-    .left-group {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    /* hamburger (hidden on desktop) */
-    .hamburger {
-      background: none;
-      border: none;
-      font-size: 1.8rem;
-      color: #4e3622;
-      cursor: pointer;
-      display: none;
-      padding: 0.2rem;
-    }
-
-    /* logo images */
-    .logo-area {
-      display: flex;
-      align-items: center;
-      text-decoration: none;
-    }
-    .logo-desktop {
-      display: block;
-      height: 50px;
-      width: auto;
-    }
-    .logo-mobile {
-      display: none;
-      height: 40px;
-      width: auto;
-    }
-
-    /* desktop navigation links */
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 2rem;
-    }
-    .nav-links a {
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 1rem;
-      color: #4a3220;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover {
-      color: #c94f2c;
-    }
-
-    /* search bar */
-    .search-wrapper {
-      flex: 1;
-      max-width: 300px;
-      min-width: 180px;
-    }
-    .search-bar {
-      display: flex;
-      align-items: center;
-      background: #f5efe8;
-      border-radius: 60px;
-      padding: 0.5rem 1rem;
-      border: 1px solid #e2d6ca;
-      transition: all 0.2s;
-    }
-    .search-bar:focus-within {
-      border-color: #c94f2c;
-      background: white;
-      box-shadow: 0 0 0 3px rgba(201, 79, 44, 0.15);
-    }
-    .search-bar i {
-      color: #b28b65;
-      font-size: 1.1rem;
-    }
-    .search-bar input {
-      border: none;
-      background: transparent;
-      padding: 0.3rem 0.8rem;
-      width: 100%;
-      font-size: 0.9rem;
-      outline: none;
-      font-family: inherit;
-    }
-    .search-bar input::placeholder {
-      color: #b79b7c;
-      font-weight: 400;
-    }
-
-    /* icon group (wishlist, cart, profile) */
-    .icon-group {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-    }
-    .icon-btn {
-      background: none;
-      border: none;
-      font-size: 1.6rem;
-      color: #4e3622;
-      cursor: pointer;
-      transition: transform 0.2s, color 0.2s;
-      display: flex;
-      align-items: center;
-      position: relative;
-    }
-    .icon-btn:hover {
-      color: #c94f2c;
-      transform: translateY(-2px);
-    }
-    .cart-badge {
-      position: absolute;
-      top: -8px;
-      right: -12px;
-      background: #c94f2c;
-      color: white;
-      font-size: 0.65rem;
-      font-weight: 700;
-      padding: 2px 6px;
-      border-radius: 40px;
-      line-height: 1;
-      min-width: 18px;
-      text-align: center;
-      border: 1px solid white;
-    }
-
-    /* mobile menu (hidden by default) */
-    .mobile-menu {
-      display: none;
-      flex-direction: column;
-      background: white;
-      padding: 1rem 1.5rem;
-      border-top: 1px solid #f0e2d4;
-      margin-top: 0.8rem;
-      gap: 1rem;
-    }
-    .mobile-menu a {
-      text-decoration: none;
-      font-weight: 600;
-      color: #4a3220;
-      padding: 0.5rem 0;
-      border-bottom: 1px solid #f3e9e0;
-    }
-    .mobile-menu a:last-child {
-      border-bottom: none;
-    }
-    .mobile-menu.show {
-      display: flex;
-    }
-
-    /* demo content */
-    .demo-section {
-      max-width: 1200px;
-      margin: 3rem auto;
-      padding: 0 2rem;
-    }
-    .demo-header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    .demo-header h2 {
-      font-size: 1.9rem;
-      color: #3a291c;
-    }
-    .demo-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 2rem;
-    }
-    .demo-card {
-      background: white;
-      border-radius: 24px;
-      padding: 1.5rem;
-      text-align: center;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.03);
-      transition: 0.2s;
-      border: 1px solid #f3e7dd;
-    }
-    .demo-card i {
-      font-size: 3rem;
-      color: #c94f2c;
-      margin-bottom: 0.7rem;
-    }
-    .demo-card h4 {
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-    }
-    .demo-card p {
-      color: #a07d5c;
-      font-size: 0.85rem;
-    }
-
-    /* ----- RESPONSIVE BREAKPOINTS ----- */
-    @media (max-width: 880px) {
-      .navbar {
-        padding: 0.75rem 1rem;
-      }
-      /* hide desktop nav links, show hamburger */
-      .nav-links {
-        display: none;
-      }
-      .hamburger {
-        display: block;
-      }
-      /* swap logos: hide desktop logo, show mobile logo */
-      .logo-desktop {
-        display: none;
-      }
-      .logo-mobile {
-        display: block;
-      }
-      .search-wrapper {
-        max-width: 220px;
-      }
-      .icon-group {
-        gap: 1rem;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .nav-container {
-        flex-wrap: wrap;
-      }
-      .search-wrapper {
-        order: 3;
-        max-width: 100%;
-        width: 100%;
-        margin-top: 0.6rem;
-      }
-      .icon-group {
-        margin-left: auto;
-      }
-      .left-group {
-        flex: 1;
-      }
-    }
-  </style>
-</head>
-<body>
+  @media (max-width: 880px) {
+    .navbar { padding: 0.75rem 1rem; }
+    .nav-links { display: none; }
+    .hamburger { display: block; }
+    .logo-desktop { display: none; }
+    .logo-mobile { display: block; }
+    .search-wrapper { max-width: 220px; }
+    .icon-group { gap: 1rem; }
+    .popup-fixed { width: 260px; }
+  }
+  @media (max-width: 640px) {
+    .nav-container { flex-wrap: wrap; }
+    .search-wrapper { order: 3; max-width: 100%; width: 100%; margin-top: 0.6rem; }
+    .icon-group { margin-left: auto; }
+    .left-group { flex: 1; }
+  }
+</style>
 
 <nav class="navbar">
   <div class="nav-container">
-    <!-- Left side: hamburger + logo -->
     <div class="left-group">
-      <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
-        <i class="bx bx-menu"></i>
-      </button>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Menu"><i class="bx bx-menu"></i></button>
       <a href="#" class="logo-area">
-        <!-- Desktop logo (logo.png) -->
         <img src="./assets/logo.png" alt="Happy NonVeg Pickles" class="logo-desktop">
-        <!-- Mobile logo (logo-small.png) -->
         <img src="./assets/logo-small.png" alt="Happy NonVeg Pickles" class="logo-mobile">
       </a>
     </div>
-
-    <!-- Desktop navigation links -->
     <div class="nav-links">
       <a href="#">Home</a>
       <a href="#">Shop</a>
       <a href="#">Categories</a>
     </div>
-
-    <!-- Search bar -->
     <div class="search-wrapper">
       <div class="search-bar">
         <i class="bx bx-search"></i>
-        <input type="text" placeholder="search product" aria-label="Search products">
+        <input type="text" placeholder="search product">
       </div>
     </div>
-
-    <!-- Icon group: wishlist, cart, profile -->
     <div class="icon-group">
-      <button class="icon-btn" aria-label="Wishlist">
+      <a href="wishlist.html" class="icon-btn" style="text-decoration: none;" aria-label="Wishlist">
         <i class="bx bx-heart"></i>
-      </button>
-      <button class="icon-btn" aria-label="Cart">
+      </a>
+      <button class="icon-btn" id="cartIconBtn" aria-label="Cart">
         <i class="bx bx-cart"></i>
-        <span class="cart-badge">0</span>
       </button>
-      <button class="icon-btn" aria-label="Profile">
+      <button class="icon-btn" id="profileIconBtn" aria-label="Profile">
         <i class="bx bx-user"></i>
       </button>
     </div>
   </div>
-
-  <!-- Mobile menu -->
   <div class="mobile-menu" id="mobileMenu">
     <a href="#">Home</a>
     <a href="#">Shop</a>
@@ -335,52 +225,246 @@
   </div>
 </nav>
 
-<!-- Demo content (empty placeholder data) -->
-<section class="demo-section">
-  <div class="demo-header">
-    <h2>🥒 Handcrafted pickles, straight from the jar</h2>
-    <p style="color:#a18465;">Explore our range — demo items below (empty cart, wishlist data)</p>
+<!-- Fixed popups (will be positioned dynamically) -->
+<div id="cartPopup" class="popup-fixed">
+  <div class="popup-header">🛒 Your Cart</div>
+  <div id="cartPopupContent">Loading...</div>
+</div>
+<div id="profilePopup" class="popup-fixed">
+  <div class="popup-header">👤 Account</div>
+  <div class="popup-item profile-option" data-action="profile">
+    <i class="bx bx-user-circle"></i> My Profile
   </div>
-  <div class="demo-grid">
-    <div class="demo-card">
-      <i class="bx bx-jar"></i>
-      <h4>Mango Pickle</h4>
-      <p>Spicy, tangy & traditional</p>
-    </div>
-    <div class="demo-card">
-      <i class="bx bx-pepper"></i>
-      <h4>Mixed Veg Pickle</h4>
-      <p>Garlic, chili & mustard oil</p>
-    </div>
-    <div class="demo-card">
-      <i class="bx bx-lemon"></i>
-      <h4>Lemon Pickle</h4>
-      <p>Zesty & salted perfection</p>
-    </div>
-    <div class="demo-card">
-      <i class="bx bx-dish"></i>
-      <h4>Chicken Pickle</h4>
-      <p>Andhra style, slow cooked</p>
-    </div>
+  <div class="popup-item profile-option" data-action="orders">
+    <i class="bx bx-package"></i> My Orders
   </div>
-  <div style="text-align: center; margin-top: 2.5rem; font-size: 0.8rem; color: #b28b65;">
-    <i class="bx bx-info-circle"></i> Demo data – wishlist, cart (0 items) and profile are static placeholders.
+  <div class="popup-item profile-option signout-btn" data-action="signout">
+    <i class="bx bx-log-out"></i> Sign Out
   </div>
-</section>
+</div>
 
 <script>
-  // Mobile hamburger toggle
-  const hamburger = document.getElementById('hamburgerBtn');
-  const mobileMenu = document.getElementById('mobileMenu');
-  hamburger.addEventListener('click', () => {
-    mobileMenu.classList.toggle('show');
-  });
-  // Close mobile menu when a link is clicked
-  mobileMenu.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      mobileMenu.classList.remove('show');
+  // ---------- CART MANAGEMENT (localStorage) ----------
+  let cart = [];
+  const CART_KEY = 'happyPicklesCart';
+
+  function loadCart() {
+    const stored = localStorage.getItem(CART_KEY);
+    cart = stored ? JSON.parse(stored) : [];
+  }
+  function saveCart() {
+    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  }
+
+  window.addToCart = function(product) {
+    const existing = cart.find(item => item.id === product.id);
+    if (existing) existing.quantity += 1;
+    else cart.push({ ...product, quantity: 1 });
+    saveCart();
+    renderCartPopup();
+  };
+
+  function removeFromCart(productId) {
+    cart = cart.filter(item => item.id !== productId);
+    saveCart();
+    renderCartPopup();
+  }
+
+  function updateQuantity(productId, delta) {
+    const item = cart.find(i => i.id === productId);
+    if (item) {
+      item.quantity += delta;
+      if (item.quantity <= 0) removeFromCart(productId);
+      else { saveCart(); renderCartPopup(); }
+    }
+  }
+
+  function renderCartPopup() {
+    const container = document.getElementById('cartPopupContent');
+    if (!container) return;
+    if (cart.length === 0) {
+      container.innerHTML = '<div class="empty-cart">Your cart is empty.</div>';
+      return;
+    }
+    let html = '';
+    cart.forEach(item => {
+      html += `
+        <div class="popup-item" style="flex-wrap: wrap;">
+          <div class="cart-item-img">
+            <img src="${item.image || 'https://placehold.co/40x40/f5e9e7/c0392b?text='}" alt="${escapeHtml(item.name)}">
+          </div>
+          <div class="cart-item-details">
+            <div class="cart-item-name">${escapeHtml(item.name)}</div>
+            <div class="cart-item-price">₹${Math.round(item.price)}</div>
+            <div style="display:flex; gap:8px; margin-top:6px;">
+              <button class="cart-qty-btn" data-id="${item.id}" data-delta="-1" style="background:#f0e2d4; border:none; width:24px; border-radius:20px;">-</button>
+              <span>${item.quantity}</span>
+              <button class="cart-qty-btn" data-id="${item.id}" data-delta="1" style="background:#f0e2d4; border:none; width:24px; border-radius:20px;">+</button>
+              <button class="cart-remove" data-id="${item.id}" style="background:none; border:none; color:#c94f2c; margin-left:auto;">Remove</button>
+            </div>
+          </div>
+        </div>
+      `;
     });
+    container.innerHTML = html;
+    document.querySelectorAll('.cart-qty-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute('data-id');
+        const delta = parseInt(btn.getAttribute('data-delta'));
+        updateQuantity(id, delta);
+      });
+    });
+    document.querySelectorAll('.cart-remove').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute('data-id');
+        removeFromCart(id);
+      });
+    });
+  }
+
+  function handleProfileAction(action) {
+    if (action === 'profile') alert("My Profile – coming soon");
+    else if (action === 'orders') alert("My Orders – coming soon");
+    else if (action === 'signout') {
+      alert("Signed out successfully!");
+      window.location.href = 'index.html';
+    }
+  }
+
+  // ---------- IMPROVED POPUP POSITIONING (always visible) ----------
+  let activePopup = null;
+
+  function positionPopup(popupElement, buttonElement) {
+    const rect = buttonElement.getBoundingClientRect();
+    const popupWidth = popupElement.offsetWidth;
+    const popupHeight = popupElement.offsetHeight;
+    const margin = 8;
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    // Try left side first
+    let left = rect.left - popupWidth - margin;
+    let side = 'left';
+    // If left side would go off screen, try right side
+    if (left < margin) {
+      left = rect.right + margin;
+      side = 'right';
+      // If right side would also go off screen, align to left edge with margin
+      if (left + popupWidth > viewportWidth - margin) {
+        left = margin;
+      }
+    } else if (left + popupWidth > viewportWidth - margin) {
+      // If left side goes off right edge, shift left
+      left = viewportWidth - popupWidth - margin;
+    }
+
+    // Vertical positioning: below button by default, but if too low, place above
+    let top = rect.bottom + margin;
+    if (top + popupHeight > viewportHeight - margin) {
+      // Place above the button
+      top = rect.top - popupHeight - margin;
+      if (top < margin) top = margin; // fallback
+    }
+
+    popupElement.style.left = left + 'px';
+    popupElement.style.top = top + 'px';
+  }
+
+  function showPopup(popupId, buttonElement) {
+    if (activePopup) activePopup.style.display = 'none';
+    const popup = document.getElementById(popupId);
+    if (!popup) return;
+    if (activePopup === popup && popup.style.display === 'block') {
+      popup.style.display = 'none';
+      activePopup = null;
+      return;
+    }
+    positionPopup(popup, buttonElement);
+    popup.style.display = 'block';
+    activePopup = popup;
+  }
+
+  function closeAllPopups() {
+    if (activePopup) {
+      activePopup.style.display = 'none';
+      activePopup = null;
+    }
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
+  }
+
+  // ---------- INITIALIZE ----------
+  document.addEventListener('DOMContentLoaded', () => {
+    loadCart();
+    renderCartPopup();
+
+    const hamburger = document.getElementById('hamburgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (hamburger && mobileMenu) {
+      hamburger.addEventListener('click', () => {
+        mobileMenu.classList.toggle('show');
+      });
+      mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          mobileMenu.classList.remove('show');
+        });
+      });
+    }
+
+    const cartBtn = document.getElementById('cartIconBtn');
+    if (cartBtn) {
+      cartBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeAllPopups();
+        showPopup('cartPopup', cartBtn);
+        renderCartPopup();
+      });
+    }
+
+    const profileBtn = document.getElementById('profileIconBtn');
+    if (profileBtn) {
+      profileBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeAllPopups();
+        showPopup('profilePopup', profileBtn);
+      });
+    }
+
+    const profilePopup = document.getElementById('profilePopup');
+    if (profilePopup) {
+      profilePopup.addEventListener('click', (e) => {
+        const option = e.target.closest('.profile-option');
+        if (option) {
+          const action = option.getAttribute('data-action');
+          handleProfileAction(action);
+          closeAllPopups();
+        }
+      });
+    }
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.icon-btn') && !e.target.closest('.popup-fixed')) {
+        closeAllPopups();
+      }
+    });
+
+    function repositionActivePopup() {
+      if (!activePopup) return;
+      let btnId = null;
+      if (activePopup.id === 'cartPopup') btnId = 'cartIconBtn';
+      else if (activePopup.id === 'profilePopup') btnId = 'profileIconBtn';
+      if (btnId) {
+        const btn = document.getElementById(btnId);
+        if (btn) positionPopup(activePopup, btn);
+      }
+    }
+    window.addEventListener('scroll', repositionActivePopup);
+    window.addEventListener('resize', repositionActivePopup);
   });
 </script>
-</body>
-</html>
+<!-- ===================== END OF NAVBAR ===================== -->
