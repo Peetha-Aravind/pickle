@@ -1,8 +1,8 @@
-<!-- ===================== STANDALONE NAVBAR (Popups always visible) ===================== -->
+<!-- ===================== STANDALONE NAVBAR (Popups fully visible) ===================== -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
 <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
 <style>
-  /* ----- NAVBAR STYLES (no badges) ----- */
+  /* ----- NAVBAR STYLES ----- */
   .navbar {
     background: white;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
@@ -84,7 +84,6 @@
     outline: none;
     font-family: inherit;
   }
-  .search-bar input::placeholder { color: #b79b7c; font-weight: 400; }
   .icon-group {
     display: flex;
     align-items: center;
@@ -99,32 +98,39 @@
     transition: transform 0.2s, color 0.2s;
     display: flex;
     align-items: center;
-    position: relative;
   }
   .icon-btn:hover {
     color: #c94f2c;
     transform: translateY(-2px);
   }
-  /* Popup styles - FIXED positioning (relative to viewport) */
+  /* ----- FIXED POPUP STYLES (always visible, scrollable if needed) ----- */
   .popup-fixed {
     position: fixed;
     background: white;
     border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-    width: 280px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.15);
+    width: 320px;
+    max-height: 400px;
     z-index: 1100;
     display: none;
     overflow: hidden;
     border: 1px solid #f0e2d4;
   }
   .popup-header {
-    padding: 12px 16px;
+    padding: 14px 18px;
     font-weight: 700;
+    font-size: 1rem;
     border-bottom: 1px solid #f0e2d4;
     background: #fffaf5;
+    color: #2c1a0e;
+  }
+  .popup-content {
+    max-height: 350px;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
   .popup-item {
-    padding: 10px 16px;
+    padding: 12px 16px;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -135,20 +141,36 @@
   .popup-item:last-child { border-bottom: none; }
   .popup-item:hover { background: #fef7f0; }
   .cart-item-img {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
     background: #f5efe8;
     overflow: hidden;
+    flex-shrink: 0;
   }
   .cart-item-img img { width: 100%; height: 100%; object-fit: cover; }
   .cart-item-details { flex: 1; font-size: 0.85rem; }
-  .cart-item-name { font-weight: 600; }
-  .cart-item-price { color: #c94f2c; }
-  .empty-cart { padding: 20px; text-align: center; color: #b79b7c; }
-  .profile-option i { width: 20px; font-size: 1.2rem; }
+  .cart-item-name { font-weight: 600; margin-bottom: 4px; }
+  .cart-item-price { color: #c94f2c; font-weight: 500; }
+  .empty-cart { padding: 30px; text-align: center; color: #b79b7c; }
+  .profile-option i { width: 24px; font-size: 1.2rem; }
   .signout-btn { color: #c94f2c; }
   .cart-qty-btn, .cart-remove { cursor: pointer; }
+  .cart-qty-btn {
+    background: #f0e2d4;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 30px;
+    font-weight: bold;
+  }
+  .cart-remove {
+    background: none;
+    border: none;
+    color: #c94f2c;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+  }
   .mobile-menu {
     display: none;
     flex-direction: column;
@@ -176,23 +198,24 @@
     .logo-mobile { display: block; }
     .search-wrapper { max-width: 220px; }
     .icon-group { gap: 1rem; }
-    .popup-fixed { width: 260px; }
+    .popup-fixed { width: 290px; }
   }
   @media (max-width: 640px) {
     .nav-container { flex-wrap: wrap; }
     .search-wrapper { order: 3; max-width: 100%; width: 100%; margin-top: 0.6rem; }
     .icon-group { margin-left: auto; }
     .left-group { flex: 1; }
+    .popup-fixed { width: 260px; max-height: 360px; }
   }
 </style>
 
 <nav class="navbar">
   <div class="nav-container">
     <div class="left-group">
-      <button class="hamburger" id="hamburgerBtn" aria-label="Menu"><i class="bx bx-menu"></i></button>
+      <button class="hamburger" id="hamburgerBtn"><i class="bx bx-menu"></i></button>
       <a href="#" class="logo-area">
-        <img src="./assets/logo.png" alt="Happy NonVeg Pickles" class="logo-desktop">
-        <img src="./assets/logo-small.png" alt="Happy NonVeg Pickles" class="logo-mobile">
+        <img src="./assets/logo.png" alt="Logo" class="logo-desktop">
+        <img src="./assets/logo-small.png" alt="Logo" class="logo-mobile">
       </a>
     </div>
     <div class="nav-links">
@@ -207,15 +230,9 @@
       </div>
     </div>
     <div class="icon-group">
-      <a href="wishlist.html" class="icon-btn" style="text-decoration: none;" aria-label="Wishlist">
-        <i class="bx bx-heart"></i>
-      </a>
-      <button class="icon-btn" id="cartIconBtn" aria-label="Cart">
-        <i class="bx bx-cart"></i>
-      </button>
-      <button class="icon-btn" id="profileIconBtn" aria-label="Profile">
-        <i class="bx bx-user"></i>
-      </button>
+      <a href="wishlist.html" class="icon-btn"><i class="bx bx-heart"></i></a>
+      <button class="icon-btn" id="cartIconBtn"><i class="bx bx-cart"></i></button>
+      <button class="icon-btn" id="profileIconBtn"><i class="bx bx-user"></i></button>
     </div>
   </div>
   <div class="mobile-menu" id="mobileMenu">
@@ -225,26 +242,28 @@
   </div>
 </nav>
 
-<!-- Fixed popups (will be positioned dynamically) -->
+<!-- Popups (placed at end of body, will be positioned dynamically) -->
 <div id="cartPopup" class="popup-fixed">
   <div class="popup-header">🛒 Your Cart</div>
-  <div id="cartPopupContent">Loading...</div>
+  <div class="popup-content" id="cartPopupContent"></div>
 </div>
 <div id="profilePopup" class="popup-fixed">
   <div class="popup-header">👤 Account</div>
-  <div class="popup-item profile-option" data-action="profile">
-    <i class="bx bx-user-circle"></i> My Profile
-  </div>
-  <div class="popup-item profile-option" data-action="orders">
-    <i class="bx bx-package"></i> My Orders
-  </div>
-  <div class="popup-item profile-option signout-btn" data-action="signout">
-    <i class="bx bx-log-out"></i> Sign Out
+  <div class="popup-content">
+    <div class="popup-item profile-option" data-action="profile">
+      <i class="bx bx-user-circle"></i> My Profile
+    </div>
+    <div class="popup-item profile-option" data-action="orders">
+      <i class="bx bx-package"></i> My Orders
+    </div>
+    <div class="popup-item profile-option signout-btn" data-action="signout">
+      <i class="bx bx-log-out"></i> Sign Out
+    </div>
   </div>
 </div>
 
 <script>
-  // ---------- CART MANAGEMENT (localStorage) ----------
+  // ---------- CART LOGIC ----------
   let cart = [];
   const CART_KEY = 'happyPicklesCart';
 
@@ -291,22 +310,23 @@
       html += `
         <div class="popup-item" style="flex-wrap: wrap;">
           <div class="cart-item-img">
-            <img src="${item.image || 'https://placehold.co/40x40/f5e9e7/c0392b?text='}" alt="${escapeHtml(item.name)}">
+            <img src="${item.image || 'https://placehold.co/60x60/f5e9e7/c0392b?text='}" alt="${escapeHtml(item.name)}">
           </div>
           <div class="cart-item-details">
             <div class="cart-item-name">${escapeHtml(item.name)}</div>
             <div class="cart-item-price">₹${Math.round(item.price)}</div>
-            <div style="display:flex; gap:8px; margin-top:6px;">
-              <button class="cart-qty-btn" data-id="${item.id}" data-delta="-1" style="background:#f0e2d4; border:none; width:24px; border-radius:20px;">-</button>
-              <span>${item.quantity}</span>
-              <button class="cart-qty-btn" data-id="${item.id}" data-delta="1" style="background:#f0e2d4; border:none; width:24px; border-radius:20px;">+</button>
-              <button class="cart-remove" data-id="${item.id}" style="background:none; border:none; color:#c94f2c; margin-left:auto;">Remove</button>
+            <div style="display:flex; gap:8px; margin-top:8px; align-items:center;">
+              <button class="cart-qty-btn" data-id="${item.id}" data-delta="-1">-</button>
+              <span style="min-width: 20px; text-align:center;">${item.quantity}</span>
+              <button class="cart-qty-btn" data-id="${item.id}" data-delta="1">+</button>
+              <button class="cart-remove" data-id="${item.id}">Remove</button>
             </div>
           </div>
         </div>
       `;
     });
     container.innerHTML = html;
+    // Attach events
     document.querySelectorAll('.cart-qty-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -333,46 +353,40 @@
     }
   }
 
-  // ---------- IMPROVED POPUP POSITIONING (always visible) ----------
+  // ---------- POSITIONING (popup always visible) ----------
   let activePopup = null;
 
-  function positionPopup(popupElement, buttonElement) {
-    const rect = buttonElement.getBoundingClientRect();
-    const popupWidth = popupElement.offsetWidth;
-    const popupHeight = popupElement.offsetHeight;
-    const margin = 8;
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
+  function positionPopup(popup, button) {
+    const rect = button.getBoundingClientRect();
+    const popupWidth = popup.offsetWidth;
+    const popupHeight = popup.offsetHeight;
+    const margin = 10;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
 
-    // Try left side first
+    // Horizontal: try left, else right, else fit
     let left = rect.left - popupWidth - margin;
-    let side = 'left';
-    // If left side would go off screen, try right side
     if (left < margin) {
       left = rect.right + margin;
-      side = 'right';
-      // If right side would also go off screen, align to left edge with margin
-      if (left + popupWidth > viewportWidth - margin) {
-        left = margin;
+      if (left + popupWidth > vw - margin) {
+        left = vw - popupWidth - margin;
       }
-    } else if (left + popupWidth > viewportWidth - margin) {
-      // If left side goes off right edge, shift left
-      left = viewportWidth - popupWidth - margin;
+    } else if (left + popupWidth > vw - margin) {
+      left = vw - popupWidth - margin;
     }
 
-    // Vertical positioning: below button by default, but if too low, place above
+    // Vertical: below or above
     let top = rect.bottom + margin;
-    if (top + popupHeight > viewportHeight - margin) {
-      // Place above the button
+    if (top + popupHeight > vh - margin) {
       top = rect.top - popupHeight - margin;
-      if (top < margin) top = margin; // fallback
+      if (top < margin) top = margin;
     }
 
-    popupElement.style.left = left + 'px';
-    popupElement.style.top = top + 'px';
+    popup.style.left = Math.max(margin, left) + 'px';
+    popup.style.top = top + 'px';
   }
 
-  function showPopup(popupId, buttonElement) {
+  function showPopup(popupId, button) {
     if (activePopup) activePopup.style.display = 'none';
     const popup = document.getElementById(popupId);
     if (!popup) return;
@@ -381,7 +395,7 @@
       activePopup = null;
       return;
     }
-    positionPopup(popup, buttonElement);
+    positionPopup(popup, button);
     popup.style.display = 'block';
     activePopup = popup;
   }
@@ -398,24 +412,22 @@
     return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
   }
 
-  // ---------- INITIALIZE ----------
+  // ---------- INIT ----------
   document.addEventListener('DOMContentLoaded', () => {
     loadCart();
     renderCartPopup();
 
+    // Hamburger
     const hamburger = document.getElementById('hamburgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     if (hamburger && mobileMenu) {
-      hamburger.addEventListener('click', () => {
-        mobileMenu.classList.toggle('show');
-      });
+      hamburger.addEventListener('click', () => mobileMenu.classList.toggle('show'));
       mobileMenu.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-          mobileMenu.classList.remove('show');
-        });
+        link.addEventListener('click', () => mobileMenu.classList.remove('show'));
       });
     }
 
+    // Cart button
     const cartBtn = document.getElementById('cartIconBtn');
     if (cartBtn) {
       cartBtn.addEventListener('click', (e) => {
@@ -426,6 +438,7 @@
       });
     }
 
+    // Profile button
     const profileBtn = document.getElementById('profileIconBtn');
     if (profileBtn) {
       profileBtn.addEventListener('click', (e) => {
@@ -435,36 +448,35 @@
       });
     }
 
+    // Profile option clicks
     const profilePopup = document.getElementById('profilePopup');
     if (profilePopup) {
       profilePopup.addEventListener('click', (e) => {
         const option = e.target.closest('.profile-option');
         if (option) {
-          const action = option.getAttribute('data-action');
-          handleProfileAction(action);
+          handleProfileAction(option.dataset.action);
           closeAllPopups();
         }
       });
     }
 
+    // Close on outside click
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.icon-btn') && !e.target.closest('.popup-fixed')) {
         closeAllPopups();
       }
     });
 
-    function repositionActivePopup() {
+    // Reposition on scroll/resize
+    const reposition = () => {
       if (!activePopup) return;
-      let btnId = null;
-      if (activePopup.id === 'cartPopup') btnId = 'cartIconBtn';
-      else if (activePopup.id === 'profilePopup') btnId = 'profileIconBtn';
-      if (btnId) {
-        const btn = document.getElementById(btnId);
-        if (btn) positionPopup(activePopup, btn);
-      }
-    }
-    window.addEventListener('scroll', repositionActivePopup);
-    window.addEventListener('resize', repositionActivePopup);
+      let btn = null;
+      if (activePopup.id === 'cartPopup') btn = document.getElementById('cartIconBtn');
+      else if (activePopup.id === 'profilePopup') btn = document.getElementById('profileIconBtn');
+      if (btn) positionPopup(activePopup, btn);
+    };
+    window.addEventListener('scroll', reposition);
+    window.addEventListener('resize', reposition);
   });
 </script>
 <!-- ===================== END OF NAVBAR ===================== -->
