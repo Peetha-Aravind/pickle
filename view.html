@@ -4,11 +4,197 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>Happy NonVeg Pickles – Product Detail</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <!-- Google Fonts & Boxicons (for navbar) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* ---------- RESET & BASE ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'IBM Plex Sans', sans-serif;
+      background: #fffaf3;
+      color: #2c1a0e;
+      padding-top: 76px;  /* matches navbar height */
+      overflow-x: hidden;
+    }
+
+    /* ---------- DASHBOARD NAVBAR STYLES (from first file) ---------- */
+    .navbar {
+      background: white;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 0.75rem 1.2rem;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .left-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .hamburger {
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      color: #4e3622;
+      cursor: pointer;
+      display: none;
+      padding: 0.2rem;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+    .logo-desktop {
+      display: block;
+      height: 50px;
+      width: auto;
+    }
+    .logo-mobile {
+      display: none;
+      height: 40px;
+      width: auto;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #4a3220;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover {
+      color: #c94f2c;
+    }
+
+    .search-wrapper {
+      flex: 1;
+      max-width: 300px;
+      min-width: 180px;
+    }
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background: #f5efe8;
+      border-radius: 60px;
+      padding: 0.5rem 1rem;
+      border: 1px solid #e2d6ca;
+      transition: all 0.2s;
+    }
+    .search-bar:focus-within {
+      border-color: #c94f2c;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(201, 79, 44, 0.15);
+    }
+    .search-bar i {
+      color: #b28b65;
+      font-size: 1.1rem;
+    }
+    .search-bar input {
+      border: none;
+      background: transparent;
+      padding: 0.3rem 0.8rem;
+      width: 100%;
+      font-size: 0.9rem;
+      outline: none;
+      font-family: inherit;
+    }
+    .search-bar input::placeholder {
+      color: #b79b7c;
+      font-weight: 400;
+    }
+
+    .icon-group {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .icon-btn {
+      background: none;
+      border: none;
+      font-size: 1.6rem;
+      color: #4e3622;
+      cursor: pointer;
+      transition: transform 0.2s, color 0.2s;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+    .icon-btn:hover {
+      color: #c94f2c;
+      transform: translateY(-2px);
+    }
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -12px;
+      background: #c94f2c;
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 40px;
+      line-height: 1;
+      min-width: 18px;
+      text-align: center;
+      border: 1px solid white;
+    }
+
+    /* mobile menu (hidden by default) */
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      background: white;
+      padding: 1rem 1.5rem;
+      border-top: 1px solid #f0e2d4;
+      margin-top: 0.8rem;
+      gap: 1rem;
+    }
+    .mobile-menu a {
+      text-decoration: none;
+      font-weight: 600;
+      color: #4a3220;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f3e9e0;
+    }
+    .mobile-menu a:last-child {
+      border-bottom: none;
+    }
+    .mobile-menu.show {
+      display: flex;
+    }
+
+    /* ---------- VIEW PAGE ORIGINAL STYLES (cleaned, no nav conflicts) ---------- */
     :root {
       --rust: #C0392B; --rust-dark: #962d22; --rust-light: #f5e9e7;
       --turmeric: #E8A020; --cream: #FDF6EC; --ink: #1C1009;
@@ -17,43 +203,14 @@
       --shadow-md: 0 8px 32px rgba(28,16,9,0.12);
       --r-card: 16px; --r-pill: 999px;
       --ff-body: 'IBM Plex Sans', sans-serif;
-      --nav-h: 68px;
     }
-    body {
-      background-color: var(--cream);
-      color: var(--ink);
-      font-family: var(--ff-body);
-      font-size: 15px;
-      line-height: 1.5;
-      padding-top: var(--nav-h);
-    }
-    .nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
-      height: var(--nav-h); display: flex; align-items: center;
-      justify-content: space-between; padding: 0 5vw;
-      background: rgba(253,246,236,0.94); backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-      transition: box-shadow 0.3s;
-    }
-    .nav.scrolled { box-shadow: var(--shadow-md); }
-    .nav-logo {
-      font-family: var(--ff-body);
-      font-size: 1.45rem; font-weight: 700;
-      color: var(--rust); letter-spacing: -0.5px;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .nav-logo .dot { width: 8px; height: 8px; background: var(--turmeric); border-radius: 50%; }
-    .nav-links { display: flex; gap: 32px; }
-    .nav-links a { font-weight: 600; font-size: 14px; color: var(--ash); text-decoration: none; transition: color 0.2s; }
-    .nav-links a:hover { color: var(--rust); }
-    .nav-cta { background: var(--rust); color: #fff; padding: 10px 22px; border-radius: var(--r-pill); font-weight: 600; }
-    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+
     .product-container {
       max-width: 1280px; margin: 30px auto 60px; padding: 0 5vw;
       display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 48px; align-items: start;
     }
     .product-gallery {
-      position: sticky; top: calc(var(--nav-h) + 20px);
+      position: sticky; top: 96px;
       display: flex; gap: 20px; flex-direction: row;
     }
     .thumbnail-strip {
@@ -75,7 +232,6 @@
     .main-image img { width: 100%; height: 100%; object-fit: cover; }
     .product-info { display: flex; flex-direction: column; gap: 24px; }
     .product-title {
-      font-family: var(--ff-body);
       font-size: 2.4rem; font-weight: 700;
       line-height: 1.2; color: var(--ink);
     }
@@ -118,7 +274,7 @@
     .policy-block h4 { font-size: 1rem; margin-bottom: 8px; color: var(--rust); }
     .full-description { background: white; border-radius: 20px; padding: 18px; box-shadow: var(--shadow-sm); }
     .related-section { max-width: 1280px; margin: 80px auto 60px; padding: 0 5vw; }
-    .related-section h2 { font-family: var(--ff-body); font-weight: 700; font-size: 1.9rem; margin-bottom: 28px; }
+    .related-section h2 { font-weight: 700; font-size: 1.9rem; margin-bottom: 28px; }
     .related-grid {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 28px;
@@ -162,13 +318,28 @@
       cursor: pointer; font-weight: bold;
     }
     footer { background: var(--ink); color: rgba(255,255,255,0.6); padding: 30px 5vw; text-align: center; margin-top: 50px; }
+    
+    /* Responsive */
+    @media (max-width: 880px) {
+      .navbar { padding: 0.75rem 1rem; }
+      .nav-links { display: none; }
+      .hamburger { display: block; }
+      .logo-desktop { display: none; }
+      .logo-mobile { display: block; }
+      .search-wrapper { max-width: 220px; }
+      .icon-group { gap: 1rem; }
+    }
+    @media (max-width: 640px) {
+      .nav-container { flex-wrap: wrap; }
+      .search-wrapper { order: 3; max-width: 100%; width: 100%; margin-top: 0.6rem; }
+      .icon-group { margin-left: auto; }
+      .left-group { flex: 1; }
+    }
     @media (max-width: 800px) {
       .product-container { grid-template-columns: 1fr; gap: 32px; }
       .product-gallery { position: relative; top: 0; flex-direction: column; }
       .thumbnail-strip { flex-direction: row; width: 100%; order: 2; justify-content: center; }
       .main-image { order: 1; }
-      .nav-links { display: none; }
-      .nav-hamburger { display: flex; }
       .button-row { flex-direction: column; }
     }
     @media (max-width: 500px) {
@@ -182,19 +353,65 @@
 </head>
 <body>
 
-<nav class="nav" id="mainNav">
-  <div class="nav-logo"><span class="dot"></span> Happy NonVeg Pickles</div>
-  <div class="nav-links">
+<!-- ========== DASHBOARD NAVBAR ========== -->
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="left-group">
+      <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+        <i class="bx bx-menu"></i>
+      </button>
+      <a href="index.html" class="logo-area">
+        <img src="./assets/logo.png" alt="Happy NonVeg Pickles" class="logo-desktop">
+        <img src="./assets/logo-small.png" alt="Happy NonVeg Pickles" class="logo-mobile">
+      </a>
+    </div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="index.html#bestsellers">Best Sellers</a>
+      <a href="index.html#categories">Categories</a>
+    </div>
+    <div class="search-wrapper">
+      <div class="search-bar">
+        <i class="bx bx-search"></i>
+        <input type="text" placeholder="search product" aria-label="Search products">
+      </div>
+    </div>
+    <div class="icon-group">
+      <button class="icon-btn" aria-label="Wishlist"><i class="bx bx-heart"></i></button>
+      <button class="icon-btn" aria-label="Cart">
+        <i class="bx bx-cart"></i>
+        <span class="cart-badge">0</span>
+      </button>
+      <button class="icon-btn" aria-label="Profile"><i class="bx bx-user"></i></button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
     <a href="index.html">Home</a>
     <a href="index.html#bestsellers">Best Sellers</a>
-    <a href="index.html#categories">Shop</a>
+    <a href="index.html#categories">Categories</a>
   </div>
-  <div class="nav-hamburger" id="hamburger"><span></span><span></span><span></span></div>
 </nav>
 
+<!-- ========== VIEW PAGE MAIN CONTENT ========== -->
 <main id="productDetailRoot"><div class="loader">Loading delicious details...</div></main>
 
 <footer><p>© 2025 Happy NonVeg Pickles — handcrafted with tradition.</p></footer>
+
+<script>
+  // ----- Navbar toggle (mobile) -----
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  if (hamburgerBtn && mobileMenu) {
+    hamburgerBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('show');
+    });
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('show');
+      });
+    });
+  }
+</script>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -387,7 +604,7 @@
       return { weight: variants[0]?.weight || 'Standard', price: variants[0]?.price || product.price };
     };
     
-    // Add to Cart (simple alert for demo)
+    // Add to Cart (demo)
     document.getElementById('addToCartBtn')?.addEventListener('click', () => {
       const qty = parseInt(qtyInput.value);
       const v = getActiveVariant();
@@ -397,12 +614,11 @@
     // Wishlist
     document.getElementById('wishlistBtn')?.addEventListener('click', () => alert(`❤️ ${displayName} saved to wishlist!`));
     
-    // 🔥 BUY NOW: directly navigate to checkout.html with parameters (NO alert)
+    // Buy Now -> redirect to checkout.html (preserve original behavior)
     document.getElementById('buyNowBtn')?.addEventListener('click', () => {
       const qty = parseInt(qtyInput.value);
       const v = getActiveVariant();
       const checkoutUrl = `checkout.html?productId=${product.id}&quantity=${qty}&variant=${encodeURIComponent(v.weight)}`;
-      console.log('Redirecting to:', checkoutUrl); // for debugging
       window.location.href = checkoutUrl;
     });
 
@@ -421,18 +637,6 @@
     }, { threshold: 0.1 });
     document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
   }
-
-  const nav = document.getElementById('mainNav');
-  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 10));
-  const hamburger = document.getElementById('hamburger');
-  const navLinks = document.querySelector('.nav-links');
-  hamburger?.addEventListener('click', () => {
-    if (navLinks.style.display === 'flex') navLinks.style.display = '';
-    else navLinks.style.cssText = 'display:flex; flex-direction:column; position:fixed; top:var(--nav-h); left:0; right:0; background:rgba(253,246,236,0.98); backdrop-filter:blur(16px); padding:24px 5vw; gap:20px; z-index:800;';
-  });
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.nav') && navLinks && navLinks.style.display === 'flex') navLinks.style.display = '';
-  });
 
   loadProductPage();
 </script>
