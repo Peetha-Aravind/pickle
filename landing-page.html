@@ -745,8 +745,7 @@
         .icon-wrap.force-fill .icon-fill   { opacity: 1; }
         .icon-wrap.force-fill .icon-default { opacity: 0; }
 
-        /* ---------- LANDING PAGE STYLES (unchanged, scoped by parent if needed) ---------- */
-        /* No namespace needed as all classes are unique. Global resets already merged. */
+        /* ---------- LANDING PAGE STYLES ---------- */
         .hero {
             position:relative; overflow:hidden;
             height: calc(100svh - var(--nav-h));
@@ -824,7 +823,14 @@
         .hero-skeleton .shop-only { text-align: center; }
         @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-        .section { padding: 80px 5vw; scroll-margin-top: 20px; }
+        /* ─── NOW MATCHED TO NAVBAR WIDTH: max-width 1440px + auto margins ─── */
+        .section {
+            max-width: 1440px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 80px 5vw;
+            scroll-margin-top: 20px;
+        }
         .section-label {
             display:inline-flex; align-items:center; gap:8px;
             font-size:11px; font-weight:700; letter-spacing:3px;
@@ -944,7 +950,7 @@
 
         .empty-state { grid-column:1/-1; text-align:center; padding:60px 20px; color:var(--ash); font-size:.95rem; }
 
-        /* FOOTER */
+        /* FOOTER: also capped to 1440px inner container, full‑width red background remains */
         .demo-footer {
             background: #C0392B; color: #ffffff;
             font-family: 'IBM Plex Sans', sans-serif;
@@ -952,7 +958,8 @@
         }
         .demo-footer, .demo-footer * { color: #ffffff; }
         .footer-container {
-            max-width: 1280px; margin: 0 auto;
+            max-width: 1440px;      /* ← matched to navbar */
+            margin: 0 auto;
             display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 40px 48px;
         }
@@ -1012,7 +1019,7 @@
 </head>
 <body>
 
-<!-- ═══════════════════════════════ DESKTOP NAVBAR ═══════════════════════════════ -->
+<!-- ═══════════════ DESKTOP NAVBAR ═══════════════ -->
 <div class="page-desktop">
     <nav class="d-navbar">
         <div class="d-navbar-container">
@@ -1090,7 +1097,7 @@
     </nav>
 </div>
 
-<!-- ═══════════════════════════════ MOBILE NAVBAR ═══════════════════════════════ -->
+<!-- ═══════════════ MOBILE NAVBAR ═══════════════ -->
 <div class="page-mobile">
     <nav class="m-navbar">
         <button class="m-menu-btn icon-trigger" id="m-menu-toggle" aria-label="Open menu">
@@ -1213,7 +1220,7 @@
     </div>
 </div>
 
-<!-- ═══════════════════════════════ LANDING PAGE CONTENT ═══════════════════════════════ -->
+<!-- ═══════════════ LANDING PAGE CONTENT ═══════════════ -->
 <section class="hero" id="heroSection">
     <div class="hero-skeleton" id="heroSkeleton">
         <div class="shop-only">
@@ -1290,9 +1297,8 @@
     </div>
 </footer>
 
-<!-- ═══════════════════════════════ AUTH MODAL & TOAST (navbar) ═══════════════════════════════ -->
+<!-- AUTH MODAL -->
 <div class="modal-overlay" id="login-modal-overlay">
-    <!-- ... (same as provided, unchanged) ... -->
     <div class="login-container">
         <button class="modal-close-btn icon-trigger" id="close-modal-btn" aria-label="Close">
             <span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span>
@@ -1374,8 +1380,7 @@
 
 <div id="toast-container"></div>
 
-<!-- ═══════════════════════════════ SCRIPTS ═══════════════════════════════ -->
-<!-- Firebase v8 (used by navbar) -->
+<!-- ═══════════════ SCRIPTS ═══════════════ -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -1400,7 +1405,7 @@ let currentUser = null;
 let wishlistUnsubscribe = null;
 let allProducts = [];   // used by navbar search
 
-// ═══════════ NAVBAR UI & AUTH (unchanged) ═══════════
+// ═══════════ NAVBAR UI & AUTH ═══════════
 document.addEventListener('DOMContentLoaded', () => {
     initNavbarUI();
     checkAuth();
@@ -1769,7 +1774,6 @@ function showToast(msg) {
 <!-- ═══════════ LANDING PAGE SCRIPT (adapted to Firebase v8) ═══════════ -->
 <script>
 (function() {
-    // Landing page Firebase config (separate project)
     const landingConfig = {
         apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
         authDomain: "pickle-fdc54.firebaseapp.com",
@@ -1780,11 +1784,9 @@ function showToast(msg) {
         measurementId: "G-B40NG5KQDL"
     };
 
-    // Initialize secondary Firebase app (avoids conflict with navbar's app)
     const landingApp = firebase.initializeApp(landingConfig, 'landingApp');
     const landingDb = firebase.firestore(landingApp);
 
-    // Helper functions
     function fmt(price) { return `₹${Math.round(parseFloat(price))}`; }
     function discount(mrp, price) {
         if (!mrp || !price || +mrp <= 0) return null;
@@ -1832,7 +1834,6 @@ function showToast(msg) {
         }
     }
 
-    // Hero slider (unchanged logic)
     const isMobile = () => window.innerWidth <= 768;
     const HERO_INTERVAL = 5000;
     let heroSlides = [], heroIndex = 0, heroTimer = null;
@@ -1966,7 +1967,7 @@ function showToast(msg) {
             catProducts = catProducts.filter(p => p.isavailable !== false);
             if (catProducts.length === 0) return;
             const section = document.createElement('section');
-            section.className = 'section category-products-wrapper reveal';
+            section.className = 'section category-products-wrapper reveal';  // will inherit max-width & margin
             section.id = `category-section-${cat.id}`;
             section.innerHTML = `<div class="section-label">${cat.name} Collection</div><h2 class="section-heading">Best of ${cat.name}</h2><p class="section-sub">Explore our top picks carefully curated for ${cat.name} lovers.</p>`;
             const grid = document.createElement('div'); grid.className = 'product-grid';
@@ -2015,14 +2016,12 @@ function showToast(msg) {
         }
     }
 
-    // Start when DOM ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initLanding);
     } else {
         initLanding();
     }
 
-    // Reveal observer fallback
     window.addEventListener('load', () => {
         const io = new IntersectionObserver((entries) => {
             entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('visible'); io.unobserve(en.target); } });
