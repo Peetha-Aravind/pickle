@@ -1242,7 +1242,70 @@
                 if (relatedProducts.length === 0) {
                     const q2 = await db.collection('products').where('category', '==', categoryValue).get();
                     q2.forEach(doc => { if (doc.id !== product.id) relatedProducts.push({ id: doc.id, ...doc.data() }); });
+                }    // ---------- IMPROVED PRODUCT VIEW LOGIC (NO COLLECTION GROUP QUERY) ----------
+    async function loadProductPage() {
+        const root = document.getElementById('productDetailRoot');
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get('id');
+        console.log("Product ID from URL:", productId);
+        if (!productId) {
+            root.innerHTML = `<div class="error-message"><strong>❌ No product specified.</strong><br><button onclick="location.href='?id='">Go to Shop</button></div>`;
+            return;
+        }
+        try {
+            let productSnapshot = null;
+            // 1) Try direct document ID (no index needed)
+            const docRef = db.collection('products').doc(productId);
+            const docSnap = await docRef.get();
+            if (docSnap.exists) {
+                productSnapshot = docSnap;
+                console.log("Found by document ID");
+            } else {
+                // 2) Search by 'productId' field (requires single-field index in products collection)
+                const qById = await db.collection('products').where('productId', '==', productId).get();
+                if (!qById.empty) {
+                    productSnapshot = qById.docs[0];
+                    console.log("Found by productId field");
+                } else {
+                    // 3) Search by 'id' field
+                    const qByIdField = await db.collection('products').where('id', '==', productId).get();
+                    if (!qByIdField.empty) {
+                        productSnapshot = qByIdField.docs[0];
+                        console.log("Found by id field");
+                    }
                 }
+            }
+            if (!productSnapshot) {
+                root.innerHTML = `<div class="error-message"><strong>😕 Product not found.</strong><br>Product ID: ${productId}<br><button onclick="location.href='?id='">Browse Pickles</button></div>`;
+                return;
+            }
+            const product = { id: productSnapshot.id, ...productSnapshot.data() };
+            console.log("Loaded product:", product);
+            // Normalise field names
+            if (!product.mainImage && product.image) product.mainImage = product.image;
+            if (!product.image && product.mainImage) product.image = product.mainImage;
+            if (!product.variants && product.variant) product.variants = product.variant;
+            if (!product.price && product.variants && product.variants[0]) product.price = product.variants[0].price;
+            if (!product.name) product.name = "Artisan Pickle";
+            // Fetch related products
+            let relatedProducts = [];
+            const categoryValue = product.categoryId || product.category;
+            if (categoryValue) {
+                const q = await db.collection('products').where('categoryId', '==', categoryValue).get();
+                q.forEach(doc => { if (doc.id !== product.id) relatedProducts.push({ id: doc.id, ...doc.data() }); });
+                if (relatedProducts.length === 0) {
+                    const q2 = await db.collection('products').where('category', '==', categoryValue).get();
+                    q2.forEach(doc => { if (doc.id !== product.id) relatedProducts.push({ id: doc.id, ...doc.data() }); });
+                }
+            }
+            relatedProducts = relatedProducts.slice(0, 4);
+            renderProductPage(product, relatedProducts);
+            observeReveal();
+        } catch (err) {
+            console.error("Product load error:", err);
+            root.innerHTML = `<div class="error-message"><strong>⚠️ Failed to load data.</strong><br>${err.message || "Check network and console"}<br><button onclick="location.reload()">Retry</button></div>`;
+        }
+    }
             }
             relatedProducts = relatedProducts.slice(0, 4);
             renderProductPage(product, relatedProducts);
