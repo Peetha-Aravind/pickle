@@ -1,38 +1,4 @@
-I have combined both files into a single responsive page. The dashboard (navbar, cart, auth, search) now wraps the product detail content. I scoped all product‑page CSS with a `.product-view` namespace, removed duplicate navigation, kept both Firebase instances (auth + products), and preserved every original feature. Conflicts in class names, IDs, and generic selectors have been resolved.
 
-## Renamed classes / IDs for conflict prevention
-
-| Original (View Page) | Renamed (Scoped) | Reason |
-|----------------------|------------------|--------|
-| `.nav`, `.nav-logo`, `.nav-links` | **removed** (dashboard provides navigation) | Duplicate navbar |
-| `.product-container` | `.pv-container` | Conflict with possible dashboard class |
-| `.product-gallery` | `.pv-gallery` | General name, scope to product view |
-| `.thumbnail-strip`, `.thumbnail` | `.pv-thumb-strip`, `.pv-thumb` | Prevent clash with dashboard thumbnails |
-| `.main-image` | `.pv-main-img` | Generic selector |
-| `.product-info` | `.pv-info` | Avoid global interference |
-| `.product-title` | `.pv-title` | Same |
-| `.price-group`, `.current-price`, `.old-price`, `.discount-badge` | `.pv-price-group`, `.pv-current-price`, `.pv-old-price`, `.pv-discount-badge` | Scoped to product view |
-| `.variants-section`, `.variant-btn` | `.pv-variants-section`, `.pv-variant-btn` | Prevent dashboard button styles leaking |
-| `.qty-selector`, `.qty-control` | `.pv-qty-selector`, `.pv-qty-control` | Generic names |
-| `.action-buttons`, `.button-row`, `.btn-cart`, `.btn-wishlist`, `.btn-buynow` | `.pv-action-buttons`, `.pv-button-row`, `.pv-btn-cart`, `.pv-btn-wishlist`, `.pv-btn-buynow` | Avoid CSS conflicts with dashboard buttons |
-| `.extra-info`, `.policy-block`, `.full-description` | `.pv-extra-info`, `.pv-policy`, `.pv-full-desc` | Scoped |
-| `.related-section`, `.related-grid`, `.related-card` | `.pv-related-section`, `.pv-related-grid`, `.pv-related-card` | Prevent dashboard card styles |
-| `#qtyInput`, `#addToCartBtn`, `#wishlistBtn`, `#buyNowBtn` | Kept same (no conflict with dashboard IDs) | Dashboard has no such IDs |
-| All generic element selectors (`button`, `input`, `p`, `h1`, etc.) | Scoped inside `.product-view` | Only affect product detail area |
-
-## Main changes made
-
-1. **Layout** – Added `<main class="app-main-content">` inside both desktop and mobile wrappers to hold the product detail.
-2. **CSS scoping** – Wrapped all view‑page styles inside `.product-view { ... }` and prefixed classes as above.
-3. **Duplicate navbar removed** – View page’s own `<nav>` is omitted; dashboard navbars handle all navigation.
-4. **Firebase dual init** – Main app (`happynonvegpickles‑f2636`) for auth/cart; second app (`pickle‑fdc54`) for product data.
-5. **Script integration** – View page script converted to non‑module, uses second Firestore instance, and queries elements inside `.product-view` only.
-6. **Responsive** – All original media queries preserved and work inside the scoped container.
-7. **Cart / Wishlist / Auth** – Dashboard functionality remains untouched; product page’s own buttons show alerts (original behavior preserved).
-
-Below is the complete merged HTML file.
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
