@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Happy NonVeg Pickles – Product Detail</title>
+  <title>Happy NonVeg Pickles – Combo Builder & Product Detail</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -117,7 +117,7 @@
     .policy-block { background: #fff8f0; border-radius: 20px; padding: 18px; margin-bottom: 20px; }
     .policy-block h4 { font-size: 1rem; margin-bottom: 8px; color: var(--rust); }
     .full-description { background: white; border-radius: 20px; padding: 18px; box-shadow: var(--shadow-sm); }
-    .related-section { max-width: 1280px; margin: 80px auto 60px; padding: 0 5vw; }
+    .related-section { max-width: 1280px; margin: 80px auto 40px; padding: 0 5vw; }
     .related-section h2 { font-family: var(--ff-body); font-weight: 700; font-size: 1.9rem; margin-bottom: 28px; }
     .related-grid {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -151,17 +151,196 @@
       margin-top: 8px; cursor: pointer; text-align: center; transition: background 0.2s;
     }
     .related-view-btn:hover { background: var(--rust); }
-    .loader { text-align: center; padding: 60px; color: var(--ash); }
-    .error-message {
-      background: #ffefef; padding: 40px 30px; text-align: center;
-      border-radius: var(--r-card); margin: 40px auto; max-width: 600px;
+    /* COMBO BUILDER SECTION STYLES */
+    .combo-section {
+      max-width: 1280px;
+      margin: 40px auto 60px;
+      padding: 0 5vw;
     }
+    .combo-card {
+      background: white;
+      border-radius: 28px;
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: transform 0.2s;
+    }
+    .combo-header {
+      background: linear-gradient(135deg, #2c1a0e 0%, #411f0c 100%);
+      padding: 20px 28px;
+      color: white;
+    }
+    .combo-header h2 {
+      font-family: 'Playfair Display', var(--ff-body);
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      margin-bottom: 6px;
+    }
+    .combo-header p {
+      opacity: 0.85;
+      font-size: 0.9rem;
+    }
+    .combo-counter-area {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 14px;
+      flex-wrap: wrap;
+      gap: 12px;
+      border-top: 1px solid rgba(255,255,255,0.2);
+      padding-top: 14px;
+    }
+    .combo-counter-badge {
+      background: #C0392B;
+      padding: 6px 16px;
+      border-radius: 60px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .combo-message-area {
+      font-size: 0.85rem;
+      background: rgba(0,0,0,0.25);
+      padding: 5px 12px;
+      border-radius: 30px;
+    }
+    .combo-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      padding: 24px 28px;
+      background: #fffcf8;
+    }
+    .combo-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: white;
+      border-radius: 80px;
+      padding: 0.6rem 1rem 0.6rem 0.6rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid #f0e2d4;
+      box-shadow: var(--shadow-sm);
+    }
+    .combo-item:hover {
+      background: #fff5ea;
+      transform: translateY(-2px);
+    }
+    .combo-img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #e9ddd0;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border: 2px solid #fff;
+    }
+    .combo-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .combo-info {
+      flex: 1;
+    }
+    .combo-name {
+      font-weight: 700;
+      font-size: 1rem;
+      color: #2c1a0e;
+      margin-bottom: 4px;
+    }
+    .combo-price {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #C0392B;
+    }
+    .combo-item.selected-combo {
+      background: #ffede3;
+      border-left: 5px solid #C0392B;
+      box-shadow: 0 6px 14px rgba(192,57,43,0.2);
+    }
+    .combo-grid.limit-reached .combo-item:not(.selected-combo) {
+      filter: blur(2px);
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    .combo-actions-footer {
+      padding: 18px 28px 26px;
+      background: #fef7ef;
+      display: flex;
+      justify-content: flex-end;
+      gap: 16px;
+      border-top: 1px solid #f0e2d4;
+    }
+    .combo-btn {
+      padding: 12px 32px;
+      border-radius: 60px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform 0.15s, background 0.2s;
+    }
+    .combo-btn-primary {
+      background: #C0392B;
+      color: white;
+    }
+    .combo-btn-primary:hover {
+      background: #962d22;
+      transform: translateY(-2px);
+    }
+    .combo-btn-secondary {
+      background: #2c1a0e;
+      color: white;
+    }
+    .combo-btn-secondary:hover {
+      background: #1f1108;
+      transform: translateY(-2px);
+    }
+    .combo-loading, .combo-error {
+      text-align: center;
+      padding: 40px;
+      color: var(--ash);
+      background: white;
+      border-radius: 28px;
+    }
+    @media (max-width: 680px) {
+      .combo-grid { grid-template-columns: 1fr; padding: 20px; }
+      .combo-img { width: 55px; height: 55px; }
+      .combo-actions-footer { flex-direction: column; }
+      .combo-btn { width: 100%; }
+    }
+    /* NEW RED FOOTER */
+    .red-footer {
+      background-color: #C0392B;
+      color: white;
+      text-align: center;
+      padding: 32px 20px;
+      margin-top: 30px;
+      font-family: var(--ff-body);
+    }
+    .red-footer .footer-demo-details {
+      max-width: 800px;
+      margin: 0 auto;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    .red-footer a {
+      color: #FFD966;
+      text-decoration: none;
+    }
+    .loader, .error-message { text-align: center; padding: 60px; color: var(--ash); }
     .error-message button {
       background: var(--rust); color: white; border: none;
       padding: 10px 24px; border-radius: 40px; margin-top: 20px;
       cursor: pointer; font-weight: bold;
     }
-    footer { background: var(--ink); color: rgba(255,255,255,0.6); padding: 30px 5vw; text-align: center; margin-top: 50px; }
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s, transform 0.6s; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
     @media (max-width: 800px) {
       .product-container { grid-template-columns: 1fr; gap: 32px; }
       .product-gallery { position: relative; top: 0; flex-direction: column; }
@@ -171,30 +350,23 @@
       .nav-hamburger { display: flex; }
       .button-row { flex-direction: column; }
     }
-    @media (max-width: 500px) {
-      .thumbnail-strip { gap: 8px; }
-      .thumbnail { width: 65px; height: 65px; }
-      .variant-btn { padding: 6px 18px; font-size: 0.85rem; }
-    }
-    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s, transform 0.6s; }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
 <nav class="nav" id="mainNav">
   <div class="nav-logo"><span class="dot"></span> Happy NonVeg Pickles</div>
   <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a href="index.html#bestsellers">Best Sellers</a>
-    <a href="index.html#categories">Shop</a>
+    <a href="#">Home</a>
+    <a href="#">Best Sellers</a>
+    <a href="#">Shop</a>
   </div>
   <div class="nav-hamburger" id="hamburger"><span></span><span></span><span></span></div>
 </nav>
 
 <main id="productDetailRoot"><div class="loader">Loading delicious details...</div></main>
-
-<footer><p>© 2025 Happy NonVeg Pickles — handcrafted with tradition.</p></footer>
+<div id="comboBuilderAnchor"></div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -232,17 +404,18 @@
     return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
   }
 
+  // ----- PRODUCT PAGE LOGIC -----
   async function loadProductPage() {
     const root = document.getElementById('productDetailRoot');
     const productId = getProductId();
     if (!productId) {
-      root.innerHTML = `<div class="error-message"><strong>❌ No product specified.</strong><br><button onclick="location.href='index.html'">Go to Shop</button></div>`;
+      root.innerHTML = `<div class="error-message"><strong>❌ No product specified.</strong><br><button onclick="location.reload()">Go to Shop</button></div>`;
       return;
     }
     try {
       const productSnap = await getDoc(doc(db, "products", productId));
       if (!productSnap.exists()) {
-        root.innerHTML = `<div class="error-message"><strong>😕 Product not found.</strong><br><button onclick="location.href='index.html'">Browse Pickles</button></div>`;
+        root.innerHTML = `<div class="error-message"><strong>😕 Product not found.</strong><br><button onclick="location.href='#'">Browse Pickles</button></div>`;
         return;
       }
       const product = { id: productSnap.id, ...productSnap.data() };
@@ -265,6 +438,9 @@
       relatedProducts = relatedProducts.slice(0, 4);
       renderProductPage(product, relatedProducts);
       observeReveal();
+      // After product and related products are rendered, inject combo section and red footer
+      await injectComboBuilder();
+      replaceFooterWithRedDemo();
     } catch (err) {
       console.error(err);
       root.innerHTML = `<div class="error-message"><strong>⚠️ Failed to load data.</strong><br>${err.message || "Check network"}<br><button onclick="location.reload()">Retry</button></div>`;
@@ -334,53 +510,37 @@
         </div>
       </div>
     `;
-
     const root = document.getElementById('productDetailRoot');
     root.innerHTML = html;
 
-    // Thumbnail click
-    const thumbs = document.querySelectorAll('.thumbnail');
-    const mainImg = document.getElementById('mainProductImage');
-    thumbs.forEach(t => t.addEventListener('click', () => {
-      const src = t.getAttribute('data-img');
-      if (src) mainImg.src = src;
-      thumbs.forEach(th => th.classList.remove('active'));
-      t.classList.add('active');
+    // Thumbnail, variants, qty, buttons events
+    document.querySelectorAll('.thumbnail').forEach(t => t.addEventListener('click', function() {
+      const src = this.getAttribute('data-img');
+      if (src) document.getElementById('mainProductImage').src = src;
+      document.querySelectorAll('.thumbnail').forEach(th => th.classList.remove('active'));
+      this.classList.add('active');
     }));
-
-    // Variant selection
     const variantBtns = document.querySelectorAll('.variant-btn');
-    const currentPriceSpan = document.getElementById('currentPrice');
-    const oldPriceSpan = document.getElementById('oldPrice');
+    const priceSpan = document.getElementById('currentPrice');
+    const oldSpan = document.getElementById('oldPrice');
     const discountSpan = document.getElementById('discountBadge');
     variantBtns.forEach(btn => btn.addEventListener('click', () => {
       variantBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       const price = btn.getAttribute('data-price');
       const mrp = btn.getAttribute('data-mrp');
-      currentPriceSpan.innerText = formatPrice(price);
-      if (oldPriceSpan) {
-        if (mrp && mrp !== 'null') oldPriceSpan.innerText = formatPrice(mrp);
-        else oldPriceSpan.style.display = 'none';
-      }
+      priceSpan.innerText = formatPrice(price);
+      if (oldSpan && mrp && mrp !== 'null') oldSpan.innerText = formatPrice(mrp);
+      else if (oldSpan) oldSpan.style.display = 'none';
       const disc = getDiscountPercent(mrp, price);
       if (discountSpan) {
         if (disc) { discountSpan.innerText = `${disc}% OFF`; discountSpan.style.display = 'inline-block'; }
         else discountSpan.style.display = 'none';
       }
     }));
-
-    // Quantity
     const qtyInput = document.getElementById('qtyInput');
-    document.getElementById('qtyMinus')?.addEventListener('click', () => {
-      let v = parseInt(qtyInput.value);
-      if (v > 1) qtyInput.value = v - 1;
-    });
-    document.getElementById('qtyPlus')?.addEventListener('click', () => {
-      let v = parseInt(qtyInput.value);
-      qtyInput.value = v + 1;
-    });
-
+    document.getElementById('qtyMinus')?.addEventListener('click', () => { let v = parseInt(qtyInput.value); if (v > 1) qtyInput.value = v - 1; });
+    document.getElementById('qtyPlus')?.addEventListener('click', () => { let v = parseInt(qtyInput.value); qtyInput.value = v + 1; });
     const getActiveVariant = () => {
       const active = document.querySelector('.variant-btn.active');
       if (active) return { weight: active.innerText.split(' ')[0], price: active.getAttribute('data-price') };
@@ -397,14 +557,158 @@
       const v = getActiveVariant();
       alert(`⚡ Proceed to checkout: ${displayName} ${v.weight} x ${qty} | Total ${formatPrice(v.price * qty)}`);
     });
-
-    // Related product click
     document.querySelectorAll('.related-card').forEach(card => {
-      card.addEventListener('click', (e) => {
-        const pid = card.getAttribute('data-id');
-        if (pid) window.location.href = `view.html?id=${pid}`;
-      });
+      card.addEventListener('click', (e) => { const pid = card.getAttribute('data-id'); if (pid) window.location.href = `view.html?id=${pid}`; });
     });
+  }
+
+  // ------------- COMBO BUILDER SECTION (FIRESTORE combos) -------------
+  async function injectComboBuilder() {
+    const anchor = document.getElementById('comboBuilderAnchor');
+    if (!anchor) return;
+    anchor.innerHTML = `<div class="combo-section"><div class="combo-loading">🍱 Loading combo deals...</div></div>`;
+    try {
+      const combosRef = collection(db, 'combos');
+      const snapshot = await getDocs(combosRef);
+      if (snapshot.empty) {
+        anchor.innerHTML = `<div class="combo-section"><div class="combo-error">✨ No combo offers available right now.</div></div>`;
+        return;
+      }
+      const comboDoc = snapshot.docs[0];
+      const data = comboDoc.data();
+      if (!data.items || !Array.isArray(data.items) || data.items.length === 0) {
+        anchor.innerHTML = `<div class="combo-section"><div class="combo-error">⚠️ Combo items missing. Please check Firestore.</div></div>`;
+        return;
+      }
+      const comboItems = data.items.map((item, idx) => ({
+        id: item.id || `combo_${idx}`,
+        name: item.name || 'Spicy Pickle',
+        price: item.price || '₹199',
+        imageUrl: item.imageUrl || item.image || 'https://placehold.co/400x400/f5e9e7/C0392B?text=Pickle'
+      }));
+      const maxPick = data.maxSelect && typeof data.maxSelect === 'number' ? data.maxSelect : 4;
+      const comboTitle = data.title || '🔥 Build Your Feast Combo';
+      const comboDesc = data.description || 'Select your favorite pickles and save big!';
+      renderComboUI(comboItems, maxPick, comboTitle, comboDesc);
+    } catch (err) {
+      console.error("Combo error", err);
+      anchor.innerHTML = `<div class="combo-section"><div class="combo-error">⚠️ Failed to load combo. ${err.message}</div></div>`;
+    }
+  }
+
+  let selectedComboIds = [];
+  let currentComboItems = [];
+  let currentMax = 4;
+
+  function renderComboUI(items, maxSelect, title, desc) {
+    currentComboItems = items;
+    currentMax = maxSelect;
+    selectedComboIds = [];
+    const wrapper = document.getElementById('comboBuilderAnchor');
+    if (!wrapper) return;
+    const html = `
+      <div class="combo-section reveal">
+        <div class="combo-card">
+          <div class="combo-header">
+            <h2>${escapeHtml(title)}</h2>
+            <p>${escapeHtml(desc)}</p>
+            <div class="combo-counter-area">
+              <div class="combo-counter-badge">
+                <span>📦 Selected</span>
+                <strong id="comboSelectedCount">0</strong> / ${maxSelect}
+              </div>
+              <div class="combo-message-area" id="comboStatusMsg">👉 Pick up to ${maxSelect} pickles</div>
+            </div>
+          </div>
+          <div class="combo-grid" id="comboGrid"></div>
+          <div class="combo-actions-footer">
+            <button class="combo-btn combo-btn-secondary" id="resetComboBtn">Reset</button>
+            <button class="combo-btn combo-btn-primary" id="addComboToCartBtn">🛒 Add Combo to Cart</button>
+          </div>
+        </div>
+      </div>
+    `;
+    wrapper.innerHTML = html;
+    const gridContainer = document.getElementById('comboGrid');
+    function updateComboUIState() {
+      const count = selectedComboIds.length;
+      document.getElementById('comboSelectedCount').innerText = count;
+      const limitReached = count === currentMax;
+      const gridDiv = document.querySelector('.combo-grid');
+      if (gridDiv) {
+        if (limitReached) gridDiv.classList.add('limit-reached');
+        else gridDiv.classList.remove('limit-reached');
+      }
+      document.querySelectorAll('.combo-item').forEach(item => {
+        const id = item.getAttribute('data-id');
+        if (selectedComboIds.includes(id)) item.classList.add('selected-combo');
+        else item.classList.remove('selected-combo');
+      });
+      const msgDiv = document.getElementById('comboStatusMsg');
+      if (count === currentMax) msgDiv.innerHTML = '🎉 Perfect combo! Ready to add to cart.';
+      else msgDiv.innerHTML = `👉 Select ${currentMax - count} more pickle${currentMax - count !== 1 ? 's' : ''} to complete combo.`;
+      const addBtn = document.getElementById('addComboToCartBtn');
+      if (addBtn) addBtn.disabled = (count !== currentMax);
+    }
+    function toggleComboItem(pickleId) {
+      const idx = selectedComboIds.indexOf(pickleId);
+      if (idx !== -1) {
+        selectedComboIds.splice(idx, 1);
+      } else {
+        if (selectedComboIds.length >= currentMax) {
+          const msgDiv = document.getElementById('comboStatusMsg');
+          msgDiv.innerHTML = `⚠️ You can only select ${currentMax} pickles. Remove one first.`;
+          setTimeout(() => updateComboUIState(), 1200);
+          return;
+        }
+        selectedComboIds.push(pickleId);
+      }
+      updateComboUIState();
+    }
+    items.forEach(pickle => {
+      const itemDiv = document.createElement('div');
+      itemDiv.className = 'combo-item';
+      itemDiv.setAttribute('data-id', pickle.id);
+      itemDiv.innerHTML = `
+        <div class="combo-img"><img src="${pickle.imageUrl}" onerror="this.src='https://placehold.co/400x400/f5e9e7/C0392B?text=Pickle'" alt="${escapeHtml(pickle.name)}"></div>
+        <div class="combo-info">
+          <div class="combo-name">${escapeHtml(pickle.name)}</div>
+          <div class="combo-price">${pickle.price}</div>
+        </div>
+      `;
+      itemDiv.addEventListener('click', (e) => { e.stopPropagation(); toggleComboItem(pickle.id); });
+      gridContainer.appendChild(itemDiv);
+    });
+    updateComboUIState();
+    document.getElementById('resetComboBtn')?.addEventListener('click', () => {
+      selectedComboIds = [];
+      updateComboUIState();
+    });
+    document.getElementById('addComboToCartBtn')?.addEventListener('click', () => {
+      if (selectedComboIds.length !== currentMax) {
+        alert(`Please select exactly ${currentMax} pickles for the combo.`);
+        return;
+      }
+      const selectedNames = currentComboItems.filter(i => selectedComboIds.includes(i.id)).map(i => i.name).join(', ');
+      alert(`🍯 Combo added to cart!\nSelected: ${selectedNames}\n(Combo total can be calculated at checkout)`);
+    });
+  }
+
+  // Replace old footer with red demo footer
+  function replaceFooterWithRedDemo() {
+    const existingFooter = document.querySelector('footer');
+    if (existingFooter) existingFooter.remove();
+    const footerDiv = document.createElement('footer');
+    footerDiv.className = 'red-footer';
+    footerDiv.innerHTML = `
+      <div class="footer-demo-details">
+        <p>🍅 <strong>Demo Project | Happy NonVeg Pickles</strong> 🥒</p>
+        <p>Combo Builder & Product Showcase powered by Firestore. All data for demonstration purposes.</p>
+        <p>📧 support@happypickles.demo | 📞 +91 98765 43210 | © 2025 Crafted with spices</p>
+        <p style="margin-top: 12px; font-size:0.8rem;">✨ Build your perfect pickle box — mix, match, and enjoy!</p>
+      </div>
+    `;
+    document.body.appendChild(footerDiv);
   }
 
   function observeReveal() {
@@ -422,10 +726,7 @@
     if (navLinks.style.display === 'flex') navLinks.style.display = '';
     else navLinks.style.cssText = 'display:flex; flex-direction:column; position:fixed; top:var(--nav-h); left:0; right:0; background:rgba(253,246,236,0.98); backdrop-filter:blur(16px); padding:24px 5vw; gap:20px; z-index:800;';
   });
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.nav') && navLinks && navLinks.style.display === 'flex') navLinks.style.display = '';
-  });
-
+  document.addEventListener('click', (e) => { if (!e.target.closest('.nav') && navLinks && navLinks.style.display === 'flex') navLinks.style.display = ''; });
   loadProductPage();
 </script>
 </body>
