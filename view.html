@@ -1,24 +1,4 @@
-Below is the complete merged HTML file that combines the **navbar (dashboard)** and the **product detail view page** into a single, fully responsive page.  
-All existing functionality is preserved: desktop/mobile navbars, search, cart, wishlist, authentication, categories dropdown, and the product view (including variants, quantity, related products).  
-The product detail now loads dynamically inside the main content area, and its **Add to Cart / Wishlist** buttons integrate directly with the navbar’s cart and wishlist systems using the same Firebase backend.
 
-### 🔧 Key changes made:
-- **No CSS conflicts** – The view page’s styles are scoped under `.product-view-container`. Generic selectors (e.g., `button`, `input`, `p`) are prefixed with that class.
-- **No duplicate IDs** – All IDs from the view page remain unique and do not clash with navbar IDs.
-- **Shared Firebase** – The product detail uses the same Firebase project as the navbar (`happynonvegpickles-f2636`). The Firestore queries have been adapted to match the existing product schema.
-- **Cart integration** – Clicking **Add to Cart** or **Buy Now** in the product view adds items to the navbar’s cart, updates badges, and syncs with Firestore if logged in.
-- **Wishlist integration** – The **Wishlist** button adds the product to the user’s wishlist (Firestore) and updates the badge.
-- **Responsive** – The navbar switches between desktop/mobile layouts, and the product view adapts to all screen sizes (sticky gallery on desktop, column layout on mobile).
-- **Search links fixed** – Search result links now point to the current page with the product ID parameter (`?id=...`) so the product view loads correctly.
-- **Removed redundant elements** – The view page’s own navigation bar and duplicate footer have been removed (replaced by the navbar’s structure). A simple footer remains.
-
-### 📦 How to use:
-1. Save the code below as a single `.html` file (e.g., `index.html` or `view.html`).
-2. Ensure the image assets (SVGs, logo, etc.) are in an `./assets/` folder as referenced in the navbar code.
-3. The page will automatically load the product based on the URL parameter `?id=...`. If no ID is provided, a “product not found” message appears.
-4. All other navbar features (search, cart popup, profile dropdown, categories) work exactly as before.
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
