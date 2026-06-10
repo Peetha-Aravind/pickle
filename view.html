@@ -1174,7 +1174,7 @@
         else { input.type = 'password'; wrap.classList.remove('force-fill'); }
     }
 
-    // ---------- FIXED PRODUCT VIEW LOGIC (NO INDEX REQUIRED) ----------
+    // ---------- FIXED PRODUCT VIEW LOGIC (WITH FALLBACKS & INDEX HELP) ----------
     async function loadProductPage() {
         const root = document.getElementById('productDetailRoot');
         const params = new URLSearchParams(window.location.search);
@@ -1185,29 +1185,69 @@
             return;
         }
         try {
-            // Direct document lookup by ID – works immediately, no index needed
+            let productSnapshot = null;
+            
+            // 1) Try direct document ID
             const docRef = db.collection('products').doc(productId);
             const docSnap = await docRef.get();
-            if (!docSnap.exists) {
-                root.innerHTML = `<div class="error-message"><strong>😕 Product not found.</strong><br>Product ID: ${productId}<br><button onclick="location.href='?id='">Browse Pickles</button></div>`;
+            if (docSnap.exists) {
+                productSnapshot = docSnap;
+                console.log("Found by document ID");
+            } else {
+                // 2) Try query by 'productId' field (requires index)
+                try {
+                    const qById = await db.collection('products').where('productId', '==', productId).get();
+                    if (!qById.empty) {
+                        productSnapshot = qById.docs[0];
+                        console.log("Found by productId field");
+                    }
+                } catch (queryError) {
+                    if (queryError.code === 'failed-precondition' && queryError.message.includes('index')) {
+                        const indexUrl = queryError.message.match(/https:\/\/console\.firebase\.google\.com[^\s]+/);
+                        root.innerHTML = `<div class="error-message">
+                            <strong>⚠️ Missing Firestore Index</strong><br>
+                            To search by product ID, you need to create an index.<br>
+                            <a href="${indexUrl ? indexUrl[0] : 'https://console.firebase.google.com/project/happynonvegpickles-f2636/firestore/indexes'}" target="_blank" style="color:var(--rust);">Click here to create the index</a><br>
+                            After creation, refresh the page.
+                            </div>`;
+                        return;
+                    }
+                    throw queryError;
+                }
+                
+                // 3) Try by 'id' field
+                if (!productSnapshot) {
+                    const qByIdField = await db.collection('products').where('id', '==', productId).get();
+                    if (!qByIdField.empty) {
+                        productSnapshot = qByIdField.docs[0];
+                        console.log("Found by id field");
+                    }
+                }
+            }
+            
+            if (!productSnapshot) {
+                root.innerHTML = `<div class="error-message"><strong>😕 Product not found.</strong><br>Product ID: ${productId}<br><button onclick="location.reload()">Retry</button><br><button onclick="location.href='?id='">Browse Shop</button></div>`;
                 return;
             }
-            const product = { id: docSnap.id, ...docSnap.data() };
+            
+            const product = { id: productSnapshot.id, ...productSnapshot.data() };
             console.log("Loaded product:", product);
-            // Normalise field names (handle possible variations)
+            
+            // Normalise field names
             if (!product.mainImage && product.image) product.mainImage = product.image;
             if (!product.image && product.mainImage) product.image = product.mainImage;
             if (!product.variants && product.variant) product.variants = product.variant;
             if (!product.price && product.variants && product.variants[0]) product.price = product.variants[0].price;
             if (!product.name) product.name = "Artisan Pickle";
-            // Fetch related products by category (simple query, may need index if categoryId is used)
+            
+            // Fetch related products (optional, may also need indexes)
             let relatedProducts = [];
             const categoryValue = product.categoryId || product.category;
             if (categoryValue) {
                 try {
                     const q = await db.collection('products').where('categoryId', '==', categoryValue).get();
                     q.forEach(doc => { if (doc.id !== product.id) relatedProducts.push({ id: doc.id, ...doc.data() }); });
-                } catch (e) { console.warn("Category query failed, trying fallback", e); }
+                } catch (e) { console.warn("Related products query failed", e); }
                 if (relatedProducts.length === 0 && categoryValue) {
                     try {
                         const q2 = await db.collection('products').where('category', '==', categoryValue).get();
@@ -1216,13 +1256,16 @@
                 }
             }
             relatedProducts = relatedProducts.slice(0, 4);
+            
             renderProductPage(product, relatedProducts);
             observeReveal();
+            
         } catch (err) {
             console.error("Product load error:", err);
             root.innerHTML = `<div class="error-message"><strong>⚠️ Failed to load data.</strong><br>${err.message || "Check network and console"}<br><button onclick="location.reload()">Retry</button></div>`;
         }
     }
+    
     function renderProductPage(product, relatedProducts) {
         const variants = product.variants || [];
         const defaultVariant = variants[0] || { weight: "Standard", price: product.price || 249, mrp: product.mrp || 299 };
