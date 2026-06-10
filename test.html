@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Combo Builder – Pickle Selection (Firestore IDs)</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #fef7e8;
+      font-family: 'Segoe UI', 'DM Sans', system-ui, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .combo-wrapper {
+      max-width: 1280px;
+      width: 100%;
+      background: white;
+      border-radius: 36px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .combo-layout {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .combo-banner {
+      flex: 1.2;
+      min-width: 260px;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+      background-color: #2c1a0e;
+    }
+
+    .combo-banner-content {
+      position: absolute;
+      bottom: 30px;
+      left: 24px;
+      right: 24px;
+      color: white;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    .combo-banner-content h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .combo-right {
+      flex: 2;
+      padding: 1.8rem 2rem 2rem;
+      background: #fffcf8;
+    }
+
+    .combo-header-right {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+      border-bottom: 2px dashed #f0e2d4;
+      padding-bottom: 16px;
+    }
+
+    .counter-circle {
+      background: #C0392B;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      box-shadow: 0 8px 20px rgba(192,57,43,0.3);
+    }
+
+    .counter-number {
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .counter-label {
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .combo-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #2c1a0e;
+    }
+
+    .pickle-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin: 1.5rem 0 1rem;
+    }
+
+    .pickle-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: white;
+      border-radius: 80px;
+      padding: 0.5rem 1rem 0.5rem 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid #f0e2d4;
+    }
+
+    .pickle-item:hover {
+      background: #fff5ea;
+      transform: translateY(-2px);
+    }
+
+    .pickle-img-circle {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #e9ddd0;
+      flex-shrink: 0;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .pickle-img-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .pickle-info {
+      flex: 1;
+    }
+
+    .pickle-name {
+      font-weight: 700;
+      font-size: 1rem;
+      color: #2c1a0e;
+      margin-bottom: 4px;
+    }
+
+    .pickle-price {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #C0392B;
+    }
+
+    .pickle-item.selected {
+      background: #ffede3;
+      border-left: 5px solid #C0392B;
+      box-shadow: 0 6px 14px rgba(192,57,43,0.2);
+    }
+
+    .pickle-grid.limit-reached .pickle-item:not(.selected) {
+      filter: blur(3px);
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .combo-message {
+      text-align: right;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #C0392B;
+      margin: 8px 0 16px;
+    }
+
+    .combo-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: none;
+      padding: 10px 28px;
+      border-radius: 60px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: #C0392B;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #962d22;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: #2c1a0e;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #1f1108;
+    }
+
+    .hidden-buttons {
+      display: none;
+    }
+
+    .skeleton-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .skeleton-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: #f0ece7;
+      border-radius: 80px;
+      padding: 0.5rem 1rem 0.5rem 0.5rem;
+      animation: pulse 1.2s infinite;
+    }
+
+    .skeleton-img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: #ddd2c6;
+    }
+
+    .skeleton-text {
+      height: 18px;
+      width: 60%;
+      background: #ddd2c6;
+      border-radius: 20px;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
+
+    .error-message {
+      text-align: center;
+      padding: 3rem;
+      color: #b33;
+      font-weight: 500;
+    }
+
+    @media (max-width: 760px) {
+      body { padding: 1rem; }
+      .combo-banner { min-height: 220px; }
+      .pickle-img-circle { width: 55px; height: 55px; }
+      .pickle-name { font-size: 0.85rem; }
+      .counter-circle { width: 65px; height: 65px; }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="combo-wrapper" id="comboApp">
+  <div class="combo-layout">
+    <div class="combo-banner" id="comboBanner" style="background-image: url('https://placehold.co/800x600/2c1a0e/FFFFFF?text=Loading...');">
+      <div class="combo-banner-content">
+        <h3 id="comboTitle">Loading...</h3>
+        <p id="comboDesc"></p>
+      </div>
+    </div>
+    <div class="combo-right">
+      <div class="combo-header-right">
+        <div class="counter-circle">
+          <span class="counter-number" id="selectedCount">0</span>
+          <span class="counter-label">/ <span id="maxSelectSpan">4</span></span>
+        </div>
+        <div class="combo-title">✨ Build Your Pickle Box</div>
+      </div>
+      <div id="pickleGridContainer"></div>
+      <div class="combo-message" id="comboMsg"></div>
+      <div class="combo-actions" id="comboActions">
+        <button class="btn btn-secondary hidden-buttons" id="buyNowBtn">Buy Now →</button>
+        <button class="btn btn-primary hidden-buttons" id="addToCartBtn">Add to Cart 🛒</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+  // Firebase config (replace with your own)
+  const firebaseConfig = {
+    apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
+    authDomain: "pickle-fdc54.firebaseapp.com",
+    projectId: "pickle-fdc54",
+    storageBucket: "pickle-fdc54.firebasestorage.app",
+    messagingSenderId: "650348710985",
+    appId: "1:650348710985:web:b8eedb551a79b536578398",
+    measurementId: "G-B40NG5KQDL"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // DOM elements
+  const pickleContainer = document.getElementById('pickleGridContainer');
+  const selectedCountSpan = document.getElementById('selectedCount');
+  const maxSelectSpan = document.getElementById('maxSelectSpan');
+  const comboMsgDiv = document.getElementById('comboMsg');
+  const addToCartBtn = document.getElementById('addToCartBtn');
+  const buyNowBtn = document.getElementById('buyNowBtn');
+  const comboBannerDiv = document.getElementById('comboBanner');
+  const comboTitleElem = document.getElementById('comboTitle');
+  const comboDescElem = document.getElementById('comboDesc');
+
+  let allPickles = [];      // full product objects { id, name, price, imageUrl }
+  let selectedIds = [];
+  let maxSelect = 4;
+
+  // Helper
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
+  }
+
+  function showSkeleton() {
+    pickleContainer.innerHTML = `
+      <div class="skeleton-grid">
+        ${Array(4).fill(0).map(() => `
+          <div class="skeleton-item">
+            <div class="skeleton-img"></div>
+            <div class="skeleton-text"></div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    addToCartBtn.classList.add('hidden-buttons');
+    buyNowBtn.classList.add('hidden-buttons');
+    comboMsgDiv.innerHTML = 'Loading combo offer...';
+  }
+
+  function showError(message) {
+    pickleContainer.innerHTML = `<div class="error-message">⚠️ ${message}</div>`;
+    addToCartBtn.classList.add('hidden-buttons');
+    buyNowBtn.classList.add('hidden-buttons');
+    comboMsgDiv.innerHTML = '';
+  }
+
+  function updateUI() {
+    const count = selectedIds.length;
+    selectedCountSpan.innerText = count;
+    const limitReached = (count === maxSelect);
+    const grid = document.querySelector('.pickle-grid');
+    if (grid) {
+      if (limitReached) grid.classList.add('limit-reached');
+      else grid.classList.remove('limit-reached');
+    }
+    document.querySelectorAll('.pickle-item').forEach(el => {
+      const id = el.getAttribute('data-id');
+      if (selectedIds.includes(id)) el.classList.add('selected');
+      else el.classList.remove('selected');
+    });
+    if (count === maxSelect) {
+      addToCartBtn.classList.remove('hidden-buttons');
+      buyNowBtn.classList.remove('hidden-buttons');
+      comboMsgDiv.innerHTML = '🎉 Perfect combo! You can now checkout.';
+    } else {
+      addToCartBtn.classList.add('hidden-buttons');
+      buyNowBtn.classList.add('hidden-buttons');
+      const remaining = maxSelect - count;
+      comboMsgDiv.innerHTML = remaining > 0 ? `👉 Select ${remaining} more pickle${remaining > 1 ? 's' : ''} to unlock.` : '';
+    }
+  }
+
+  function togglePickle(id) {
+    const idx = selectedIds.indexOf(id);
+    if (idx !== -1) {
+      selectedIds.splice(idx, 1);
+    } else {
+      if (selectedIds.length >= maxSelect) {
+        comboMsgDiv.innerHTML = `⚠️ You can only select ${maxSelect} pickles. Remove one first.`;
+        setTimeout(() => {
+          if (selectedIds.length !== maxSelect) {
+            const rem = maxSelect - selectedIds.length;
+            comboMsgDiv.innerHTML = rem > 0 ? `👉 Select ${rem} more pickle${rem > 1 ? 's' : ''}.` : '';
+          } else comboMsgDiv.innerHTML = '🎉 Perfect combo!';
+        }, 1500);
+        return;
+      }
+      selectedIds.push(id);
+    }
+    updateUI();
+  }
+
+  function renderPickleGrid() {
+    if (!allPickles.length) {
+      showError('No pickles found for this combo.');
+      return;
+    }
+    const gridDiv = document.createElement('div');
+    gridDiv.className = 'pickle-grid';
+    allPickles.forEach(pickle => {
+      const item = document.createElement('div');
+      item.className = 'pickle-item';
+      if (selectedIds.includes(pickle.id)) item.classList.add('selected');
+      item.setAttribute('data-id', pickle.id);
+      const imgCircle = document.createElement('div');
+      imgCircle.className = 'pickle-img-circle';
+      const img = document.createElement('img');
+      img.src = pickle.imageUrl || 'https://placehold.co/400x400/f5e9e7/C0392B?text=Pickle';
+      img.alt = pickle.name;
+      img.onerror = () => { img.src = 'https://placehold.co/400x400/e2d6ca/5a3a2a?text=Yummy'; };
+      imgCircle.appendChild(img);
+      const infoDiv = document.createElement('div');
+      infoDiv.className = 'pickle-info';
+      infoDiv.innerHTML = `<div class="pickle-name">${escapeHtml(pickle.name)}</div><div class="pickle-price">${pickle.price || '₹199'}</div>`;
+      item.appendChild(imgCircle);
+      item.appendChild(infoDiv);
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        togglePickle(pickle.id);
+      });
+      gridDiv.appendChild(item);
+    });
+    pickleContainer.innerHTML = '';
+    pickleContainer.appendChild(gridDiv);
+    updateUI();
+  }
+
+  // MAIN: fetch combo document -> get pickleIds -> fetch products
+  async function loadComboFromFirestore() {
+    showSkeleton();
+    try {
+      const combosRef = collection(db, 'combos');
+      const comboSnapshot = await getDocs(combosRef);
+      if (comboSnapshot.empty) {
+        showError('No combo offers found in Firestore.');
+        return;
+      }
+      // Use the first combo document (you can modify to pick an active one)
+      const comboDoc = comboSnapshot.docs[0];
+      const comboData = comboDoc.data();
+
+      // Extract combo metadata
+      const title = comboData.title || 'Special Combo';
+      const description = comboData.description || 'Select your favourite pickles';
+      const bannerImage = comboData.bannerImage || '';
+      maxSelect = comboData.maxSelect || 4;
+      maxSelectSpan.innerText = maxSelect;
+      comboTitleElem.innerText = title;
+      comboDescElem.innerText = description;
+      if (bannerImage) {
+        comboBannerDiv.style.backgroundImage = `url('${bannerImage}')`;
+      } else {
+        comboBannerDiv.style.backgroundImage = `url('https://placehold.co/800x600/C0392B/white?text=Pickle+Combo')`;
+      }
+
+      // Get pickle IDs array from the combo document (field name: "pickleIds")
+      const pickleIds = comboData.pickleIds;
+      if (!pickleIds || !Array.isArray(pickleIds) || pickleIds.length === 0) {
+        showError('This combo has no pickle IDs defined.');
+        return;
+      }
+
+      // Fetch each product from "products" collection
+      const productsPromises = pickleIds.map(async (pid) => {
+        const productRef = doc(db, 'products', pid);
+        const productSnap = await getDoc(productRef);
+        if (productSnap.exists()) {
+          const data = productSnap.data();
+          return {
+            id: pid,
+            name: data.name || 'Unnamed Pickle',
+            price: data.price ? `₹${data.price}` : (data.variants?.[0]?.price ? `₹${data.variants[0].price}` : '₹199'),
+            imageUrl: data.image || data.thumbnail || '',
+          };
+        }
+        return null;
+      });
+      const products = await Promise.all(productsPromises);
+      allPickles = products.filter(p => p !== null);
+      
+      if (allPickles.length === 0) {
+        showError('No valid pickle products found for the given IDs.');
+        return;
+      }
+      // Limit to max 8 pickles (2x4 grid)
+      if (allPickles.length > 8) allPickles = allPickles.slice(0, 8);
+      
+      selectedIds = [];
+      renderPickleGrid();
+    } catch (err) {
+      console.error('Firestore error:', err);
+      showError('Failed to load combo. Please check your network and Firestore rules.');
+    }
+  }
+
+  // Button actions
+  addToCartBtn.addEventListener('click', () => {
+    if (selectedIds.length !== maxSelect) {
+      alert(`Please select exactly ${maxSelect} pickles.`);
+      return;
+    }
+    const selectedItems = allPickles.filter(p => selectedIds.includes(p.id));
+    const names = selectedItems.map(i => i.name).join(', ');
+    alert(`🍯 Combo added to cart!\nSelected: ${names}\n(Integrate with your cart system.)`);
+  });
+
+  buyNowBtn.addEventListener('click', () => {
+    if (selectedIds.length !== maxSelect) {
+      alert(`Select ${maxSelect} pickles to continue.`);
+      return;
+    }
+    const selectedItems = allPickles.filter(p => selectedIds.includes(p.id));
+    const names = selectedItems.map(i => i.name).join(', ');
+    alert(`🚀 Proceeding to checkout with combo: ${names}`);
+  });
+
+  // Start
+  loadComboFromFirestore();
+</script>
+</body>
+</html>
