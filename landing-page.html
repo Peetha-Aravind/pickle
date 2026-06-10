@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>Happy NonVeg Pickles – Bold Flavours, Every Bite</title>
   
-  <!-- Google Fonts -->
+  <!-- Google Fonts: IBM Plex Sans for footer + DM Sans + Playfair Display -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- Boxicons CSS -->
   <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
@@ -27,200 +28,7 @@
       overflow-x: hidden;
     }
 
-    /* ---------- ENHANCED NAVBAR STYLES (with popups, no badges) ---------- */
-    .navbar {
-      background: white;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      padding: 0.75rem 1.2rem;
-      font-family: 'Inter', sans-serif;
-    }
-
-    .nav-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .left-group {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .hamburger {
-      background: none;
-      border: none;
-      font-size: 1.8rem;
-      color: #4e3622;
-      cursor: pointer;
-      display: none;
-      padding: 0.2rem;
-    }
-
-    .logo-area {
-      display: flex;
-      align-items: center;
-      text-decoration: none;
-    }
-    .logo-desktop {
-      display: block;
-      height: 50px;
-      width: auto;
-    }
-    .logo-mobile {
-      display: none;
-      height: 40px;
-      width: auto;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 2rem;
-    }
-    .nav-links a {
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 1rem;
-      color: #4a3220;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover {
-      color: #c94f2c;
-    }
-
-    .search-wrapper {
-      flex: 1;
-      max-width: 300px;
-      min-width: 180px;
-    }
-    .search-bar {
-      display: flex;
-      align-items: center;
-      background: #f5efe8;
-      border-radius: 60px;
-      padding: 0.5rem 1rem;
-      border: 1px solid #e2d6ca;
-      transition: all 0.2s;
-    }
-    .search-bar:focus-within {
-      border-color: #c94f2c;
-      background: white;
-      box-shadow: 0 0 0 3px rgba(201, 79, 44, 0.15);
-    }
-    .search-bar i {
-      color: #b28b65;
-      font-size: 1.1rem;
-    }
-    .search-bar input {
-      border: none;
-      background: transparent;
-      padding: 0.3rem 0.8rem;
-      width: 100%;
-      font-size: 0.9rem;
-      outline: none;
-      font-family: inherit;
-    }
-    .search-bar input::placeholder {
-      color: #b79b7c;
-      font-weight: 400;
-    }
-
-    .icon-group {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-    }
-    .icon-btn {
-      background: none;
-      border: none;
-      font-size: 1.6rem;
-      color: #4e3622;
-      cursor: pointer;
-      transition: transform 0.2s, color 0.2s;
-      display: flex;
-      align-items: center;
-      position: relative;
-    }
-    .icon-btn:hover {
-      color: #c94f2c;
-      transform: translateY(-2px);
-    }
-
-    /* Popup styles (cart & profile) */
-    .popup {
-      position: absolute;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-      width: 280px;
-      z-index: 1100;
-      display: none;
-      overflow: hidden;
-      border: 1px solid #f0e2d4;
-      transform: translateX(-50%);
-      left: 50%;
-    }
-    .popup-header {
-      padding: 12px 16px;
-      font-weight: 700;
-      border-bottom: 1px solid #f0e2d4;
-      background: #fffaf5;
-    }
-    .popup-item {
-      padding: 10px 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border-bottom: 1px solid #f3e9e0;
-      cursor: pointer;
-      transition: background 0.1s;
-    }
-    .popup-item:last-child { border-bottom: none; }
-    .popup-item:hover { background: #fef7f0; }
-    .cart-item-img {
-      width: 40px;
-      height: 40px;
-      border-radius: 8px;
-      background: #f5efe8;
-      overflow: hidden;
-    }
-    .cart-item-img img { width: 100%; height: 100%; object-fit: cover; }
-    .cart-item-details { flex: 1; font-size: 0.85rem; }
-    .cart-item-name { font-weight: 600; }
-    .cart-item-price { color: #c94f2c; }
-    .empty-cart { padding: 20px; text-align: center; color: #b79b7c; }
-    .profile-option i { width: 20px; font-size: 1.2rem; }
-    .signout-btn { color: #c94f2c; }
-    .cart-qty-btn, .cart-remove { cursor: pointer; }
-
-    .mobile-menu {
-      display: none;
-      flex-direction: column;
-      background: white;
-      padding: 1rem 1.5rem;
-      border-top: 1px solid #f0e2d4;
-      margin-top: 0.8rem;
-      gap: 1rem;
-    }
-    .mobile-menu a {
-      text-decoration: none;
-      font-weight: 600;
-      color: #4a3220;
-      padding: 0.5rem 0;
-      border-bottom: 1px solid #f3e9e0;
-    }
-    .mobile-menu a:last-child { border-bottom: none; }
-    .mobile-menu.show { display: flex; }
-
-    /* ---------- LANDING PAGE STYLES (unchanged from original) ---------- */
+    /* ---------- ORIGINAL LANDING STYLES (no navbar, hero only shop button) ---------- */
     :root {
       --rust: #C0392B;
       --rust-dark: #962d22;
@@ -237,14 +45,14 @@
       --r-pill: 999px;
       --ff-display: 'Playfair Display', Georgia, serif;
       --ff-body: 'DM Sans', sans-serif;
-      --nav-h: 70px;
+      --nav-h: 0px;
     }
 
     body::before {
       content:'';
       position:fixed;
       inset:0;
-      z-index:1;
+      z-index:-1;
       pointer-events:none;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
       opacity: .4;
@@ -254,14 +62,15 @@
     a { text-decoration:none; color:inherit; }
     button { font-family: var(--ff-body); cursor:pointer; border:none; outline:none; }
 
+    /* Hero section — only shop button, no text */
     .hero {
-      margin-top: var(--nav-h);
       position:relative;
       overflow:hidden;
       height: calc(100svh - var(--nav-h));
       min-height: 480px;
       max-height: 860px;
       background: var(--ink);
+      margin-top: 0;
     }
     .hero-slide {
       position:absolute; inset:0;
@@ -281,27 +90,9 @@
     .hero-slide-content {
       position:absolute; inset:0; z-index:2;
       display:flex; flex-direction:column; justify-content:center;
+      align-items: flex-start;
       padding: 0 8vw;
       max-width: 680px;
-    }
-    .hero-eyebrow {
-      font-size:11px; font-weight:700; letter-spacing:3px;
-      text-transform:uppercase; color:var(--turmeric);
-      margin-bottom:16px;
-      opacity:0; transform:translateY(20px);
-    }
-    .hero-slide.active .hero-eyebrow {
-      animation: slideUp .6s .15s ease forwards;
-    }
-    .hero-heading {
-      font-family: var(--ff-display);
-      font-size: clamp(2.2rem, 5.5vw, 4rem);
-      font-weight:900; line-height:1.08;
-      color:#fff; margin-bottom:20px;
-      opacity:0; transform:translateY(24px);
-    }
-    .hero-slide.active .hero-heading {
-      animation: slideUp .65s .28s ease forwards;
     }
     .hero-btn {
       display:inline-flex; align-items:center; gap:8px;
@@ -313,10 +104,9 @@
       opacity:0; transform:translateY(20px);
     }
     .hero-slide.active .hero-btn {
-      animation: slideUp .6s .44s ease forwards;
+      animation: slideUp .6s .25s ease forwards;
     }
     .hero-btn:hover { background:var(--rust-dark); transform:translateY(-2px); box-shadow:0 8px 24px rgba(192,57,43,.4); }
-    .hero-btn svg { transition:transform .2s; }
     .hero-btn:hover svg { transform:translateX(4px); }
 
     @keyframes slideUp {
@@ -356,12 +146,12 @@
       animation: shimmer 1.6s infinite;
       display:flex; align-items:center; justify-content:center;
     }
-    .hero-skeleton-text { color:rgba(255,255,255,.2); font-size:1rem; }
+    .hero-skeleton .shop-only { text-align: center; }
     @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
     .section { 
       padding: 80px 5vw; 
-      scroll-margin-top: var(--nav-h); 
+      scroll-margin-top: 20px; 
     }
     .section-label {
       display:inline-flex; align-items:center; gap:8px;
@@ -380,6 +170,7 @@
     }
     .section-sub { font-size:15px; color:var(--ash); margin-bottom:48px; max-width:500px; }
 
+    /* product grid & skeleton */
     .product-grid {
       display:grid;
       grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -429,6 +220,45 @@
       transition: background .2s;
     }
     .product-card:hover .product-card-cta { background:var(--rust); }
+
+    /* skeleton card styles */
+    .skeleton-card {
+      background: #fff;
+      border-radius: var(--r-card);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      animation: pulse 1.2s infinite ease-in-out;
+    }
+    .skeleton-img {
+      aspect-ratio: 1/1;
+      background: #e2d6ca;
+    }
+    .skeleton-text {
+      height: 16px;
+      background: #e2d6ca;
+      margin: 16px 16px 8px 16px;
+      border-radius: 8px;
+    }
+    .skeleton-text-sm {
+      height: 12px;
+      width: 60%;
+      margin: 0 16px 12px 16px;
+      background: #e2d6ca;
+      border-radius: 8px;
+    }
+    .skeleton-price {
+      height: 24px;
+      width: 80px;
+      background: #e2d6ca;
+      margin: 8px 16px 16px 16px;
+      border-radius: 8px;
+    }
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
 
     .divider-banner {
       background: var(--rust);
@@ -495,44 +325,154 @@
     .cat-card:hover .cat-card-arrow { background:var(--rust); transform:scale(1.1); }
     .cat-card-arrow svg { stroke:#fff; }
 
+    /* category skeleton */
+    .skeleton-cat {
+      border-radius: var(--r-card);
+      aspect-ratio: 3/4;
+      background: #e2d6ca;
+      animation: pulse 1.2s infinite;
+    }
+
     .empty-state {
       grid-column:1/-1; text-align:center;
       padding:60px 20px; color:var(--ash);
       font-size:.95rem;
     }
-    .footer {
-      background:var(--ink); color:rgba(255,255,255,.6);
-      padding:40px 5vw;
-      display:flex; flex-wrap:wrap; align-items:center;
-      justify-content:space-between; gap:16px;
-      font-size:13px;
+
+    /* ---------- FOOTER (RED BG, WHITE TEXT, IBM PLEX SANS) ---------- */
+    .demo-footer {
+      background: #C0392B;   /* rich red */
+      color: #ffffff;
+      font-family: 'IBM Plex Sans', sans-serif;
+      padding: 56px 5vw 32px;
+      border-top: 1px solid rgba(255,255,255,0.15);
     }
-    .footer-brand {
-      font-family:var(--ff-display); font-size:1.25rem;
-      font-weight:900; color:#fff;
+    .demo-footer,
+    .demo-footer * {
+      color: #ffffff;
     }
-    .footer-links { display:flex; gap:24px; }
-    .footer-links a { transition:color .2s; }
-    .footer-links a:hover { color:#fff; }
+    .footer-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 40px 48px;
+    }
+    .footer-brand-col {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .footer-logo {
+      font-family: var(--ff-display);
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.3px;
+    }
+    .footer-desc {
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: rgba(255,255,255,0.85);
+      max-width: 260px;
+    }
+    .footer-col-title {
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 18px;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      position: relative;
+      display: inline-block;
+    }
+    .footer-col-title::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      width: 32px;
+      height: 2px;
+      background: #FFD966;
+      border-radius: 2px;
+    }
+    .footer-links {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .footer-links li a {
+      color: rgba(255,255,255,0.85);
+      transition: color 0.2s, transform 0.1s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .footer-links li a i {
+      font-size: 1.1rem;
+      color: #FFD966;
+    }
+    .footer-links li a:hover {
+      color: #fff;
+      transform: translateX(3px);
+    }
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.85);
+    }
+    .contact-item i {
+      font-size: 1.2rem;
+      min-width: 24px;
+      color: #FFD966;
+    }
+    .social-icons {
+      display: flex;
+      gap: 20px;
+      margin-top: 12px;
+    }
+    .social-icons a {
+      background: rgba(255,255,255,0.15);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      color: #fff;
+      font-size: 1.3rem;
+    }
+    .social-icons a:hover {
+      background: #FFD966;
+      color: #C0392B;
+      transform: translateY(-3px);
+    }
+    .footer-bottom {
+      text-align: center;
+      padding-top: 40px;
+      margin-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.7);
+    }
+    @media (max-width: 768px) {
+      .footer-container {
+        gap: 32px;
+      }
+      .demo-footer {
+        padding: 48px 6vw 28px;
+      }
+    }
 
     .reveal { opacity:0; transform:translateY(30px); transition: opacity .6s ease, transform .6s ease; }
     .reveal.visible { opacity:1; transform:translateY(0); }
 
-    @media (max-width: 880px) {
-      .navbar { padding: 0.75rem 1rem; }
-      .nav-links { display: none; }
-      .hamburger { display: block; }
-      .logo-desktop { display: none; }
-      .logo-mobile { display: block; }
-      .search-wrapper { max-width: 220px; }
-      .icon-group { gap: 1rem; }
-    }
-    @media (max-width: 640px) {
-      .nav-container { flex-wrap: wrap; }
-      .search-wrapper { order: 3; max-width: 100%; width: 100%; margin-top: 0.6rem; }
-      .icon-group { margin-left: auto; }
-      .left-group { flex: 1; }
-    }
     @media (max-width:768px) {
       .hero { max-height:580px; }
       .hero-arrow { display:none; }
@@ -547,94 +487,22 @@
 </head>
 <body>
 
-<!-- ===================== ENHANCED NAVBAR (only change) ===================== -->
-<nav class="navbar">
-  <div class="nav-container">
-    <div class="left-group">
-      <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
-        <i class="bx bx-menu"></i>
-      </button>
-      <a href="#" class="logo-area">
-        <img src="./assets/logo.png" alt="Happy NonVeg Pickles" class="logo-desktop">
-        <img src="./assets/logo-small.png" alt="Happy NonVeg Pickles" class="logo-mobile">
-      </a>
-    </div>
-    <div class="nav-links">
-      <a href="#">Home</a>
-      <a href="#">Shop</a>
-      <a href="#">Categories</a>
-    </div>
-    <div class="search-wrapper">
-      <div class="search-bar">
-        <i class="bx bx-search"></i>
-        <input type="text" placeholder="search product">
-      </div>
-    </div>
-    <div class="icon-group">
-      <!-- Wishlist: opens new page -->
-      <a href="wishlist.html" class="icon-btn" style="text-decoration: none;" aria-label="Wishlist">
-        <i class="bx bx-heart"></i>
-      </a>
-      <!-- Cart: popup below icon -->
-      <div style="position: relative;">
-        <button class="icon-btn" id="cartIconBtn" aria-label="Cart">
-          <i class="bx bx-cart"></i>
-        </button>
-        <div id="cartPopup" class="popup">
-          <div class="popup-header">🛒 Your Cart</div>
-          <div id="cartPopupContent">Loading...</div>
-        </div>
-      </div>
-      <!-- Profile: popup below icon -->
-      <div style="position: relative;">
-        <button class="icon-btn" id="profileIconBtn" aria-label="Profile">
-          <i class="bx bx-user"></i>
-        </button>
-        <div id="profilePopup" class="popup">
-          <div class="popup-header">👤 Account</div>
-          <div class="popup-item profile-option" data-action="profile">
-            <i class="bx bx-user-circle"></i> My Profile
-          </div>
-          <div class="popup-item profile-option" data-action="orders">
-            <i class="bx bx-package"></i> My Orders
-          </div>
-          <div class="popup-item profile-option signout-btn" data-action="signout">
-            <i class="bx bx-log-out"></i> Sign Out
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="mobile-menu" id="mobileMenu">
-    <a href="#">Home</a>
-    <a href="#">Shop</a>
-    <a href="#">Categories</a>
-  </div>
-</nav>
-
-<!-- ===================== LANDING PAGE CONTENT (unchanged) ===================== -->
+<!-- HERO SECTION -->
 <section class="hero" id="heroSection">
   <div class="hero-skeleton" id="heroSkeleton">
-    <span class="hero-skeleton-text">Loading…</span>
+    <div class="shop-only">
+      <a href="#bestsellers" class="hero-btn" style="opacity:1; transform:none;">Shop Now<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
   </div>
   <div id="heroSlides"></div>
-  <button class="hero-arrow prev" id="heroPrev" aria-label="Previous slide" style="display:none">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M15 18l-6-6 6-6"/>
-    </svg>
-  </button>
-  <button class="hero-arrow next" id="heroNext" aria-label="Next slide" style="display:none">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M9 18l6-6-6-6"/>
-    </svg>
-  </button>
+  <button class="hero-arrow prev" id="heroPrev" aria-label="Previous slide" style="display:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <button class="hero-arrow next" id="heroNext" aria-label="Next slide" style="display:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
   <div class="hero-dots" id="heroDots"></div>
 </section>
 
-<div class="divider-banner" aria-hidden="true">
-  <div class="divider-track" id="marqueeTrack"></div>
-</div>
+<div class="divider-banner" aria-hidden="true"><div class="divider-track" id="marqueeTrack"></div></div>
 
+<!-- Best Sellers Section with Skeleton -->
 <section class="section bestsellers reveal" id="bestsellers">
   <div class="section-label">Our Favourites</div>
   <h2 class="section-heading">Best Sellers</h2>
@@ -642,6 +510,7 @@
   <div class="product-grid" id="bestsellersGrid"></div>
 </section>
 
+<!-- Categories Section with Skeleton -->
 <section class="section categories reveal" id="categories">
   <div class="section-label">Explore</div>
   <h2 class="section-heading">Shop by Category</h2>
@@ -651,205 +520,51 @@
 
 <div id="allCategoryProductsContainer"></div>
 
-<footer class="footer">
-  <div class="footer-brand">Happy NonVeg Pickles</div>
-  <div class="footer-links">
-    <a href="#bestsellers">Best Sellers</a>
-    <a href="#categories">Categories</a>
+<!-- FOOTER (red background, white text, IBM Plex Sans) -->
+<footer class="demo-footer">
+  <div class="footer-container">
+    <div class="footer-brand-col">
+      <div class="footer-logo">Happy NonVeg Pickles</div>
+      <div class="footer-desc">Bringing you bold, authentic flavours straight from traditional recipes. No artificial preservatives, just pure joy in every bite.</div>
+      <div class="social-icons">
+        <a href="#"><i class="bx bxl-facebook"></i></a>
+        <a href="#"><i class="bx bxl-instagram"></i></a>
+        <a href="#"><i class="bx bxl-twitter"></i></a>
+        <a href="#"><i class="bx bxl-whatsapp"></i></a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Quick Links</div>
+      <ul class="footer-links">
+        <li><a href="#bestsellers"><i class="bx bx-trending-up"></i> Best Sellers</a></li>
+        <li><a href="#categories"><i class="bx bx-category"></i> All Categories</a></li>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms & Conditions</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Support</div>
+      <ul class="footer-links">
+        <li><a href="#">FAQs</a></li>
+        <li><a href="#">Shipping Info</a></li>
+        <li><a href="#">Returns & Exchange</a></li>
+        <li><a href="#">Track Order</a></li>
+        <li><a href="#">Contact Us</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Get in Touch</div>
+      <div class="contact-item"><i class="bx bx-map"></i><span>123 Flavor Street, Spice Market, Delhi - 110001</span></div>
+      <div class="contact-item"><i class="bx bx-phone"></i><span>+91 98765 43210</span></div>
+      <div class="contact-item"><i class="bx bx-envelope"></i><span>hello@happynonvegpickles.com</span></div>
+      <div class="contact-item"><i class="bx bx-time-five"></i><span>Mon - Sat: 10:00 AM – 7:00 PM</span></div>
+    </div>
   </div>
-  <div>© 2025 Happy NonVeg Pickles. All rights reserved.</div>
+  <div class="footer-bottom"><p>© 2025 Happy NonVeg Pickles — All rights reserved. Crafted with ❤️ for pickle lovers.</p><p style="margin-top: 6px; font-size: 11px;">Demo project — for showcase purposes only.</p></div>
 </footer>
 
-<!-- ===================== JAVASCRIPT ===================== -->
-<!-- Navbar hamburger toggle -->
-<script>
-  const hamburger = document.getElementById('hamburgerBtn');
-  const mobileMenu = document.getElementById('mobileMenu');
-  if (hamburger && mobileMenu) {
-    hamburger.addEventListener('click', () => {
-      mobileMenu.classList.toggle('show');
-    });
-    mobileMenu.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        mobileMenu.classList.remove('show');
-      });
-    });
-  }
-</script>
-
-<!-- Cart & Popup Management (standalone – does not modify landing page products) -->
-<script>
-  let cart = [];
-  const CART_KEY = 'happyPicklesCart';
-
-  function loadCart() {
-    const stored = localStorage.getItem(CART_KEY);
-    if (stored) cart = JSON.parse(stored);
-    else cart = [];
-  }
-  function saveCart() {
-    localStorage.setItem(CART_KEY, JSON.stringify(cart));
-  }
-
-  function addToCart(product) {
-    const existing = cart.find(item => item.id === product.id);
-    if (existing) existing.quantity += 1;
-    else cart.push({ ...product, quantity: 1 });
-    saveCart();
-    renderCartPopup();
-  }
-
-  function removeFromCart(productId) {
-    cart = cart.filter(item => item.id !== productId);
-    saveCart();
-    renderCartPopup();
-  }
-
-  function updateQuantity(productId, delta) {
-    const item = cart.find(i => i.id === productId);
-    if (item) {
-      item.quantity += delta;
-      if (item.quantity <= 0) removeFromCart(productId);
-      else { saveCart(); renderCartPopup(); }
-    }
-  }
-
-  function renderCartPopup() {
-    const container = document.getElementById('cartPopupContent');
-    if (!container) return;
-    if (cart.length === 0) {
-      container.innerHTML = '<div class="empty-cart">Your cart is empty.</div>';
-      return;
-    }
-    let html = '';
-    cart.forEach(item => {
-      html += `
-        <div class="popup-item" style="flex-wrap: wrap;">
-          <div class="cart-item-img">
-            <img src="${item.image}" alt="${item.name}" onerror="this.src='https://placehold.co/40x40/f5e9e7/c0392b?text='">
-          </div>
-          <div class="cart-item-details">
-            <div class="cart-item-name">${escapeHtml(item.name)}</div>
-            <div class="cart-item-price">₹${Math.round(item.price)}</div>
-            <div style="display:flex; gap:8px; margin-top:6px;">
-              <button class="cart-qty-btn" data-id="${item.id}" data-delta="-1" style="background:#f0e2d4; border:none; width:24px; border-radius:20px;">-</button>
-              <span>${item.quantity}</span>
-              <button class="cart-qty-btn" data-id="${item.id}" data-delta="1" style="background:#f0e2d4; border:none; width:24px; border-radius:20px;">+</button>
-              <button class="cart-remove" data-id="${item.id}" style="background:none; border:none; color:#c94f2c; margin-left:auto;">Remove</button>
-            </div>
-          </div>
-        </div>
-      `;
-    });
-    container.innerHTML = html;
-    document.querySelectorAll('.cart-qty-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const id = btn.getAttribute('data-id');
-        const delta = parseInt(btn.getAttribute('data-delta'));
-        updateQuantity(id, delta);
-      });
-    });
-    document.querySelectorAll('.cart-remove').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const id = btn.getAttribute('data-id');
-        removeFromCart(id);
-      });
-    });
-  }
-
-  function handleProfileAction(action) {
-    if (action === 'profile') alert("My Profile – coming soon");
-    else if (action === 'orders') alert("My Orders – coming soon");
-    else if (action === 'signout') {
-      alert("Signed out successfully!");
-      window.location.href = 'index.html';
-    }
-  }
-
-  let activePopup = null;
-  function positionPopup(popupElement, buttonElement) {
-    const rect = buttonElement.getBoundingClientRect();
-    const popupWidth = popupElement.offsetWidth;
-    let left = rect.left + (rect.width / 2) - (popupWidth / 2);
-    const maxLeft = window.innerWidth - popupWidth - 10;
-    left = Math.min(Math.max(left, 10), maxLeft);
-    popupElement.style.left = left + 'px';
-    popupElement.style.top = (rect.bottom + window.scrollY + 8) + 'px';
-  }
-  function showPopup(popupId, buttonElement) {
-    if (activePopup) activePopup.style.display = 'none';
-    const popup = document.getElementById(popupId);
-    if (!popup) return;
-    if (activePopup === popup && popup.style.display === 'block') {
-      popup.style.display = 'none';
-      activePopup = null;
-      return;
-    }
-    positionPopup(popup, buttonElement);
-    popup.style.display = 'block';
-    activePopup = popup;
-  }
-  function closeAllPopups() {
-    if (activePopup) {
-      activePopup.style.display = 'none';
-      activePopup = null;
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    loadCart();
-    renderCartPopup();
-
-    const cartBtn = document.getElementById('cartIconBtn');
-    if (cartBtn) {
-      cartBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        closeAllPopups();
-        showPopup('cartPopup', cartBtn);
-        renderCartPopup();
-      });
-    }
-    const profileBtn = document.getElementById('profileIconBtn');
-    if (profileBtn) {
-      profileBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        closeAllPopups();
-        showPopup('profilePopup', profileBtn);
-      });
-    }
-    const profilePopup = document.getElementById('profilePopup');
-    if (profilePopup) {
-      profilePopup.addEventListener('click', (e) => {
-        const option = e.target.closest('.profile-option');
-        if (option) {
-          handleProfileAction(option.getAttribute('data-action'));
-          closeAllPopups();
-        }
-      });
-    }
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.icon-btn') && !e.target.closest('.popup')) closeAllPopups();
-    });
-    window.addEventListener('resize', () => {
-      if (activePopup) {
-        let btnId = activePopup.id === 'cartPopup' ? 'cartIconBtn' : 'profilePopup' ? 'profileIconBtn' : null;
-        if (btnId) {
-          const btn = document.getElementById(btnId);
-          if (btn) positionPopup(activePopup, btn);
-        }
-      }
-    });
-  });
-
-  function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
-  }
-</script>
-
-<!-- Firebase & Landing Page Modules (original product card – no Add to Cart) -->
+<!-- Firebase + Skeleton + Data Loading -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
   import { getFirestore, doc, getDoc, getDocs, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -876,7 +591,6 @@
     return `https://placehold.co/${w}x${h}/f5e9e7/c0392b?text=${encodeURIComponent(text||'Pickle')}`;
   }
 
-  // Original product card (no Add to Cart button)
   function createProductCard(prod, index = 0) {
     const variants = prod.variants || [];
     const v0 = variants[0] || {};
@@ -889,140 +603,85 @@
     card.style.transitionDelay = `${(index % 6) * 70}ms`;
     card.onclick = () => window.location.href = `view.html?id=${prod.id}`;
     card.innerHTML = `
-      <div class="product-card-img">
-        ${disc ? `<div class="card-ribbon">${disc}</div>` : ''}
-        <img src="${img}" alt="${prod.name}" loading="lazy" onerror="this.src='${fallback(400,400,prod.name)}'">
-      </div>
-      <div class="product-card-body">
-        <div class="product-card-name">${prod.name}</div>
-        ${v0.weight ? `<div class="product-card-weight">${v0.weight}${variants.length > 1 ? ` · ${variants.length} sizes` : ''}</div>` : ''}
-        <div class="product-card-pricing">
-          <span class="product-card-price">${fmt(price)}</span>
-          ${mrp && +mrp > +price ? `<span class="product-card-mrp">${fmt(mrp)}</span>` : ''}
-          ${disc ? `<span class="product-card-discount">${disc}</span>` : ''}
-        </div>
-      </div>
+      <div class="product-card-img">${disc ? `<div class="card-ribbon">${disc}</div>` : ''}<img src="${img}" alt="${prod.name}" loading="lazy" onerror="this.src='${fallback(400,400,prod.name)}'"></div>
+      <div class="product-card-body"><div class="product-card-name">${prod.name}</div>${v0.weight ? `<div class="product-card-weight">${v0.weight}${variants.length > 1 ? ` · ${variants.length} sizes` : ''}</div>` : ''}<div class="product-card-pricing"><span class="product-card-price">${fmt(price)}</span>${mrp && +mrp > +price ? `<span class="product-card-mrp">${fmt(mrp)}</span>` : ''}${disc ? `<span class="product-card-discount">${disc}</span>` : ''}</div></div>
       <div class="product-card-cta">View Product</div>
     `;
     return card;
   }
 
-  // Hero slider (unchanged)
+  // SKELETON GENERATORS
+  function showSkeletonProducts(container, count = 6) {
+    container.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+      const skeleton = document.createElement('div');
+      skeleton.className = 'skeleton-card';
+      skeleton.innerHTML = `<div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-text-sm"></div><div class="skeleton-price"></div>`;
+      container.appendChild(skeleton);
+    }
+  }
+  function showSkeletonCategories(container, count = 4) {
+    container.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+      const sk = document.createElement('div');
+      sk.className = 'skeleton-cat';
+      container.appendChild(sk);
+    }
+  }
+
+  // Hero logic (unchanged)
   const isMobile = () => window.innerWidth <= 768;
   const HERO_INTERVAL = 5000;
   let heroSlides = [], heroIndex = 0, heroTimer = null;
-
   function buildHeroSlide(slide, idx) {
     const imgSrc = isMobile() && slide.mobileImg ? slide.mobileImg : slide.desktopImg;
     const div = document.createElement('div');
     div.className = `hero-slide${idx === 0 ? ' active' : ''}`;
-    div.innerHTML = `
-      <img src="${imgSrc}" alt="Slide ${idx + 1}" onerror="this.src='${fallback(1400,700,'')}'">
-      <div class="hero-slide-content">
-        <div class="hero-eyebrow">Fresh & Flavourful</div>
-        <h1 class="hero-heading">${slide.heading || 'Taste the Tradition'}</h1>
-        ${slide.btnName ? `<a href="${slide.btnLink || '#bestsellers'}" class="hero-btn">${slide.btnName}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>` : `<a href="#bestsellers" class="hero-btn">Shop Now<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>`}
-      </div>`;
+    const btnLink = slide.btnLink || '#bestsellers';
+    const btnText = slide.btnName || 'Shop Now';
+    div.innerHTML = `<img src="${imgSrc}" alt="Hero" onerror="this.src='${fallback(1400,700,'')}'"><div class="hero-slide-content"><a href="${btnLink}" class="hero-btn">${btnText}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></div>`;
     return div;
   }
-
-  function buildDot(idx) {
-    const btn = document.createElement('button');
-    btn.className = `hero-dot${idx === 0 ? ' active' : ''}`;
-    btn.onclick = () => goToSlide(idx);
-    return btn;
-  }
-
-  function goToSlide(idx) {
-    const slides = document.querySelectorAll('.hero-slide');
-    const dots = document.querySelectorAll('.hero-dot');
-    slides[heroIndex]?.classList.remove('active');
-    dots[heroIndex]?.classList.remove('active');
-    heroIndex = (idx + heroSlides.length) % heroSlides.length;
-    slides[heroIndex]?.classList.add('active');
-    dots[heroIndex]?.classList.add('active');
-    resetTimer();
-  }
-
-  function resetTimer() {
-    clearInterval(heroTimer);
-    if (heroSlides.length > 1) heroTimer = setInterval(() => goToSlide(heroIndex + 1), HERO_INTERVAL);
-  }
-
+  function buildDot(idx) { const btn = document.createElement('button'); btn.className = `hero-dot${idx === 0 ? ' active' : ''}`; btn.onclick = () => goToSlide(idx); return btn; }
+  function goToSlide(idx) { const slides = document.querySelectorAll('.hero-slide'); const dots = document.querySelectorAll('.hero-dot'); if(slides.length===0) return; slides[heroIndex]?.classList.remove('active'); dots[heroIndex]?.classList.remove('active'); heroIndex = (idx + heroSlides.length) % heroSlides.length; slides[heroIndex]?.classList.add('active'); dots[heroIndex]?.classList.add('active'); resetTimer(); }
+  function resetTimer() { clearInterval(heroTimer); if(heroSlides.length > 1) heroTimer = setInterval(() => goToSlide(heroIndex + 1), HERO_INTERVAL); }
   async function loadHero(masterData) {
-    const skeleton = document.getElementById('heroSkeleton');
-    const slidesEl = document.getElementById('heroSlides');
-    const dotsEl = document.getElementById('heroDots');
-    const prevBtn = document.getElementById('heroPrev');
-    const nextBtn = document.getElementById('heroNext');
-    if (masterData?.config?.isHeroEnabled === false) {
-      skeleton.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;"><p style="color:rgba(255,255,255,.4);font-size:1rem;">Hero section is currently disabled.</p></div>`;
-      return;
-    }
-    const rawSlides = masterData?.hero_slides?.slides || [];
-    heroSlides = rawSlides.filter(s => s.isActive !== false);
-    if (!heroSlides.length) {
-      skeleton.style.background = 'linear-gradient(120deg, #2a1a10 0%, #5a2e1a 50%, #2a1a10 100%)';
-      skeleton.innerHTML = `<div style="text-align:center;padding:0 40px;"><div style="font-family:'Playfair Display',serif;font-size:clamp(2rem,6vw,4rem);font-weight:900;color:#fff;line-height:1.1;margin-bottom:20px;">Bold Flavours,<br>Every Bite.</div><a href="#bestsellers" style="display:inline-flex;align-items:center;gap:8px;background:#C0392B;color:#fff;padding:14px 32px;border-radius:999px;font-weight:700;font-size:15px;text-decoration:none;">Shop Now</a></div>`;
-      return;
-    }
-    skeleton.style.display = 'none';
-    heroSlides.forEach((slide, i) => {
-      slidesEl.appendChild(buildHeroSlide(slide, i));
-      dotsEl.appendChild(buildDot(i));
-    });
-    if (heroSlides.length > 1) {
-      prevBtn.style.display = 'flex';
-      nextBtn.style.display = 'flex';
-      prevBtn.onclick = () => goToSlide(heroIndex - 1);
-      nextBtn.onclick = () => goToSlide(heroIndex + 1);
-      resetTimer();
-    }
-    let lastMobile = isMobile();
-    window.addEventListener('resize', () => {
-      const nowMobile = isMobile();
-      if (nowMobile === lastMobile) return;
-      lastMobile = nowMobile;
-      document.querySelectorAll('.hero-slide').forEach((el, i) => {
-        const slide = heroSlides[i];
-        const img = el.querySelector('img');
-        if (img && slide) img.src = (nowMobile && slide.mobileImg) ? slide.mobileImg : slide.desktopImg;
-      });
-    });
+    const skeleton = document.getElementById('heroSkeleton'); const slidesEl = document.getElementById('heroSlides'); const dotsEl = document.getElementById('heroDots'); const prevBtn = document.getElementById('heroPrev'); const nextBtn = document.getElementById('heroNext');
+    if (masterData?.config?.isHeroEnabled === false) { skeleton.innerHTML = `<div class="shop-only"><a href="#bestsellers" class="hero-btn" style="opacity:1; transform:none;">Shop Now<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></div>`; return; }
+    const rawSlides = masterData?.hero_slides?.slides || []; heroSlides = rawSlides.filter(s => s.isActive !== false);
+    if (!heroSlides.length) { skeleton.style.background = 'linear-gradient(120deg, #2a1a10 0%, #5a2e1a 50%, #2a1a10 100%)'; skeleton.innerHTML = `<div class="shop-only"><a href="#bestsellers" class="hero-btn" style="opacity:1; transform:none;">Shop Now<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></div>`; return; }
+    skeleton.style.display = 'none'; slidesEl.innerHTML = ''; dotsEl.innerHTML = '';
+    heroSlides.forEach((slide,i)=>{ slidesEl.appendChild(buildHeroSlide(slide,i)); dotsEl.appendChild(buildDot(i)); });
+    if(heroSlides.length>1){ prevBtn.style.display='flex'; nextBtn.style.display='flex'; prevBtn.onclick=()=>goToSlide(heroIndex-1); nextBtn.onclick=()=>goToSlide(heroIndex+1); resetTimer(); } else { prevBtn.style.display='none'; nextBtn.style.display='none'; }
+    let lastMobile = isMobile(); window.addEventListener('resize',()=>{ const nowMobile=isMobile(); if(nowMobile===lastMobile) return; lastMobile=nowMobile; document.querySelectorAll('.hero-slide').forEach((el,i)=>{ const slide=heroSlides[i]; const img=el.querySelector('img'); if(img&&slide) img.src=(nowMobile&&slide.mobileImg)?slide.mobileImg:slide.desktopImg; }); });
   }
 
-  function buildMarquee() {
-    const items = ['Authentic Recipes', 'Sun-dried Mangoes', 'No Preservatives', 'Handcrafted Daily', 'Ships Pan-India', 'Family Secret Spices', 'Authentic Recipes', 'Sun-dried Mangoes', 'No Preservatives', 'Handcrafted Daily', 'Ships Pan-India', 'Family Secret Spices'];
-    const track = document.getElementById('marqueeTrack');
-    track.innerHTML = items.map(t => `<span class="divider-item">${t}</span>`).join('');
-  }
+  function buildMarquee() { const items = ['Authentic Recipes', 'Sun-dried Mangoes', 'No Preservatives', 'Handcrafted Daily', 'Ships Pan-India', 'Family Secret Spices', 'Authentic Recipes', 'Sun-dried Mangoes', 'No Preservatives', 'Handcrafted Daily', 'Ships Pan-India', 'Family Secret Spices']; document.getElementById('marqueeTrack').innerHTML = items.map(t => `<span class="divider-item">${t}</span>`).join(''); }
 
-  async function loadBestSellers(bestPickleIds, allProducts) {
+  async function loadBestSellers(bestIds, allProducts) {
     const grid = document.getElementById('bestsellersGrid');
-    grid.innerHTML = '';
-    const picks = bestPickleIds.map(id => allProducts.find(p => p.id === id)).filter(Boolean).filter(p => p.isavailable !== false);
+    showSkeletonProducts(grid, 6);
+    await new Promise(r => setTimeout(r, 300)); // slight delay for realism but data will override
+    const picks = bestIds.map(id => allProducts.find(p => p.id === id)).filter(Boolean).filter(p => p.isavailable !== false);
     if (!picks.length) { grid.innerHTML = `<div class="empty-state">No best sellers configured yet.</div>`; return; }
+    grid.innerHTML = '';
     picks.forEach((prod, i) => grid.appendChild(createProductCard(prod, i)));
     observeReveal();
   }
 
   async function loadCategories(landingCats, allCategories) {
     const grid = document.getElementById('categoriesGrid');
-    grid.innerHTML = '';
+    showSkeletonCategories(grid, 4);
+    await new Promise(r => setTimeout(r, 200));
     const visible = landingCats.filter(c => c.isVisible !== false);
     const orderedCats = visible.map(lc => allCategories.find(c => c.id === lc.id)).filter(c => c && c.isavailable !== false);
     if (!orderedCats.length) { grid.innerHTML = `<div class="empty-state">No categories available.</div>`; return; }
+    grid.innerHTML = '';
     orderedCats.forEach((cat, i) => {
       const img = cat.image || fallback(300, 400, cat.name);
       const prodCount = cat.products ? Object.keys(cat.products).length : null;
-      const card = document.createElement('div');
-      card.className = 'cat-card reveal';
-      card.style.transitionDelay = `${i * 80}ms`;
-      card.onclick = () => {
-        const targetSection = document.getElementById(`category-section-${cat.id}`);
-        if (targetSection) targetSection.scrollIntoView({ behavior: 'smooth' });
-        else window.location.href = `products.html?categoryId=${cat.id}`;
-      };
+      const card = document.createElement('div'); card.className = 'cat-card reveal'; card.style.transitionDelay = `${i * 80}ms`;
+      card.onclick = () => { const targetSection = document.getElementById(`category-section-${cat.id}`); if(targetSection) targetSection.scrollIntoView({ behavior: 'smooth' }); else window.location.href = `products.html?categoryId=${cat.id}`; };
       card.innerHTML = `<img src="${img}" alt="${cat.name}" loading="lazy" onerror="this.src='${fallback(300,400,cat.name)}'"><div class="cat-card-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div><div class="cat-card-label"><div class="cat-card-name">${cat.name}</div>${prodCount !== null ? `<div class="cat-card-count">${prodCount} product${prodCount !== 1 ? 's' : ''}</div>` : ''}</div>`;
       grid.appendChild(card);
     });
@@ -1038,41 +697,28 @@
     if (!orderedCats.length) return;
     orderedCats.forEach((cat) => {
       let catProducts = allProducts.filter(p => p.categoryId === cat.id || p.category === cat.name);
-      if (catProducts.length === 0 && cat.products) {
-        const productIds = Object.keys(cat.products);
-        catProducts = allProducts.filter(p => productIds.includes(p.id));
-      }
+      if (catProducts.length === 0 && cat.products) { const productIds = Object.keys(cat.products); catProducts = allProducts.filter(p => productIds.includes(p.id)); }
       catProducts = catProducts.filter(p => p.isavailable !== false);
       if (catProducts.length === 0) return;
-      const sectionWrapper = document.createElement('section');
-      sectionWrapper.className = 'section category-products-wrapper reveal';
-      sectionWrapper.id = `category-section-${cat.id}`;
-      const sectionHeader = `<div class="section-label">${cat.name} Collection</div><h2 class="section-heading">Best of ${cat.name}</h2><p class="section-sub">Explore our top picks carefully curated for our ${cat.name} lovers.</p>`;
-      const grid = document.createElement('div');
-      grid.className = 'product-grid';
+      const sectionWrapper = document.createElement('section'); sectionWrapper.className = 'section category-products-wrapper reveal'; sectionWrapper.id = `category-section-${cat.id}`;
+      const sectionHeader = `<div class="section-label">${cat.name} Collection</div><h2 class="section-heading">Best of ${cat.name}</h2><p class="section-sub">Explore our top picks carefully curated for ${cat.name} lovers.</p>`;
+      const grid = document.createElement('div'); grid.className = 'product-grid';
       catProducts.forEach((prod, idx) => grid.appendChild(createProductCard(prod, idx)));
-      sectionWrapper.innerHTML = sectionHeader;
-      sectionWrapper.appendChild(grid);
+      sectionWrapper.innerHTML = sectionHeader; sectionWrapper.appendChild(grid);
       container.appendChild(sectionWrapper);
     });
     observeReveal();
   }
 
-  function observeReveal() {
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('visible'); io.unobserve(en.target); } });
-    }, { threshold: 0.08 });
-    document.querySelectorAll('.reveal:not(.visible)').forEach(el => io.observe(el));
-  }
+  function observeReveal() { const io = new IntersectionObserver((entries) => { entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('visible'); io.unobserve(en.target); } }); }, { threshold: 0.08 }); document.querySelectorAll('.reveal:not(.visible)').forEach(el => io.observe(el)); }
 
   async function init() {
     buildMarquee();
+    // Show skeletons before loading
+    const bestGrid = document.getElementById('bestsellersGrid'); showSkeletonProducts(bestGrid, 6);
+    const catGrid = document.getElementById('categoriesGrid'); showSkeletonCategories(catGrid, 4);
     try {
-      const [masterSnap, productsSnap, categoriesSnap] = await Promise.all([
-        getDoc(doc(db, 'landing_page', 'master')),
-        getDocs(collection(db, 'products')),
-        getDocs(collection(db, 'categories')),
-      ]);
+      const [masterSnap, productsSnap, categoriesSnap] = await Promise.all([ getDoc(doc(db, 'landing_page', 'master')), getDocs(collection(db, 'products')), getDocs(collection(db, 'categories')) ]);
       const masterData = masterSnap.exists() ? masterSnap.data() : {};
       const allProducts = productsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
       const allCategories = categoriesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -1084,25 +730,10 @@
       const catsToShow = landingCats.length ? landingCats : allCategories.map(c => ({ id: c.id, isVisible: true }));
       await loadCategories(catsToShow, allCategories);
       loadAllCategoryProducts(catsToShow, allCategories, allProducts);
-    } catch (err) {
-      console.error('Firebase load error:', err);
-      document.getElementById('bestsellersGrid').innerHTML = `<div class="empty-state">Failed to load products. Please refresh.</div>`;
-      document.getElementById('categoriesGrid').innerHTML = `<div class="empty-state">Failed to load categories. Please refresh.</div>`;
-    }
+    } catch (err) { console.error(err); document.getElementById('bestsellersGrid').innerHTML = `<div class="empty-state">Failed to load products.</div>`; document.getElementById('categoriesGrid').innerHTML = `<div class="empty-state">Failed to load categories.</div>`; }
   }
   init();
+  window.addEventListener('load', () => { const io = new IntersectionObserver((entries)=> { entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('visible'); io.unobserve(en.target); } }); }, { threshold: 0.08 }); document.querySelectorAll('.reveal:not(.visible)').forEach(el=>io.observe(el)); });
 </script>
-
-<!-- Scroll reveal (existing) -->
-<script>
-  function observeReveal() {
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('visible'); io.unobserve(en.target); } });
-    }, { threshold: 0.08 });
-    document.querySelectorAll('.reveal:not(.visible)').forEach(el => io.observe(el));
-  }
-  observeReveal();
-</script>
-
 </body>
 </html>
