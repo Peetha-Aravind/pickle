@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -830,14 +829,14 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // ---------- GLOBAL VARIABLES (navbar + product view) ----------
+    // ---------- GLOBAL VARIABLES ----------
     let cart = JSON.parse(localStorage.getItem('vastramaya_cart')) || [];
     let wishlist = [];
     let currentUser = null;
     let wishlistUnsubscribe = null;
     let allProducts = [];
 
-    // ---------- HELPER FUNCTIONS (navbar & product view) ----------
+    // ---------- HELPER FUNCTIONS ----------
     function formatPrice(price) { return `₹${Math.round(Number(price) || 0)}`; }
     function getDiscountPercent(mrp, price) {
         if (!mrp || !price || mrp <= price) return null;
@@ -992,7 +991,7 @@
         }
     }
 
-    // ---------- NAVBAR: FETCH ALL PRODUCTS (for search) ----------
+    // ---------- FETCH ALL PRODUCTS (for search) ----------
     async function fetchAllProducts() {
         try {
             const snapshot = await db.collectionGroup('products').get();
@@ -1009,7 +1008,7 @@
         }
     }
 
-    // ---------- NAVBAR: LIVE SEARCH ----------
+    // ---------- LIVE SEARCH ----------
     function debounce(func, wait) {
         let timeout;
         return function(...args) {
@@ -1049,7 +1048,7 @@
         });
     }
 
-    // ---------- NAVBAR: AUTH MODAL & CATEGORIES ----------
+    // ---------- AUTH MODAL & CATEGORIES ----------
     function openAuthModal() {
         document.getElementById('login-modal-overlay').classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -1108,7 +1107,7 @@
         } catch (err) { console.error("Error loading categories:", err); }
     }
 
-    // ---------- AUTH STATE (navbar) ----------
+    // ---------- AUTH STATE ----------
     function checkAuth() {
         auth.onAuthStateChanged(async user => {
             currentUser = user;
@@ -1149,7 +1148,7 @@
         });
     }
 
-    // ---------- NAVBAR UI INITIALIZATION (drawers, toggles) ----------
+    // ---------- NAVBAR UI INITIALIZATION ----------
     function initNavbarUI() {
         const mMenuToggle = document.getElementById('m-menu-toggle');
         const mDrawerClose = document.getElementById('m-drawer-close');
@@ -1182,29 +1181,59 @@
         else { input.type = 'password'; wrap.classList.remove('force-fill'); }
     }
 
-    // ---------- PRODUCT VIEW PAGE LOGIC (integrated) ----------
+    // ---------- IMPROVED PRODUCT VIEW LOGIC ----------
     async function loadProductPage() {
         const root = document.getElementById('productDetailRoot');
         const params = new URLSearchParams(window.location.search);
         const productId = params.get('id');
+        console.log("Product ID from URL:", productId);
         if (!productId) {
             root.innerHTML = `<div class="error-message"><strong>❌ No product specified.</strong><br><button onclick="location.href='?id='">Go to Shop</button></div>`;
             return;
         }
         try {
-            // Try to get from top-level 'products' collection first
-            let productSnap = await db.collection('products').doc(productId).get();
-            if (!productSnap.exists) {
-                // fallback: search in collectionGroup
-                const groupSnap = await db.collectionGroup('products').where('productId', '==', productId).get();
-                if (!groupSnap.empty) productSnap = groupSnap.docs[0];
+            let productSnapshot = null;
+            // 1) Try direct document ID
+            const docRef = db.collection('products').doc(productId);
+            const docSnap = await docRef.get();
+            if (docSnap.exists) {
+                productSnapshot = docSnap;
+                console.log("Found by document ID");
+            } else {
+                // 2) Search by 'productId' field
+                const qById = await db.collection('products').where('productId', '==', productId).get();
+                if (!qById.empty) {
+                    productSnapshot = qById.docs[0];
+                    console.log("Found by productId field");
+                } else {
+                    // 3) Search by 'id' field
+                    const qByIdField = await db.collection('products').where('id', '==', productId).get();
+                    if (!qByIdField.empty) {
+                        productSnapshot = qByIdField.docs[0];
+                        console.log("Found by id field");
+                    } else {
+                        // 4) Fallback to collectionGroup (for subcollections)
+                        const groupQuery = await db.collectionGroup('products').where('productId', '==', productId).get();
+                        if (!groupQuery.empty) {
+                            productSnapshot = groupQuery.docs[0];
+                            console.log("Found via collectionGroup");
+                        }
+                    }
+                }
             }
-            if (!productSnap || !productSnap.exists) {
-                root.innerHTML = `<div class="error-message"><strong>😕 Product not found.</strong><br><button onclick="location.href='?id='">Browse Pickles</button></div>`;
+            if (!productSnapshot) {
+                root.innerHTML = `<div class="error-message"><strong>😕 Product not found.</strong><br>Product ID: ${productId}<br><button onclick="location.href='?id='">Browse Pickles</button></div>`;
                 return;
             }
-            const product = { id: productSnap.id, ...productSnap.data() };
-            // Fetch related products (by category)
+            const product = { id: productSnapshot.id, ...productSnapshot.data() };
+            console.log("Loaded product:", product);
+            // Normalise field names (handle both mainImage/image, variants etc.)
+            if (!product.mainImage && product.image) product.mainImage = product.image;
+            if (!product.image && product.mainImage) product.image = product.mainImage;
+            if (!product.variants && product.variant) product.variants = product.variant;
+            if (!product.price && product.variants && product.variants[0]) product.price = product.variants[0].price;
+            if (!product.name) product.name = "Artisan Pickle";
+            // Fetch related products by category
             let relatedProducts = [];
             const categoryValue = product.categoryId || product.category;
             if (categoryValue) {
@@ -1219,8 +1248,8 @@
             renderProductPage(product, relatedProducts);
             observeReveal();
         } catch (err) {
-            console.error(err);
-            root.innerHTML = `<div class="error-message"><strong>⚠️ Failed to load data.</strong><br>${err.message || "Check network"}<br><button onclick="location.reload()">Retry</button></div>`;
+            console.error("Product load error:", err);
+            root.innerHTML = `<div class="error-message"><strong>⚠️ Failed to load data.</strong><br>${err.message || "Check network and console"}<br><button onclick="location.reload()">Retry</button></div>`;
         }
     }
     function renderProductPage(product, relatedProducts) {
@@ -1326,13 +1355,13 @@
             if (active) return { weight: active.innerText.split(' ')[0], price: active.getAttribute('data-price') };
             return { weight: variants[0]?.weight || 'Standard', price: variants[0]?.price || product.price };
         };
-        // Add to Cart integration
+        // Add to Cart
         document.getElementById('addToCartBtn')?.addEventListener('click', () => {
             const qty = parseInt(qtyInput.value);
             const v = getActiveVariant();
             addToCart(product, qty, { weight: v.weight, price: v.price });
         });
-        // Wishlist integration
+        // Wishlist
         document.getElementById('wishlistBtn')?.addEventListener('click', () => addToWishlist(product));
         // Buy Now
         document.getElementById('buyNowBtn')?.addEventListener('click', () => {
@@ -1371,4 +1400,3 @@
 </script>
 </body>
 </html>
-```
