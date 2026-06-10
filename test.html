@@ -1701,7 +1701,7 @@ function showToast(msg) {
             addBtn.classList.add('combo-btn-hidden');
             buyBtn.classList.add('combo-btn-hidden');
             const remaining = comboMaxSelect - count;
-            msgEl.textContent = remaining > 0 ? `👉 Select ${remaining} more pickle${remaining > 1 ? 's' : ''} to unlock.` : '';
+            msgEl.textContent = remaining > 0 ? ` Select ${remaining} more pickle${remaining > 1 ? 's' : ''} to unlock.` : '';
         }
     }
 
@@ -1716,7 +1716,7 @@ function showToast(msg) {
                 setTimeout(() => {
                     if (comboSelectedIds.length !== comboMaxSelect) {
                         const rem = comboMaxSelect - comboSelectedIds.length;
-                        msgEl.textContent = rem > 0 ? `👉 Select ${rem} more pickle${rem > 1 ? 's' : ''}.` : '';
+                        msgEl.textContent = rem > 0 ? `Select ${rem} more pickle${rem > 1 ? 's' : ''}.` : '';
                     } else {
                         msgEl.textContent = '🎉 Perfect combo!';
                     }
