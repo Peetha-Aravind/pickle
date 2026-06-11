@@ -832,82 +832,74 @@
 <body>
 
 <!-- ═══════════════ DESKTOP NAVBAR ═══════════════ -->
-<div class="page-desktop">
-    <nav class="d-navbar">
-        <div class="d-navbar-container">
-            <img class="d-logo-img" src="./assets/logo.png" alt="Happy NonVeg Pickles" onclick="window.location.href='index.html'" />
-            <div class="d-nav-links">
-                <a href="index.html" class="d-nav-link active">Home</a>
-                <a href="shop.html" class="d-nav-link">Shop</a>
-                <div class="d-categories-dropdown">
-                    <a href="javascript:void(0)" class="d-nav-link" style="cursor:default">Categories</a>
-                    <div class="d-categories-content" id="desktop-nav-categories"></div>
-                </div>
-            </div>
-            <div class="d-search-container">
-                <div class="d-search-icon-wrap"><img src="./assets/search.svg" alt=""></div>
-                <input type="text" class="d-search-bar" placeholder="Search products..." id="desktop-search">
-                <div class="search-results" id="desktop-search-results"></div>
-            </div>
-            <div class="d-action-icons">
-                <a href="#" class="d-icon-btn icon-trigger" onclick="handleWishlistClick(event)" aria-label="Wishlist">
-                    <span class="icon-wrap"><img src="./assets/heart.svg" class="icon-default" alt=""><img src="./assets/heart-fill.svg" class="icon-fill" alt=""></span>
-                    <span class="wishlist-badge" id="wishlist-badge-desktop" style="display:none">0</span>
-                </a>
-                <div class="d-profile-dropdown">
-                    <button class="d-icon-btn icon-trigger" id="d-cart-toggle" aria-label="Cart">
-                        <span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default" alt=""><img src="./assets/cart-fill.svg" class="icon-fill" alt=""></span>
-                        <span class="cart-badge" id="cart-badge-desktop" style="display:none">0</span>
-                    </button>
-                    <div class="cart-popup" id="cart-popup">
-                        <div class="cart-popup-header">
-                            <div class="cart-popup-title">Your Shopping Cart</div>
-                            <div class="cart-popup-subtitle" id="cart-count-desktop">0 items</div>
-                        </div>
-                        <div class="cart-popup-body" id="cart-items-desktop"></div>
-                        <div class="cart-popup-footer">
-                            <div class="cart-total">
-                                <div class="cart-total-label">Total Amount</div>
-                                <div class="cart-total-amount" id="cart-total-desktop">₹0.00</div>
-                            </div>
-                            <button class="buy-btn" onclick="window.location.href='checkout.html'">
-                                <span>Checkout Now</span>
-                                <span class="icon-wrap icon-white"><img src="./assets/arrow-right.svg" class="icon-default" alt=""><img src="./assets/arrow-right-fill.svg" class="icon-fill" alt=""></span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="d-profile-dropdown">
-                    <button class="d-profile-btn icon-trigger" id="d-profile-toggle" aria-label="Profile">
-                        <span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span>
-                    </button>
-                    <div class="profile-popup" id="profile-popup">
-                        <div class="profile-header">
-                            <div class="profile-info">
-                                <div class="profile-name" id="user-name">Guest User</div>
-                                <div class="profile-email" id="user-email">Sign in to sync</div>
-                            </div>
-                        </div>
-                        <div class="profile-links" id="profile-links-container">
-                            <a href="my-profile.html" class="profile-link icon-trigger auth-only auth-hidden">
-                                <span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span>
-                                My Profile
-                            </a>
-                            <a href="my-orders.html" class="profile-link icon-trigger auth-only auth-hidden">
-                                <span class="icon-wrap"><img src="./assets/orders.svg" class="icon-default" alt=""><img src="./assets/orders-fill.svg" class="icon-fill" alt=""></span>
-                                My Orders
-                            </a>
-                            <div id="login-trigger-desktop" class="profile-link icon-trigger">
-                                <span class="icon-wrap"><img src="./assets/login.svg" class="icon-default" alt=""><img src="./assets/login-fill.svg" class="icon-fill" alt=""></span>
-                                Sign In
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <div class="nb-desk">
+    <nav class="nb-dbar">
+      <div class="nb-dbar-inner">
+        <img class="nb-logo-img" src="./assets/logo.png" alt="Happy NonVeg Pickles" onclick="window.location.href='index.html'">
+        <div class="nb-dlinks">
+          <a href="index.html" class="nb-dnl active">Home</a>
+          <a href="shop.html" class="nb-dnl">Shop</a>
+          <div class="nb-catdrop">
+            <a href="javascript:void(0)" class="nb-dnl" style="cursor:default">Categories</a>
+            <div class="nb-catbox" id="nb-dcat"></div>
+          </div>
         </div>
+        <div class="nb-search-wrap">
+          <div class="nb-search-icon"><img src="./assets/search.svg" alt=""></div>
+          <input type="text" class="nb-search-inp" placeholder="Search products…" id="nb-dsearch">
+          <div class="nb-sresults" id="nb-dres"></div>
+        </div>
+        <div class="nb-dicons">
+          <a href="#" class="nb-dibtn trg" onclick="nbWishlistClick(event)" aria-label="Wishlist">
+            <span class="ico"><img src="./assets/heart.svg" class="d" alt=""><img src="./assets/heart-fill.svg" class="f" alt=""></span>
+            <span class="nb-wbadge" id="nb-wbadge-d" style="display:none">0</span>
+          </a>
+          <div class="nb-pdrop">
+            <button class="nb-dibtn trg" id="nb-dcart-tog" aria-label="Cart">
+              <span class="ico"><img src="./assets/cart.svg" class="d" alt=""><img src="./assets/cart-fill.svg" class="f" alt=""></span>
+              <span class="nb-cbadge" id="nb-cbadge-d" style="display:none">0</span>
+            </button>
+            <div class="nb-cpop" id="nb-cpop">
+              <div class="nb-cpop-hd">
+                <div class="nb-cpop-ttl">Your Shopping Cart</div>
+                <div class="nb-cpop-sub" id="nb-ccount-d">0 items</div>
+              </div>
+              <div class="nb-cpop-body" id="nb-citems-d"></div>
+              <div class="nb-cpop-ft">
+                <div class="nb-ctot">
+                  <div class="nb-ctot-lbl">Total Amount</div>
+                  <div class="nb-ctot-amt" id="nb-ctot-d">₹0.00</div>
+                </div>
+                <button class="nb-buybtn" onclick="window.location.href='checkout.html'">
+                  <span>Checkout Now</span>
+                  <span class="ico wh"><img src="./assets/arrow-right.svg" class="d" alt=""><img src="./assets/arrow-right-fill.svg" class="f" alt=""></span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="nb-pdrop">
+            <button class="nb-pbtn trg" id="nb-dprof-tog" aria-label="Profile">
+              <span class="ico"><img src="./assets/user.svg" class="d" alt=""><img src="./assets/user-fill.svg" class="f" alt=""></span>
+            </button>
+            <div class="nb-ppop" id="nb-ppop">
+              <div class="nb-ppop-hd">
+                <div>
+                  <div class="nb-ppop-name" id="nb-uname-d">Guest User</div>
+                  <div class="nb-ppop-email" id="nb-uemail-d">Sign in to sync</div>
+                </div>
+              </div>
+              <div class="nb-plinks">
+                <a href="my-profile.html" class="nb-plink trg nb-ao nb-ah"><span class="ico"><img src="./assets/user.svg" class="d" alt=""><img src="./assets/user-fill.svg" class="f" alt=""></span>My Profile</a>
+                <a href="my-orders.html" class="nb-plink trg nb-ao nb-ah"><span class="ico"><img src="./assets/orders.svg" class="d" alt=""><img src="./assets/orders-fill.svg" class="f" alt=""></span>My Orders</a>
+                <div id="nb-dlogin-trig" class="nb-plink trg"><span class="ico"><img src="./assets/login.svg" class="d" alt=""><img src="./assets/login-fill.svg" class="f" alt=""></span>Sign In</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </nav>
-</div>
+  </div>
+
 
 <!-- ═══════════════ MOBILE NAVBAR ═══════════════ -->
 <div class="page-mobile">
