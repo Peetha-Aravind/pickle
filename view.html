@@ -68,7 +68,7 @@
     .nav-links a:hover { color: var(--rust); }
     .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; font-size: 26px; font-weight: bold; color: var(--rust); }
     
-    /* PRODUCT CONTAINER: main image width reduced by ~10% */
+    /* PRODUCT CONTAINER: main image width reduced */
     .product-container {
       max-width: 1400px;
       margin: 30px auto 60px;
@@ -240,7 +240,7 @@
       margin: 4px 0 8px;
     }
 
-    /* VARIANT BUTTONS: left aligned */
+    /* VARIANT BUTTONS */
     .variant-buttons {
       display: flex;
       gap: 16px;
@@ -297,7 +297,7 @@
       border-radius: 20px;
     }
 
-    /* BUTTON LAYOUT */
+    /* BUTTON LAYOUT with SVG icons */
     .action-buttons {
       display: flex;
       flex-direction: column;
@@ -316,6 +316,19 @@
       text-align: center;
       cursor: pointer;
       transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-cart svg, .btn-wishlist svg, .btn-buynow svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
     .btn-cart { background: black; color: white; border: none; }
     .btn-cart:hover { background: #2c2c2c; transform: translateY(-2px); }
@@ -332,6 +345,10 @@
       background: var(--rust);
       color: white;
       border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
     .btn-buynow:hover { background: var(--rust-dark); transform: translateY(-2px); }
 
@@ -340,7 +357,7 @@
     .qty-control button { background: #fff; border: none; padding: 8px 18px; font-size: 1.2rem; cursor: pointer; font-weight: bold; }
     .qty-control input { width: 50px; text-align: center; border: none; font-weight: 600; font-size: 1rem; }
 
-    /* rating stars - ONLY RED (no empty/grey stars) */
+    /* rating stars - ONLY RED */
     .stars {
       font-size: 1.6rem;
       font-weight: bold;
@@ -370,7 +387,7 @@
       white-space: nowrap;
     }
 
-    /* toggle sections - description: enforce single column, multiple rows (no multi-column layout) */
+    /* toggle sections - description: single column, 3 lines preview */
     .toggle-section {
       background: transparent;
       border-radius: 0;
@@ -404,26 +421,22 @@
     .toggle-content.collapsed {
       display: none;
     }
-    /* Description: fixed width, only one column, text wraps into multiple rows */
-    .desc-preview, .full-description-text {
-      column-count: 1;
-      column-width: auto;
-      column-gap: normal;
-      width: 100%;
-      max-width: 100%;
-      word-wrap: break-word;
-      word-break: normal;
-      line-height: 1.5;
-    }
+    /* Description: single column, first 3 lines with ellipsis */
     .desc-preview {
       display: -webkit-box;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
+      line-height: 1.5;
+      column-count: 1;
+      column-width: auto;
     }
     .full-description-text {
       display: block;
       margin-top: 8px;
+      line-height: 1.5;
+      column-count: 1;
+      column-width: auto;
     }
 
     /* 5 demo icons */
@@ -630,7 +643,7 @@
   function formatPrice(p) { return `₹${Math.round(Number(p) || 0)}`; }
   function getDiscountPercent(mrp, price) { if (!mrp || !price || mrp <= price) return null; return Math.round(((mrp - price) / mrp) * 100); }
   
-  // rating stars - only red (full or half, no empty)
+  // rating stars - only red
   function renderStars(rating) {
     const full = Math.floor(rating);
     const hasHalf = (rating % 1) >= 0.5;
@@ -645,6 +658,11 @@
   }
 
   function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+
+  // SVG icons for buttons
+  const cartIcon = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`;
+  const wishlistIcon = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+  const lightningIcon = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M13 2L3 14h8l-2 8 10-12h-8l2-8z"/></svg>`;
 
   async function loadProductPage() {
     const root = document.getElementById('productDetailRoot');
@@ -731,10 +749,10 @@
           <div class="qty-selector"><span style="font-weight:600;">Quantity:</span><div class="qty-control"><button id="qtyMinus">-</button><input type="text" id="qtyInput" value="1" readonly><button id="qtyPlus">+</button></div></div>
           <div class="action-buttons">
             <div class="dual-buttons">
-              <div class="btn-cart" id="addToCartBtn">🛒 Add to Cart</div>
-              <div class="btn-wishlist" id="wishlistBtn">❤️ Wishlist</div>
+              <div class="btn-cart" id="addToCartBtn">${cartIcon} Add to Cart</div>
+              <div class="btn-wishlist" id="wishlistBtn">${wishlistIcon} Wishlist</div>
             </div>
-            <div class="btn-buynow" id="buyNowBtn">⚡ Buy Now</div>
+            <div class="btn-buynow" id="buyNowBtn">${lightningIcon} Buy Now</div>
           </div>
           <div class="feature-icons">
             <div class="icon-item"><span>🚚</span><span>Free Ship</span></div>
