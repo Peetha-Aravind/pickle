@@ -1425,4 +1425,192 @@ async function comboFetchFromFirestore() {
         comboRenderGrid('desktop');
         comboRenderGrid('mobile');
         // Initialize related pickles (empty state)
-        updateCombo
+        updateComboRelatedPickles('desktop');
+        updateComboRelatedPickles('mobile');
+    } catch (err) {
+        console.error('Combo error:', err);
+        ['Desktop', 'Mobile'].forEach(suffix => {
+            let container = document.getElementById(`comboPickleGridContainer${suffix}`);
+            if (container) container.innerHTML = `<div class="empty-state">⚠️ Could not load combo data. Please check back later.</div>`;
+            let status = document.getElementById(`comboStatusMsg${suffix}`);
+            if (status) status.textContent = '';
+            let grid = document.getElementById(`comboRelatedGrid${suffix}`);
+            if (grid) grid.innerHTML = '';
+            let empty = document.getElementById(`comboRelatedEmpty${suffix}`);
+            if (empty) { empty.style.display = 'block'; empty.textContent = 'Combo data unavailable — related recommendations cannot be loaded.'; }
+        });
+    }
+}
+
+function initComboSection() {
+    comboShowSkeleton('desktop');
+    comboShowSkeleton('mobile');
+    comboFetchFromFirestore();
+    ['Desktop', 'Mobile'].forEach(suffix => {
+        let addBtn = document.getElementById(`comboAddToCartBtn${suffix}`);
+        let buyBtn = document.getElementById(`comboBuyNowBtn${suffix}`);
+        if (addBtn) addBtn.addEventListener('click', () => {
+            if (comboSelectedIds.length !== comboMaxSelect) { showToast(`Please select exactly ${comboMaxSelect} pickles.`); return; }
+            let chosen = comboAllPickles.filter(p => comboSelectedIds.includes(p.id));
+            chosen.forEach(p => {
+                let uniqueId = `combo-${p.id}`;
+                let existing = cart.find(i => String(i.uniqueId) === String(uniqueId));
+                if (existing) existing.quantity += 1;
+                else cart.push({ uniqueId, productId: p.id, name: `${p.name} (Combo)`, price: parseInt(String(p.price).replace(/[^\d]/g, '')) || 199, image: p.imageUrl, quantity: 1 });
+            });
+            saveCart(true);
+            renderCart();
+            showToast('Combo added to cart!');
+        });
+        if (buyBtn) buyBtn.addEventListener('click', () => {
+            if (comboSelectedIds.length !== comboMaxSelect) { showToast(`Select ${comboMaxSelect} pickles to continue.`); return; }
+            if (addBtn) addBtn.click();
+            window.location.href = 'checkout.html';
+        });
+    });
+}
+
+// ===== Live search =====
+function initLiveSearch() {
+    async function fetchNavProducts() {
+        try {
+            let snap = await productsDb.collectionGroup('products').get();
+            let map = new Map();
+            snap.docs.forEach(d => { let data = d.data(); if (data.productId && !map.has(data.productId)) map.set(data.productId, data); });
+            allNavProducts = Array.from(map.values());
+        } catch(e) { console.error(e); }
+    }
+    fetchNavProducts();
+    const performSearch = (q, cid) => {
+        let el = document.getElementById(cid);
+        if (!el) return;
+        if (!q || q.length < 2) { el.classList.remove('show'); el.innerHTML = ''; return; }
+        let res = allNavProducts.filter(p => p.name?.toLowerCase().includes(q.toLowerCase())).slice(0, 6);
+        el.innerHTML = res.length
+            ? res.map(p => `<a href="view.html?id=${p.productId}" class="search-result-item"><img src="${p.image||''}" class="search-result-img" onerror="this.src='https://placehold.co/48'"><div class="search-result-info"><div class="search-result-name">${pvEsc(p.longName || p.name)}</div><div class="search-result-price">₹${p.price}</div></div></a>`).join('')
+            : '<div class="search-no-results">No products found</div>';
+        if (cid === 'desktop-search-results') el.classList.add('show');
+    };
+    let dInput = document.getElementById('desktop-search'), mInput = document.getElementById('mobile-search');
+    if (dInput) dInput.addEventListener('input', (e) => performSearch(e.target.value, 'desktop-search-results'));
+    if (mInput) mInput.addEventListener('input', (e) => performSearch(e.target.value, 'mobile-search-results'));
+    document.addEventListener('click', (e) => { if (!e.target.closest('.d-search-container')) document.getElementById('desktop-search-results')?.classList.remove('show'); });
+}
+
+// ===== Auth modal =====
+function initAuthModal() {
+    const overlay = document.getElementById('login-modal-overlay');
+    const closeBtn = document.getElementById('close-modal-btn');
+    const showLoginBtn = document.getElementById('show-login-btn');
+    const showSignupBtn = document.getElementById('show-signup-btn');
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    const loader = document.getElementById('loader');
+    const switchToSignup = document.querySelector('.switch-to-signup');
+    const switchToLogin = document.querySelector('.switch-to-login');
+    const googleBtn = document.getElementById('google-login-btn');
+    const forgotLink = document.getElementById('forgot-password-link');
+
+    function showLogin() {
+        showLoginBtn.classList.add('active'); showSignupBtn.classList.remove('active');
+        loginForm.classList.add('active'); signupForm.classList.remove('active');
+    }
+    function showSignup() {
+        showSignupBtn.classList.add('active'); showLoginBtn.classList.remove('active');
+        signupForm.classList.add('active'); loginForm.classList.remove('active');
+    }
+
+    closeBtn?.addEventListener('click', closeAuthModal);
+    overlay?.addEventListener('click', (e) => { if (e.target === overlay) closeAuthModal(); });
+    showLoginBtn?.addEventListener('click', showLogin);
+    showSignupBtn?.addEventListener('click', showSignup);
+    switchToSignup?.addEventListener('click', (e) => { e.preventDefault(); showSignup(); });
+    switchToLogin?.addEventListener('click', (e) => { e.preventDefault(); showLogin(); });
+
+    loginForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        loader.classList.add('active');
+        try {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            await auth.signInWithEmailAndPassword(email, password);
+            closeAuthModal();
+            showToast('Signed in successfully!');
+        } catch(err) {
+            showToast(err.message || 'Sign in failed');
+        } finally {
+            loader.classList.remove('active');
+        }
+    });
+
+    signupForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        loader.classList.add('active');
+        try {
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const cred = await auth.createUserWithEmailAndPassword(email, password);
+            await cred.user.updateProfile({ displayName: name });
+            await db.collection('users').doc(cred.user.uid).set({ name, email, cart: [], wishlist: [] }, { merge: true });
+            closeAuthModal();
+            showToast('Account created!');
+        } catch(err) {
+            showToast(err.message || 'Sign up failed');
+        } finally {
+            loader.classList.remove('active');
+        }
+    });
+
+    googleBtn?.addEventListener('click', async () => {
+        loader.classList.add('active');
+        try {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            const result = await auth.signInWithPopup(provider);
+            await db.collection('users').doc(result.user.uid).set({ name: result.user.displayName, email: result.user.email }, { merge: true });
+            closeAuthModal();
+            showToast('Signed in with Google!');
+        } catch(err) {
+            showToast(err.message || 'Google sign-in failed');
+        } finally {
+            loader.classList.remove('active');
+        }
+    });
+
+    forgotLink?.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+        if (!email) { showToast('Enter your email first'); return; }
+        try {
+            await auth.sendPasswordResetEmail(email);
+            showToast('Password reset email sent!');
+        } catch(err) {
+            showToast(err.message || 'Could not send reset email');
+        }
+    });
+}
+
+// ===== Scroll reveal =====
+function initRevealObserver() {
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+}
+
+// ===== Init =====
+document.addEventListener('DOMContentLoaded', () => {
+    initNavbarUI();
+    checkAuth();
+    renderCart();
+    updateWishlistCount();
+    loadCategories();
+    initLiveSearch();
+    initAuthModal();
+    loadProductPage();
+    initComboSection();
+    initRevealObserver();
+});
+</script>
+</body>
+</html>
