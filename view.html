@@ -68,7 +68,7 @@
     .nav-links a:hover { color: var(--rust); }
     .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; font-size: 26px; font-weight: bold; color: var(--rust); }
     
-    /* PRODUCT CONTAINER: wider main image column */
+    /* PRODUCT CONTAINER */
     .product-container {
       max-width: 1400px;
       margin: 30px auto 60px;
@@ -240,7 +240,7 @@
       margin: 4px 0 8px;
     }
 
-    /* VARIANT BUTTONS: left aligned */
+    /* VARIANT BUTTONS */
     .variant-buttons {
       display: flex;
       gap: 16px;
@@ -340,15 +340,16 @@
     .qty-control button { background: #fff; border: none; padding: 8px 18px; font-size: 1.2rem; cursor: pointer; font-weight: bold; }
     .qty-control input { width: 50px; text-align: center; border: none; font-weight: 600; font-size: 1rem; }
 
-    /* rating stars - FIXED alignment for both main and related cards */
-    .stars {
+    /* rating stars - perfect alignment for main & related cards */
+    .stars, .related-stars {
       display: inline-flex;
       align-items: center;
       gap: 2px;
       background: transparent;
       line-height: 1;
-      font-size: 1.3rem;
     }
+    .stars { font-size: 1.3rem; }
+    .related-stars { font-size: 1rem; }
     .star-wrapper {
       position: relative;
       display: inline-block;
@@ -359,6 +360,11 @@
       margin: 0;
       padding: 0;
       vertical-align: middle;
+    }
+    .related-stars .star-wrapper {
+      width: 1rem;
+      height: 1rem;
+      font-size: 1rem;
     }
     .star-empty {
       color: #ccc;
@@ -386,37 +392,27 @@
       overflow: hidden;
       background: transparent;
     }
-    /* ensure related cards stars align properly */
-    .related-stars {
-      display: inline-flex;
-      align-items: center;
-      gap: 2px;
-      background: transparent;
-      line-height: 1;
-      font-size: 1rem;
-    }
-    .related-stars .star-wrapper {
-      width: 1rem;
-      height: 1rem;
-      font-size: 1rem;
-    }
 
-    /* description expand/collapse styles (3-line truncate with view more) */
+    /* DESCRIPTION SECTION: 40 characters per row + expand/collapse */
     .description-section {
       margin-top: 8px;
       border-top: 1px solid var(--border);
       padding-top: 16px;
+    }
+    .desc-short, .desc-full {
+      max-width: 40ch;        /* forces line break after roughly 40 letters */
+      word-break: break-word;
+      line-height: 1.5;
+      font-size: 0.95rem;
     }
     .desc-short {
       display: -webkit-box;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
-      line-height: 1.5;
     }
     .desc-full {
       display: none;
-      line-height: 1.5;
     }
     .desc-full.show {
       display: block;
@@ -441,7 +437,7 @@
       color: var(--rust-dark);
     }
 
-    /* toggle sections (shipping & return) remain as collapsible */
+    /* toggle sections (shipping & return) */
     .toggle-section {
       background: transparent;
       border-radius: 0;
@@ -476,7 +472,7 @@
       display: none;
     }
 
-    /* 5 demo icons */
+    /* feature icons */
     .feature-icons {
       display: flex;
       flex-wrap: wrap;
@@ -582,7 +578,6 @@
     .related-img img { width: 100%; height: 100%; object-fit: cover; }
     .related-info { padding: 14px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
     .related-name { font-weight: 700; font-size: 0.95rem; }
-    .related-stars { font-size: 0.9rem; font-weight: bold; letter-spacing: 1px; background: transparent; display: inline-flex; align-items: center; }
     .related-pricing { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin: 4px 0; }
     .related-price { color: var(--rust); font-weight: 800; font-size: 1rem; }
     .related-mrp { text-decoration: line-through; font-size: 0.8rem; color: var(--ash); }
@@ -600,7 +595,6 @@
     }
     .related-view-btn:hover { background: var(--rust); }
 
-    .loader { text-align: center; padding: 60px; color: var(--ash); }
     .error-message {
       background: #ffefef; padding: 40px 30px; text-align: center;
       border-radius: var(--r-card); margin: 40px auto; max-width: 600px;
@@ -680,8 +674,7 @@
   function formatPrice(p) { return `₹${Math.round(Number(p) || 0)}`; }
   function getDiscountPercent(mrp, price) { if (!mrp || !price || mrp <= price) return null; return Math.round(((mrp - price) / mrp) * 100); }
   
-  // fixed stars rendering with proper alignment (no extra spacing)
-  function renderStars(rating, isRelated = false) {
+  function renderStars(rating) {
     const full = Math.floor(rating);
     const half = (rating % 1) >= 0.5;
     let starsHtml = '';
@@ -729,7 +722,8 @@
       relatedProducts = relatedProducts.slice(0, 6);
       renderProductPage(product, relatedProducts);
       initMobileCarousel(product);
-      initTogglesAndDescription(product);
+      initDescriptionToggle();
+      initShippingToggle();
     } catch (err) {
       console.error(err);
       root.innerHTML = `<div class="error-message"><strong>⚠️ Failed to load.</strong><br>${err.message}<br><button onclick="location.reload()">Retry</button></div>`;
@@ -802,8 +796,8 @@
               <div class="toggle-header"><h4>📦 Shipping & Return</h4><div class="toggle-btn">View more</div></div>
               <div class="toggle-content collapsed"><p>${escapeHtml(shippingText)}</p><p style="margin-top:8px;">${escapeHtml(returnText)}</p></div>
             </div>
-            <!-- Description section with 3-line truncate and view more -->
-            <div class="description-section" id="descriptionSection">
+            <!-- Description section with 40-char per row limit and view more -->
+            <div class="description-section">
               <div class="desc-short" id="descShort">${escapeHtml(fullDescriptionText)}</div>
               <div class="desc-full" id="descFull">${escapeHtml(fullDescriptionText)}</div>
               <button class="view-more-btn" id="viewMoreDescBtn">View more</button>
@@ -860,9 +854,7 @@
       const v = getActiveVariant();
       alert(`🛒 Added to cart: ${displayName} (${v.weight}) x ${qty} = ${formatPrice(v.price * qty)}`);
     });
-    
     document.getElementById('wishlistBtn')?.addEventListener('click', () => alert(`❤️ ${displayName} saved to wishlist!`));
-    
     document.getElementById('buyNowBtn')?.addEventListener('click', () => {
       const qty = parseInt(qtyInput.value);
       const variant = getActiveVariant();
@@ -911,27 +903,13 @@
     updateCarousel(0, true);
   }
 
-  function initTogglesAndDescription(product) {
-    // shipping & return toggle
-    const shippingToggle = document.getElementById('shippingToggle');
-    if (shippingToggle) {
-      const header = shippingToggle.querySelector('.toggle-header');
-      const content = shippingToggle.querySelector('.toggle-content');
-      const btnSpan = header.querySelector('.toggle-btn');
-      header.addEventListener('click', () => {
-        content.classList.toggle('collapsed');
-        btnSpan.innerText = content.classList.contains('collapsed') ? 'View more' : 'View less';
-      });
-    }
-    // description expand/collapse (3 lines to full)
+  function initDescriptionToggle() {
     const descShort = document.getElementById('descShort');
     const descFull = document.getElementById('descFull');
     const viewMoreBtn = document.getElementById('viewMoreDescBtn');
     if (descShort && descFull && viewMoreBtn) {
-      // hide full initially, short shown with clamp
       descFull.classList.remove('show');
       descShort.classList.remove('hide');
-      // check if text overflows? always show button because we allow toggle
       viewMoreBtn.addEventListener('click', () => {
         const isExpanded = descFull.classList.contains('show');
         if (isExpanded) {
@@ -943,6 +921,19 @@
           descShort.classList.add('hide');
           viewMoreBtn.innerText = 'View less';
         }
+      });
+    }
+  }
+
+  function initShippingToggle() {
+    const shippingToggle = document.getElementById('shippingToggle');
+    if (shippingToggle) {
+      const header = shippingToggle.querySelector('.toggle-header');
+      const content = shippingToggle.querySelector('.toggle-content');
+      const btnSpan = header.querySelector('.toggle-btn');
+      header.addEventListener('click', () => {
+        content.classList.toggle('collapsed');
+        btnSpan.innerText = content.classList.contains('collapsed') ? 'View more' : 'View less';
       });
     }
   }
