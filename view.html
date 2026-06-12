@@ -10,11 +10,17 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
-      --rust: #C0392B; --rust-dark: #962d22; --rust-light: #f5e9e7;
-      --turmeric: #E8A020; --cream: #FDF6EC; --ink: #1C1009;
-      --ash: #6b5b4e; --border: rgba(28,16,9,0.1);
+      --rust: #C0392B; /* dark red */
+      --rust-dark: #962d22;
+      --rust-light: #f5e9e7;
+      --turmeric: #E8A020;
+      --cream: #FDF6EC;
+      --ink: #1C1009;
+      --ash: #6b5b4e;
+      --border: rgba(28,16,9,0.1);
       --shadow-sm: 0 2px 8px rgba(28,16,9,0.05);
-      --r-card: 16px; --r-btn: 12px;
+      --r-card: 16px;
+      --r-btn: 12px;
       --ff-body: 'IBM Plex Sans', sans-serif;
       --nav-h: 68px;
     }
@@ -68,13 +74,13 @@
     .nav-links a:hover { color: var(--rust); }
     .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; font-size: 26px; font-weight: bold; color: var(--rust); }
     
-    /* PRODUCT CONTAINER */
+    /* PRODUCT CONTAINER - reduced main image width */
     .product-container {
       max-width: 1400px;
       margin: 30px auto 60px;
       padding: 0 5vw;
       display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
+      grid-template-columns: 0.85fr 1.15fr;  /* image column narrower */
       gap: 56px;
       align-items: start;
     }
@@ -340,7 +346,7 @@
     .qty-control button { background: #fff; border: none; padding: 8px 18px; font-size: 1.2rem; cursor: pointer; font-weight: bold; }
     .qty-control input { width: 50px; text-align: center; border: none; font-weight: 600; font-size: 1rem; }
 
-    /* rating stars - perfect alignment for main & related cards */
+    /* rating stars - DARK RED (already var(--rust) = #C0392B) */
     .stars, .related-stars {
       display: inline-flex;
       align-items: center;
@@ -375,7 +381,7 @@
       background: transparent;
     }
     .star-full {
-      color: var(--rust);
+      color: var(--rust); /* dark red */
       position: absolute;
       left: 0;
       top: 0;
@@ -384,7 +390,7 @@
       background: transparent;
     }
     .star-half {
-      color: var(--rust);
+      color: var(--rust); /* dark red */
       position: absolute;
       left: 0;
       top: 0;
@@ -393,14 +399,25 @@
       background: transparent;
     }
 
-    /* DESCRIPTION SECTION: 40 characters per row + expand/collapse */
+    /* DESCRIPTION SECTION with heading like shipping */
     .description-section {
       margin-top: 8px;
       border-top: 1px solid var(--border);
       padding-top: 16px;
     }
+    .desc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .desc-header h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
     .desc-short, .desc-full {
-      max-width: 40ch;        /* forces line break after roughly 40 letters */
+      max-width: 40ch;
       word-break: break-word;
       line-height: 1.5;
       font-size: 0.95rem;
@@ -796,8 +813,11 @@
               <div class="toggle-header"><h4>📦 Shipping & Return</h4><div class="toggle-btn">View more</div></div>
               <div class="toggle-content collapsed"><p>${escapeHtml(shippingText)}</p><p style="margin-top:8px;">${escapeHtml(returnText)}</p></div>
             </div>
-            <!-- Description section with 40-char per row limit and view more -->
+            <!-- Description section with heading and expand/collapse -->
             <div class="description-section">
+              <div class="desc-header">
+                <h4>📖 Description</h4>
+              </div>
               <div class="desc-short" id="descShort">${escapeHtml(fullDescriptionText)}</div>
               <div class="desc-full" id="descFull">${escapeHtml(fullDescriptionText)}</div>
               <button class="view-more-btn" id="viewMoreDescBtn">View more</button>
