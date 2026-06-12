@@ -395,10 +395,10 @@
             line-height: 1.5;
             /* Push content below the fixed dashboard navbar instead of the
                page's own nav (which has been removed). */
-            padding-top: calc(var(--header-height-desktop) + 20px);
+            padding-top: var(--header-height-desktop);
         }
         @media (max-width: 768px) {
-            .pg-root { padding-top: calc(var(--navbar-height-mobile) + 16px); }
+            .pg-root { padding-top: var(--navbar-height-mobile); }
         }
 
         .pg-root button { font-family: inherit; }
@@ -428,8 +428,8 @@
         /* PRODUCT CONTAINER */
         .pg-root .pg-product-container {
             max-width: 1400px;
-            margin: 30px auto 60px;
-            padding: 0 5vw;
+            margin: 0 auto 60px;
+            padding: 24px 5vw 0;
             display: grid;
             grid-template-columns: 0.85fr 1.15fr;
             gap: 56px;
@@ -1452,10 +1452,12 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+window.db = db;
+window.auth = auth;
 
-let cart = JSON.parse(localStorage.getItem('vastramaya_cart')) || [];
-let wishlist = [];
-let currentUser = null;
+window.cart = JSON.parse(localStorage.getItem('vastramaya_cart')) || [];
+window.wishlist = [];
+window.currentUser = null;
 let wishlistUnsubscribe = null;
 let allProducts = [];
 
@@ -1535,22 +1537,23 @@ function initLiveSearch() {
 // --- WISHLIST ---
 function handleWishlistClick(e) {
     e.preventDefault();
-    if (currentUser) window.location.href = 'wishlist.html';
+    if (window.currentUser) window.location.href = 'wishlist.html';
     else openAuthModal();
 }
 
 function updateWishlistCount() {
-    const count = wishlist.length;
+    const count = window.wishlist.length;
     const dBadge = document.getElementById('wishlist-badge-desktop');
     const mBadge = document.getElementById('wishlist-badge-mobile');
     if (dBadge) { dBadge.textContent = count; dBadge.style.display = count > 0 ? 'flex' : 'none'; }
     if (mBadge) { mBadge.textContent = count; mBadge.style.display = count > 0 ? 'flex' : 'none'; }
 }
+window.updateWishlistCount = updateWishlistCount;
 
 function setupWishlistListener(user) {
     if (wishlistUnsubscribe) wishlistUnsubscribe();
     wishlistUnsubscribe = db.collection('users').doc(user.uid).onSnapshot(doc => {
-        wishlist = (doc.exists && doc.data().wishlist) ? doc.data().wishlist : [];
+        window.wishlist = (doc.exists && doc.data().wishlist) ? doc.data().wishlist : [];
         updateWishlistCount();
     }, err => console.error("Wishlist sync error:", err));
 }
@@ -1665,7 +1668,7 @@ async function loadCategories() {
 
 function checkAuth() {
     auth.onAuthStateChanged(async user => {
-        currentUser = user;
+        window.currentUser = user;
         const triggerDesktop = document.getElementById('login-trigger-desktop');
         const triggerMobile = document.getElementById('mobile-profile-trigger');
         const mProfilePopup = document.getElementById('m-profile-popup');
@@ -1691,7 +1694,7 @@ function checkAuth() {
         } else {
             authOnlyLinks.forEach(el => el.classList.add('auth-hidden'));
             if (wishlistUnsubscribe) { wishlistUnsubscribe(); wishlistUnsubscribe = null; }
-            wishlist = []; updateWishlistCount();
+            window.wishlist = []; updateWishlistCount();
             document.getElementById('user-name').textContent = "Guest User";
             document.getElementById('user-email').textContent = "Sign in to sync";
             triggerDesktop.innerHTML = `<span class="icon-wrap"><img src="./assets/login.svg" class="icon-default" alt=""><img src="./assets/login-fill.svg" class="icon-fill" alt=""></span> Sign In`;
@@ -1757,42 +1760,45 @@ function initNavbarUI() {
 
 // --- CART LOGIC ---
 function removeFromCart(uniqueId) {
-    cart = cart.filter(item => String(item.uniqueId) !== String(uniqueId));
+    window.cart = window.cart.filter(item => String(item.uniqueId) !== String(uniqueId));
     saveCart(true); renderCart();
 }
+window.removeFromCart = removeFromCart;
 
 function updateQuantity(uniqueId, change) {
-    const item = cart.find(item => String(item.uniqueId) === String(uniqueId));
+    const item = window.cart.find(item => String(item.uniqueId) === String(uniqueId));
     if (item) {
         item.quantity += change;
         if (item.quantity <= 0) removeFromCart(uniqueId);
         else { saveCart(true); renderCart(); }
     }
 }
+window.updateQuantity = updateQuantity;
 
 async function syncCartToFirestore() {
-    if (!currentUser) return;
+    if (!window.currentUser) return;
     try {
-        const doc = await db.collection('users').doc(currentUser.uid).get();
+        const doc = await db.collection('users').doc(window.currentUser.uid).get();
         if (doc.exists && doc.data().cart) {
-            if (cart.length === 0) { cart = doc.data().cart; saveCart(false); renderCart(); }
+            if (window.cart.length === 0) { window.cart = doc.data().cart; saveCart(false); renderCart(); }
             else {
                 const dbCart = doc.data().cart || [];
-                cart.forEach(localItem => {
+                window.cart.forEach(localItem => {
                     const existing = dbCart.find(d => String(d.uniqueId) === String(localItem.uniqueId));
                     if (existing) existing.quantity = Math.max(existing.quantity, localItem.quantity);
                     else dbCart.push(localItem);
                 });
-                cart = dbCart; saveCart(true); renderCart();
+                window.cart = dbCart; saveCart(true); renderCart();
             }
-        } else if (cart.length > 0) saveCart(true);
+        } else if (window.cart.length > 0) saveCart(true);
     } catch (e) { console.error("Sync error", e); }
 }
 
 function saveCart(syncDB) {
-    localStorage.setItem('vastramaya_cart', JSON.stringify(cart));
-    if (syncDB && currentUser) db.collection('users').doc(currentUser.uid).update({ cart }).catch(err => console.log("Error syncing cart", err));
+    localStorage.setItem('vastramaya_cart', JSON.stringify(window.cart));
+    if (syncDB && window.currentUser) db.collection('users').doc(window.currentUser.uid).update({ cart: window.cart }).catch(err => console.log("Error syncing cart", err));
 }
+window.saveCart = saveCart;
 
 function renderCart() {
     const desktopBody = document.getElementById('cart-items-desktop');
@@ -1805,6 +1811,7 @@ function renderCart() {
     const countMobile = document.getElementById('cart-count-mobile');
 
     let total = 0, count = 0, html = '';
+    const cart = window.cart;
 
     if (cart.length === 0) {
         html = '<div class="empty-cart-msg">Your cart is empty</div>';
@@ -2058,9 +2065,45 @@ function showToast(msg) {
     document.getElementById('pg-addToCartBtn')?.addEventListener('click', () => {
       const qty = parseInt(qtyInput.value);
       const v = pgGetActiveVariant();
-      alert(`🛒 Added to cart: ${displayName} (${v.weight}) x ${qty} = ${pgFormatPrice(v.price * qty)}`);
+      const uniqueId = `${product.id}_${v.weight}`;
+      const existing = window.cart.find(item => String(item.uniqueId) === String(uniqueId));
+      if (existing) {
+        existing.quantity += qty;
+      } else {
+        window.cart.push({
+          uniqueId,
+          productId: product.id,
+          name: displayName,
+          image: uniqueImages[0],
+          price: Number(v.price),
+          quantity: qty,
+          size: v.weight
+        });
+      }
+      window.saveCart(true);
+      window.renderCart();
+      window.showToast(`🛒 Added to cart: ${displayName} (${v.weight}) x ${qty}`);
     });
-    document.getElementById('pg-wishlistBtn')?.addEventListener('click', () => alert(`❤️ ${displayName} saved to wishlist!`));
+
+    document.getElementById('pg-wishlistBtn')?.addEventListener('click', () => {
+      if (!window.currentUser) {
+        window.openAuthModal();
+        return;
+      }
+      const wishItem = {
+        productId: product.id,
+        name: displayName,
+        image: uniqueImages[0]
+      };
+      if (!window.wishlist.find(w => w.productId === product.id)) {
+        window.wishlist.push(wishItem);
+        window.db.collection('users').doc(window.currentUser.uid).update({ wishlist: window.wishlist })
+          .catch(err => console.error("Error updating wishlist", err));
+        window.showToast(`❤️ ${displayName} saved to wishlist!`);
+      } else {
+        window.showToast(`${displayName} is already in your wishlist.`);
+      }
+    });
     document.getElementById('pg-buyNowBtn')?.addEventListener('click', () => {
       const qty = parseInt(qtyInput.value);
       const variant = pgGetActiveVariant();
