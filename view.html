@@ -19,7 +19,7 @@
             font-family: 'Inter', sans-serif;
             background: #fefaf5;
             color: #1f2937;
-            line-height: 1.5;
+            line-height: 1.4;
         }
 
         .container {
@@ -346,7 +346,7 @@
             font-size: 1rem;
         }
 
-        /* Variants grid - 2 columns, compact rectangles */
+        /* NEW COMPACT VARIANT CARDS - horizontal row layout: quantity(weight), price, MRP, discount */
         .variants-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -357,15 +357,16 @@
         .variant-card {
             border: 1.5px solid #e5e7eb;
             border-radius: 20px;
-            padding: 8px 6px;
-            text-align: center;
+            padding: 8px 12px;
             cursor: pointer;
             transition: all 0.2s ease;
             background: white;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
-            gap: 4px;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .variant-card:hover {
@@ -382,28 +383,48 @@
 
         .variant-weight {
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            background: #fef3c7;
+            padding: 2px 8px;
+            border-radius: 30px;
+            white-space: nowrap;
         }
 
         .variant-price {
             color: #b91c1c;
             font-weight: 800;
-            font-size: 1rem;
+            font-size: 0.95rem;
+            white-space: nowrap;
         }
 
         .variant-mrp {
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             text-decoration: line-through;
             color: #6b7280;
+            white-space: nowrap;
         }
 
         .variant-discount {
-            font-size: 0.6rem;
+            font-size: 0.65rem;
             background: #fef3c7;
             display: inline-block;
             padding: 2px 8px;
             border-radius: 30px;
-            margin-top: 2px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* On very small screens, allow wrap inside card */
+        @media (max-width: 500px) {
+            .variant-card {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 6px;
+                padding: 8px 6px;
+            }
+            .variant-weight, .variant-price, .variant-mrp, .variant-discount {
+                font-size: 0.75rem;
+            }
         }
 
         /* Action buttons */
@@ -482,7 +503,7 @@
             transform: scale(0.98);
         }
 
-        /* 5 demo icons - NO SWIPE, always in single row without scrolling (grid on mobile, flex on desktop) */
+        /* 5 demo icons - single row without scrolling (grid on mobile) */
         .red-icons {
             display: flex;
             flex-direction: row;
@@ -494,7 +515,6 @@
             margin: 8px 0 16px;
         }
 
-        /* On mobile: use grid to ensure 5 equal columns without overflow */
         @media (max-width: 1023px) {
             .red-icons {
                 display: grid;
@@ -677,9 +697,6 @@
             .variants-grid {
                 gap: 10px;
             }
-            .variant-card {
-                padding: 6px 4px;
-            }
         }
 
         button {
@@ -699,11 +716,9 @@
                 </div>
                 <button class="arrow-btn" id="thumbNextBtn"><i class="fas fa-chevron-down"></i></button>
             </div>
-            <!-- Main image with swipe detection -->
             <div class="main-img" id="mainImageContainer">
                 <img id="mainBigImage" src="https://picsum.photos/id/108/600/550" alt="Main Pickle">
             </div>
-            <!-- Mobile red dots -->
             <div class="mobile-dots" id="mobileDots"></div>
         </div>
 
@@ -737,7 +752,7 @@
             </div>
             <button class="btn-buynow" id="buyNowBtn"><i class="fas fa-bolt"></i> Buy Now</button>
 
-            <!-- 5 red icons - always in single row without swiping (grid on mobile) -->
+            <!-- 5 red icons - single row without swiping -->
             <div class="red-icons">
                 <div class="icon-item"><i class="fas fa-truck"></i><span>Fast Shipping</span></div>
                 <div class="icon-item"><i class="fas fa-leaf"></i><span>100% Natural</span></div>
@@ -752,7 +767,7 @@
             </div>
 
             <div class="desc">
-                <strong>📖 Description:</strong> Authentic homemade mango pickle with raw mangoes, exotic spices, and cold-pressed mustard oil. No preservatives. Perfect with paratha, rice, or dal. Traditional family recipe since 1987.
+                <strong>📖 Description:</strong> Authentic homemade mango pickle made with raw mangoes, exotic spices, and cold-pressed mustard oil. No preservatives. Perfect with paratha, rice, or dal. Traditional family recipe since 1987.
             </div>
         </div>
     </div>
@@ -777,9 +792,7 @@
 </div>
 
 <script>
-    // ------------------------------
     // Data
-    // ------------------------------
     const variantsData = [
         { id: 1, weight: "250g", price: 149, mrp: 199 },
         { id: 2, weight: "500g", price: 249, mrp: 349 },
@@ -818,7 +831,7 @@
     const thumbNextBtn = document.getElementById("thumbNextBtn");
     const mobileDotsContainer = document.getElementById("mobileDots");
 
-    // Swipe variables
+    // Swipe support
     let touchStartX = 0;
     let touchEndX = 0;
     const minSwipeDistance = 50;
@@ -832,10 +845,8 @@
         const diff = touchEndX - touchStartX;
         if (Math.abs(diff) < minSwipeDistance) return;
         if (diff > 0) {
-            // swipe right -> previous image
             goPrevImage();
         } else {
-            // swipe left -> next image
             goNextImage();
         }
     }
@@ -859,7 +870,6 @@
         mainImgElement.src = galleryImages[activeThumbIndex];
         
         if (window.innerWidth >= 1024) {
-            // desktop: re-render thumbs and adjust startIndex if needed
             if (activeThumbIndex < thumbStartIndex) {
                 thumbStartIndex = activeThumbIndex;
             } else if (activeThumbIndex >= thumbStartIndex + visibleThumbCount) {
@@ -929,7 +939,7 @@
         }
     }
 
-    // Variants (compact)
+    // Compact variant cards
     function renderVariants() {
         variantsContainer.innerHTML = "";
         variantsData.forEach((variant) => {
@@ -938,10 +948,10 @@
             card.className = "variant-card";
             if (currentVariant.id === variant.id) card.classList.add("active-variant");
             card.innerHTML = `
-                <div class="variant-weight">${variant.weight}</div>
-                <div class="variant-price">₹${variant.price}</div>
-                <div class="variant-mrp">MRP ₹${variant.mrp}</div>
-                <div class="variant-discount">${discountVal}% off</div>
+                <span class="variant-weight">${variant.weight}</span>
+                <span class="variant-price">₹${variant.price}</span>
+                <span class="variant-mrp">₹${variant.mrp}</span>
+                <span class="variant-discount">${discountVal}% off</span>
             `;
             card.addEventListener("click", () => {
                 currentVariant = variant;
@@ -998,7 +1008,7 @@
         });
     }
 
-    // Quantity
+    // Quantity handlers
     function updateQuantityUI() { qtySpan.innerText = currentQuantity; }
     function showToast(msg, icon = "✅") { alert(`${icon} ${msg}`); }
 
@@ -1028,14 +1038,12 @@
         setTimeout(() => btn.style.transform = "", 150);
     });
 
-    // Handle resize & swipe attachment
     function handleResize() {
         if (window.innerWidth >= 1024) {
             if (mobileDotsContainer) mobileDotsContainer.style.display = "none";
             renderThumbnailsCarousel();
             thumbPrevBtn.onclick = goPrevThumbs;
             thumbNextBtn.onclick = goNextThumbs;
-            // remove swipe listeners on desktop (optional)
             mainImageContainer.removeEventListener("touchstart", handleTouchStart);
             mainImageContainer.removeEventListener("touchend", handleTouchEnd);
         } else {
@@ -1043,7 +1051,6 @@
                 mobileDotsContainer.style.display = "flex";
                 updateMobileDots();
             }
-            // attach swipe listeners
             mainImageContainer.addEventListener("touchstart", handleTouchStart, { passive: false });
             mainImageContainer.addEventListener("touchend", handleTouchEnd);
         }
