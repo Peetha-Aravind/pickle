@@ -28,7 +28,7 @@
             padding: 0 24px;
         }
 
-        /* product grid layout */
+        /* product grid layout - desktop side by side */
         .product-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -62,7 +62,7 @@
             }
             .thumb-list-container {
                 overflow: hidden;
-                max-height: 380px; /* enough for 3 thumbs (approx 110px each + gaps) */
+                max-height: 380px;
                 position: relative;
             }
             .thumb-list {
@@ -79,7 +79,7 @@
             .main-img {
                 order: 2;
                 flex: 1;
-                min-height: 500px; /* increased length for main image */
+                min-height: 500px;
                 display: flex;
                 align-items: center;
             }
@@ -111,72 +111,71 @@
                 opacity: 0.4;
                 pointer-events: none;
             }
+            /* hide dots on desktop */
+            .mobile-dots {
+                display: none;
+            }
         }
 
-        /* mobile: main image bigger, thumbnails horizontal scrollable */
+        /* MOBILE VIEW: details below image, red dots for navigation, no arrows */
         @media (max-width: 1023px) {
+            .product-grid {
+                display: flex;
+                flex-direction: column;
+                gap: 28px;
+            }
             .gallery {
                 position: static;
                 flex-direction: column;
-                gap: 20px;
-            }
-            .thumb-carousel-wrapper {
-                display: flex;
-                align-items: center;
-                gap: 10px;
+                gap: 16px;
                 width: 100%;
             }
-            .thumb-list-container {
-                overflow-x: auto;
-                scroll-behavior: smooth;
-                flex: 1;
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: thin;
-                padding-bottom: 6px;
+            .thumb-carousel-wrapper {
+                display: none; /* hide arrow wrapper on mobile */
             }
-            .thumb-list {
-                display: flex;
-                flex-direction: row;
-                gap: 12px;
-                width: max-content;
-            }
-            .thumb {
-                width: 85px;
-                height: 85px;
-                flex-shrink: 0;
-            }
-            .arrow-btn {
-                background: white;
-                border: 1px solid #e2e8f0;
-                border-radius: 40px;
-                width: 40px;
-                height: 40px;
+            .main-img {
+                width: 100%;
+                min-height: 320px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                cursor: pointer;
-                color: #b91c1c;
-                font-size: 1rem;
-                flex-shrink: 0;
-            }
-            .arrow-btn:hover {
-                background: #fee2e2;
-            }
-            .main-img {
-                order: 1;
-                min-height: 380px;
-                display: flex;
-                align-items: center;
                 background: #fff8f0;
+                border-radius: 28px;
+                overflow: hidden;
             }
             .main-img img {
                 width: 100%;
                 height: auto;
                 object-fit: contain;
-                max-height: 420px;
+                max-height: 380px;
             }
-            .thumb-carousel-wrapper {
+            /* red dots container */
+            .mobile-dots {
+                display: flex;
+                justify-content: center;
+                gap: 12px;
+                margin-top: 12px;
+                margin-bottom: 8px;
+            }
+            .dot {
+                width: 10px;
+                height: 10px;
+                background-color: #e2e8f0;
+                border-radius: 50%;
+                cursor: pointer;
+                transition: all 0.2s;
+                border: none;
+                padding: 0;
+            }
+            .dot.active {
+                background-color: #dc2626;
+                transform: scale(1.2);
+                width: 12px;
+                height: 12px;
+            }
+            .product-info {
                 order: 2;
+                width: 100%;
             }
         }
 
@@ -671,21 +670,25 @@
 <body>
 <div class="container">
     <div class="product-grid">
-        <!-- left side gallery with thumbnail carousel (3 visible on desktop, scrollable on mobile) -->
+        <!-- Gallery section: main image + (desktop thumbs) + mobile dots -->
         <div class="gallery" id="gallerySticky">
+            <!-- Desktop thumbnail carousel wrapper (hidden on mobile) -->
             <div class="thumb-carousel-wrapper">
-                <button class="arrow-btn" id="thumbPrevBtn" aria-label="Previous images"><i class="fas fa-chevron-up"></i></button>
+                <button class="arrow-btn" id="thumbPrevBtn"><i class="fas fa-chevron-up"></i></button>
                 <div class="thumb-list-container" id="thumbListContainer">
                     <div class="thumb-list" id="thumbList"></div>
                 </div>
-                <button class="arrow-btn" id="thumbNextBtn" aria-label="Next images"><i class="fas fa-chevron-down"></i></button>
+                <button class="arrow-btn" id="thumbNextBtn"><i class="fas fa-chevron-down"></i></button>
             </div>
+            <!-- Main image -->
             <div class="main-img" id="mainImageContainer">
                 <img id="mainBigImage" src="https://picsum.photos/id/108/600/550" alt="Main Pickle">
             </div>
+            <!-- Mobile red dots container -->
+            <div class="mobile-dots" id="mobileDots"></div>
         </div>
 
-        <!-- right side details -->
+        <!-- Right side details (will appear below image on mobile) -->
         <div class="product-info">
             <h1 class="product-name" id="productName">Homemade Tangy Mango Pickle</h1>
             <div class="rating">
@@ -791,7 +794,7 @@
     let thumbStartIndex = 0;
     const visibleThumbCount = 3;
 
-    // DOM
+    // DOM elements
     const mainImgElement = document.getElementById("mainBigImage");
     const sellPriceSpan = document.getElementById("sellPrice");
     const mrpSpan = document.getElementById("mrpPrice");
@@ -801,9 +804,25 @@
     const thumbListDiv = document.getElementById("thumbList");
     const thumbPrevBtn = document.getElementById("thumbPrevBtn");
     const thumbNextBtn = document.getElementById("thumbNextBtn");
-    const thumbContainer = document.getElementById("thumbListContainer");
+    const mobileDotsContainer = document.getElementById("mobileDots");
 
-    // Render thumbnails carousel
+    // Helper: update main image and active states
+    function setActiveImage(index) {
+        if (index < 0) index = 0;
+        if (index >= galleryImages.length) index = galleryImages.length - 1;
+        activeThumbIndex = index;
+        mainImgElement.src = galleryImages[activeThumbIndex];
+        
+        // Update desktop thumbs active class if visible
+        if (window.innerWidth >= 1024) {
+            renderThumbnailsCarousel(); // re-render to update active class
+        } else {
+            // update mobile dots
+            updateMobileDots();
+        }
+    }
+
+    // Desktop thumbnail carousel
     function renderThumbnailsCarousel() {
         thumbListDiv.innerHTML = "";
         const endIndex = Math.min(thumbStartIndex + visibleThumbCount, galleryImages.length);
@@ -819,8 +838,7 @@
             thumbDiv.addEventListener("click", ((idx) => {
                 return () => {
                     activeThumbIndex = idx;
-                    currentMainImage = galleryImages[activeThumbIndex];
-                    mainImgElement.src = currentMainImage;
+                    mainImgElement.src = galleryImages[activeThumbIndex];
                     renderThumbnailsCarousel();
                     if (activeThumbIndex < thumbStartIndex) {
                         thumbStartIndex = activeThumbIndex;
@@ -836,24 +854,14 @@
             thumbListDiv.appendChild(thumbDiv);
         }
         updateArrowState();
-        if (window.innerWidth <= 1023 && thumbContainer) {
-            const activeElem = thumbListDiv.querySelector(".thumb.active-thumb");
-            if (activeElem) activeElem.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-        }
     }
 
     function updateArrowState() {
-        if (thumbPrevBtn && thumbNextBtn) {
-            const isMobile = window.innerWidth <= 1023;
-            if (!isMobile) {
-                thumbPrevBtn.disabled = (thumbStartIndex <= 0);
-                thumbNextBtn.disabled = (thumbStartIndex + visibleThumbCount >= galleryImages.length);
-                thumbPrevBtn.classList.toggle("disabled", thumbStartIndex <= 0);
-                thumbNextBtn.classList.toggle("disabled", thumbStartIndex + visibleThumbCount >= galleryImages.length);
-            } else {
-                thumbPrevBtn.disabled = false;
-                thumbNextBtn.disabled = false;
-            }
+        if (thumbPrevBtn && thumbNextBtn && window.innerWidth >= 1024) {
+            thumbPrevBtn.disabled = (thumbStartIndex <= 0);
+            thumbNextBtn.disabled = (thumbStartIndex + visibleThumbCount >= galleryImages.length);
+            thumbPrevBtn.classList.toggle("disabled", thumbStartIndex <= 0);
+            thumbNextBtn.classList.toggle("disabled", thumbStartIndex + visibleThumbCount >= galleryImages.length);
         }
     }
 
@@ -871,24 +879,18 @@
         }
     }
 
-    function adjustArrowsForMobile() {
-        const isMobile = window.innerWidth <= 1023;
-        const prevIcon = thumbPrevBtn.querySelector('i');
-        const nextIcon = thumbNextBtn.querySelector('i');
-        if (isMobile) {
-            prevIcon.className = "fas fa-chevron-left";
-            nextIcon.className = "fas fa-chevron-right";
-            thumbPrevBtn.onclick = () => {
-                if (thumbContainer) thumbContainer.scrollBy({ left: -120, behavior: "smooth" });
-            };
-            thumbNextBtn.onclick = () => {
-                if (thumbContainer) thumbContainer.scrollBy({ left: 120, behavior: "smooth" });
-            };
-        } else {
-            prevIcon.className = "fas fa-chevron-up";
-            nextIcon.className = "fas fa-chevron-down";
-            thumbPrevBtn.onclick = goPrevThumbs;
-            thumbNextBtn.onclick = goNextThumbs;
+    // Mobile: create red dots and attach click handlers
+    function updateMobileDots() {
+        if (!mobileDotsContainer) return;
+        mobileDotsContainer.innerHTML = "";
+        for (let i = 0; i < galleryImages.length; i++) {
+            const dot = document.createElement("button");
+            dot.classList.add("dot");
+            if (i === activeThumbIndex) dot.classList.add("active");
+            dot.addEventListener("click", () => {
+                setActiveImage(i);
+            });
+            mobileDotsContainer.appendChild(dot);
         }
     }
 
@@ -991,25 +993,50 @@
         setTimeout(() => btn.style.transform = "", 150);
     });
 
-    window.addEventListener('resize', () => {
-        adjustArrowsForMobile();
-        if (window.innerWidth > 1023) renderThumbnailsCarousel();
-    });
+    // Handle resize: switch between desktop thumbs and mobile dots
+    function handleResize() {
+        if (window.innerWidth >= 1024) {
+            // desktop mode: ensure thumbs are rendered, hide dots container
+            if (mobileDotsContainer) mobileDotsContainer.style.display = "none";
+            renderThumbnailsCarousel();
+            thumbPrevBtn.onclick = goPrevThumbs;
+            thumbNextBtn.onclick = goNextThumbs;
+        } else {
+            // mobile mode: show dots, hide desktop carousel wrapper? already hidden via CSS
+            if (mobileDotsContainer) {
+                mobileDotsContainer.style.display = "flex";
+                updateMobileDots();
+            }
+        }
+    }
 
+    // Initial setup
     function init() {
         renderVariants();
         activeThumbIndex = 0;
         thumbStartIndex = 0;
-        renderThumbnailsCarousel();
         mainImgElement.src = galleryImages[0];
         currentVariant = variantsData[0];
         currentQuantity = 1;
         updateQuantityUI();
         updatePriceDetails();
         renderRelated();
-        adjustArrowsForMobile();
         document.getElementById("starRating").innerHTML = "★★★★½";
+        
+        if (window.innerWidth >= 1024) {
+            renderThumbnailsCarousel();
+            thumbPrevBtn.onclick = goPrevThumbs;
+            thumbNextBtn.onclick = goNextThumbs;
+            if (mobileDotsContainer) mobileDotsContainer.style.display = "none";
+        } else {
+            if (mobileDotsContainer) {
+                mobileDotsContainer.style.display = "flex";
+                updateMobileDots();
+            }
+        }
+        window.addEventListener('resize', handleResize);
     }
+    
     init();
 </script>
 </body>
