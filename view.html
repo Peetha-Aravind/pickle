@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,12 +46,12 @@
     .nav-links { display: flex; gap: 32px; }
     .nav-links a { font-weight: 600; font-size: 14px; color: var(--ash); text-decoration: none; transition: color 0.2s; }
     .nav-links a:hover { color: var(--rust); }
-    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; font-size: 24px; font-weight: bold; color: var(--rust); }
     .product-container {
       max-width: 1280px; margin: 30px auto 60px; padding: 0 5vw;
       display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 48px; align-items: start;
     }
-    /* GALLERY DESKTOP (thumbnails) */
+    /* DESKTOP GALLERY */
     .product-gallery.desktop-gallery {
       position: sticky; top: calc(var(--nav-h) + 20px);
       display: flex; gap: 20px; flex-direction: row;
@@ -115,7 +114,7 @@
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.5);
+      background: rgba(255,255,255,0.6);
       transition: all 0.2s;
       cursor: pointer;
     }
@@ -128,8 +127,6 @@
       .product-container { grid-template-columns: 1fr; gap: 32px; }
       .product-gallery.desktop-gallery { display: none; }
       .mobile-carousel { display: block; }
-      .product-gallery { position: relative; top: 0; margin-bottom: 16px; }
-      .thumbnail-strip { flex-direction: row; width: 100%; order: 2; justify-content: center; }
       .button-row { flex-direction: column; }
       .related-section .section-header { flex-wrap: wrap; }
     }
@@ -453,10 +450,16 @@
   async function loadProductPage() {
     const root = document.getElementById('productDetailRoot');
     const productId = getProductId();
-    if (!productId) { root.innerHTML = `<div class="error-message"><strong>❌ No product specified.</strong><br><button onclick="location.href='#'">Go to Shop</button></div>`; return; }
+    if (!productId) {
+      root.innerHTML = `<div class="error-message"><strong>❌ No product specified.</strong><br><button onclick="location.href='#'">Go to Shop</button></div>`;
+      return;
+    }
     try {
       const productSnap = await getDoc(doc(db, "products", productId));
-      if (!productSnap.exists()) { root.innerHTML = `<div class="error-message"><strong>😕 Product not found.</strong><br><button onclick="location.href='#'">Browse Pickles</button></div>`; return; }
+      if (!productSnap.exists()) {
+        root.innerHTML = `<div class="error-message"><strong>😕 Product not found.</strong><br><button onclick="location.href='#'">Browse Pickles</button></div>`;
+        return;
+      }
       const product = { id: productSnap.id, ...productSnap.data() };
       let relatedProducts = [];
       const categoryValue = product.categoryId || product.category;
@@ -474,10 +477,14 @@
       renderProductPage(product, relatedProducts);
       initMobileCarousel(product);
       initToggles();
-    } catch (err) { console.error(err); root.innerHTML = `<div class="error-message"><strong>⚠️ Failed to load.</strong><br>${err.message}<br><button onclick="location.reload()">Retry</button></div>`; }
+    } catch (err) {
+      console.error(err);
+      root.innerHTML = `<div class="error-message"><strong>⚠️ Failed to load.</strong><br>${err.message}<br><button onclick="location.reload()">Retry</button></div>`;
+    }
   }
 
   function renderProductPage(product, relatedProducts) {
+    const root = document.getElementById('productDetailRoot'); // FIXED: root defined
     const variants = product.variants || [];
     const defaultVariant = variants[0] || { weight: "Standard", price: product.price || 249, mrp: product.mrp || 299 };
     const allImages = [product.mainImage || product.image || "https://placehold.co/600x600/f5e9e7/c0392b?text=Pickle", ...(product.thumbnailImages || product.additionalImages || [])].filter(Boolean);
@@ -499,14 +506,14 @@
 
     const html = `
       <div class="product-container">
-        <!-- DESKTOP GALLERY (thumbnails) -->
+        <!-- DESKTOP GALLERY -->
         <div class="product-gallery desktop-gallery">
           <div class="thumbnail-strip" id="desktopThumbStrip">
             ${uniqueImages.map((img, idx) => `<div class="thumbnail ${idx === 0 ? 'active' : ''}" data-img="${img}"><img src="${img}" loading="lazy" onerror="this.src='https://placehold.co/85x85/f5e9e7/c0392b?text=img'"></div>`).join('')}
           </div>
           <div class="main-image"><img id="desktopMainImg" src="${uniqueImages[0]}" onerror="this.src='https://placehold.co/600x600/f5e9e7/c0392b?text=Pickle'"></div>
         </div>
-        <!-- MOBILE CAROUSEL (placeholder, will be filled by JS) -->
+        <!-- MOBILE CAROUSEL container -->
         <div class="mobile-carousel" id="mobileCarouselContainer">
           <div class="carousel-track" id="carouselTrack"></div>
           <div class="carousel-dots" id="carouselDots"></div>
@@ -522,7 +529,7 @@
             <div class="button-row"><div class="btn-cart" id="addToCartBtn">🛒 Add to Cart</div><div class="btn-wishlist" id="wishlistBtn">❤️ Wishlist</div></div>
             <div class="btn-buynow" id="buyNowBtn">⚡ Buy Now</div>
           </div>
-          <!-- 5 demo icons red row -->
+          <!-- 5 demo icons -->
           <div class="feature-icons">
             <div class="icon-item"><span>🚚</span><span>Free Ship</span></div>
             <div class="icon-item"><span>⭐</span><span>100% Authentic</span></div>
@@ -554,15 +561,18 @@
       </div>
     `;
     root.innerHTML = html;
-    // desktop thumb logic
+
+    // desktop thumbnail logic
     const thumbs = document.querySelectorAll('.thumbnail');
     const desktopMain = document.getElementById('desktopMainImg');
     thumbs.forEach(t => t.addEventListener('click', () => { const src = t.getAttribute('data-img'); if (src) desktopMain.src = src; thumbs.forEach(th => th.classList.remove('active')); t.classList.add('active'); }));
-    // variant logic
+    
+    // variant selection
     const variantBtns = document.querySelectorAll('.variant-btn');
     const currPriceSpan = document.getElementById('currentPrice'), oldSpan = document.getElementById('oldPrice'), discSpan = document.getElementById('discountBadge');
     variantBtns.forEach(btn => btn.addEventListener('click', () => { variantBtns.forEach(b => b.classList.remove('active')); btn.classList.add('active'); const price = btn.getAttribute('data-price'), mrp = btn.getAttribute('data-mrp'); currPriceSpan.innerText = formatPrice(price); if (oldSpan) { if (mrp && mrp !== 'null') oldSpan.innerText = formatPrice(mrp); else oldSpan.style.display = 'none'; } const disc = getDiscountPercent(mrp, price); if (discSpan) { if (disc) { discSpan.innerText = `${disc}% OFF`; discSpan.style.display = 'inline-block'; } else discSpan.style.display = 'none'; } }));
-    // qty
+    
+    // quantity
     const qtyInput = document.getElementById('qtyInput');
     document.getElementById('qtyMinus')?.addEventListener('click', () => { let v = parseInt(qtyInput.value); if (v > 1) qtyInput.value = v - 1; });
     document.getElementById('qtyPlus')?.addEventListener('click', () => { let v = parseInt(qtyInput.value); qtyInput.value = v + 1; });
@@ -570,8 +580,10 @@
     document.getElementById('addToCartBtn')?.addEventListener('click', () => { const qty = parseInt(qtyInput.value); const v = getActiveVar(); alert(`🛒 Added to cart: ${displayName} (${v.weight}) x ${qty} = ${formatPrice(v.price * qty)}`); });
     document.getElementById('wishlistBtn')?.addEventListener('click', () => alert(`❤️ ${displayName} saved to wishlist!`));
     document.getElementById('buyNowBtn')?.addEventListener('click', () => { const qty = parseInt(qtyInput.value); const v = getActiveVar(); alert(`⚡ Checkout: ${displayName} ${v.weight} x ${qty} → ${formatPrice(v.price * qty)}`); });
+    
+    // related products click
     document.querySelectorAll('.related-card').forEach(card => card.addEventListener('click', (e) => { const pid = card.getAttribute('data-id'); if (pid) window.location.href = `view.html?id=${pid}`; }));
-    document.getElementById('viewMoreRelatedLink')?.addEventListener('click', (e) => { e.preventDefault(); alert("Navigate to full category page (integration ready)"); });
+    document.getElementById('viewMoreRelatedLink')?.addEventListener('click', (e) => { e.preventDefault(); alert("Browse full category collection (integration ready)."); });
   }
 
   function initMobileCarousel(product) {
@@ -605,4 +617,3 @@
 </script>
 </body>
 </html>
-```
