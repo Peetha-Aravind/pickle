@@ -68,18 +68,18 @@
     .nav-links a:hover { color: var(--rust); }
     .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; font-size: 26px; font-weight: bold; color: var(--rust); }
     
-    /* PRODUCT CONTAINER: wider main image column (increase width by ~20%) */
+    /* PRODUCT CONTAINER: wider main image column */
     .product-container {
       max-width: 1400px;
       margin: 30px auto 60px;
       padding: 0 5vw;
       display: grid;
-      grid-template-columns: 1.2fr 0.8fr; /* gallery gets 20% more relative to info */
+      grid-template-columns: 1.2fr 0.8fr;
       gap: 56px;
       align-items: start;
     }
     
-    /* DESKTOP GALLERY - larger main image */
+    /* DESKTOP GALLERY */
     .product-gallery.desktop-gallery {
       position: sticky; top: calc(var(--nav-h) + 20px);
       display: flex;
@@ -174,7 +174,7 @@
       .variant-buttons { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
     }
 
-    /* vertical spacing for product info */
+    /* product info spacing */
     .product-info {
       display: flex;
       flex-direction: column;
@@ -193,7 +193,7 @@
       gap: 12px;
       margin-top: 4px;
     }
-    /* price group with bigger bold main price */
+    /* price group */
     .price-group {
       background: var(--rust-light);
       padding: 12px 20px;
@@ -205,7 +205,7 @@
       flex-wrap: wrap;
     }
     .current-price {
-      font-size: 2.4rem;   /* bigger and bold */
+      font-size: 2.4rem;
       font-weight: 800;
       color: var(--rust);
       line-height: 1.2;
@@ -223,7 +223,6 @@
       font-size: 0.8rem;
       font-weight: 700;
     }
-    /* tax text size increased by ~5% (0.7rem -> 0.74rem) */
     .tax-text {
       font-size: 0.74rem;
       color: var(--ash);
@@ -240,11 +239,8 @@
     .qty-selector {
       margin: 4px 0 8px;
     }
-    .action-buttons {
-      margin-top: 8px;
-    }
 
-    /* VARIANT BUTTONS: left-aligned content */
+    /* VARIANT BUTTONS: left aligned */
     .variant-buttons {
       display: flex;
       gap: 16px;
@@ -261,7 +257,7 @@
       transition: all 0.2s;
       display: flex;
       flex-direction: column;
-      align-items: flex-start;  /* left align weight and price row */
+      align-items: flex-start;
       text-align: left;
       gap: 6px;
     }
@@ -277,7 +273,7 @@
     .price-row {
       display: flex;
       flex-wrap: wrap;
-      justify-content: flex-start;  /* left align price elements */
+      justify-content: flex-start;
       align-items: baseline;
       gap: 8px;
       row-gap: 4px;
@@ -344,13 +340,14 @@
     .qty-control button { background: #fff; border: none; padding: 8px 18px; font-size: 1.2rem; cursor: pointer; font-weight: bold; }
     .qty-control input { width: 50px; text-align: center; border: none; font-weight: 600; font-size: 1rem; }
 
-    /* rating stars - pure dark red (var(--rust)) */
+    /* rating stars - pure dark red, no background shade */
     .stars {
       font-size: 1.6rem;
       font-weight: bold;
       letter-spacing: 3px;
       display: inline-flex;
       gap: 2px;
+      background: transparent;
     }
     .star-wrapper {
       position: relative;
@@ -359,10 +356,11 @@
       height: 1.2rem;
       font-size: 1.6rem;
       line-height: 1;
+      background: transparent;
     }
-    .star-empty { color: #ccc; width: 100%; }
-    .star-full { color: var(--rust); width: 100%; }
-    .star-half { color: var(--rust); width: 50%; overflow: hidden; }
+    .star-empty { color: #ccc; width: 100%; background: transparent; }
+    .star-full { color: var(--rust); width: 100%; background: transparent; }
+    .star-half { color: var(--rust); width: 50%; overflow: hidden; background: transparent; }
 
     /* toggle sections */
     .toggle-section {
@@ -514,7 +512,7 @@
     .related-img img { width: 100%; height: 100%; object-fit: cover; }
     .related-info { padding: 14px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
     .related-name { font-weight: 700; font-size: 0.95rem; }
-    .related-stars { font-size: 0.9rem; font-weight: bold; letter-spacing: 1px; }
+    .related-stars { font-size: 0.9rem; font-weight: bold; letter-spacing: 1px; background: transparent; }
     .related-pricing { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin: 4px 0; }
     .related-price { color: var(--rust); font-weight: 800; font-size: 1rem; }
     .related-mrp { text-decoration: line-through; font-size: 0.8rem; color: var(--ash); }
@@ -532,41 +530,6 @@
     }
     .related-view-btn:hover { background: var(--rust); }
 
-    /* footer red */
-    .footer-red {
-      background: var(--rust);
-      color: white;
-      padding: 40px 5vw 30px;
-      margin-top: 60px;
-    }
-    .footer-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 32px;
-    }
-    .footer-col h4 {
-      font-size: 1.1rem;
-      margin-bottom: 16px;
-      font-weight: 700;
-    }
-    .footer-col p, .footer-col a {
-      color: rgba(255,255,255,0.85);
-      text-decoration: none;
-      font-size: 0.85rem;
-      line-height: 1.6;
-      display: block;
-      margin-bottom: 8px;
-    }
-    .footer-col a:hover { text-decoration: underline; color: white; }
-    .footer-bottom {
-      text-align: center;
-      padding-top: 32px;
-      border-top: 1px solid rgba(255,255,255,0.2);
-      margin-top: 32px;
-      font-size: 0.75rem;
-    }
     .loader { text-align: center; padding: 60px; color: var(--ash); }
     .error-message {
       background: #ffefef; padding: 40px 30px; text-align: center;
@@ -627,16 +590,6 @@
   </div>
 </main>
 
-<footer class="footer-red">
-  <div class="footer-container">
-    <div class="footer-col"><h4>Happy NonVeg Pickles</h4><p>Traditional family recipes since 1985. Handcrafted with authentic spices and premium meat.</p></div>
-    <div class="footer-col"><h4>Quick Links</h4><a href="#">Shop All</a><a href="#">Best Sellers</a><a href="#">Offers</a><a href="#">Track Order</a></div>
-    <div class="footer-col"><h4>Support</h4><a href="#">Contact Us</a><a href="#">FAQs</a><a href="#">Return Policy</a><a href="#">Privacy</a></div>
-    <div class="footer-col"><h4>Connect</h4><p>📞 +91 98765 43210</p><p>📧 hello@happynonveg.com</p><p>⏱️ Mon-Sat 10AM-7PM</p></div>
-  </div>
-  <div class="footer-bottom">© 2025 Happy NonVeg Pickles — crafted with tradition & passion | All rights reserved</div>
-</footer>
-
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
   import { getFirestore, doc, getDoc, getDocs, collection, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -657,7 +610,7 @@
   function formatPrice(p) { return `₹${Math.round(Number(p) || 0)}`; }
   function getDiscountPercent(mrp, price) { if (!mrp || !price || mrp <= price) return null; return Math.round(((mrp - price) / mrp) * 100); }
   
-  // rating stars with pure dark red (var(--rust) via CSS)
+  // rating stars with pure dark red, no background
   function renderStars(rating) {
     const full = Math.floor(rating);
     const half = (rating % 1) >= 0.5;
@@ -817,12 +770,53 @@
     const qtyInput = document.getElementById('qtyInput');
     document.getElementById('qtyMinus')?.addEventListener('click', () => { let v = parseInt(qtyInput.value); if (v > 1) qtyInput.value = v - 1; });
     document.getElementById('qtyPlus')?.addEventListener('click', () => { let v = parseInt(qtyInput.value); qtyInput.value = v + 1; });
-    const getActiveVar = () => { const active = document.querySelector('.variant-btn.active'); if (active) return { weight: active.querySelector('.variant-weight')?.innerText || 'Standard', price: active.getAttribute('data-price') }; return { weight: variants[0]?.weight, price: variants[0]?.price }; };
-    document.getElementById('addToCartBtn')?.addEventListener('click', () => { const qty = parseInt(qtyInput.value); const v = getActiveVar(); alert(`🛒 Added to cart: ${displayName} (${v.weight}) x ${qty} = ${formatPrice(v.price * qty)}`); });
-    document.getElementById('wishlistBtn')?.addEventListener('click', () => alert(`❤️ ${displayName} saved to wishlist!`));
-    document.getElementById('buyNowBtn')?.addEventListener('click', () => { const qty = parseInt(qtyInput.value); const v = getActiveVar(); alert(`⚡ Checkout: ${displayName} ${v.weight} x ${qty} → ${formatPrice(v.price * qty)}`); });
     
-    document.querySelectorAll('.related-card').forEach(card => card.addEventListener('click', (e) => { const pid = card.getAttribute('data-id'); if (pid) window.location.href = `view.html?id=${pid}`; }));
+    const getActiveVariant = () => {
+      const active = document.querySelector('.variant-btn.active');
+      if (active) {
+        return {
+          weight: active.querySelector('.variant-weight')?.innerText || 'Standard',
+          price: active.getAttribute('data-price'),
+          mrp: active.getAttribute('data-mrp')
+        };
+      }
+      return { weight: variants[0]?.weight || 'Standard', price: variants[0]?.price, mrp: variants[0]?.mrp };
+    };
+    
+    // Add to Cart (alert only)
+    document.getElementById('addToCartBtn')?.addEventListener('click', () => {
+      const qty = parseInt(qtyInput.value);
+      const v = getActiveVariant();
+      alert(`🛒 Added to cart: ${displayName} (${v.weight}) x ${qty} = ${formatPrice(v.price * qty)}`);
+    });
+    
+    // Wishlist (alert only)
+    document.getElementById('wishlistBtn')?.addEventListener('click', () => alert(`❤️ ${displayName} saved to wishlist!`));
+    
+    // BUY NOW: navigate to checkout page with product details
+    document.getElementById('buyNowBtn')?.addEventListener('click', () => {
+      const qty = parseInt(qtyInput.value);
+      const variant = getActiveVariant();
+      const selectedPrice = variant.price;
+      const selectedWeight = variant.weight;
+      const totalAmount = selectedPrice * qty;
+      // Build URL parameters
+      const params = new URLSearchParams();
+      params.set('id', product.id);
+      params.set('name', displayName);
+      params.set('weight', selectedWeight);
+      params.set('price', selectedPrice);
+      params.set('quantity', qty);
+      params.set('total', totalAmount);
+      // Navigate to checkout page (create checkout.html or any destination)
+      window.location.href = `checkout.html?${params.toString()}`;
+    });
+    
+    // related product click
+    document.querySelectorAll('.related-card').forEach(card => card.addEventListener('click', (e) => {
+      const pid = card.getAttribute('data-id');
+      if (pid) window.location.href = `view.html?id=${pid}`;
+    }));
   }
 
   function initMobileCarousel(product) {
