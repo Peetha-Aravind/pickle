@@ -68,14 +68,14 @@
     .nav-links a:hover { color: var(--rust); }
     .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; font-size: 26px; font-weight: bold; color: var(--rust); }
     
-    /* PRODUCT CONTAINER: wider main image column */
+    /* PRODUCT CONTAINER: main image width reduced by ~10% (now gallery 1.0, info 0.9) */
     .product-container {
       max-width: 1400px;
       margin: 30px auto 60px;
       padding: 0 5vw;
       display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 56px;
+      grid-template-columns: 1fr 0.9fr; /* gallery width reduced relative to info */
+      gap: 48px;
       align-items: start;
     }
     
@@ -172,6 +172,11 @@
       .product-gallery.desktop-gallery { display: none; }
       .mobile-carousel { display: block; }
       .variant-buttons { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+      /* extra info becomes stacked on mobile */
+      .extra-info-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px;
+      }
     }
 
     /* product info spacing */
@@ -340,7 +345,7 @@
     .qty-control button { background: #fff; border: none; padding: 8px 18px; font-size: 1.2rem; cursor: pointer; font-weight: bold; }
     .qty-control input { width: 50px; text-align: center; border: none; font-weight: 600; font-size: 1rem; }
 
-    /* rating stars - pure dark red, no background shade */
+    /* rating stars - pure solid red, no fading, no background */
     .stars {
       font-size: 1.6rem;
       font-weight: bold;
@@ -362,14 +367,27 @@
     .star-full { color: var(--rust); width: 100%; background: transparent; }
     .star-half { color: var(--rust); width: 50%; overflow: hidden; background: transparent; }
 
-    /* toggle sections */
+    /* toggle sections - now in grid layout (2 columns) */
+    .extra-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 8px;
+    }
     .toggle-section {
       background: transparent;
       border-radius: 0;
-      padding: 12px 0;
+      padding: 0;
       box-shadow: none;
-      margin-bottom: 12px;
-      border-bottom: 1px solid var(--border);
+      margin-bottom: 0;
+      border: none;
+    }
+    .toggle-card {
+      background: white;
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
     }
     .toggle-header {
       display: flex;
@@ -378,6 +396,7 @@
       cursor: pointer;
       font-weight: 700;
       color: var(--ink);
+      margin-bottom: 8px;
     }
     .toggle-header h4 {
       font-size: 1rem;
@@ -406,7 +425,7 @@
       margin-top: 8px;
     }
 
-    /* 5 demo icons */
+    /* 5 icons based on image */
     .feature-icons {
       display: flex;
       flex-wrap: wrap;
@@ -610,7 +629,7 @@
   function formatPrice(p) { return `₹${Math.round(Number(p) || 0)}`; }
   function getDiscountPercent(mrp, price) { if (!mrp || !price || mrp <= price) return null; return Math.round(((mrp - price) / mrp) * 100); }
   
-  // rating stars with pure dark red, no background
+  // rating stars: pure red, no half-opacity, solid red stars (half star uses same color but clipped)
   function renderStars(rating) {
     const full = Math.floor(rating);
     const half = (rating % 1) >= 0.5;
@@ -715,33 +734,38 @@
           <div class="qty-selector"><span style="font-weight:600;">Quantity:</span><div class="qty-control"><button id="qtyMinus">-</button><input type="text" id="qtyInput" value="1" readonly><button id="qtyPlus">+</button></div></div>
           <div class="action-buttons">
             <div class="dual-buttons">
-              <div class="btn-cart" id="addToCartBtn">Add to Cart</div>
-              <div class="btn-wishlist" id="wishlistBtn" img src="./assets/heart-fill.svg"> Wishlist</div>
+              <div class="btn-cart" id="addToCartBtn">🛒 Add to Cart</div>
+              <div class="btn-wishlist" id="wishlistBtn">❤️ Wishlist</div>
             </div>
             <div class="btn-buynow" id="buyNowBtn">⚡ Buy Now</div>
           </div>
+          <!-- 5 icons based on image: Premium Quality, No Preservatives, Fast Delivery, Traditional Recipe, Secure Packaging -->
           <div class="feature-icons">
-            <div class="icon-item"><span>🚚</span><span>Free Ship</span></div>
-            <div class="icon-item"><span>⭐</span><span>100% Authentic</span></div>
-            <div class="icon-item"><span>🔄</span><span>Easy Return</span></div>
-            <div class="icon-item"><span>🥇</span><span>Quality</span></div>
-            <div class="icon-item"><span>🌶️</span><span>Homemade</span></div>
+            <div class="icon-item"><span>🏆</span><span>Premium Quality</span></div>
+            <div class="icon-item"><span>🌿</span><span>No Preservatives</span></div>
+            <div class="icon-item"><span>⚡</span><span>Fast Delivery</span></div>
+            <div class="icon-item"><span>👵</span><span>Traditional Recipe</span></div>
+            <div class="icon-item"><span>📦</span><span>Secure Packaging</span></div>
           </div>
-          <div class="extra-info">
-            <div class="toggle-section" id="shippingToggle">
-              <div class="toggle-header"><h4>📦 Shipping & Return</h4><div class="toggle-btn">View more</div></div>
-              <div class="toggle-content collapsed"><p>${escapeHtml(shippingText)}</p><p style="margin-top:8px;">${escapeHtml(returnText)}</p></div>
+          <div class="extra-info-grid">
+            <div class="toggle-card">
+              <div class="toggle-section" id="shippingToggle">
+                <div class="toggle-header"><h4>📦 Shipping & Returns</h4><div class="toggle-btn">View more</div></div>
+                <div class="toggle-content collapsed"><p>${escapeHtml(shippingText)}</p><p style="margin-top:8px;">${escapeHtml(returnText)}</p></div>
+              </div>
             </div>
-            <div class="toggle-section" id="descToggle">
-              <div class="toggle-header"><h4>📖 Description</h4><div class="toggle-btn">View more</div></div>
-              <div class="toggle-content collapsed"><div class="desc-preview">${escapeHtml(fullDescriptionText)}</div><div class="full-description-text" style="display:none;">${escapeHtml(fullDescriptionText)}</div></div>
+            <div class="toggle-card">
+              <div class="toggle-section" id="descToggle">
+                <div class="toggle-header"><h4>📖 Description</h4><div class="toggle-btn">View more</div></div>
+                <div class="toggle-content collapsed"><div class="desc-preview">${escapeHtml(fullDescriptionText)}</div><div class="full-description-text" style="display:none;">${escapeHtml(fullDescriptionText)}</div></div>
+              </div>
             </div>
           </div>
         </div>
       </div>
       <div class="related-section">
         <div class="section-header">
-          <h2> More from this category</h2>
+          <h2>🔥 More from this category</h2>
           <a class="view-more-link" href="shop.html" id="viewMoreRelatedLink">View all →</a>
         </div>
         <div class="related-grid" id="relatedGrid">
@@ -783,24 +807,18 @@
       return { weight: variants[0]?.weight || 'Standard', price: variants[0]?.price, mrp: variants[0]?.mrp };
     };
     
-    // Add to Cart (alert only)
     document.getElementById('addToCartBtn')?.addEventListener('click', () => {
       const qty = parseInt(qtyInput.value);
       const v = getActiveVariant();
       alert(`🛒 Added to cart: ${displayName} (${v.weight}) x ${qty} = ${formatPrice(v.price * qty)}`);
     });
-    
-    // Wishlist (alert only)
     document.getElementById('wishlistBtn')?.addEventListener('click', () => alert(`❤️ ${displayName} saved to wishlist!`));
-    
-    // BUY NOW: navigate to checkout page with product details
     document.getElementById('buyNowBtn')?.addEventListener('click', () => {
       const qty = parseInt(qtyInput.value);
       const variant = getActiveVariant();
       const selectedPrice = variant.price;
       const selectedWeight = variant.weight;
       const totalAmount = selectedPrice * qty;
-      // Build URL parameters
       const params = new URLSearchParams();
       params.set('id', product.id);
       params.set('name', displayName);
@@ -808,11 +826,9 @@
       params.set('price', selectedPrice);
       params.set('quantity', qty);
       params.set('total', totalAmount);
-      // Navigate to checkout page (create checkout.html or any destination)
       window.location.href = `checkout.html?${params.toString()}`;
     });
     
-    // related product click
     document.querySelectorAll('.related-card').forEach(card => card.addEventListener('click', (e) => {
       const pid = card.getAttribute('data-id');
       if (pid) window.location.href = `view.html?id=${pid}`;
