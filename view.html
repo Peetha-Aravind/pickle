@@ -26,7 +26,7 @@
       line-height: 1.5;
       padding-top: var(--nav-h);
     }
-    /* skeleton loading animation */
+    /* skeleton loading */
     .skeleton {
       background: linear-gradient(90deg, #e0dcd6 25%, #f0ece6 50%, #e0dcd6 75%);
       background-size: 200% 100%;
@@ -68,18 +68,18 @@
     .nav-links a:hover { color: var(--rust); }
     .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; font-size: 26px; font-weight: bold; color: var(--rust); }
     
-    /* PRODUCT CONTAINER: main image width reduced by ~10% (now gallery 1.0, info 0.9) */
+    /* product container: main image width reduced */
     .product-container {
       max-width: 1400px;
       margin: 30px auto 60px;
       padding: 0 5vw;
       display: grid;
-      grid-template-columns: 1fr 0.9fr; /* gallery width reduced relative to info */
+      grid-template-columns: 1fr 0.9fr;
       gap: 48px;
       align-items: start;
     }
     
-    /* DESKTOP GALLERY */
+    /* desktop gallery */
     .product-gallery.desktop-gallery {
       position: sticky; top: calc(var(--nav-h) + 20px);
       display: flex;
@@ -115,7 +115,7 @@
     }
     .main-image img { width: 100%; height: 100%; object-fit: cover; }
 
-    /* MOBILE CAROUSEL */
+    /* mobile carousel */
     .mobile-carousel {
       display: none;
       position: relative;
@@ -172,21 +172,19 @@
       .product-gallery.desktop-gallery { display: none; }
       .mobile-carousel { display: block; }
       .variant-buttons { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
-      /* extra info becomes stacked on mobile */
       .extra-info-grid {
         grid-template-columns: 1fr !important;
         gap: 16px;
       }
     }
 
-    /* product info spacing */
+    /* product info */
     .product-info {
       display: flex;
       flex-direction: column;
       gap: 20px;
     }
     .product-title {
-      font-family: var(--ff-body);
       font-size: 2.4rem;
       font-weight: 700;
       line-height: 1.2;
@@ -198,7 +196,6 @@
       gap: 12px;
       margin-top: 4px;
     }
-    /* price group */
     .price-group {
       background: var(--rust-light);
       padding: 12px 20px;
@@ -213,7 +210,6 @@
       font-size: 2.4rem;
       font-weight: 800;
       color: var(--rust);
-      line-height: 1.2;
     }
     .old-price {
       text-decoration: line-through;
@@ -233,19 +229,11 @@
       color: var(--ash);
       margin-top: 6px;
     }
-    .variants-section {
-      margin-top: 4px;
-    }
     .variants-section h3 {
       font-size: 1rem;
       margin-bottom: 12px;
       font-weight: 600;
     }
-    .qty-selector {
-      margin: 4px 0 8px;
-    }
-
-    /* VARIANT BUTTONS: left aligned */
     .variant-buttons {
       display: flex;
       gap: 16px;
@@ -281,7 +269,6 @@
       justify-content: flex-start;
       align-items: baseline;
       gap: 8px;
-      row-gap: 4px;
     }
     .variant-price {
       font-weight: 800;
@@ -301,8 +288,33 @@
       padding: 2px 8px;
       border-radius: 20px;
     }
-
-    /* BUTTON LAYOUT */
+    .qty-selector {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin: 4px 0 8px;
+    }
+    .qty-control {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 40px;
+      overflow: hidden;
+    }
+    .qty-control button {
+      background: #fff;
+      border: none;
+      padding: 8px 18px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .qty-control input {
+      width: 50px;
+      text-align: center;
+      border: none;
+      font-weight: 600;
+      font-size: 1rem;
+    }
     .action-buttons {
       display: flex;
       flex-direction: column;
@@ -340,12 +352,7 @@
     }
     .btn-buynow:hover { background: var(--rust-dark); transform: translateY(-2px); }
 
-    .qty-selector { display: flex; align-items: center; gap: 20px; }
-    .qty-control { display: flex; border: 1px solid var(--border); border-radius: 40px; overflow: hidden; }
-    .qty-control button { background: #fff; border: none; padding: 8px 18px; font-size: 1.2rem; cursor: pointer; font-weight: bold; }
-    .qty-control input { width: 50px; text-align: center; border: none; font-weight: 600; font-size: 1rem; }
-
-    /* rating stars - pure solid red, no fading, no background */
+    /* rating stars - solid red, no fading */
     .stars {
       font-size: 1.6rem;
       font-weight: bold;
@@ -367,20 +374,39 @@
     .star-full { color: var(--rust); width: 100%; background: transparent; }
     .star-half { color: var(--rust); width: 50%; overflow: hidden; background: transparent; }
 
-    /* toggle sections - now in grid layout (2 columns) */
+    /* 5 icons section */
+    .feature-icons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 8px 0 4px;
+      padding: 12px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .icon-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--rust);
+      text-align: center;
+      flex: 1;
+      min-width: 60px;
+    }
+    .icon-item span:first-child {
+      font-size: 1.5rem;
+    }
+
+    /* extra info grid: fixed two columns on desktop */
     .extra-info-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 24px;
       margin-top: 8px;
-    }
-    .toggle-section {
-      background: transparent;
-      border-radius: 0;
-      padding: 0;
-      box-shadow: none;
-      margin-bottom: 0;
-      border: none;
     }
     .toggle-card {
       background: white;
@@ -388,6 +414,15 @@
       padding: 18px;
       box-shadow: var(--shadow-sm);
       border: 1px solid var(--border);
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+    .toggle-section {
+      background: transparent;
+      border-radius: 0;
+      padding: 0;
+      box-shadow: none;
+      border: none;
     }
     .toggle-header {
       display: flex;
@@ -395,7 +430,6 @@
       align-items: center;
       cursor: pointer;
       font-weight: 700;
-      color: var(--ink);
       margin-bottom: 8px;
     }
     .toggle-header h4 {
@@ -425,34 +459,7 @@
       margin-top: 8px;
     }
 
-    /* 5 icons based on image */
-    .feature-icons {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 12px;
-      margin: 8px 0 4px;
-      padding: 12px 0;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-    .icon-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      color: var(--rust);
-      text-align: center;
-      flex: 1;
-      min-width: 60px;
-    }
-    .icon-item span:first-child {
-      font-size: 1.5rem;
-    }
-
-    /* RELATED SECTION */
+    /* related section */
     .related-section {
       max-width: 1400px;
       margin: 60px auto 40px;
@@ -489,15 +496,8 @@
         align-items: stretch;
         gap: 8px;
       }
-      .section-header h2 {
-        order: 1;
-        margin-bottom: 0;
-      }
-      .view-more-link {
-        order: 2;
-        text-align: right;
-        align-self: flex-end;
-      }
+      .section-header h2 { order: 1; }
+      .view-more-link { order: 2; text-align: right; align-self: flex-end; }
       .related-grid {
         display: flex;
         overflow-x: auto;
@@ -511,9 +511,7 @@
         scroll-snap-align: start;
         min-width: calc(50% - 12px);
       }
-      .related-grid::-webkit-scrollbar {
-        height: 4px;
-      }
+      .related-grid::-webkit-scrollbar { height: 4px; }
     }
     .related-card {
       background: white;
@@ -549,7 +547,6 @@
     }
     .related-view-btn:hover { background: var(--rust); }
 
-    .loader { text-align: center; padding: 60px; color: var(--ash); }
     .error-message {
       background: #ffefef; padding: 40px 30px; text-align: center;
       border-radius: var(--r-card); margin: 40px auto; max-width: 600px;
@@ -629,7 +626,6 @@
   function formatPrice(p) { return `₹${Math.round(Number(p) || 0)}`; }
   function getDiscountPercent(mrp, price) { if (!mrp || !price || mrp <= price) return null; return Math.round(((mrp - price) / mrp) * 100); }
   
-  // rating stars: pure red, no half-opacity, solid red stars (half star uses same color but clipped)
   function renderStars(rating) {
     const full = Math.floor(rating);
     const half = (rating % 1) >= 0.5;
@@ -692,9 +688,9 @@
     const allImages = [product.mainImage || product.image || "https://placehold.co/600x600/f5e9e7/c0392b?text=Pickle", ...(product.thumbnailImages || product.additionalImages || [])].filter(Boolean);
     const uniqueImages = [...new Map(allImages.map(img => [img, img])).values()];
     const displayName = product.longName || product.name || "Artisan Pickle";
-    const fullDescriptionText = product.fullDescription || product.description || "No detailed description available.";
-    const shippingText = product.shippingPolicy || "Free shipping on orders above ₹499. Delivery within 3-5 business days.";
-    const returnText = product.returnPolicy || "7-day return policy for unopened jars. Contact support for replacements.";
+    const fullDescriptionText = product.fullDescription || product.description || "No detailed description available. This is a sample long description that will wrap into multiple rows within the fixed column width, demonstrating that the layout remains stable and the text flows vertically without breaking the two-column design.";
+    const shippingText = product.shippingPolicy || "Free standard shipping on all orders over ₹999. Orders processed within 24–48 hours. Delivery typically takes 3-5 business days.";
+    const returnText = product.returnPolicy || "Returns accepted within 7 days of delivery for original, unopened items. Please contact support for return authorization.";
 
     const variantsHtml = variants.map((v, idx) => {
       const disc = getDiscountPercent(v.mrp, v.price);
@@ -739,7 +735,6 @@
             </div>
             <div class="btn-buynow" id="buyNowBtn">⚡ Buy Now</div>
           </div>
-          <!-- 5 icons based on image: Premium Quality, No Preservatives, Fast Delivery, Traditional Recipe, Secure Packaging -->
           <div class="feature-icons">
             <div class="icon-item"><span>🏆</span><span>Premium Quality</span></div>
             <div class="icon-item"><span>🌿</span><span>No Preservatives</span></div>
