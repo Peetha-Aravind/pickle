@@ -46,28 +46,28 @@
             align-self: flex-start;
         }
 
-        /* desktop row layout (thumbs left, main right) */
+        /* desktop: thumbs left, main right */
         @media (min-width: 1024px) {
             .gallery {
                 flex-direction: row;
                 gap: 24px;
             }
             .thumb-carousel-wrapper {
-                width: 100px;
+                width: 110px;
                 order: 1;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                gap: 8px;
+                gap: 10px;
             }
             .thumb-list-container {
                 overflow: hidden;
-                max-height: 340px; /* enough for 3 thumbs (approx 100px each + gaps) */
+                max-height: 380px; /* enough for 3 thumbs (approx 110px each + gaps) */
                 position: relative;
             }
             .thumb-list {
                 flex-direction: column;
-                gap: 12px;
+                gap: 14px;
                 transition: transform 0.3s ease;
                 display: flex;
             }
@@ -79,20 +79,29 @@
             .main-img {
                 order: 2;
                 flex: 1;
+                min-height: 500px; /* increased length for main image */
+                display: flex;
+                align-items: center;
+            }
+            .main-img img {
+                width: 100%;
+                height: auto;
+                object-fit: contain;
+                max-height: 550px;
             }
             .arrow-btn {
                 background: white;
                 border: 1px solid #e2e8f0;
                 border-radius: 40px;
-                width: 40px;
-                height: 40px;
+                width: 44px;
+                height: 44px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 cursor: pointer;
                 transition: all 0.2s;
                 color: #b91c1c;
-                font-size: 1.2rem;
+                font-size: 1.3rem;
             }
             .arrow-btn:hover {
                 background: #fee2e2;
@@ -104,16 +113,17 @@
             }
         }
 
-        /* mobile: horizontal swipe style with arrows left/right */
+        /* mobile: main image bigger, thumbnails horizontal scrollable */
         @media (max-width: 1023px) {
             .gallery {
                 position: static;
                 flex-direction: column;
+                gap: 20px;
             }
             .thumb-carousel-wrapper {
                 display: flex;
                 align-items: center;
-                gap: 12px;
+                gap: 10px;
                 width: 100%;
             }
             .thumb-list-container {
@@ -122,6 +132,7 @@
                 flex: 1;
                 -webkit-overflow-scrolling: touch;
                 scrollbar-width: thin;
+                padding-bottom: 6px;
             }
             .thumb-list {
                 display: flex;
@@ -130,28 +141,39 @@
                 width: max-content;
             }
             .thumb {
-                width: 80px;
-                height: 80px;
+                width: 85px;
+                height: 85px;
                 flex-shrink: 0;
             }
             .arrow-btn {
                 background: white;
                 border: 1px solid #e2e8f0;
                 border-radius: 40px;
-                width: 36px;
-                height: 36px;
+                width: 40px;
+                height: 40px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 cursor: pointer;
                 color: #b91c1c;
                 font-size: 1rem;
+                flex-shrink: 0;
             }
             .arrow-btn:hover {
                 background: #fee2e2;
             }
             .main-img {
                 order: 1;
+                min-height: 380px;
+                display: flex;
+                align-items: center;
+                background: #fff8f0;
+            }
+            .main-img img {
+                width: 100%;
+                height: auto;
+                object-fit: contain;
+                max-height: 420px;
             }
             .thumb-carousel-wrapper {
                 order: 2;
@@ -164,12 +186,10 @@
             overflow: hidden;
             box-shadow: 0 12px 24px -12px rgba(0, 0, 0, 0.1);
             border: 1px solid #ffe6cc;
+            justify-content: center;
         }
 
         .main-img img {
-            width: 100%;
-            height: auto;
-            object-fit: cover;
             display: block;
             transition: transform 0.3s ease;
         }
@@ -205,7 +225,7 @@
             border-color: #f97316;
         }
 
-        /* right side info */
+        /* Right side product info */
         .product-info {
             display: flex;
             flex-direction: column;
@@ -323,34 +343,38 @@
             font-size: 1.1rem;
         }
 
+        /* Variants grid - exactly 2 columns, 2 rows (rectangular boxes) */
         .variants-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
             margin-bottom: 20px;
         }
 
         .variant-card {
             border: 1.5px solid #e5e7eb;
-            border-radius: 20px;
-            padding: 10px 14px;
-            min-width: 130px;
+            border-radius: 24px;
+            padding: 14px 12px;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s ease;
             background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
         }
 
         .variant-card:hover {
             border-color: #dc2626;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
         }
 
         .variant-card.active-variant {
             border-color: #dc2626;
             background: #fff1f0;
-            box-shadow: 0 4px 10px rgba(220, 38, 38, 0.15);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
         }
 
         .variant-weight {
@@ -360,12 +384,12 @@
 
         .variant-price {
             color: #b91c1c;
-            font-weight: 700;
-            margin-top: 4px;
+            font-weight: 800;
+            font-size: 1.2rem;
         }
 
         .variant-mrp {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             text-decoration: line-through;
             color: #6b7280;
         }
@@ -374,11 +398,12 @@
             font-size: 0.7rem;
             background: #fef3c7;
             display: inline-block;
-            padding: 2px 8px;
-            border-radius: 20px;
-            margin-top: 5px;
+            padding: 3px 10px;
+            border-radius: 30px;
+            margin-top: 4px;
         }
 
+        /* Action buttons */
         .action-buttons-row {
             display: flex;
             gap: 16px;
@@ -455,15 +480,20 @@
             box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
         }
 
+        /* 5 icons - single row always, with horizontal scroll on mobile if needed */
         .red-icons {
             display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
+            flex-direction: row;
+            flex-wrap: nowrap;
             gap: 16px;
             background: #fff5f0;
             padding: 16px 20px;
             border-radius: 48px;
             margin: 10px 0 20px;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
         }
 
         .icon-item {
@@ -474,12 +504,15 @@
             color: #dc2626;
             font-size: 0.8rem;
             font-weight: 500;
+            flex-shrink: 0;
+            min-width: 70px;
         }
 
         .icon-item i {
             font-size: 1.6rem;
         }
 
+        /* Shipping & Description */
         .shipping-refund {
             background: #f8fafc;
             padding: 16px 20px;
@@ -619,8 +652,17 @@
             .product-name {
                 font-size: 1.6rem;
             }
+            .variants-grid {
+                gap: 12px;
+            }
+            .variant-card {
+                padding: 10px 8px;
+            }
+            .variant-price {
+                font-size: 1rem;
+            }
         }
-        
+
         button {
             cursor: pointer;
         }
@@ -628,12 +670,10 @@
 </head>
 <body>
 <div class="container">
-    <!-- product main row -->
     <div class="product-grid">
-        <!-- left side gallery with thumb carousel (3 visible at a time) -->
+        <!-- left side gallery with thumbnail carousel (3 visible on desktop, scrollable on mobile) -->
         <div class="gallery" id="gallerySticky">
             <div class="thumb-carousel-wrapper">
-                <!-- Up/Down arrows for desktop, Left/Right for mobile (handled via same buttons but CSS orientation) -->
                 <button class="arrow-btn" id="thumbPrevBtn" aria-label="Previous images"><i class="fas fa-chevron-up"></i></button>
                 <div class="thumb-list-container" id="thumbListContainer">
                     <div class="thumb-list" id="thumbList"></div>
@@ -641,7 +681,7 @@
                 <button class="arrow-btn" id="thumbNextBtn" aria-label="Next images"><i class="fas fa-chevron-down"></i></button>
             </div>
             <div class="main-img" id="mainImageContainer">
-                <img id="mainBigImage" src="https://picsum.photos/id/108/600/500" alt="Main Pickle">
+                <img id="mainBigImage" src="https://picsum.photos/id/108/600/550" alt="Main Pickle">
             </div>
         </div>
 
@@ -667,19 +707,19 @@
                     <button class="qty-btn" id="incrementQty">+</button>
                 </div>
             </div>
-            <!-- variants list -->
+            <!-- variants list (2 rows, 2 columns) -->
             <div class="variants-title">🍯 Choose Size & Weight :</div>
             <div class="variants-grid" id="variantsContainer"></div>
 
-            <!-- action buttons row (cart + wishlist) -->
+            <!-- action buttons row -->
             <div class="action-buttons-row">
                 <button class="btn-cart" id="addToCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
                 <button class="btn-wishlist" id="wishlistBtn"><i class="far fa-heart"></i> Wishlist</button>
             </div>
-            <!-- buy now button full width (removed intermediate free delivery text) -->
+            <!-- buy now button -->
             <button class="btn-buynow" id="buyNowBtn"><i class="fas fa-bolt"></i> Buy Now</button>
 
-            <!-- 5 red demo icons -->
+            <!-- 5 red icons - single row always (scrollable on mobile) -->
             <div class="red-icons">
                 <div class="icon-item"><i class="fas fa-truck"></i><span>Fast Shipping</span></div>
                 <div class="icon-item"><i class="fas fa-leaf"></i><span>100% Natural</span></div>
@@ -701,7 +741,7 @@
         </div>
     </div>
 
-    <!-- related pickle section (same category) -->
+    <!-- related pickle section -->
     <div class="related-section">
         <div class="section-title">✨ You may also like (Mango & Mixed Pickles)</div>
         <div class="related-grid" id="relatedGrid"></div>
@@ -724,7 +764,7 @@
 
 <script>
     // ------------------------------
-    // Data Models
+    // Data
     // ------------------------------
     const variantsData = [
         { id: 1, weight: "250g", price: 149, mrp: 199 },
@@ -737,9 +777,8 @@
         return Math.round(((mrp - price) / mrp) * 100);
     }
 
-    // Gallery images (5 images for demonstration)
     const galleryImages = [
-        "https://picsum.photos/id/108/600/500",
+        "https://picsum.photos/id/108/600/550",
         "https://picsum.photos/id/127/300/300",
         "https://picsum.photos/id/132/300/300",
         "https://picsum.photos/id/145/300/300",
@@ -748,14 +787,11 @@
 
     let currentVariant = variantsData[0];
     let currentQuantity = 1;
-    let currentMainImage = galleryImages[0];
     let activeThumbIndex = 0;
-    
-    // Thumbnail carousel state (visible range for desktop: 3 items)
     let thumbStartIndex = 0;
     const visibleThumbCount = 3;
 
-    // DOM elements
+    // DOM
     const mainImgElement = document.getElementById("mainBigImage");
     const sellPriceSpan = document.getElementById("sellPrice");
     const mrpSpan = document.getElementById("mrpPrice");
@@ -767,10 +803,9 @@
     const thumbNextBtn = document.getElementById("thumbNextBtn");
     const thumbContainer = document.getElementById("thumbListContainer");
 
-    // Helper: update thumbnails UI (based on startIndex)
+    // Render thumbnails carousel
     function renderThumbnailsCarousel() {
         thumbListDiv.innerHTML = "";
-        // Determine visible thumbnails slice
         const endIndex = Math.min(thumbStartIndex + visibleThumbCount, galleryImages.length);
         for (let i = thumbStartIndex; i < endIndex; i++) {
             const imgSrc = galleryImages[i];
@@ -786,8 +821,7 @@
                     activeThumbIndex = idx;
                     currentMainImage = galleryImages[activeThumbIndex];
                     mainImgElement.src = currentMainImage;
-                    renderThumbnailsCarousel(); // re-render to update active class
-                    // if selected thumb is out of current visible range, adjust startIndex
+                    renderThumbnailsCarousel();
                     if (activeThumbIndex < thumbStartIndex) {
                         thumbStartIndex = activeThumbIndex;
                         renderThumbnailsCarousel();
@@ -802,21 +836,24 @@
             thumbListDiv.appendChild(thumbDiv);
         }
         updateArrowState();
-        // for mobile: ensure smooth scroll to active thumb? optional, but we handle via scrollIntoView
         if (window.innerWidth <= 1023 && thumbContainer) {
-            const activeThumbElement = thumbListDiv.querySelector(".thumb.active-thumb");
-            if (activeThumbElement) {
-                activeThumbElement.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-            }
+            const activeElem = thumbListDiv.querySelector(".thumb.active-thumb");
+            if (activeElem) activeElem.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
         }
     }
 
     function updateArrowState() {
         if (thumbPrevBtn && thumbNextBtn) {
-            thumbPrevBtn.disabled = (thumbStartIndex <= 0);
-            thumbNextBtn.disabled = (thumbStartIndex + visibleThumbCount >= galleryImages.length);
-            thumbPrevBtn.classList.toggle("disabled", thumbStartIndex <= 0);
-            thumbNextBtn.classList.toggle("disabled", thumbStartIndex + visibleThumbCount >= galleryImages.length);
+            const isMobile = window.innerWidth <= 1023;
+            if (!isMobile) {
+                thumbPrevBtn.disabled = (thumbStartIndex <= 0);
+                thumbNextBtn.disabled = (thumbStartIndex + visibleThumbCount >= galleryImages.length);
+                thumbPrevBtn.classList.toggle("disabled", thumbStartIndex <= 0);
+                thumbNextBtn.classList.toggle("disabled", thumbStartIndex + visibleThumbCount >= galleryImages.length);
+            } else {
+                thumbPrevBtn.disabled = false;
+                thumbNextBtn.disabled = false;
+            }
         }
     }
 
@@ -834,8 +871,6 @@
         }
     }
 
-    // For mobile we also attach horizontal scroll arrows? Actually we reuse same buttons but rotate icons based on screen width? 
-    // We'll dynamically adjust icon direction. Also on mobile the buttons should scroll left/right, not up/down.
     function adjustArrowsForMobile() {
         const isMobile = window.innerWidth <= 1023;
         const prevIcon = thumbPrevBtn.querySelector('i');
@@ -843,17 +878,11 @@
         if (isMobile) {
             prevIcon.className = "fas fa-chevron-left";
             nextIcon.className = "fas fa-chevron-right";
-            // for mobile, we need scroll behavior on container instead of changing startIndex
-            // But we'll override click handlers for mobile to scroll horizontally
             thumbPrevBtn.onclick = () => {
-                if (thumbContainer) {
-                    thumbContainer.scrollBy({ left: -120, behavior: "smooth" });
-                }
+                if (thumbContainer) thumbContainer.scrollBy({ left: -120, behavior: "smooth" });
             };
             thumbNextBtn.onclick = () => {
-                if (thumbContainer) {
-                    thumbContainer.scrollBy({ left: 120, behavior: "smooth" });
-                }
+                if (thumbContainer) thumbContainer.scrollBy({ left: 120, behavior: "smooth" });
             };
         } else {
             prevIcon.className = "fas fa-chevron-up";
@@ -863,23 +892,7 @@
         }
     }
 
-    // variant logic
-    function updatePriceAndDetails() {
-        const price = currentVariant.price;
-        const mrp = currentVariant.mrp;
-        const discount = getDiscountPercent(price, mrp);
-        sellPriceSpan.innerText = `₹${price}`;
-        mrpSpan.innerText = `₹${mrp}`;
-        discountSpan.innerText = `${discount}% OFF`;
-        document.querySelectorAll(".variant-card").forEach((card, idx) => {
-            if (variantsData[idx].id === currentVariant.id) {
-                card.classList.add("active-variant");
-            } else {
-                card.classList.remove("active-variant");
-            }
-        });
-    }
-
+    // Variants (2x2 grid)
     function renderVariants() {
         variantsContainer.innerHTML = "";
         variantsData.forEach((variant) => {
@@ -893,14 +906,22 @@
                 <div class="variant-mrp">MRP ₹${variant.mrp}</div>
                 <div class="variant-discount">${discountVal}% off</div>
             `;
-            card.addEventListener("click", (e) => {
-                e.stopPropagation();
+            card.addEventListener("click", () => {
                 currentVariant = variant;
-                updatePriceAndDetails();
+                updatePriceDetails();
                 renderVariants();
             });
             variantsContainer.appendChild(card);
         });
+    }
+
+    function updatePriceDetails() {
+        const price = currentVariant.price;
+        const mrp = currentVariant.mrp;
+        const discount = getDiscountPercent(price, mrp);
+        sellPriceSpan.innerText = `₹${price}`;
+        mrpSpan.innerText = `₹${mrp}`;
+        discountSpan.innerText = `${discount}% OFF`;
     }
 
     // Related products
@@ -935,90 +956,60 @@
                 </div>
             `;
             const viewBtn = card.querySelector(".view-btn");
-            viewBtn.addEventListener("click", () => {
-                alert(`✨ Viewing ${prod.name} (similar pickle). Full details coming soon!`);
-            });
+            viewBtn.addEventListener("click", () => alert(`✨ Viewing ${prod.name} (similar pickle). Full details coming soon!`));
             grid.appendChild(card);
         });
     }
 
-    // quantity handlers
-    function updateQuantityUI() {
-        qtySpan.innerText = currentQuantity;
-    }
+    // Quantity handlers
+    function updateQuantityUI() { qtySpan.innerText = currentQuantity; }
+    function showToast(msg, icon = "✅") { alert(`${icon} ${msg}`); }
 
-    function showToastMsg(msg, icon = "✅") {
-        alert(`${icon} ${msg}`);
-    }
-
-    // Event Listeners
     document.getElementById("incrementQty").addEventListener("click", () => {
-        if (currentQuantity < 15) {
-            currentQuantity++;
-            updateQuantityUI();
-        } else {
-            alert("Max 15 units allowed");
-        }
+        if (currentQuantity < 15) { currentQuantity++; updateQuantityUI(); }
+        else alert("Max 15 units allowed");
     });
     document.getElementById("decrementQty").addEventListener("click", () => {
-        if (currentQuantity > 1) {
-            currentQuantity--;
-            updateQuantityUI();
-        }
+        if (currentQuantity > 1) { currentQuantity--; updateQuantityUI(); }
     });
-
     document.getElementById("addToCartBtn").addEventListener("click", () => {
-        showToastMsg(`Added ${currentQuantity} x ${currentVariant.weight} ${document.getElementById("productName").innerText} to cart 🛒`, "🛒");
+        showToast(`Added ${currentQuantity} x ${currentVariant.weight} ${document.getElementById("productName").innerText}`, "🛒");
         const btn = document.getElementById("addToCartBtn");
         btn.style.transform = "scale(0.96)";
-        setTimeout(() => { btn.style.transform = ""; }, 150);
+        setTimeout(() => btn.style.transform = "", 150);
     });
-
     document.getElementById("wishlistBtn").addEventListener("click", () => {
-        showToastMsg(`❤️ ${document.getElementById("productName").innerText} (${currentVariant.weight}) added to your wishlist!`, "❤️");
+        showToast(`❤️ ${document.getElementById("productName").innerText} (${currentVariant.weight}) added to wishlist!`, "❤️");
         const btn = document.getElementById("wishlistBtn");
         btn.style.transform = "scale(0.96)";
-        setTimeout(() => { btn.style.transform = ""; }, 150);
+        setTimeout(() => btn.style.transform = "", 150);
     });
-
     document.getElementById("buyNowBtn").addEventListener("click", () => {
-        showToastMsg(`Proceeding to checkout: ${currentQuantity} x ${currentVariant.weight} pickle. Secure payment`, "⚡");
+        showToast(`Proceeding to checkout: ${currentQuantity} x ${currentVariant.weight} pickle`, "⚡");
         const btn = document.getElementById("buyNowBtn");
         btn.style.transform = "scale(0.97)";
-        setTimeout(() => { btn.style.transform = ""; }, 150);
+        setTimeout(() => btn.style.transform = "", 150);
     });
 
     window.addEventListener('resize', () => {
         adjustArrowsForMobile();
-        // re-render thumbnails to fix layout if needed
-        if (window.innerWidth <= 1023) {
-            // mobile: reset startIndex not needed, but we set scroll behavior
-        } else {
-            // ensure thumbnail carousel uses startIndex properly
-            renderThumbnailsCarousel();
-        }
+        if (window.innerWidth > 1023) renderThumbnailsCarousel();
     });
 
-    // Initialize everything
     function init() {
         renderVariants();
-        // Setup thumbnail carousel
         activeThumbIndex = 0;
         thumbStartIndex = 0;
         renderThumbnailsCarousel();
         mainImgElement.src = galleryImages[0];
-        currentMainImage = galleryImages[0];
         currentVariant = variantsData[0];
         currentQuantity = 1;
         updateQuantityUI();
-        updatePriceAndDetails();
+        updatePriceDetails();
         renderRelated();
-        const ratingStarsSpan = document.getElementById("starRating");
-        ratingStarsSpan.innerHTML = "★★★★½";
         adjustArrowsForMobile();
-        // ensure that on desktop the thumb container height is consistent
+        document.getElementById("starRating").innerHTML = "★★★★½";
     }
-    
     init();
 </script>
 </body>
