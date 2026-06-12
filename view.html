@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Happy NonVeg Pickles – Artisan Pickle Detail</title>
+  <title>Happy NonVeg Pickles – Artisan Pickle</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -126,17 +126,10 @@
       .product-container { grid-template-columns: 1fr; gap: 32px; }
       .product-gallery.desktop-gallery { display: none; }
       .mobile-carousel { display: block; }
-      .variant-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-      .button-row { flex-wrap: wrap; }
-      .action-buttons .button-row { display: flex; gap: 12px; }
-      .action-buttons .btn-cart, .action-buttons .btn-wishlist, .action-buttons .btn-buynow { flex: 1; }
-    }
-    @media (max-width: 480px) {
-      .variant-buttons { grid-template-columns: repeat(3, 1fr); }
-      .variant-btn { min-width: auto; padding: 8px 6px; }
+      .variant-buttons { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
     }
 
-    /* VARIANT RECTANGULAR BOX : weight, price, mrp, discount */
+    /* VARIANT BUTTONS: wider, shorter, content inline for price/mrp/discount */
     .variant-buttons {
       display: flex;
       gap: 16px;
@@ -146,9 +139,9 @@
     .variant-btn {
       background: white;
       border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 12px 10px;
-      min-width: 110px;
+      border-radius: 14px;
+      padding: 10px 16px;
+      min-width: 140px;
       cursor: pointer;
       transition: all 0.2s;
       display: flex;
@@ -163,8 +156,16 @@
     }
     .variant-weight {
       font-weight: 700;
-      font-size: 0.9rem;
+      font-size: 1rem;
       color: var(--ink);
+    }
+    .price-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: baseline;
+      gap: 8px;
+      row-gap: 4px;
     }
     .variant-price {
       font-weight: 800;
@@ -181,14 +182,26 @@
       font-weight: 700;
       color: #e63946;
       background: rgba(230,57,70,0.1);
-      padding: 2px 6px;
+      padding: 2px 8px;
       border-radius: 20px;
     }
 
-    /* BUTTONS: rectangular curve */
-    .btn-cart, .btn-wishlist, .btn-buynow {
-      border-radius: var(--r-btn) !important;
+    /* BUTTON LAYOUT: cart & wishlist side by side, buy now full width below */
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .dual-buttons {
+      display: flex;
+      gap: 16px;
+      width: 100%;
+    }
+    .btn-cart, .btn-wishlist {
+      flex: 1;
       padding: 14px 12px;
+      border-radius: var(--r-btn);
       font-weight: 700;
       text-align: center;
       cursor: pointer;
@@ -198,7 +211,18 @@
     .btn-cart:hover { background: #2c2c2c; transform: translateY(-2px); }
     .btn-wishlist { background: transparent; border: 1.5px solid var(--rust); color: var(--rust); }
     .btn-wishlist:hover { background: var(--rust-light); }
-    .btn-buynow { background: var(--rust); color: white; border: none; font-weight: 800; }
+    .btn-buynow {
+      width: 100%;
+      padding: 14px 12px;
+      border-radius: var(--r-btn);
+      font-weight: 800;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+      background: var(--rust);
+      color: white;
+      border: none;
+    }
     .btn-buynow:hover { background: var(--rust-dark); transform: translateY(-2px); }
 
     .qty-selector { display: flex; align-items: center; gap: 20px; margin: 8px 0 10px; }
@@ -206,19 +230,7 @@
     .qty-control button { background: #fff; border: none; padding: 8px 18px; font-size: 1.2rem; cursor: pointer; font-weight: bold; }
     .qty-control input { width: 50px; text-align: center; border: none; font-weight: 600; font-size: 1rem; }
 
-    .action-buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 12px;
-    }
-    .button-row {
-      display: flex;
-      gap: 16px;
-      width: 100%;
-    }
-
-    /* price group: bold main price */
+    /* price group */
     .price-group {
       background: var(--rust-light);
       padding: 12px 20px;
@@ -253,21 +265,34 @@
       margin-top: 6px;
     }
 
-    /* rating stars - red */
+    /* rating stars - large bold, proper half-star using clip */
     .stars {
-      font-size: 1.1rem;
-      letter-spacing: 2px;
-      color: #e63946;
+      font-size: 1.6rem;
+      font-weight: bold;
+      letter-spacing: 3px;
+      display: inline-flex;
+      gap: 2px;
     }
-    .stars .star-empty {
-      color: #ccc;
+    .star-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 1.2rem;
+      height: 1.2rem;
+      font-size: 1.6rem;
+      line-height: 1;
     }
-    .stars .star-half {
-      color: #e63946;
-      opacity: 0.6;
+    .star-empty, .star-full, .star-half {
+      position: absolute;
+      top: 0;
+      left: 0;
+      white-space: nowrap;
+      overflow: hidden;
     }
+    .star-empty { color: #ccc; width: 100%; }
+    .star-full { color: #e63946; width: 100%; }
+    .star-half { color: #e63946; width: 50%; overflow: hidden; }
 
-    /* remove white background from toggles */
+    /* toggle sections: no arrows, only text */
     .toggle-section {
       background: transparent;
       border-radius: 0;
@@ -294,7 +319,7 @@
       font-size: 0.9rem;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
     }
     .toggle-content {
       margin-top: 12px;
@@ -314,7 +339,7 @@
       margin-top: 8px;
     }
 
-    /* 5 demo icons row */
+    /* 5 demo icons */
     .feature-icons {
       display: flex;
       flex-wrap: wrap;
@@ -341,7 +366,7 @@
       font-size: 1.5rem;
     }
 
-    /* RELATED SECTION - mobile: horizontal swipe, 2 items per view */
+    /* RELATED SECTION - mobile horizontal swipe, 2 items per view */
     .related-section {
       max-width: 1280px;
       margin: 60px auto 40px;
@@ -372,15 +397,29 @@
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 28px;
     }
-    /* mobile horizontal swipe: 2 items per row swipable */
+    /* mobile: left-aligned view all + horizontal swipe */
     @media (max-width: 800px) {
+      .section-header {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+      .section-header .view-more-link {
+        order: 0;
+      }
+      .section-header h2 {
+        order: 1;
+      }
+      /* actually move view all to left: swap order */
+      .section-header {
+        justify-content: flex-start;
+        gap: 20px;
+      }
       .related-grid {
         display: flex;
         overflow-x: auto;
         scroll-snap-type: x mandatory;
         gap: 16px;
         padding-bottom: 12px;
-        grid-template-columns: unset;
       }
       .related-card {
         flex: 0 0 calc(50% - 12px);
@@ -407,7 +446,7 @@
     .related-img img { width: 100%; height: 100%; object-fit: cover; }
     .related-info { padding: 14px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
     .related-name { font-weight: 700; font-size: 0.95rem; }
-    .related-stars { font-size: 0.75rem; color: #e63946; letter-spacing: 1px; }
+    .related-stars { font-size: 0.9rem; font-weight: bold; letter-spacing: 1px; }
     .related-pricing { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin: 4px 0; }
     .related-price { color: var(--rust); font-weight: 800; font-size: 1rem; }
     .related-mrp { text-decoration: line-through; font-size: 0.8rem; color: var(--ash); }
@@ -421,7 +460,7 @@
     .related-view-btn {
       background: black; color: white; border: none; border-radius: var(--r-btn);
       padding: 8px 12px; font-size: 0.75rem; font-weight: 600;
-      margin-top: 8px; cursor: pointer; text-align: center; transition: background 0.2s;
+      margin-top: 8px; cursor: pointer; text-align: center;
     }
     .related-view-btn:hover { background: var(--rust); }
 
@@ -510,16 +549,21 @@
   function formatPrice(p) { return `₹${Math.round(Number(p) || 0)}`; }
   function getDiscountPercent(mrp, price) { if (!mrp || !price || mrp <= price) return null; return Math.round(((mrp - price) / mrp) * 100); }
   
-  // rating stars: red, half-star with opacity 0.6 (half fade)
+  // proper half-star rendering using CSS wrapper
   function renderStars(rating) {
-    const total = 5;
-    const fullStars = Math.floor(rating);
-    const halfStar = (rating % 1) >= 0.5 ? 1 : 0;
-    const emptyStars = total - fullStars - halfStar;
+    const full = Math.floor(rating);
+    const half = (rating % 1) >= 0.5;
     let starsHtml = '';
-    for (let i = 0; i < fullStars; i++) starsHtml += '<span style="color:#e63946;">★</span>';
-    if (halfStar) starsHtml += '<span style="color:#e63946; opacity:0.6;">★</span>';
-    for (let i = 0; i < emptyStars; i++) starsHtml += '<span style="color:#ccc;">☆</span>';
+    for (let i = 0; i < full; i++) {
+      starsHtml += `<span class="star-wrapper"><span class="star-full">★</span><span class="star-empty">☆</span></span>`;
+    }
+    if (half) {
+      starsHtml += `<span class="star-wrapper"><span class="star-half">★</span><span class="star-empty">☆</span></span>`;
+    }
+    const emptyCount = 5 - full - (half ? 1 : 0);
+    for (let i = 0; i < emptyCount; i++) {
+      starsHtml += `<span class="star-wrapper"><span class="star-empty">☆</span></span>`;
+    }
     return starsHtml;
   }
 
@@ -576,13 +620,14 @@
       const disc = getDiscountPercent(v.mrp, v.price);
       return `<button class="variant-btn ${idx === 0 ? 'active' : ''}" data-price="${v.price}" data-mrp="${v.mrp || ''}" data-weight="${v.weight}">
         <span class="variant-weight">${v.weight}</span>
-        <span class="variant-price">${formatPrice(v.price)}</span>
-        ${v.mrp ? `<span class="variant-old-mrp">${formatPrice(v.mrp)}</span>` : ''}
-        ${disc ? `<span class="variant-discount">${disc}% OFF</span>` : ''}
+        <div class="price-row">
+          <span class="variant-price">${formatPrice(v.price)}</span>
+          ${v.mrp ? `<span class="variant-old-mrp">${formatPrice(v.mrp)}</span>` : ''}
+          ${disc ? `<span class="variant-discount">${disc}% OFF</span>` : ''}
+        </div>
       </button>`;
     }).join('');
 
-    // combine all three buttons in one row (desktop & mobile)
     const discount = getDiscountPercent(defaultVariant.mrp, defaultVariant.price);
     const html = `
       <div class="product-container">
@@ -608,11 +653,11 @@
           ${variants.length ? `<div class="variants-section"><h3>Select Size:</h3><div class="variant-buttons" id="variantButtons">${variantsHtml}</div></div>` : ''}
           <div class="qty-selector"><span style="font-weight:600;">Quantity:</span><div class="qty-control"><button id="qtyMinus">-</button><input type="text" id="qtyInput" value="1" readonly><button id="qtyPlus">+</button></div></div>
           <div class="action-buttons">
-            <div class="button-row">
+            <div class="dual-buttons">
               <div class="btn-cart" id="addToCartBtn">🛒 Add to Cart</div>
               <div class="btn-wishlist" id="wishlistBtn">❤️ Wishlist</div>
-              <div class="btn-buynow" id="buyNowBtn">⚡ Buy Now</div>
             </div>
+            <div class="btn-buynow" id="buyNowBtn">⚡ Buy Now</div>
           </div>
           <div class="feature-icons">
             <div class="icon-item"><span>🚚</span><span>Free Ship</span></div>
@@ -623,11 +668,11 @@
           </div>
           <div class="extra-info">
             <div class="toggle-section" id="shippingToggle">
-              <div class="toggle-header"><h4>📦 Shipping & Return</h4><div class="toggle-btn">View more <span class="arrow">▼</span></div></div>
+              <div class="toggle-header"><h4>📦 Shipping & Return</h4><div class="toggle-btn">View more</div></div>
               <div class="toggle-content collapsed"><p>${escapeHtml(shippingText)}</p><p style="margin-top:8px;">${escapeHtml(returnText)}</p></div>
             </div>
             <div class="toggle-section" id="descToggle">
-              <div class="toggle-header"><h4>📖 Description</h4><div class="toggle-btn">View more <span class="arrow">▼</span></div></div>
+              <div class="toggle-header"><h4>📖 Description</h4><div class="toggle-btn">View more</div></div>
               <div class="toggle-content collapsed"><div class="desc-preview">${escapeHtml(fullDescriptionText)}</div><div class="full-description-text" style="display:none;">${escapeHtml(fullDescriptionText)}</div></div>
             </div>
           </div>
@@ -648,7 +693,7 @@
     `;
     root.innerHTML = html;
     
-    // desktop thumbnail logic
+    // desktop thumbnails
     const thumbs = document.querySelectorAll('.thumbnail');
     const desktopMain = document.getElementById('desktopMainImg');
     thumbs.forEach(t => t.addEventListener('click', () => { const src = t.getAttribute('data-img'); if (src) desktopMain.src = src; thumbs.forEach(th => th.classList.remove('active')); t.classList.add('active'); }));
@@ -658,7 +703,6 @@
     const currPriceSpan = document.getElementById('currentPrice'), oldSpan = document.getElementById('oldPrice'), discSpan = document.getElementById('discountBadge');
     variantBtns.forEach(btn => btn.addEventListener('click', () => { variantBtns.forEach(b => b.classList.remove('active')); btn.classList.add('active'); const price = btn.getAttribute('data-price'), mrp = btn.getAttribute('data-mrp'); currPriceSpan.innerText = formatPrice(price); if (oldSpan) { if (mrp && mrp !== 'null') oldSpan.innerText = formatPrice(mrp); else oldSpan.style.display = 'none'; } const disc = getDiscountPercent(mrp, price); if (discSpan) { if (disc) { discSpan.innerText = `${disc}% OFF`; discSpan.style.display = 'inline-block'; } else discSpan.style.display = 'none'; } }));
     
-    // quantity
     const qtyInput = document.getElementById('qtyInput');
     document.getElementById('qtyMinus')?.addEventListener('click', () => { let v = parseInt(qtyInput.value); if (v > 1) qtyInput.value = v - 1; });
     document.getElementById('qtyPlus')?.addEventListener('click', () => { let v = parseInt(qtyInput.value); qtyInput.value = v + 1; });
@@ -676,23 +720,33 @@
     const unique = [...new Map(allImages.map(img => [img, img])).values()];
     const track = document.getElementById('carouselTrack');
     const dotsContainer = document.getElementById('carouselDots');
-    if (!track || !dotsContainer) return;
-    track.innerHTML = unique.map(img => `<div class="carousel-slide"><img src="${img}" onerror="this.src='https://placehold.co/600x600/f5e9e7/c0392b?text=img'"></div>`).join('');
+    if (!track || !dotsContainer || unique.length === 0) return;
+    // duplicate for infinite loop illusion: append first image at end
+    const slides = [...unique, ...unique.slice(0, 2)]; // extra for smooth loop
+    track.innerHTML = slides.map(img => `<div class="carousel-slide"><img src="${img}" onerror="this.src='https://placehold.co/600x600/f5e9e7/c0392b?text=img'"></div>`).join('');
     let currentIdx = 0;
-    const updateCarousel = (idx) => { currentIdx = (idx + unique.length) % unique.length; track.style.transform = `translateX(-${currentIdx * 100}%)`; document.querySelectorAll('.carousel-dot').forEach((dot, i) => dot.classList.toggle('active', i === currentIdx)); };
+    const totalReal = unique.length;
+    const updateCarousel = (idx, immediate = false) => {
+      currentIdx = idx;
+      track.style.transition = immediate ? 'none' : 'transform 0.3s ease-out';
+      track.style.transform = `translateX(-${currentIdx * 100}%)`;
+      let realIndex = ((currentIdx % totalReal) + totalReal) % totalReal;
+      document.querySelectorAll('.carousel-dot').forEach((dot, i) => dot.classList.toggle('active', i === realIndex));
+    };
     dotsContainer.innerHTML = unique.map((_, i) => `<div class="carousel-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></div>`).join('');
-    document.querySelectorAll('.carousel-dot').forEach(dot => dot.addEventListener('click', (e) => { const idx = parseInt(e.target.getAttribute('data-index')); updateCarousel(idx); }));
+    document.querySelectorAll('.carousel-dot').forEach(dot => dot.addEventListener('click', (e) => { const idx = parseInt(e.target.getAttribute('data-index')); updateCarousel(idx, false); }));
     let startX = 0, isDragging = false;
     track.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; isDragging = true; });
-    track.addEventListener('touchmove', (e) => { if (!isDragging) return; const diff = e.touches[0].clientX - startX; if (Math.abs(diff) > 40) { if (diff > 0) updateCarousel(currentIdx - 1); else updateCarousel(currentIdx + 1); isDragging = false; } });
+    track.addEventListener('touchmove', (e) => { if (!isDragging) return; const diff = e.touches[0].clientX - startX; if (Math.abs(diff) > 40) { if (diff > 0) { let newIdx = currentIdx - 1; if (newIdx < 0) newIdx = totalReal - 1; updateCarousel(newIdx); } else { let newIdx = currentIdx + 1; if (newIdx >= totalReal) newIdx = 0; updateCarousel(newIdx); } isDragging = false; } });
     track.addEventListener('touchend', () => { isDragging = false; });
+    updateCarousel(0, true);
   }
 
   function initToggles() {
     const shippingToggle = document.getElementById('shippingToggle');
     const descToggle = document.getElementById('descToggle');
-    if (shippingToggle) { const header = shippingToggle.querySelector('.toggle-header'); const content = shippingToggle.querySelector('.toggle-content'); const btnSpan = header.querySelector('.toggle-btn'); header.addEventListener('click', () => { content.classList.toggle('collapsed'); btnSpan.innerHTML = content.classList.contains('collapsed') ? 'View more ▼' : 'View less ▲'; }); }
-    if (descToggle) { const header = descToggle.querySelector('.toggle-header'); const contentDiv = descToggle.querySelector('.toggle-content'); const previewDiv = contentDiv?.querySelector('.desc-preview'); const fullDiv = contentDiv?.querySelector('.full-description-text'); const btnSpan = header.querySelector('.toggle-btn'); if (previewDiv && fullDiv) { fullDiv.style.display = 'none'; header.addEventListener('click', () => { const isCollapsed = contentDiv.classList.contains('collapsed'); if (isCollapsed) { previewDiv.style.display = 'none'; fullDiv.style.display = 'block'; contentDiv.classList.remove('collapsed'); btnSpan.innerHTML = 'View less ▲'; } else { previewDiv.style.display = '-webkit-box'; fullDiv.style.display = 'none'; contentDiv.classList.add('collapsed'); btnSpan.innerHTML = 'View more ▼'; } }); } }
+    if (shippingToggle) { const header = shippingToggle.querySelector('.toggle-header'); const content = shippingToggle.querySelector('.toggle-content'); const btnSpan = header.querySelector('.toggle-btn'); header.addEventListener('click', () => { content.classList.toggle('collapsed'); btnSpan.innerText = content.classList.contains('collapsed') ? 'View more' : 'View less'; }); }
+    if (descToggle) { const header = descToggle.querySelector('.toggle-header'); const contentDiv = descToggle.querySelector('.toggle-content'); const previewDiv = contentDiv?.querySelector('.desc-preview'); const fullDiv = contentDiv?.querySelector('.full-description-text'); const btnSpan = header.querySelector('.toggle-btn'); if (previewDiv && fullDiv) { fullDiv.style.display = 'none'; header.addEventListener('click', () => { const isCollapsed = contentDiv.classList.contains('collapsed'); if (isCollapsed) { previewDiv.style.display = 'none'; fullDiv.style.display = 'block'; contentDiv.classList.remove('collapsed'); btnSpan.innerText = 'View less'; } else { previewDiv.style.display = '-webkit-box'; fullDiv.style.display = 'none'; contentDiv.classList.add('collapsed'); btnSpan.innerText = 'View more'; } }); } }
   }
 
   const nav = document.getElementById('mainNav');
