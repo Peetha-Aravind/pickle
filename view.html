@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -358,14 +357,14 @@
         .variant-card {
             border: 1.5px solid #e5e7eb;
             border-radius: 20px;
-            padding: 10px 8px;
+            padding: 10px 12px;
             cursor: pointer;
             transition: all 0.2s ease;
             background: white;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            text-align: center;
+            align-items: flex-start;  /* left align all content */
+            text-align: left;
             gap: 6px;
         }
 
@@ -385,20 +384,19 @@
             font-weight: 800;
             font-size: 0.95rem;
             background: #fef3c7;
-            padding: 4px 10px;
+            padding: 4px 12px;
             border-radius: 40px;
             display: inline-block;
-            width: auto;
         }
 
         .variant-price-details {
             display: flex;
             flex-wrap: wrap;
             align-items: baseline;
-            justify-content: center;
             gap: 8px;
             row-gap: 4px;
             margin-top: 2px;
+            width: 100%;
         }
 
         .variant-price {
@@ -426,11 +424,11 @@
                 gap: 8px;
             }
             .variant-card {
-                padding: 8px 4px;
+                padding: 8px 8px;
             }
             .variant-weight {
                 font-size: 0.8rem;
-                padding: 2px 6px;
+                padding: 2px 8px;
             }
             .variant-price {
                 font-size: 0.85rem;
@@ -584,6 +582,7 @@
             font-size: 0.9rem;
         }
 
+        /* RELATED PRODUCTS SECTION */
         .related-section {
             margin: 48px 0 32px;
         }
@@ -596,10 +595,32 @@
             padding-left: 14px;
         }
 
+        /* Desktop: normal grid */
         .related-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 20px;
+        }
+
+        /* Mobile: horizontal scrollable carousel, 2 cards visible at a time */
+        @media (max-width: 768px) {
+            .related-grid {
+                display: flex;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                gap: 16px;
+                padding-bottom: 12px;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: thin;
+            }
+            .related-card {
+                flex: 0 0 calc(50% - 8px);
+                scroll-snap-align: start;
+                min-width: calc(50% - 8px);
+            }
+            .related-card:last-child {
+                margin-right: 0;
+            }
         }
 
         .related-card {
@@ -789,7 +810,7 @@
         </div>
     </div>
 
-    <!-- related pickle section -->
+    <!-- related pickle section (horizontal scroll on mobile, 2 cards per view) -->
     <div class="related-section">
         <div class="section-title">✨ You may also like (Mango & Mixed Pickles)</div>
         <div class="related-grid" id="relatedGrid"></div>
@@ -956,7 +977,7 @@
         }
     }
 
-    // Variant cards (3 columns, weight on top, price/mrp/discount below)
+    // Variant cards (left-aligned weight)
     function renderVariants() {
         variantsContainer.innerHTML = "";
         variantsData.forEach((variant) => {
@@ -990,7 +1011,7 @@
         discountSpan.innerText = `${discount}% OFF`;
     }
 
-    // Related products
+    // Related products (4 items, scrollable on mobile)
     const relatedProducts = [
         { id: 101, name: "Spicy Lemon Pickle", price: 179, mrp: 249, rating: 4.5, discount: 28, image: "https://picsum.photos/id/127/240/180" },
         { id: 102, name: "Mixed Veg Pickle", price: 199, mrp: 299, discount: 33, image: "https://picsum.photos/id/132/240/180", rating: 4.7 },
@@ -1107,4 +1128,3 @@
 </script>
 </body>
 </html>
-```
