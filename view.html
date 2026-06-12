@@ -53,7 +53,7 @@
                 gap: 24px;
             }
             .thumb-carousel-wrapper {
-                width: 110px;
+                width: 100px;
                 order: 1;
                 display: flex;
                 flex-direction: column;
@@ -62,12 +62,12 @@
             }
             .thumb-list-container {
                 overflow: hidden;
-                max-height: 380px;
+                max-height: 330px;
                 position: relative;
             }
             .thumb-list {
                 flex-direction: column;
-                gap: 14px;
+                gap: 12px;
                 transition: transform 0.3s ease;
                 display: flex;
             }
@@ -88,20 +88,21 @@
                 height: auto;
                 object-fit: contain;
                 max-height: 550px;
+                pointer-events: auto;
             }
             .arrow-btn {
                 background: white;
                 border: 1px solid #e2e8f0;
                 border-radius: 40px;
-                width: 44px;
-                height: 44px;
+                width: 40px;
+                height: 40px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 cursor: pointer;
                 transition: all 0.2s;
                 color: #b91c1c;
-                font-size: 1.3rem;
+                font-size: 1.2rem;
             }
             .arrow-btn:hover {
                 background: #fee2e2;
@@ -111,27 +112,26 @@
                 opacity: 0.4;
                 pointer-events: none;
             }
-            /* hide dots on desktop */
             .mobile-dots {
                 display: none;
             }
         }
 
-        /* MOBILE VIEW: details below image, red dots for navigation, no arrows */
+        /* MOBILE VIEW: details below image, red dots, swipe support */
         @media (max-width: 1023px) {
             .product-grid {
                 display: flex;
                 flex-direction: column;
-                gap: 28px;
+                gap: 24px;
             }
             .gallery {
                 position: static;
                 flex-direction: column;
-                gap: 16px;
+                gap: 12px;
                 width: 100%;
             }
             .thumb-carousel-wrapper {
-                display: none; /* hide arrow wrapper on mobile */
+                display: none;
             }
             .main-img {
                 width: 100%;
@@ -142,14 +142,19 @@
                 background: #fff8f0;
                 border-radius: 28px;
                 overflow: hidden;
+                cursor: grab;
+                touch-action: pan-y pinch-zoom;
+            }
+            .main-img:active {
+                cursor: grabbing;
             }
             .main-img img {
                 width: 100%;
                 height: auto;
                 object-fit: contain;
                 max-height: 380px;
+                pointer-events: none;
             }
-            /* red dots container */
             .mobile-dots {
                 display: flex;
                 justify-content: center;
@@ -186,19 +191,16 @@
             box-shadow: 0 12px 24px -12px rgba(0, 0, 0, 0.1);
             border: 1px solid #ffe6cc;
             justify-content: center;
+            position: relative;
         }
 
         .main-img img {
             display: block;
-            transition: transform 0.3s ease;
-        }
-
-        .main-img img:hover {
-            transform: scale(1.02);
+            transition: transform 0.2s ease;
         }
 
         .thumb {
-            border-radius: 20px;
+            border-radius: 18px;
             cursor: pointer;
             overflow: hidden;
             border: 2px solid transparent;
@@ -228,11 +230,11 @@
         .product-info {
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 16px;
         }
 
         .product-name {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 700;
             letter-spacing: -0.02em;
             color: #2d2a24;
@@ -241,13 +243,14 @@
         .rating {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
         .stars {
             color: #fbbf24;
             letter-spacing: 2px;
+            font-size: 0.9rem;
         }
 
         .rating-value {
@@ -255,32 +258,32 @@
             background: #fef3c7;
             padding: 4px 10px;
             border-radius: 30px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
         .reviews-count {
             color: #6b7280;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .price-section {
             background: #fff3e9;
-            padding: 12px 16px;
+            padding: 10px 14px;
             border-radius: 24px;
             display: flex;
             align-items: baseline;
-            gap: 16px;
+            gap: 14px;
             flex-wrap: wrap;
         }
 
         .current-price {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 800;
             color: #b91c1c;
         }
 
         .mrp {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #6b7280;
             text-decoration: line-through;
         }
@@ -288,21 +291,22 @@
         .discount-badge {
             background: #dc2626;
             color: white;
-            padding: 4px 12px;
+            padding: 4px 10px;
             border-radius: 40px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
         }
 
         .quantity-selector {
             display: flex;
             align-items: center;
-            gap: 16px;
-            margin: 8px 0;
+            gap: 14px;
+            margin: 4px 0;
         }
 
         .qty-label {
             font-weight: 500;
+            font-size: 0.95rem;
         }
 
         .qty-control {
@@ -317,9 +321,9 @@
         .qty-btn {
             background: white;
             border: none;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 600;
-            padding: 8px 18px;
+            padding: 6px 16px;
             cursor: pointer;
             transition: all 0.2s;
             color: #b91c1c;
@@ -330,30 +334,30 @@
         }
 
         .qty-num {
-            width: 50px;
+            width: 45px;
             text-align: center;
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
 
         .variants-title {
             font-weight: 600;
-            margin: 8px 0 12px 0;
-            font-size: 1.1rem;
+            margin: 4px 0 8px 0;
+            font-size: 1rem;
         }
 
-        /* Variants grid - exactly 2 columns, 2 rows (rectangular boxes) */
+        /* Variants grid - 2 columns, compact rectangles */
         .variants-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 12px;
         }
 
         .variant-card {
             border: 1.5px solid #e5e7eb;
-            border-radius: 24px;
-            padding: 14px 12px;
+            border-radius: 20px;
+            padding: 8px 6px;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -361,52 +365,52 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
         }
 
         .variant-card:hover {
             border-color: #dc2626;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
         }
 
         .variant-card.active-variant {
             border-color: #dc2626;
             background: #fff1f0;
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+            box-shadow: 0 4px 10px rgba(220, 38, 38, 0.15);
         }
 
         .variant-weight {
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
 
         .variant-price {
             color: #b91c1c;
             font-weight: 800;
-            font-size: 1.2rem;
+            font-size: 1rem;
         }
 
         .variant-mrp {
-            font-size: 0.75rem;
+            font-size: 0.65rem;
             text-decoration: line-through;
             color: #6b7280;
         }
 
         .variant-discount {
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             background: #fef3c7;
             display: inline-block;
-            padding: 3px 10px;
+            padding: 2px 8px;
             border-radius: 30px;
-            margin-top: 4px;
+            margin-top: 2px;
         }
 
         /* Action buttons */
         .action-buttons-row {
             display: flex;
-            gap: 16px;
-            margin: 10px 0 12px;
+            gap: 14px;
+            margin: 8px 0 8px;
             flex-wrap: wrap;
         }
 
@@ -414,32 +418,10 @@
             background: #1f2937;
             color: white;
             border: none;
-            padding: 14px 24px;
+            padding: 12px 20px;
             border-radius: 48px;
             font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            flex: 1;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
-
-        .btn-cart:hover {
-            background: #111827;
-            transform: scale(0.98);
-            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-wishlist {
-            background: white;
-            color: #b91c1c;
-            border: 1.5px solid #b91c1c;
-            padding: 14px 24px;
-            border-radius: 48px;
-            font-weight: 600;
+            font-size: 0.95rem;
             cursor: pointer;
             flex: 1;
             transition: all 0.2s;
@@ -447,6 +429,28 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+        }
+
+        .btn-cart:hover {
+            background: #111827;
+            transform: scale(0.98);
+        }
+
+        .btn-wishlist {
+            background: white;
+            color: #b91c1c;
+            border: 1.5px solid #b91c1c;
+            padding: 12px 20px;
+            border-radius: 48px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            flex: 1;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .btn-wishlist:hover {
@@ -459,70 +463,85 @@
             background: #dc2626;
             color: white;
             border: none;
-            padding: 14px 20px;
+            padding: 12px 20px;
             border-radius: 48px;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.95rem;
             cursor: pointer;
             width: 100%;
             transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            margin: 5px 0 15px;
+            gap: 10px;
+            margin: 5px 0 12px;
         }
 
         .btn-buynow:hover {
             background: #b91c1c;
             transform: scale(0.98);
-            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
         }
 
-        /* 5 icons - single row always, with horizontal scroll on mobile if needed */
+        /* 5 demo icons - NO SWIPE, always in single row without scrolling (grid on mobile, flex on desktop) */
         .red-icons {
             display: flex;
             flex-direction: row;
             flex-wrap: nowrap;
-            gap: 16px;
+            gap: 12px;
             background: #fff5f0;
-            padding: 16px 20px;
+            padding: 12px 16px;
             border-radius: 48px;
-            margin: 10px 0 20px;
-            overflow-x: auto;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: thin;
+            margin: 8px 0 16px;
+        }
+
+        /* On mobile: use grid to ensure 5 equal columns without overflow */
+        @media (max-width: 1023px) {
+            .red-icons {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                gap: 8px;
+                padding: 12px 8px;
+                overflow-x: visible;
+            }
+            .icon-item {
+                min-width: auto;
+                font-size: 0.7rem;
+                gap: 4px;
+            }
+            .icon-item i {
+                font-size: 1.3rem;
+            }
         }
 
         .icon-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             color: #dc2626;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 500;
-            flex-shrink: 0;
-            min-width: 70px;
+            text-align: center;
         }
 
         .icon-item i {
-            font-size: 1.6rem;
+            font-size: 1.4rem;
         }
 
         /* Shipping & Description */
         .shipping-refund {
             background: #f8fafc;
-            padding: 16px 20px;
-            border-radius: 28px;
-            margin: 12px 0;
+            padding: 14px 18px;
+            border-radius: 24px;
+            margin: 8px 0;
+            font-size: 0.85rem;
         }
 
         .desc {
-            margin: 16px 0;
-            line-height: 1.6;
+            margin: 12px 0;
+            line-height: 1.5;
             color: #334155;
+            font-size: 0.9rem;
         }
 
         .related-section {
@@ -530,22 +549,22 @@
         }
 
         .section-title {
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             font-weight: 700;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             border-left: 6px solid #dc2626;
-            padding-left: 16px;
+            padding-left: 14px;
         }
 
         .related-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 24px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
         }
 
         .related-card {
             background: white;
-            border-radius: 28px;
+            border-radius: 24px;
             overflow: hidden;
             transition: all 0.25s;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
@@ -554,70 +573,73 @@
         }
 
         .related-card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-6px);
             box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.15);
         }
 
         .discount-tag {
             position: absolute;
-            top: 12px;
-            left: 12px;
+            top: 10px;
+            left: 10px;
             background: #dc2626;
             color: white;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 700;
-            padding: 4px 12px;
+            padding: 3px 10px;
             border-radius: 40px;
             z-index: 2;
         }
 
         .related-img {
             width: 100%;
-            height: 170px;
+            height: 160px;
             object-fit: cover;
         }
 
         .related-info {
-            padding: 16px;
+            padding: 14px;
         }
 
         .related-name {
             font-weight: 700;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
+            font-size: 0.95rem;
         }
 
         .related-price {
             display: flex;
             gap: 10px;
             align-items: baseline;
-            margin: 8px 0;
+            margin: 6px 0;
         }
 
         .rel-current {
             font-weight: 800;
             color: #b91c1c;
+            font-size: 1rem;
         }
 
         .rel-mrp {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             text-decoration: line-through;
             color: #6b7280;
         }
 
         .rel-stars {
             color: #fbbf24;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
 
         .view-btn {
             background: #1f2937;
             color: white;
             border: none;
-            padding: 8px 0;
+            padding: 7px 0;
             border-radius: 40px;
             width: 100%;
-            margin-top: 12px;
+            margin-top: 10px;
             font-weight: 500;
+            font-size: 0.8rem;
             cursor: pointer;
             transition: 0.2s;
         }
@@ -628,9 +650,9 @@
 
         .combo-placeholder {
             background: #fef2e8;
-            padding: 40px 20px;
+            padding: 32px 20px;
             text-align: center;
-            border-radius: 40px;
+            border-radius: 36px;
             margin: 40px 0;
             border: 2px dashed #dc2626;
         }
@@ -639,26 +661,24 @@
             background: #b91c1c;
             color: white;
             text-align: center;
-            padding: 32px 20px;
+            padding: 28px 20px;
             margin-top: 40px;
             border-radius: 32px 32px 0 0;
+            font-size: 0.85rem;
         }
 
-        @media (max-width: 780px) {
+        @media (max-width: 600px) {
             .container {
-                padding: 0 18px;
+                padding: 0 16px;
             }
             .product-name {
-                font-size: 1.6rem;
+                font-size: 1.5rem;
             }
             .variants-grid {
-                gap: 12px;
+                gap: 10px;
             }
             .variant-card {
-                padding: 10px 8px;
-            }
-            .variant-price {
-                font-size: 1rem;
+                padding: 6px 4px;
             }
         }
 
@@ -670,9 +690,8 @@
 <body>
 <div class="container">
     <div class="product-grid">
-        <!-- Gallery section: main image + (desktop thumbs) + mobile dots -->
+        <!-- Gallery section: main image with swipe support + mobile dots -->
         <div class="gallery" id="gallerySticky">
-            <!-- Desktop thumbnail carousel wrapper (hidden on mobile) -->
             <div class="thumb-carousel-wrapper">
                 <button class="arrow-btn" id="thumbPrevBtn"><i class="fas fa-chevron-up"></i></button>
                 <div class="thumb-list-container" id="thumbListContainer">
@@ -680,15 +699,15 @@
                 </div>
                 <button class="arrow-btn" id="thumbNextBtn"><i class="fas fa-chevron-down"></i></button>
             </div>
-            <!-- Main image -->
+            <!-- Main image with swipe detection -->
             <div class="main-img" id="mainImageContainer">
                 <img id="mainBigImage" src="https://picsum.photos/id/108/600/550" alt="Main Pickle">
             </div>
-            <!-- Mobile red dots container -->
+            <!-- Mobile red dots -->
             <div class="mobile-dots" id="mobileDots"></div>
         </div>
 
-        <!-- Right side details (will appear below image on mobile) -->
+        <!-- Right side details -->
         <div class="product-info">
             <h1 class="product-name" id="productName">Homemade Tangy Mango Pickle</h1>
             <div class="rating">
@@ -701,7 +720,6 @@
                 <span class="mrp" id="mrpPrice">₹199</span>
                 <span class="discount-badge" id="discountPercent">25% OFF</span>
             </div>
-            <!-- quantity -->
             <div class="quantity-selector">
                 <span class="qty-label">Quantity:</span>
                 <div class="qty-control">
@@ -710,19 +728,16 @@
                     <button class="qty-btn" id="incrementQty">+</button>
                 </div>
             </div>
-            <!-- variants list (2 rows, 2 columns) -->
             <div class="variants-title">🍯 Choose Size & Weight :</div>
             <div class="variants-grid" id="variantsContainer"></div>
 
-            <!-- action buttons row -->
             <div class="action-buttons-row">
                 <button class="btn-cart" id="addToCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
                 <button class="btn-wishlist" id="wishlistBtn"><i class="far fa-heart"></i> Wishlist</button>
             </div>
-            <!-- buy now button -->
             <button class="btn-buynow" id="buyNowBtn"><i class="fas fa-bolt"></i> Buy Now</button>
 
-            <!-- 5 red icons - single row always (scrollable on mobile) -->
+            <!-- 5 red icons - always in single row without swiping (grid on mobile) -->
             <div class="red-icons">
                 <div class="icon-item"><i class="fas fa-truck"></i><span>Fast Shipping</span></div>
                 <div class="icon-item"><i class="fas fa-leaf"></i><span>100% Natural</span></div>
@@ -731,15 +746,13 @@
                 <div class="icon-item"><i class="fas fa-shield-alt"></i><span>Safe Packaging</span></div>
             </div>
 
-            <!-- shipping & refund details -->
             <div class="shipping-refund">
-                <i class="fas fa-shipping-fast"></i> <strong>Shipping:</strong> Dispatched in 24 hours. Free shipping on orders above ₹499.<br>
-                <i class="fas fa-exchange-alt"></i> <strong>Refund policy:</strong> 7-day easy replacement/refund. T&C apply.
+                <i class="fas fa-shipping-fast"></i> <strong>Shipping:</strong> Dispatched in 24 hours. Free shipping above ₹499.<br>
+                <i class="fas fa-exchange-alt"></i> <strong>Refund:</strong> 7-day easy replacement. T&C apply.
             </div>
 
-            <!-- description -->
             <div class="desc">
-                <strong>📖 Description:</strong> Authentic homemade mango pickle made with raw mangoes, exotic spices, and cold-pressed mustard oil. No preservatives. Perfect with paratha, rice, or dal. Traditional family recipe since 1987.
+                <strong>📖 Description:</strong> Authentic homemade mango pickle with raw mangoes, exotic spices, and cold-pressed mustard oil. No preservatives. Perfect with paratha, rice, or dal. Traditional family recipe since 1987.
             </div>
         </div>
     </div>
@@ -750,18 +763,16 @@
         <div class="related-grid" id="relatedGrid"></div>
     </div>
 
-    <!-- sample combo section placeholder -->
     <div class="combo-placeholder" id="comboPlaceholder">
-        <i class="fas fa-gift" style="font-size: 2rem; color:#b91c1c;"></i>
-        <h3 style="margin: 12px 0;">🍱 COMBO OFFER (Custom UI coming soon)</h3>
+        <i class="fas fa-gift" style="font-size: 1.8rem; color:#b91c1c;"></i>
+        <h3 style="margin: 10px 0; font-size: 1.2rem;">🍱 COMBO OFFER (Custom UI coming soon)</h3>
         <p>Get 2 classic pickles + 1 free | Save 30% — <em>UI will be updated as per your design</em></p>
-        <button style="background:#b91c1c; color:white; border:none; padding:8px 24px; border-radius:40px; margin-top:12px;">Notify Me</button>
+        <button style="background:#b91c1c; color:white; border:none; padding:6px 20px; border-radius:40px; margin-top:10px;">Notify Me</button>
     </div>
 
-    <!-- footer -->
     <footer>
         <p>© 2025 Pickle Paradise | Authentic Indian Pickles | Crafted with ❤️</p>
-        <p style="font-size:0.8rem; margin-top: 10px;">Follow us: <i class="fab fa-instagram"></i> <i class="fab fa-facebook"></i> <i class="fab fa-twitter"></i></p>
+        <p style="font-size:0.75rem; margin-top: 8px;">Follow us: <i class="fab fa-instagram"></i> <i class="fab fa-facebook"></i> <i class="fab fa-twitter"></i></p>
     </footer>
 </div>
 
@@ -796,6 +807,7 @@
 
     // DOM elements
     const mainImgElement = document.getElementById("mainBigImage");
+    const mainImageContainer = document.getElementById("mainImageContainer");
     const sellPriceSpan = document.getElementById("sellPrice");
     const mrpSpan = document.getElementById("mrpPrice");
     const discountSpan = document.getElementById("discountPercent");
@@ -806,18 +818,56 @@
     const thumbNextBtn = document.getElementById("thumbNextBtn");
     const mobileDotsContainer = document.getElementById("mobileDots");
 
-    // Helper: update main image and active states
+    // Swipe variables
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const minSwipeDistance = 50;
+
+    function handleTouchStart(e) {
+        touchStartX = e.changedTouches[0].screenX;
+    }
+
+    function handleTouchEnd(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        const diff = touchEndX - touchStartX;
+        if (Math.abs(diff) < minSwipeDistance) return;
+        if (diff > 0) {
+            // swipe right -> previous image
+            goPrevImage();
+        } else {
+            // swipe left -> next image
+            goNextImage();
+        }
+    }
+
+    function goPrevImage() {
+        let newIndex = activeThumbIndex - 1;
+        if (newIndex < 0) newIndex = galleryImages.length - 1;
+        setActiveImage(newIndex);
+    }
+
+    function goNextImage() {
+        let newIndex = activeThumbIndex + 1;
+        if (newIndex >= galleryImages.length) newIndex = 0;
+        setActiveImage(newIndex);
+    }
+
     function setActiveImage(index) {
         if (index < 0) index = 0;
         if (index >= galleryImages.length) index = galleryImages.length - 1;
         activeThumbIndex = index;
         mainImgElement.src = galleryImages[activeThumbIndex];
         
-        // Update desktop thumbs active class if visible
         if (window.innerWidth >= 1024) {
-            renderThumbnailsCarousel(); // re-render to update active class
+            // desktop: re-render thumbs and adjust startIndex if needed
+            if (activeThumbIndex < thumbStartIndex) {
+                thumbStartIndex = activeThumbIndex;
+            } else if (activeThumbIndex >= thumbStartIndex + visibleThumbCount) {
+                thumbStartIndex = activeThumbIndex - visibleThumbCount + 1;
+                if (thumbStartIndex < 0) thumbStartIndex = 0;
+            }
+            renderThumbnailsCarousel();
         } else {
-            // update mobile dots
             updateMobileDots();
         }
     }
@@ -836,20 +886,7 @@
             thumbImg.alt = "pickle thumb";
             thumbDiv.appendChild(thumbImg);
             thumbDiv.addEventListener("click", ((idx) => {
-                return () => {
-                    activeThumbIndex = idx;
-                    mainImgElement.src = galleryImages[activeThumbIndex];
-                    renderThumbnailsCarousel();
-                    if (activeThumbIndex < thumbStartIndex) {
-                        thumbStartIndex = activeThumbIndex;
-                        renderThumbnailsCarousel();
-                    } else if (activeThumbIndex >= thumbStartIndex + visibleThumbCount) {
-                        thumbStartIndex = activeThumbIndex - visibleThumbCount + 1;
-                        if (thumbStartIndex < 0) thumbStartIndex = 0;
-                        renderThumbnailsCarousel();
-                    }
-                    updateArrowState();
-                };
+                return () => setActiveImage(idx);
             })(i));
             thumbListDiv.appendChild(thumbDiv);
         }
@@ -879,7 +916,7 @@
         }
     }
 
-    // Mobile: create red dots and attach click handlers
+    // Mobile dots
     function updateMobileDots() {
         if (!mobileDotsContainer) return;
         mobileDotsContainer.innerHTML = "";
@@ -887,14 +924,12 @@
             const dot = document.createElement("button");
             dot.classList.add("dot");
             if (i === activeThumbIndex) dot.classList.add("active");
-            dot.addEventListener("click", () => {
-                setActiveImage(i);
-            });
+            dot.addEventListener("click", () => setActiveImage(i));
             mobileDotsContainer.appendChild(dot);
         }
     }
 
-    // Variants (2x2 grid)
+    // Variants (compact)
     function renderVariants() {
         variantsContainer.innerHTML = "";
         variantsData.forEach((variant) => {
@@ -941,9 +976,9 @@
         relatedProducts.forEach(prod => {
             const card = document.createElement("div");
             card.className = "related-card";
-            const starFull = "★".repeat(Math.floor(prod.rating));
-            const starHalf = prod.rating % 1 >= 0.5 ? "½" : "";
-            const starEmpty = "☆".repeat(5 - Math.floor(prod.rating) - (starHalf ? 1 : 0));
+            const fullStars = Math.floor(prod.rating);
+            const hasHalf = prod.rating % 1 >= 0.5;
+            const starString = "★".repeat(fullStars) + (hasHalf ? "½" : "") + "☆".repeat(5 - fullStars - (hasHalf ? 1 : 0));
             card.innerHTML = `
                 <div class="discount-tag">${prod.discount}% OFF</div>
                 <img class="related-img" src="${prod.image}" alt="${prod.name}">
@@ -953,7 +988,7 @@
                         <span class="rel-current">₹${prod.price}</span>
                         <span class="rel-mrp">₹${prod.mrp}</span>
                     </div>
-                    <div class="rel-stars">${starFull}${starHalf}${starEmpty} ${prod.rating}</div>
+                    <div class="rel-stars">${starString} ${prod.rating}</div>
                     <button class="view-btn" data-id="${prod.id}">View Product →</button>
                 </div>
             `;
@@ -963,7 +998,7 @@
         });
     }
 
-    // Quantity handlers
+    // Quantity
     function updateQuantityUI() { qtySpan.innerText = currentQuantity; }
     function showToast(msg, icon = "✅") { alert(`${icon} ${msg}`); }
 
@@ -993,24 +1028,27 @@
         setTimeout(() => btn.style.transform = "", 150);
     });
 
-    // Handle resize: switch between desktop thumbs and mobile dots
+    // Handle resize & swipe attachment
     function handleResize() {
         if (window.innerWidth >= 1024) {
-            // desktop mode: ensure thumbs are rendered, hide dots container
             if (mobileDotsContainer) mobileDotsContainer.style.display = "none";
             renderThumbnailsCarousel();
             thumbPrevBtn.onclick = goPrevThumbs;
             thumbNextBtn.onclick = goNextThumbs;
+            // remove swipe listeners on desktop (optional)
+            mainImageContainer.removeEventListener("touchstart", handleTouchStart);
+            mainImageContainer.removeEventListener("touchend", handleTouchEnd);
         } else {
-            // mobile mode: show dots, hide desktop carousel wrapper? already hidden via CSS
             if (mobileDotsContainer) {
                 mobileDotsContainer.style.display = "flex";
                 updateMobileDots();
             }
+            // attach swipe listeners
+            mainImageContainer.addEventListener("touchstart", handleTouchStart, { passive: false });
+            mainImageContainer.addEventListener("touchend", handleTouchEnd);
         }
     }
 
-    // Initial setup
     function init() {
         renderVariants();
         activeThumbIndex = 0;
@@ -1033,6 +1071,8 @@
                 mobileDotsContainer.style.display = "flex";
                 updateMobileDots();
             }
+            mainImageContainer.addEventListener("touchstart", handleTouchStart, { passive: false });
+            mainImageContainer.addEventListener("touchend", handleTouchEnd);
         }
         window.addEventListener('resize', handleResize);
     }
