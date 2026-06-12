@@ -3,31 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Artisan Pickle Co. - View Product</title>
+    <title>Pickle Details – Happy NonVeg Pickles</title>
     <!-- Font Awesome 6 (free icons) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'DM Sans', 'Inter', sans-serif;
             background: #fefaf5;
             color: #1e1e2a;
             line-height: 1.4;
         }
-
         .container {
             max-width: 1280px;
             margin: 0 auto;
             padding: 1rem 1.5rem;
         }
-
         /* desktop product row */
         .product-row {
             display: flex;
@@ -35,8 +32,6 @@
             gap: 2rem;
             margin-bottom: 3rem;
         }
-
-        /* image column (sticky zone) */
         .image-column {
             flex: 1.2;
             position: sticky;
@@ -48,8 +43,6 @@
             position: relative;
             top: 0;
         }
-
-        /* desktop gallery: thumbnails left + main image right */
         .desktop-gallery {
             display: flex;
             gap: 1.2rem;
@@ -114,12 +107,10 @@
         .main-img-box img {
             width: 100%;
             height: auto;
-            max-height: 500px;
+            max-height: 520px;
             object-fit: contain;
             transition: transform 0.2s ease;
         }
-
-        /* right details column */
         .details-column {
             flex: 1.2;
         }
@@ -192,8 +183,6 @@
             min-width: 40px;
             text-align: center;
         }
-
-        /* Variants grid */
         .variants-title {
             margin: 1rem 0 0.8rem;
             font-weight: 600;
@@ -300,7 +289,7 @@
         .demo-icons {
             display: flex;
             flex-wrap: wrap;
-            gap: 1.5rem;
+            gap: 1rem;
             justify-content: space-between;
             margin: 1.5rem 0;
             color: #c41e2e;
@@ -394,7 +383,7 @@
             border-radius: 30px 30px 0 0;
             margin-top: 2rem;
         }
-        /* mobile swiper gallery */
+        /* mobile swipe gallery */
         .mobile-swiper {
             display: none;
             margin-bottom: 1.5rem;
@@ -428,7 +417,6 @@
             width: 22px;
             border-radius: 10px;
         }
-        /* responsive */
         @media (max-width: 860px) {
             .container {
                 padding: 0.8rem;
@@ -474,87 +462,37 @@
         .dynamic-effect:active {
             transform: scale(0.96);
         }
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+            font-size: 1.2rem;
+            color: #c41e2e;
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="product-row">
-        <!-- left image area (desktop sticky + thumbnails) -->
+    <div class="product-row" id="productMainRow">
         <div class="image-column" id="imageColumn">
-            <div class="desktop-gallery" id="desktopGallery">
-                <div class="thumb-vertical">
-                    <button class="arrow-btn" id="thumbUpBtn"><i class="fas fa-chevron-up"></i></button>
-                    <div class="thumb-scroll-area" id="thumbScrollArea"></div>
-                    <button class="arrow-btn" id="thumbDownBtn"><i class="fas fa-chevron-down"></i></button>
-                </div>
-                <div class="main-img-box">
-                    <img id="mainDesktopImg" alt="main pickle">
-                </div>
-            </div>
-            <!-- mobile swipe gallery + dots -->
-            <div class="mobile-swiper" id="mobileSwiper">
-                <div class="swiper-container">
-                    <img id="mobileMainImg" class="swiper-main-img" alt="main pickle">
-                    <div class="dot-indicators" id="dotContainer"></div>
-                </div>
-            </div>
+            <div class="desktop-gallery" id="desktopGallery"></div>
+            <div class="mobile-swiper" id="mobileSwiper"></div>
         </div>
-
-        <!-- right side details -->
-        <div class="details-column">
-            <h1 class="product-name" id="productName">Loading...</h1>
-            <div class="rating">
-                <span class="stars" id="starsContainer"></span>
-                <span class="rating-value" id="ratingValue"></span>
-            </div>
-            <div class="price-block">
-                <span class="current-price" id="currentPrice">₹0</span>
-                <span class="mrp" id="mrpText">₹0</span>
-                <span class="discount-badge" id="discountPercent">0% off</span>
-            </div>
-            <div class="quantity-selector">
-                <button id="decrementQty"><i class="fas fa-minus"></i></button>
-                <span id="qtyValue">1</span>
-                <button id="incrementQty"><i class="fas fa-plus"></i></button>
-            </div>
-            <div class="variants-title">Choose variant (weight / price)</div>
-            <div class="variants-grid" id="variantsGrid"></div>
-
-            <div class="action-buttons">
-                <button class="cart-btn dynamic-effect" id="addToCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
-                <button class="wishlist-btn dynamic-effect" id="wishlistBtn"><i class="far fa-heart"></i> Wishlist</button>
-            </div>
-            <button class="buy-btn dynamic-effect" id="buyNowBtn"><i class="fas fa-bolt"></i> Buy Now</button>
-
-            <!-- 5 red demo icons row -->
-            <div class="demo-icons">
-                <span><i class="fas fa-pepper-hot"></i> <span>Authentic</span></span>
-                <span><i class="fas fa-leaf"></i> <span>Natural</span></span>
-                <span><i class="fas fa-clock"></i> <span>Fresh</span></span>
-                <span><i class="fas fa-truck"></i> <span>Express</span></span>
-                <span><i class="fas fa-award"></i> <span>Premium</span></span>
-            </div>
-
-            <div class="ship-refund">
-                <i class="fas fa-shipping-fast"></i> <strong>Shipping:</strong> Free delivery on orders above ₹499 | <i class="fas fa-undo-alt"></i> <strong>Refund:</strong> 7-day easy replacement
-            </div>
-            <div class="description" id="descriptionText">
-                Tangy & spicy traditional pickle, handcrafted with farm fresh ingredients.
-            </div>
+        <div class="details-column" id="detailsColumn">
+            <div class="loading-spinner" id="viewLoader"><i class="fas fa-spinner fa-pulse"></i> Loading pickle...</div>
+            <div id="productDetailsContent" style="display:none;"></div>
         </div>
     </div>
-
-    <!-- Related products section (scrolling) -->
-    <h2 class="related-title">✨ You may also like ✨</h2>
-    <div class="related-scroll" id="relatedScroll"></div>
-
-    <!-- Combo section placeholder -->
+    <div id="relatedProductsSection" style="display:none;">
+        <h2 class="related-title">✨ You may also like ✨</h2>
+        <div class="related-scroll" id="relatedScroll"></div>
+    </div>
     <div class="combo-placeholder" id="comboPlaceholder">
         <i class="fas fa-bowl-food" style="font-size: 2rem; color:#c41e2e;"></i>
-        <h3>Combo Section (UI & code will be updated later)</h3>
-        <p>Exclusive combos coming soon — stay tuned!</p>
+        <h3>Combo Section</h3>
+        <p>Build your own pickle box – coming soon on the landing page.</p>
     </div>
-
     <footer>
         <i class="fas fa-jar"></i> The Real Pickle House — tradition since 1998 | <i class="fas fa-heart"></i> Handmade with love
     </footer>
@@ -562,7 +500,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getFirestore, doc, getDoc, collection, query, where, getDocs, setDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
@@ -576,35 +514,18 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Global state
+    // DOM elements
+    const loaderDiv = document.getElementById('viewLoader');
+    const detailsContainer = document.getElementById('productDetailsContent');
+    const relatedSection = document.getElementById('relatedProductsSection');
+    const relatedScroll = document.getElementById('relatedScroll');
+
     let currentProduct = null;
     let allImages = [];
     let currentImageIndex = 0;
     let currentVariant = null;
     let productQuantity = 1;
     let variantList = [];
-    let relatedProducts = [];
-
-    // DOM elements
-    const productNameEl = document.getElementById('productName');
-    const starsContainer = document.getElementById('starsContainer');
-    const ratingValueEl = document.getElementById('ratingValue');
-    const currentPriceEl = document.getElementById('currentPrice');
-    const mrpTextEl = document.getElementById('mrpText');
-    const discountPercentEl = document.getElementById('discountPercent');
-    const qtySpan = document.getElementById('qtyValue');
-    const variantsGrid = document.getElementById('variantsGrid');
-    const mainDesktopImg = document.getElementById('mainDesktopImg');
-    const mobileMainImg = document.getElementById('mobileMainImg');
-    const thumbScrollArea = document.getElementById('thumbScrollArea');
-    const dotContainer = document.getElementById('dotContainer');
-    const addToCartBtn = document.getElementById('addToCartBtn');
-    const wishlistBtn = document.getElementById('wishlistBtn');
-    const buyNowBtn = document.getElementById('buyNowBtn');
-    const relatedScrollDiv = document.getElementById('relatedScroll');
-    const decrementQty = document.getElementById('decrementQty');
-    const incrementQty = document.getElementById('incrementQty');
-    const descriptionText = document.getElementById('descriptionText');
 
     // Helper: render stars
     function renderStars(rating) {
@@ -618,24 +539,28 @@
         return html;
     }
 
-    // update UI based on selected variant + quantity (price only variant)
     function updatePriceFromVariant() {
         if (!currentVariant) return;
-        currentPriceEl.innerText = `₹${currentVariant.price}`;
-        mrpTextEl.innerText = `₹${currentVariant.mrp}`;
+        const priceEl = document.getElementById('currentPrice');
+        const mrpEl = document.getElementById('mrpText');
+        const discountEl = document.getElementById('discountPercent');
+        if (priceEl) priceEl.innerText = `₹${currentVariant.price}`;
+        if (mrpEl) mrpEl.innerText = `₹${currentVariant.mrp}`;
         let discountVal = Math.round(((currentVariant.mrp - currentVariant.price) / currentVariant.mrp) * 100);
-        discountPercentEl.innerText = `${discountVal}% off`;
+        if (discountEl) discountEl.innerText = `${discountVal}% off`;
     }
 
-    // render thumbnails (desktop) up/down logic
+    // Thumbnails (desktop)
     let thumbStartIdx = 0;
     const MAX_THUMBS_VISIBLE = 3;
     function renderThumbnails() {
+        const thumbArea = document.getElementById('thumbScrollArea');
+        if (!thumbArea) return;
         if (!allImages.length) return;
         const total = allImages.length;
         const endIdx = Math.min(thumbStartIdx + MAX_THUMBS_VISIBLE, total);
         const visible = allImages.slice(thumbStartIdx, endIdx);
-        thumbScrollArea.innerHTML = '';
+        thumbArea.innerHTML = '';
         visible.forEach((imgSrc, idx) => {
             const thumbImg = document.createElement('img');
             thumbImg.src = imgSrc;
@@ -646,17 +571,19 @@
                 renderThumbnails();
                 syncMobileDotsAndImage();
             });
-            thumbScrollArea.appendChild(thumbImg);
+            thumbArea.appendChild(thumbImg);
         });
-        document.getElementById('thumbUpBtn').disabled = thumbStartIdx === 0;
-        document.getElementById('thumbDownBtn').disabled = endIdx === total;
+        const upBtn = document.getElementById('thumbUpBtn');
+        const downBtn = document.getElementById('thumbDownBtn');
+        if (upBtn) upBtn.disabled = thumbStartIdx === 0;
+        if (downBtn) downBtn.disabled = endIdx === total;
     }
 
     function updateMainImage() {
-        if (allImages[currentImageIndex]) {
-            mainDesktopImg.src = allImages[currentImageIndex];
-            mobileMainImg.src = allImages[currentImageIndex];
-        }
+        const mainDesktop = document.getElementById('mainDesktopImg');
+        const mobileMain = document.getElementById('mobileMainImg');
+        if (mainDesktop && allImages[currentImageIndex]) mainDesktop.src = allImages[currentImageIndex];
+        if (mobileMain && allImages[currentImageIndex]) mobileMain.src = allImages[currentImageIndex];
         renderThumbnails();
         syncMobileDots();
     }
@@ -669,10 +596,13 @@
         });
     }
     function syncMobileDotsAndImage() {
-        if (mobileMainImg) mobileMainImg.src = allImages[currentImageIndex];
+        const mobileImg = document.getElementById('mobileMainImg');
+        if (mobileImg && allImages[currentImageIndex]) mobileImg.src = allImages[currentImageIndex];
         syncMobileDots();
     }
     function buildMobileDots() {
+        const dotContainer = document.getElementById('dotContainer');
+        if (!dotContainer) return;
         dotContainer.innerHTML = '';
         allImages.forEach((_, idx) => {
             const dot = document.createElement('div');
@@ -685,31 +615,27 @@
             dotContainer.appendChild(dot);
         });
     }
-
-    // handle swipe on mobile (simple touch)
-    let touchStartX = 0;
     function initSwipe() {
         const swiperDiv = document.querySelector('.mobile-swiper');
         if(!swiperDiv) return;
+        let touchStartX = 0;
         swiperDiv.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
         swiperDiv.addEventListener('touchend', (e) => {
             const endX = e.changedTouches[0].screenX;
             const diff = endX - touchStartX;
             if (Math.abs(diff) > 50) {
-                if (diff > 0) { // right swipe -> previous
-                    currentImageIndex = (currentImageIndex - 1 + allImages.length) % allImages.length;
-                } else {
-                    currentImageIndex = (currentImageIndex + 1) % allImages.length;
-                }
+                if (diff > 0) { currentImageIndex = (currentImageIndex - 1 + allImages.length) % allImages.length; }
+                else { currentImageIndex = (currentImageIndex + 1) % allImages.length; }
                 updateMainImage();
                 syncMobileDotsAndImage();
             }
         });
     }
 
-    // render variants grid
     function renderVariants(variants, activeVarId) {
-        variantsGrid.innerHTML = '';
+        const grid = document.getElementById('variantsGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
         variants.forEach(v => {
             const card = document.createElement('div');
             card.className = `variant-card ${activeVarId === v.id ? 'active-variant' : ''}`;
@@ -722,149 +648,208 @@
                 updatePriceFromVariant();
                 renderVariants(variants, v.id);
             });
-            variantsGrid.appendChild(card);
+            grid.appendChild(card);
         });
     }
 
-    // load product by ID from firestore
-    async function loadProduct(productId) {
-        const docRef = doc(db, "products", productId);
-        let docSnap = await getDoc(docRef);
-        if (!docSnap.exists()) {
-            // fallback demo data insert
-            const demoProduct = {
-                name: "Mango Legend Pickle",
-                rating: 4.7,
-                description: "Authentic sun-dried raw mango pickle infused with secret spices. Delicious & preservative free.",
-                category: "mango",
-                images: ["https://picsum.photos/id/106/400/400?grayscale", "https://picsum.photos/id/122/400/400", "https://picsum.photos/id/127/400/400", "https://picsum.photos/id/141/400/400"],
-                variants: [
-                    { id: "v1", weight: "250g", price: 149, mrp: 220, discountPercent: 32 },
-                    { id: "v2", weight: "500g", price: 269, mrp: 399, discountPercent: 33 },
-                    { id: "v3", weight: "1kg", price: 499, mrp: 749, discountPercent: 33 },
-                    { id: "v4", weight: "1.5kg", price: 699, mrp: 1049, discountPercent: 33 }
-                ]
-            };
-            await setDoc(docRef, demoProduct);
-            docSnap = await getDoc(docRef);
+    function buildDetailsHTML() {
+        if (!currentProduct) return;
+        const prod = currentProduct;
+        const firstVar = currentVariant || (prod.variants && prod.variants[0]) || { price: 0, mrp: 0 };
+        const discountVal = firstVar.mrp ? Math.round(((firstVar.mrp - firstVar.price) / firstVar.mrp) * 100) : 0;
+        return `
+            <h1 class="product-name">${escapeHtml(prod.name)}</h1>
+            <div class="rating">
+                <span class="stars">${renderStars(prod.rating || 4.5)}</span>
+                <span class="rating-value">${prod.rating || 4.5} (${prod.reviewCount || 120} reviews)</span>
+            </div>
+            <div class="price-block">
+                <span class="current-price" id="currentPrice">₹${firstVar.price}</span>
+                <span class="mrp" id="mrpText">₹${firstVar.mrp}</span>
+                <span class="discount-badge" id="discountPercent">${discountVal}% off</span>
+            </div>
+            <div class="quantity-selector">
+                <button id="decrementQty"><i class="fas fa-minus"></i></button>
+                <span id="qtyValue">1</span>
+                <button id="incrementQty"><i class="fas fa-plus"></i></button>
+            </div>
+            <div class="variants-title">Choose variant (weight / price)</div>
+            <div class="variants-grid" id="variantsGrid"></div>
+            <div class="action-buttons">
+                <button class="cart-btn dynamic-effect" id="addToCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                <button class="wishlist-btn dynamic-effect" id="wishlistBtn"><i class="far fa-heart"></i> Wishlist</button>
+            </div>
+            <button class="buy-btn dynamic-effect" id="buyNowBtn"><i class="fas fa-bolt"></i> Buy Now</button>
+            <div class="demo-icons">
+                <span><i class="fas fa-pepper-hot"></i> <span>Authentic</span></span>
+                <span><i class="fas fa-leaf"></i> <span>Natural</span></span>
+                <span><i class="fas fa-clock"></i> <span>Fresh</span></span>
+                <span><i class="fas fa-truck"></i> <span>Express</span></span>
+                <span><i class="fas fa-award"></i> <span>Premium</span></span>
+            </div>
+            <div class="ship-refund">
+                <i class="fas fa-shipping-fast"></i> <strong>Shipping:</strong> Free delivery on orders above ₹499 | <i class="fas fa-undo-alt"></i> <strong>Refund:</strong> 7-day easy replacement
+            </div>
+            <div class="description" id="descriptionText">
+                ${escapeHtml(prod.description || 'Tangy & spicy traditional pickle, handcrafted with farm fresh ingredients.')}
+            </div>
+        `;
+    }
+
+    function attachEventListeners() {
+        const decrement = document.getElementById('decrementQty');
+        const increment = document.getElementById('incrementQty');
+        const qtySpan = document.getElementById('qtyValue');
+        if (decrement && increment && qtySpan) {
+            decrement.onclick = () => { if (productQuantity > 1) productQuantity--; qtySpan.innerText = productQuantity; };
+            increment.onclick = () => { productQuantity++; qtySpan.innerText = productQuantity; };
         }
-        const data = docSnap.data();
-        currentProduct = { id: docSnap.id, ...data };
-        productNameEl.innerText = currentProduct.name;
-        ratingValueEl.innerText = currentProduct.rating;
-        starsContainer.innerHTML = renderStars(currentProduct.rating);
-        descriptionText.innerText = currentProduct.description;
-        allImages = currentProduct.images || ["https://picsum.photos/id/106/500/500"];
-        variantList = currentProduct.variants;
-        if (variantList.length) {
-            currentVariant = variantList[0];
-            updatePriceFromVariant();
-            renderVariants(variantList, currentVariant.id);
+        const addCart = document.getElementById('addToCartBtn');
+        if (addCart) addCart.onclick = () => alert(`🛒 Added to cart: ${productQuantity} x ${currentVariant?.weight || ''} ${currentProduct.name} at ₹${currentVariant?.price}`);
+        const wishlist = document.getElementById('wishlistBtn');
+        if (wishlist) wishlist.onclick = () => alert(`❤️ ${currentProduct.name} added to wishlist!`);
+        const buyNow = document.getElementById('buyNowBtn');
+        if (buyNow) buyNow.onclick = () => alert(`⚡ Proceeding to checkout: ${productQuantity} x ${currentVariant?.weight} ${currentProduct.name}`);
+    }
+
+    function buildGallery() {
+        const desktopGalleryDiv = document.getElementById('desktopGallery');
+        const mobileSwiperDiv = document.getElementById('mobileSwiper');
+        if (!desktopGalleryDiv || !mobileSwiperDiv) return;
+        desktopGalleryDiv.innerHTML = `
+            <div class="thumb-vertical">
+                <button class="arrow-btn" id="thumbUpBtn"><i class="fas fa-chevron-up"></i></button>
+                <div class="thumb-scroll-area" id="thumbScrollArea"></div>
+                <button class="arrow-btn" id="thumbDownBtn"><i class="fas fa-chevron-down"></i></button>
+            </div>
+            <div class="main-img-box">
+                <img id="mainDesktopImg" alt="main pickle">
+            </div>
+        `;
+        mobileSwiperDiv.innerHTML = `
+            <div class="swiper-container">
+                <img id="mobileMainImg" class="swiper-main-img" alt="main pickle">
+                <div class="dot-indicators" id="dotContainer"></div>
+            </div>
+        `;
+        const upBtn = document.getElementById('thumbUpBtn');
+        const downBtn = document.getElementById('thumbDownBtn');
+        if (upBtn && downBtn) {
+            upBtn.addEventListener('click', () => { if (thumbStartIdx > 0) thumbStartIdx--; renderThumbnails(); });
+            downBtn.addEventListener('click', () => { if (thumbStartIdx + MAX_THUMBS_VISIBLE < allImages.length) thumbStartIdx++; renderThumbnails(); });
         }
-        currentImageIndex = 0;
-        updateMainImage();
+        if (allImages.length) {
+            const mainDesktop = document.getElementById('mainDesktopImg');
+            const mobileMain = document.getElementById('mobileMainImg');
+            if (mainDesktop) mainDesktop.src = allImages[0];
+            if (mobileMain) mobileMain.src = allImages[0];
+        }
+        renderThumbnails();
         buildMobileDots();
         initSwipe();
-        renderThumbnails();
-        // load related products (same category)
-        await loadRelatedProducts(currentProduct.category, currentProduct.id);
     }
 
     async function loadRelatedProducts(category, excludeId) {
-        const q = query(collection(db, "products"), where("category", "==", category));
-        const snap = await getDocs(q);
-        const related = [];
-        snap.forEach(docSnap => {
-            if (docSnap.id !== excludeId) {
-                related.push({ id: docSnap.id, ...docSnap.data() });
-            }
-        });
-        relatedProducts = related.slice(0, 6);
-        renderRelatedProducts();
-    }
-
-    function renderRelatedProducts() {
-        relatedScrollDiv.innerHTML = '';
-        if(relatedProducts.length === 0) {
-            relatedScrollDiv.innerHTML = '<p>No related items found</p>';
-            return;
-        }
-        relatedProducts.forEach(prod => {
-            const firstVar = prod.variants?.[0] || { price: '199', mrp: '299' };
-            const discountTag = firstVar.mrp ? Math.round(((firstVar.mrp - firstVar.price)/firstVar.mrp)*100) : 0;
-            const card = document.createElement('div');
-            card.className = 'related-card';
-            card.innerHTML = `
-                <div class="discount-tag">${discountTag}% OFF</div>
-                <img class="related-img" src="${prod.images?.[0] || 'https://picsum.photos/id/127/200/200'}" alt="${prod.name}">
-                <div class="related-name">${prod.name}</div>
-                <div><span class="related-price">₹${firstVar.price}</span> <span class="related-mrp">₹${firstVar.mrp}</span></div>
-                <div class="stars" style="font-size:0.7rem;">${renderStars(prod.rating || 4)}</div>
-                <button class="view-product-btn" data-id="${prod.id}">View Product</button>
-            `;
-            const viewBtn = card.querySelector('.view-product-btn');
-            viewBtn.addEventListener('click', async () => {
-                await loadProduct(viewBtn.dataset.id);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (!category) return;
+        try {
+            const q = query(collection(db, "products"), where("category", "==", category));
+            const snap = await getDocs(q);
+            const related = [];
+            snap.forEach(docSnap => {
+                if (docSnap.id !== excludeId) {
+                    related.push({ id: docSnap.id, ...docSnap.data() });
+                }
             });
-            relatedScrollDiv.appendChild(card);
-        });
+            if (related.length === 0) {
+                relatedSection.style.display = 'none';
+                return;
+            }
+            relatedSection.style.display = 'block';
+            relatedScroll.innerHTML = '';
+            related.slice(0, 8).forEach(prod => {
+                const firstVar = prod.variants?.[0] || { price: '199', mrp: '299' };
+                const discountTag = firstVar.mrp ? Math.round(((firstVar.mrp - firstVar.price) / firstVar.mrp) * 100) : 0;
+                const card = document.createElement('div');
+                card.className = 'related-card';
+                card.innerHTML = `
+                    <div class="discount-tag">${discountTag}% OFF</div>
+                    <img class="related-img" src="${prod.images?.[0] || 'https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle'}" alt="${escapeHtml(prod.name)}">
+                    <div class="related-name">${escapeHtml(prod.name)}</div>
+                    <div><span class="related-price">₹${firstVar.price}</span> <span class="related-mrp">₹${firstVar.mrp}</span></div>
+                    <div class="stars" style="font-size:0.7rem;">${renderStars(prod.rating || 4)}</div>
+                    <button class="view-product-btn" data-id="${prod.id}">View Product</button>
+                `;
+                const viewBtn = card.querySelector('.view-product-btn');
+                viewBtn.addEventListener('click', () => {
+                    window.location.href = `view.html?id=${prod.id}`;
+                });
+                relatedScroll.appendChild(card);
+            });
+        } catch (err) {
+            console.warn("Related products error", err);
+            relatedSection.style.display = 'none';
+        }
     }
 
-    // Dynamic sticky control until related section intersection
-    const observer = new IntersectionObserver((entries) => {
-        const relatedSection = document.querySelector('.related-title');
-        if(entries[0].isIntersecting) {
-            document.getElementById('imageColumn')?.classList.add('stop-sticky');
-        } else {
-            document.getElementById('imageColumn')?.classList.remove('stop-sticky');
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
+    }
+
+    async function loadProduct(productId) {
+        try {
+            const docRef = doc(db, "products", productId);
+            const docSnap = await getDoc(docRef);
+            if (!docSnap.exists()) {
+                loaderDiv.innerHTML = '<div style="text-align:center;padding:2rem;">❌ Product not found. <a href="index.html">Go back to shop</a></div>';
+                return;
+            }
+            const data = docSnap.data();
+            currentProduct = { id: docSnap.id, ...data };
+            allImages = currentProduct.images || ["https://placehold.co/600x600/f5e9e7/c0392b?text=Pickle"];
+            variantList = currentProduct.variants || [];
+            if (variantList.length) currentVariant = variantList[0];
+            else currentVariant = { price: 0, mrp: 0, weight: 'Standard' };
+            
+            // Build UI
+            buildGallery();
+            const detailsHtml = buildDetailsHTML();
+            detailsContainer.innerHTML = detailsHtml;
+            detailsContainer.style.display = 'block';
+            loaderDiv.style.display = 'none';
+            
+            if (variantList.length) renderVariants(variantList, currentVariant.id);
+            updatePriceFromVariant();
+            attachEventListeners();
+            
+            // Load related products by category
+            if (currentProduct.category) {
+                await loadRelatedProducts(currentProduct.category, currentProduct.id);
+            } else {
+                relatedSection.style.display = 'none';
+            }
+            // Sticky observer
+            const observer = new IntersectionObserver((entries) => {
+                const relatedTitle = document.querySelector('.related-title');
+                if(entries[0]?.isIntersecting) {
+                    document.getElementById('imageColumn')?.classList.add('stop-sticky');
+                } else {
+                    document.getElementById('imageColumn')?.classList.remove('stop-sticky');
+                }
+            }, { threshold: 0.1, rootMargin: "0px 0px -80px 0px" });
+            const relatedTitleElem = document.querySelector('.related-title');
+            if(relatedTitleElem) observer.observe(relatedTitleElem);
+        } catch (err) {
+            console.error(err);
+            loaderDiv.innerHTML = '<div style="text-align:center;padding:2rem;">⚠️ Error loading product. Please try again later.</div>';
         }
-    }, { threshold: 0.1, rootMargin: "0px 0px -80px 0px" });
-    window.addEventListener('DOMContentLoaded', () => {
-        const relatedTitle = document.querySelector('.related-title');
-        if(relatedTitle) observer.observe(relatedTitle);
-    });
+    }
 
-    // quantity actions
-    decrementQty.addEventListener('click', () => {
-        if(productQuantity > 1) productQuantity--;
-        qtySpan.innerText = productQuantity;
-    });
-    incrementQty.addEventListener('click', () => {
-        productQuantity++;
-        qtySpan.innerText = productQuantity;
-    });
-
-    // Buttons with dynamic effects and firebase ready
-    addToCartBtn.addEventListener('click', () => {
-        if(!currentVariant) return;
-        alert(`🍯 Added to cart: ${productQuantity} x ${currentVariant.weight} ${currentProduct.name} at ₹${currentVariant.price} each`);
-        addToCartBtn.classList.add('dynamic-effect');
-        setTimeout(() => addToCartBtn.classList.remove('dynamic-effect'), 150);
-    });
-    wishlistBtn.addEventListener('click', () => {
-        alert(`❤️ ${currentProduct.name} added to wishlist!`);
-        wishlistBtn.style.transform = 'scale(0.95)';
-        setTimeout(() => wishlistBtn.style.transform = '', 200);
-    });
-    buyNowBtn.addEventListener('click', () => {
-        alert(`⚡ Proceeding to checkout: ${productQuantity} x ${currentVariant.weight} ${currentProduct.name}`);
-    });
-    // thumbnail arrows
-    document.getElementById('thumbUpBtn')?.addEventListener('click', () => {
-        if(thumbStartIdx > 0) thumbStartIdx--;
-        renderThumbnails();
-    });
-    document.getElementById('thumbDownBtn')?.addEventListener('click', () => {
-        if(thumbStartIdx + MAX_THUMBS_VISIBLE < allImages.length) thumbStartIdx++;
-        renderThumbnails();
-    });
-
-    // init: get productId from URL or default to a known ID or create one
+    // Get product ID from URL
     const urlParams = new URLSearchParams(window.location.search);
     let productId = urlParams.get('id');
-    if(!productId) productId = "spicyMangoDelight";
-    loadProduct(productId).catch(e => console.warn(e));
+    if (!productId) productId = "spicyMangoDelight";  // fallback
+    loadProduct(productId);
 </script>
 </body>
 </html>
