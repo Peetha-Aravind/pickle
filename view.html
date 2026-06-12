@@ -1,3 +1,5 @@
+I've updated the page with the requested fixes: IBM Plex Sans is now the primary font, the "View all" link in the related section is positioned below the heading and aligned to the right on mobile (while staying inline on desktop), and it navigates to a new page (`shop.html`) when clicked.
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +8,7 @@
   <title>Happy NonVeg Pickles – Artisan Pickle</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
@@ -129,7 +131,7 @@
       .variant-buttons { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
     }
 
-    /* VARIANT BUTTONS: wider, shorter, content inline for price/mrp/discount */
+    /* VARIANT BUTTONS */
     .variant-buttons {
       display: flex;
       gap: 16px;
@@ -186,7 +188,7 @@
       border-radius: 20px;
     }
 
-    /* BUTTON LAYOUT: cart & wishlist side by side, buy now full width below */
+    /* BUTTON LAYOUT */
     .action-buttons {
       display: flex;
       flex-direction: column;
@@ -265,7 +267,7 @@
       margin-top: 6px;
     }
 
-    /* rating stars - large bold, proper half-star using clip */
+    /* rating stars - large bold, proper half-star */
     .stars {
       font-size: 1.6rem;
       font-weight: bold;
@@ -292,7 +294,7 @@
     .star-full { color: #e63946; width: 100%; }
     .star-half { color: #e63946; width: 50%; overflow: hidden; }
 
-    /* toggle sections: no arrows, only text */
+    /* toggle sections */
     .toggle-section {
       background: transparent;
       border-radius: 0;
@@ -317,9 +319,6 @@
       color: var(--rust);
       font-weight: 600;
       font-size: 0.9rem;
-      display: flex;
-      align-items: center;
-      gap: 4px;
     }
     .toggle-content {
       margin-top: 12px;
@@ -366,7 +365,7 @@
       font-size: 1.5rem;
     }
 
-    /* RELATED SECTION - mobile horizontal swipe, 2 items per view */
+    /* RELATED SECTION - desktop default: inline row */
     .related-section {
       max-width: 1280px;
       margin: 60px auto 40px;
@@ -391,28 +390,28 @@
       font-size: 1rem;
       cursor: pointer;
       border-bottom: 2px solid var(--rust);
+      display: inline-block;
     }
     .related-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 28px;
     }
-    /* mobile: left-aligned view all + horizontal swipe */
+    /* mobile: view all below heading, aligned right, horizontal swipe */
     @media (max-width: 800px) {
       .section-header {
-        flex-direction: row;
-        justify-content: space-between;
-      }
-      .section-header .view-more-link {
-        order: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
       }
       .section-header h2 {
         order: 1;
+        margin-bottom: 0;
       }
-      /* actually move view all to left: swap order */
-      .section-header {
-        justify-content: flex-start;
-        gap: 20px;
+      .view-more-link {
+        order: 2;
+        text-align: right;
+        align-self: flex-end;
       }
       .related-grid {
         display: flex;
@@ -420,6 +419,7 @@
         scroll-snap-type: x mandatory;
         gap: 16px;
         padding-bottom: 12px;
+        margin-top: 8px;
       }
       .related-card {
         flex: 0 0 calc(50% - 12px);
@@ -549,7 +549,7 @@
   function formatPrice(p) { return `₹${Math.round(Number(p) || 0)}`; }
   function getDiscountPercent(mrp, price) { if (!mrp || !price || mrp <= price) return null; return Math.round(((mrp - price) / mrp) * 100); }
   
-  // proper half-star rendering using CSS wrapper
+  // proper half-star rendering
   function renderStars(rating) {
     const full = Math.floor(rating);
     const half = (rating % 1) >= 0.5;
@@ -679,7 +679,10 @@
         </div>
       </div>
       <div class="related-section">
-        <div class="section-header"><h2>🔥 More from this category</h2><a class="view-more-link" id="viewMoreRelatedLink">View all →</a></div>
+        <div class="section-header">
+          <h2>🔥 More from this category</h2>
+          <a class="view-more-link" href="shop.html" id="viewMoreRelatedLink">View all →</a>
+        </div>
         <div class="related-grid" id="relatedGrid">
           ${relatedProducts.map(prod => {
             const firstVar = prod.variants?.[0] || {};
@@ -712,7 +715,7 @@
     document.getElementById('buyNowBtn')?.addEventListener('click', () => { const qty = parseInt(qtyInput.value); const v = getActiveVar(); alert(`⚡ Checkout: ${displayName} ${v.weight} x ${qty} → ${formatPrice(v.price * qty)}`); });
     
     document.querySelectorAll('.related-card').forEach(card => card.addEventListener('click', (e) => { const pid = card.getAttribute('data-id'); if (pid) window.location.href = `view.html?id=${pid}`; }));
-    document.getElementById('viewMoreRelatedLink')?.addEventListener('click', (e) => { e.preventDefault(); alert("Browse full category (integration ready)"); });
+    // view more link already has href="shop.html", no extra handler needed
   }
 
   function initMobileCarousel(product) {
@@ -721,8 +724,8 @@
     const track = document.getElementById('carouselTrack');
     const dotsContainer = document.getElementById('carouselDots');
     if (!track || !dotsContainer || unique.length === 0) return;
-    // duplicate for infinite loop illusion: append first image at end
-    const slides = [...unique, ...unique.slice(0, 2)]; // extra for smooth loop
+    // duplicate for infinite loop illusion
+    const slides = [...unique, ...unique.slice(0, 2)];
     track.innerHTML = slides.map(img => `<div class="carousel-slide"><img src="${img}" onerror="this.src='https://placehold.co/600x600/f5e9e7/c0392b?text=img'"></div>`).join('');
     let currentIdx = 0;
     const totalReal = unique.length;
@@ -756,3 +759,4 @@
 </script>
 </body>
 </html>
+```
