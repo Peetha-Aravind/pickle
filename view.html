@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800;900&family=Inter:wght@300;400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
     <style>
-        /* ========== GLOBAL & NAVBAR ========== */
         :root {
             --header-height-desktop: 80px;
             --navbar-height-mobile: 70px;
@@ -228,7 +227,7 @@
             .form-panel-wrapper { padding: 32px; }
         }
 
-        /* Product view styles */
+        /* Product view */
         .product-view { --pv-rust: #C0392B; --pv-rust-light: #f5e9e7; --pv-turmeric: #E8A020; --pv-ink: #1C1009; --pv-ash: #6b5b4e; --pv-border: rgba(28,16,9,0.1); --pv-shadow-sm: 0 2px 8px rgba(28,16,9,0.08); --pv-shadow-md: 0 8px 32px rgba(28,16,9,0.12); --pv-r-card: 16px; font-family: 'IBM Plex Sans', sans-serif; }
         .product-view .pv-container { max-width: 1280px; margin: 30px auto 60px; padding: 0 5vw; display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 48px; align-items: start; }
         .product-view .pv-gallery { position: sticky; top: calc(var(--header-height-desktop) + 20px); display: flex; gap: 20px; }
@@ -334,7 +333,7 @@
             .combo-section .combo-inner { padding: 48px 5vw; }
         }
 
-        /* ===== Combo-related pickles section ===== */
+        /* Combo-related pickles section */
         .combo-related-section { max-width: 1440px; margin: 0 auto; padding: 40px 5vw 60px; background: #fffaf3; }
         .combo-related-section .combo-related-inner { max-width: 1280px; margin: 0 auto; }
         .combo-related-heading { font-family: var(--ff-display); font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 800; color: var(--ink); margin-bottom: 6px; }
@@ -359,7 +358,6 @@
             .combo-related-skeleton { grid-template-columns: repeat(2, 1fr); gap: 16px; }
         }
 
-        /* Footer */
         .demo-footer { background: #C0392B; color: #ffffff; font-family: 'IBM Plex Sans', sans-serif; padding: 56px 5vw 32px; border-top: 1px solid rgba(255,255,255,0.15); }
         .demo-footer, .demo-footer * { color: #ffffff; }
         .footer-container { max-width: 1440px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px 48px; }
@@ -396,7 +394,6 @@
 </head>
 <body>
 
-<!-- ═══════════════ DESKTOP LAYOUT ═══════════════ -->
 <div class="page-desktop">
     <nav class="d-navbar">
         <div class="d-navbar-container">
@@ -451,7 +448,7 @@
     </nav>
     <main class="app-main-content">
         <div id="productDetailRoot"><div class="product-view"><div class="pv-loader">Loading product…</div></div></div>
-        <!-- Combo Section -->
+
         <div class="combo-section reveal" id="comboSectionDesktop">
             <div class="combo-inner">
                 <div class="section-label">Limited Offer</div>
@@ -478,7 +475,7 @@
                 </div>
             </div>
         </div>
-        <!-- NEW: Combo-related pickles section (desktop) -->
+
         <section class="combo-related-section reveal" id="comboRelatedDesktop">
             <div class="combo-related-inner">
                 <h3 class="combo-related-heading">🍽️ Related to Your Selection</h3>
@@ -503,7 +500,6 @@
     </footer>
 </div>
 
-<!-- ═══════════════ MOBILE LAYOUT ═══════════════ -->
 <div class="page-mobile">
     <nav class="m-navbar">
         <button class="m-menu-btn icon-trigger" id="m-menu-toggle" aria-label="Open menu">
@@ -626,6 +622,7 @@
 
     <main class="app-main-content">
         <div id="productDetailRootMobile"><div class="product-view"><div class="pv-loader">Loading product…</div></div></div>
+
         <div class="combo-section reveal" id="comboSectionMobile">
             <div class="combo-inner">
                 <div class="section-label">Limited Offer</div>
@@ -652,7 +649,7 @@
                 </div>
             </div>
         </div>
-        <!-- NEW: Combo-related pickles section (mobile) -->
+
         <section class="combo-related-section reveal" id="comboRelatedMobile">
             <div class="combo-related-inner">
                 <h3 class="combo-related-heading">🍽️ Related to Your Selection</h3>
@@ -678,7 +675,6 @@
     </footer>
 </div>
 
-<!-- ═══════════════ AUTH MODAL ═══════════════ -->
 <div class="modal-overlay" id="login-modal-overlay">
     <div class="login-container">
         <button class="modal-close-btn icon-trigger" id="close-modal-btn" aria-label="Close">
@@ -759,858 +755,834 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 <script>
-// ===== Firebase initialization =====
-const firebaseConfig = {
-    apiKey: "AIzaSyCZbCr-Zt5KQblRQ8Pk58KuinCVP-TlXGo",
-    authDomain: "happynonvegpickles-f2636.firebaseapp.com",
-    projectId: "happynonvegpickles-f2636",
-    storageBucket: "happynonvegpickles-f2636.firebasestorage.app",
-    messagingSenderId: "802823212924",
-    appId: "1:802823212924:web:d82c92737ffa950798def9"
-};
-if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+    const firebaseConfig = {
+        apiKey: "AIzaSyCZbCr-Zt5KQblRQ8Pk58KuinCVP-TlXGo",
+        authDomain: "happynonvegpickles-f2636.firebaseapp.com",
+        projectId: "happynonvegpickles-f2636",
+        storageBucket: "happynonvegpickles-f2636.firebasestorage.app",
+        messagingSenderId: "802823212924",
+        appId: "1:802823212924:web:d82c92737ffa950798def9"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-// Second app for products & combo
-const productsFirebaseConfig = {
-    apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
-    authDomain: "pickle-fdc54.firebaseapp.com",
-    projectId: "pickle-fdc54",
-    storageBucket: "pickle-fdc54.firebasestorage.app",
-    messagingSenderId: "650348710985",
-    appId: "1:650348710985:web:b8eedb551a79b536578398"
-};
-let productsApp;
-try { productsApp = firebase.app("productsApp"); } catch(e) { productsApp = firebase.initializeApp(productsFirebaseConfig, "productsApp"); }
-const productsDb = firebase.firestore(productsApp);
+    const productsFirebaseConfig = {
+        apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
+        authDomain: "pickle-fdc54.firebaseapp.com",
+        projectId: "pickle-fdc54",
+        storageBucket: "pickle-fdc54.firebasestorage.app",
+        messagingSenderId: "650348710985",
+        appId: "1:650348710985:web:b8eedb551a79b536578398"
+    };
+    let productsApp;
+    try { productsApp = firebase.app("productsApp"); } catch(e) { productsApp = firebase.initializeApp(productsFirebaseConfig, "productsApp"); }
+    const productsDb = firebase.firestore(productsApp);
 
-// ===== Global state =====
-let cart = JSON.parse(localStorage.getItem('vastramaya_cart')) || [];
-let wishlist = [];
-let currentUser = null;
-let wishlistUnsubscribe = null;
-let allNavProducts = [];
+    let cart = JSON.parse(localStorage.getItem('vastramaya_cart')) || [];
+    let wishlist = [];
+    let currentUser = null;
+    let wishlistUnsubscribe = null;
+    let allNavProducts = [];
 
-// ===== Helpers =====
-function showToast(msg) {
-    let t = document.createElement('div');
-    t.className = 'toast';
-    t.textContent = msg;
-    document.getElementById('toast-container').appendChild(t);
-    setTimeout(() => t.remove(), 3000);
-}
-function togglePassword(id, btn) {
-    let inp = document.getElementById(id), wrap = btn.querySelector('.icon-wrap');
-    if (inp.type === 'password') { inp.type = 'text'; wrap.classList.add('force-fill'); }
-    else { inp.type = 'password'; wrap.classList.remove('force-fill'); }
-}
-function openAuthModal() {
-    document.getElementById('login-modal-overlay').classList.add('active');
-    document.body.style.overflow = 'hidden';
-}
-function closeAuthModal() {
-    document.getElementById('login-modal-overlay').classList.remove('active');
-    document.body.style.overflow = '';
-}
-function handleWishlistClick(e) {
-    e.preventDefault();
-    if (currentUser) window.location.href = 'wishlist.html';
-    else openAuthModal();
-}
-function updateWishlistCount() {
-    let c = wishlist.length;
-    ['wishlist-badge-desktop','wishlist-badge-mobile'].forEach(id => {
-        let el = document.getElementById(id);
-        if (el) { el.textContent = c; el.style.display = c > 0 ? 'flex' : 'none'; }
-    });
-}
-function setupWishlistListener(user) {
-    if (wishlistUnsubscribe) wishlistUnsubscribe();
-    wishlistUnsubscribe = db.collection('users').doc(user.uid).onSnapshot(snap => {
-        wishlist = (snap.exists && snap.data().wishlist) ? snap.data().wishlist : [];
-        updateWishlistCount();
-    });
-}
-function saveCart(sync) {
-    localStorage.setItem('vastramaya_cart', JSON.stringify(cart));
-    if (sync && currentUser) db.collection('users').doc(currentUser.uid).update({ cart }).catch(e => console.error(e));
-}
-function removeFromCart(uid) {
-    cart = cart.filter(i => String(i.uniqueId) !== String(uid));
-    saveCart(true);
-    renderCart();
-}
-function updateQuantity(uid, delta) {
-    let item = cart.find(i => String(i.uniqueId) === String(uid));
-    if (!item) return;
-    item.quantity += delta;
-    if (item.quantity <= 0) removeFromCart(uid);
-    else { saveCart(true); renderCart(); }
-}
-async function syncCartToFirestore() {
-    if (!currentUser) return;
-    try {
-        let doc = await db.collection('users').doc(currentUser.uid).get();
-        if (doc.exists && doc.data().cart) {
-            if (!cart.length) { cart = doc.data().cart; saveCart(false); renderCart(); }
-            else {
-                let dbCart = doc.data().cart;
-                cart.forEach(loc => {
-                    let ex = dbCart.find(x => String(x.uniqueId) === String(loc.uniqueId));
-                    if (ex) ex.quantity = Math.max(ex.quantity, loc.quantity);
-                    else dbCart.push(loc);
-                });
-                cart = dbCart;
-                saveCart(true);
-                renderCart();
-            }
-        } else if (cart.length) saveCart(true);
-    } catch(e) { console.error(e); }
-}
-function renderCart() {
-    let total = 0, count = 0, html = '';
-    if (!cart.length) html = '<div class="empty-cart-msg">Your cart is empty</div>';
-    else cart.forEach(item => {
-        total += item.price * item.quantity;
-        count += item.quantity;
-        html += `<div class="cart-item">
-            <img src="${item.image}" class="cart-item-img" onerror="this.src='https://placehold.co/70'">
-            <div class="cart-item-details">
-                <div class="cart-item-title">${item.name}</div>
-                <div class="cart-item-price">₹${item.price}</div>
-                <div class="cart-item-quantity">
-                    <div class="quantity-btn" onclick="updateQuantity('${item.uniqueId}',-1)">−</div>
-                    <div class="quantity-value">${item.quantity}</div>
-                    <div class="quantity-btn" onclick="updateQuantity('${item.uniqueId}',1)">+</div>
-                </div>
-            </div>
-            <div class="cart-item-remove icon-trigger" onclick="removeFromCart('${item.uniqueId}')">
-                <span class="icon-wrap"><img src="./assets/close.svg" style="width:14px;height:14px;" alt=""></span>
-            </div>
-        </div>`;
-    });
-    ['cart-items-desktop','cart-items-mobile'].forEach(id => { let el = document.getElementById(id); if (el) el.innerHTML = html; });
-    let dBadge = document.getElementById('cart-badge-desktop'), mBadge = document.getElementById('cart-badge-mobile');
-    if (dBadge) { dBadge.textContent = count; dBadge.style.display = count > 0 ? 'flex' : 'none'; }
-    if (mBadge) { mBadge.textContent = count; mBadge.style.display = count > 0 ? 'flex' : 'none'; }
-    let fmt = `₹${total.toFixed(2)}`;
-    let dT = document.getElementById('cart-total-desktop'), mT = document.getElementById('cart-total-mobile');
-    if (dT) dT.textContent = fmt;
-    if (mT) mT.textContent = fmt;
-    let dC = document.getElementById('cart-count-desktop'), mC = document.getElementById('cart-count-mobile');
-    if (dC) dC.textContent = `${count} item${count !== 1 ? 's' : ''}`;
-    if (mC) mC.textContent = `Your Cart (${count})`;
-}
-
-// ===== Navbar interactions =====
-function initNavbarUI() {
-    const dCartToggle = document.getElementById('d-cart-toggle');
-    const cartPopup = document.getElementById('cart-popup');
-    const dProfileToggle = document.getElementById('d-profile-toggle');
-    const profilePopup = document.getElementById('profile-popup');
-    if (dCartToggle) dCartToggle.addEventListener('click', (e) => {
-        e.stopPropagation();
-        cartPopup.classList.toggle('show');
-        profilePopup.classList.remove('show');
-    });
-    if (dProfileToggle) dProfileToggle.addEventListener('click', (e) => {
-        e.stopPropagation();
-        profilePopup.classList.toggle('show');
-        cartPopup.classList.remove('show');
-    });
-    document.addEventListener('click', (e) => {
-        if (cartPopup && !e.target.closest('.d-profile-dropdown')) cartPopup.classList.remove('show');
-        if (profilePopup && !e.target.closest('.d-profile-dropdown')) profilePopup.classList.remove('show');
-    });
-
-    const menuToggle = document.getElementById('m-menu-toggle');
-    const mOverlay = document.getElementById('m-overlay');
-    const drawerClose = document.getElementById('m-drawer-close');
-    if (menuToggle) menuToggle.addEventListener('click', () => mOverlay.classList.add('open'));
-    if (drawerClose) drawerClose.addEventListener('click', () => mOverlay.classList.remove('open'));
-    if (mOverlay) mOverlay.addEventListener('click', (e) => { if (e.target === mOverlay) mOverlay.classList.remove('open'); });
-
-    const catToggle = document.getElementById('m-categories-toggle');
-    const catContent = document.getElementById('mobile-nav-categories');
-    if (catToggle) catToggle.addEventListener('click', () => {
-        catToggle.classList.toggle('active');
-        catContent.classList.toggle('open');
-    });
-
-    const searchToggle = document.getElementById('m-search-toggle');
-    const searchOverlay = document.getElementById('m-search-overlay');
-    const searchClose = document.getElementById('m-search-close');
-    if (searchToggle) searchToggle.addEventListener('click', () => {
-        searchOverlay.classList.add('open');
-        document.getElementById('mobile-search').focus();
-    });
-    if (searchClose) searchClose.addEventListener('click', () => searchOverlay.classList.remove('open'));
-
-    const mCartToggle = document.getElementById('m-cart-toggle');
-    const cartOverlay = document.getElementById('cart-overlay');
-    const cartDrawerClose = document.getElementById('cart-drawer-close');
-    if (mCartToggle) mCartToggle.addEventListener('click', () => cartOverlay.classList.add('open'));
-    if (cartDrawerClose) cartDrawerClose.addEventListener('click', () => cartOverlay.classList.remove('open'));
-    if (cartOverlay) cartOverlay.addEventListener('click', (e) => { if (e.target === cartOverlay) cartOverlay.classList.remove('open'); });
-
-    const mobileProfileTrigger = document.getElementById('mobile-profile-trigger');
-    const mProfilePopup = document.getElementById('m-profile-popup');
-    if (mobileProfileTrigger) mobileProfileTrigger.addEventListener('click', (e) => {
-        if (e.target.closest('.m-profile-popup-menu')) return;
-        if (currentUser) mProfilePopup.classList.toggle('active');
+    function showToast(msg) {
+        let t = document.createElement('div');
+        t.className = 'toast';
+        t.textContent = msg;
+        document.getElementById('toast-container').appendChild(t);
+        setTimeout(() => t.remove(), 3000);
+    }
+    function togglePassword(id, btn) {
+        let inp = document.getElementById(id), wrap = btn.querySelector('.icon-wrap');
+        if (inp.type === 'password') { inp.type = 'text'; wrap.classList.add('force-fill'); }
+        else { inp.type = 'password'; wrap.classList.remove('force-fill'); }
+    }
+    function openAuthModal() {
+        document.getElementById('login-modal-overlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeAuthModal() {
+        document.getElementById('login-modal-overlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    function handleWishlistClick(e) {
+        e.preventDefault();
+        if (currentUser) window.location.href = 'wishlist.html';
         else openAuthModal();
-    });
-}
-
-async function loadCategories() {
-    try {
-        let snap = await db.collection('categories').get();
-        let cats = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(c => c.enabled !== false);
-        document.getElementById('desktop-nav-categories').innerHTML = cats.map(c => `<a href="shop.html?category=${encodeURIComponent(c.name)}" class="d-category-item">${c.name}</a>`).join('');
-        document.getElementById('mobile-nav-categories').innerHTML = cats.map(c => `<a href="shop.html?category=${encodeURIComponent(c.name)}" class="m-category-item">${c.name}</a>`).join('');
-    } catch(e) { console.error(e); }
-}
-
-function checkAuth() {
-    auth.onAuthStateChanged(async user => {
-        currentUser = user;
-        let trigD = document.getElementById('login-trigger-desktop'),
-            trigM = document.getElementById('mobile-profile-trigger'),
-            mPop = document.getElementById('m-profile-popup');
-        document.querySelectorAll('.auth-only').forEach(el => el.classList[user ? 'remove' : 'add']('auth-hidden'));
-        if (user) {
-            syncCartToFirestore();
-            setupWishlistListener(user);
-            let name = user.displayName;
-            if (!name) {
-                try { let d = await db.collection('users').doc(user.uid).get(); name = (d.exists && d.data().name) ? d.data().name : 'User'; }
-                catch(e) { name = 'User'; }
-            }
-            document.getElementById('user-name').textContent = name;
-            document.getElementById('user-email').textContent = user.email;
-            document.getElementById('user-name-mobile').textContent = name;
-            document.getElementById('user-phone-mobile').textContent = user.email;
-            trigD.innerHTML = `<span class="icon-wrap"><img src="./assets/logout.svg" class="icon-default" alt=""><img src="./assets/logout-fill.svg" class="icon-fill" alt=""></span> Sign Out`;
-            trigD.onclick = e => { e.preventDefault(); auth.signOut(); };
-            document.getElementById('mobile-logout-btn').onclick = () => auth.signOut();
-        } else {
-            if (wishlistUnsubscribe) { wishlistUnsubscribe(); wishlistUnsubscribe = null; }
-            wishlist = [];
+    }
+    function updateWishlistCount() {
+        let c = wishlist.length;
+        ['wishlist-badge-desktop','wishlist-badge-mobile'].forEach(id => {
+            let el = document.getElementById(id);
+            if (el) { el.textContent = c; el.style.display = c > 0 ? 'flex' : 'none'; }
+        });
+    }
+    function setupWishlistListener(user) {
+        if (wishlistUnsubscribe) wishlistUnsubscribe();
+        wishlistUnsubscribe = db.collection('users').doc(user.uid).onSnapshot(snap => {
+            wishlist = (snap.exists && snap.data().wishlist) ? snap.data().wishlist : [];
             updateWishlistCount();
-            document.getElementById('user-name').textContent = "Guest User";
-            document.getElementById('user-email').textContent = "Sign in to sync";
-            document.getElementById('user-name-mobile').textContent = "Guest";
-            document.getElementById('user-phone-mobile').innerHTML = '<span class="m-login-text">Login / Sign Up</span>';
-            trigD.innerHTML = `<span class="icon-wrap"><img src="./assets/login.svg" class="icon-default" alt=""><img src="./assets/login-fill.svg" class="icon-fill" alt=""></span> Sign In`;
-            trigD.onclick = e => { e.preventDefault(); openAuthModal(); };
-            if (mPop) mPop.classList.remove('active');
-        }
-    });
-}
-
-// ===== Product view =====
-function getProductId() {
-    return new URLSearchParams(window.location.search).get('id') || new URLSearchParams(window.location.search).get('productId');
-}
-const pvFmt = p => `₹${Math.round(Number(p) || 0)}`;
-const pvDisc = (mrp, price) => (!mrp || !price || mrp <= price) ? null : Math.round(((mrp - price) / mrp) * 100);
-const pvStars = r => { let n = Number(r) || 4.5, f = Math.floor(n); return '★'.repeat(f) + (n % 1 >= 0.5 ? '½' : '') + '☆'.repeat(5 - Math.ceil(n)); };
-const pvEsc = s => s ? String(s).replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])) : '';
-
-let pvCurrentProduct = null;
-let pvSelectedVariant = null;
-let pvSelectedImage = 0;
-let pvQuantity = 1;
-
-async function loadProductPage() {
-    const id = getProductId();
-    const desktopRoot = document.getElementById('productDetailRoot');
-    const mobileRoot = document.getElementById('productDetailRootMobile');
-    const loaderHtml = '<div class="product-view"><div class="pv-loader">Loading product…</div></div>';
-    if (desktopRoot) desktopRoot.innerHTML = loaderHtml;
-    if (mobileRoot) mobileRoot.innerHTML = loaderHtml;
-
-    if (!id) {
-        const errHtml = '<div class="product-view"><div class="pv-error"><h3>Product not found</h3><p>No product ID was supplied.</p></div></div>';
-        if (desktopRoot) desktopRoot.innerHTML = errHtml;
-        if (mobileRoot) mobileRoot.innerHTML = errHtml;
-        return;
+        });
+    }
+    function saveCart(sync) {
+        localStorage.setItem('vastramaya_cart', JSON.stringify(cart));
+        if (sync && currentUser) db.collection('users').doc(currentUser.uid).update({ cart }).catch(e => console.error(e));
+    }
+    function removeFromCart(uid) {
+        cart = cart.filter(i => String(i.uniqueId) !== String(uid));
+        saveCart(true);
+        renderCart();
+    }
+    function updateQuantity(uid, delta) {
+        let item = cart.find(i => String(i.uniqueId) === String(uid));
+        if (!item) return;
+        item.quantity += delta;
+        if (item.quantity <= 0) removeFromCart(uid);
+        else { saveCart(true); renderCart(); }
+    }
+    async function syncCartToFirestore() {
+        if (!currentUser) return;
+        try {
+            let doc = await db.collection('users').doc(currentUser.uid).get();
+            if (doc.exists && doc.data().cart) {
+                if (!cart.length) { cart = doc.data().cart; saveCart(false); renderCart(); }
+                else {
+                    let dbCart = doc.data().cart;
+                    cart.forEach(loc => {
+                        let ex = dbCart.find(x => String(x.uniqueId) === String(loc.uniqueId));
+                        if (ex) ex.quantity = Math.max(ex.quantity, loc.quantity);
+                        else dbCart.push(loc);
+                    });
+                    cart = dbCart;
+                    saveCart(true);
+                    renderCart();
+                }
+            } else if (cart.length) saveCart(true);
+        } catch(e) { console.error(e); }
+    }
+    function renderCart() {
+        let total = 0, count = 0, html = '';
+        if (!cart.length) html = '<div class="empty-cart-msg">Your cart is empty</div>';
+        else cart.forEach(item => {
+            total += item.price * item.quantity;
+            count += item.quantity;
+            html += `<div class="cart-item">
+                <img src="${item.image}" class="cart-item-img" onerror="this.src='https://placehold.co/70'">
+                <div class="cart-item-details">
+                    <div class="cart-item-title">${item.name}</div>
+                    <div class="cart-item-price">₹${item.price}</div>
+                    <div class="cart-item-quantity">
+                        <div class="quantity-btn" onclick="updateQuantity('${item.uniqueId}',-1)">−</div>
+                        <div class="quantity-value">${item.quantity}</div>
+                        <div class="quantity-btn" onclick="updateQuantity('${item.uniqueId}',1)">+</div>
+                    </div>
+                </div>
+                <div class="cart-item-remove icon-trigger" onclick="removeFromCart('${item.uniqueId}')">
+                    <span class="icon-wrap"><img src="./assets/close.svg" style="width:14px;height:14px;" alt=""></span>
+                </div>
+            </div>`;
+        });
+        ['cart-items-desktop','cart-items-mobile'].forEach(id => { let el = document.getElementById(id); if (el) el.innerHTML = html; });
+        let dBadge = document.getElementById('cart-badge-desktop'), mBadge = document.getElementById('cart-badge-mobile');
+        if (dBadge) { dBadge.textContent = count; dBadge.style.display = count > 0 ? 'flex' : 'none'; }
+        if (mBadge) { mBadge.textContent = count; mBadge.style.display = count > 0 ? 'flex' : 'none'; }
+        let fmt = `₹${total.toFixed(2)}`;
+        let dT = document.getElementById('cart-total-desktop'), mT = document.getElementById('cart-total-mobile');
+        if (dT) dT.textContent = fmt;
+        if (mT) mT.textContent = fmt;
+        let dC = document.getElementById('cart-count-desktop'), mC = document.getElementById('cart-count-mobile');
+        if (dC) dC.textContent = `${count} item${count !== 1 ? 's' : ''}`;
+        if (mC) mC.textContent = `Your Cart (${count})`;
     }
 
-    try {
-        let snap = await productsDb.collectionGroup('products').get();
-        let product = null;
-        let allProducts = [];
-        snap.docs.forEach(d => {
-            let data = { ...d.data(), _docId: d.id };
-            allProducts.push(data);
-            if (String(data.productId) === String(id) || d.id === id) product = data;
+    function initNavbarUI() {
+        const dCartToggle = document.getElementById('d-cart-toggle');
+        const cartPopup = document.getElementById('cart-popup');
+        const dProfileToggle = document.getElementById('d-profile-toggle');
+        const profilePopup = document.getElementById('profile-popup');
+        if (dCartToggle) dCartToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            cartPopup.classList.toggle('show');
+            profilePopup.classList.remove('show');
+        });
+        if (dProfileToggle) dProfileToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profilePopup.classList.toggle('show');
+            cartPopup.classList.remove('show');
+        });
+        document.addEventListener('click', (e) => {
+            if (cartPopup && !e.target.closest('.d-profile-dropdown')) cartPopup.classList.remove('show');
+            if (profilePopup && !e.target.closest('.d-profile-dropdown')) profilePopup.classList.remove('show');
         });
 
-        if (!product) {
-            const errHtml = '<div class="product-view"><div class="pv-error"><h3>Product not found</h3><p>We couldn\'t find the product you were looking for.</p></div></div>';
+        const menuToggle = document.getElementById('m-menu-toggle');
+        const mOverlay = document.getElementById('m-overlay');
+        const drawerClose = document.getElementById('m-drawer-close');
+        if (menuToggle) menuToggle.addEventListener('click', () => mOverlay.classList.add('open'));
+        if (drawerClose) drawerClose.addEventListener('click', () => mOverlay.classList.remove('open'));
+        if (mOverlay) mOverlay.addEventListener('click', (e) => { if (e.target === mOverlay) mOverlay.classList.remove('open'); });
+
+        const catToggle = document.getElementById('m-categories-toggle');
+        const catContent = document.getElementById('mobile-nav-categories');
+        if (catToggle) catToggle.addEventListener('click', () => {
+            catToggle.classList.toggle('active');
+            catContent.classList.toggle('open');
+        });
+
+        const searchToggle = document.getElementById('m-search-toggle');
+        const searchOverlay = document.getElementById('m-search-overlay');
+        const searchClose = document.getElementById('m-search-close');
+        if (searchToggle) searchToggle.addEventListener('click', () => {
+            searchOverlay.classList.add('open');
+            document.getElementById('mobile-search').focus();
+        });
+        if (searchClose) searchClose.addEventListener('click', () => searchOverlay.classList.remove('open'));
+
+        const mCartToggle = document.getElementById('m-cart-toggle');
+        const cartOverlay = document.getElementById('cart-overlay');
+        const cartDrawerClose = document.getElementById('cart-drawer-close');
+        if (mCartToggle) mCartToggle.addEventListener('click', () => cartOverlay.classList.add('open'));
+        if (cartDrawerClose) cartDrawerClose.addEventListener('click', () => cartOverlay.classList.remove('open'));
+        if (cartOverlay) cartOverlay.addEventListener('click', (e) => { if (e.target === cartOverlay) cartOverlay.classList.remove('open'); });
+
+        const mobileProfileTrigger = document.getElementById('mobile-profile-trigger');
+        const mProfilePopup = document.getElementById('m-profile-popup');
+        if (mobileProfileTrigger) mobileProfileTrigger.addEventListener('click', (e) => {
+            if (e.target.closest('.m-profile-popup-menu')) return;
+            if (currentUser) mProfilePopup.classList.toggle('active');
+            else openAuthModal();
+        });
+    }
+
+    async function loadCategories() {
+        try {
+            let snap = await db.collection('categories').get();
+            let cats = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(c => c.enabled !== false);
+            document.getElementById('desktop-nav-categories').innerHTML = cats.map(c => `<a href="shop.html?category=${encodeURIComponent(c.name)}" class="d-category-item">${c.name}</a>`).join('');
+            document.getElementById('mobile-nav-categories').innerHTML = cats.map(c => `<a href="shop.html?category=${encodeURIComponent(c.name)}" class="m-category-item">${c.name}</a>`).join('');
+        } catch(e) { console.error(e); }
+    }
+
+    function checkAuth() {
+        auth.onAuthStateChanged(async user => {
+            currentUser = user;
+            let trigD = document.getElementById('login-trigger-desktop'),
+                trigM = document.getElementById('mobile-profile-trigger'),
+                mPop = document.getElementById('m-profile-popup');
+            document.querySelectorAll('.auth-only').forEach(el => el.classList[user ? 'remove' : 'add']('auth-hidden'));
+            if (user) {
+                syncCartToFirestore();
+                setupWishlistListener(user);
+                let name = user.displayName;
+                if (!name) {
+                    try { let d = await db.collection('users').doc(user.uid).get(); name = (d.exists && d.data().name) ? d.data().name : 'User'; }
+                    catch(e) { name = 'User'; }
+                }
+                document.getElementById('user-name').textContent = name;
+                document.getElementById('user-email').textContent = user.email;
+                document.getElementById('user-name-mobile').textContent = name;
+                document.getElementById('user-phone-mobile').textContent = user.email;
+                trigD.innerHTML = `<span class="icon-wrap"><img src="./assets/logout.svg" class="icon-default" alt=""><img src="./assets/logout-fill.svg" class="icon-fill" alt=""></span> Sign Out`;
+                trigD.onclick = e => { e.preventDefault(); auth.signOut(); };
+                document.getElementById('mobile-logout-btn').onclick = () => auth.signOut();
+            } else {
+                if (wishlistUnsubscribe) { wishlistUnsubscribe(); wishlistUnsubscribe = null; }
+                wishlist = [];
+                updateWishlistCount();
+                document.getElementById('user-name').textContent = "Guest User";
+                document.getElementById('user-email').textContent = "Sign in to sync";
+                document.getElementById('user-name-mobile').textContent = "Guest";
+                document.getElementById('user-phone-mobile').innerHTML = '<span class="m-login-text">Login / Sign Up</span>';
+                trigD.innerHTML = `<span class="icon-wrap"><img src="./assets/login.svg" class="icon-default" alt=""><img src="./assets/login-fill.svg" class="icon-fill" alt=""></span> Sign In`;
+                trigD.onclick = e => { e.preventDefault(); openAuthModal(); };
+                if (mPop) mPop.classList.remove('active');
+            }
+        });
+    }
+
+    function getProductId() {
+        return new URLSearchParams(window.location.search).get('id') || new URLSearchParams(window.location.search).get('productId');
+    }
+    const pvFmt = p => `₹${Math.round(Number(p) || 0)}`;
+    const pvDisc = (mrp, price) => (!mrp || !price || mrp <= price) ? null : Math.round(((mrp - price) / mrp) * 100);
+    const pvStars = r => { let n = Number(r) || 4.5, f = Math.floor(n); return '★'.repeat(f) + (n % 1 >= 0.5 ? '½' : '') + '☆'.repeat(5 - Math.ceil(n)); };
+    const pvEsc = s => s ? String(s).replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])) : '';
+
+    let pvCurrentProduct = null;
+    let pvSelectedVariant = null;
+    let pvSelectedImage = 0;
+    let pvQuantity = 1;
+
+    async function loadProductPage() {
+        const id = getProductId();
+        const desktopRoot = document.getElementById('productDetailRoot');
+        const mobileRoot = document.getElementById('productDetailRootMobile');
+        const loaderHtml = '<div class="product-view"><div class="pv-loader">Loading product…</div></div>';
+        if (desktopRoot) desktopRoot.innerHTML = loaderHtml;
+        if (mobileRoot) mobileRoot.innerHTML = loaderHtml;
+
+        if (!id) {
+            const errHtml = '<div class="product-view"><div class="pv-error"><h3>Product not found</h3><p>No product ID was supplied.</p></div></div>';
             if (desktopRoot) desktopRoot.innerHTML = errHtml;
             if (mobileRoot) mobileRoot.innerHTML = errHtml;
             return;
         }
 
-        let related = allProducts.filter(p => p.productId !== product.productId).slice(0, 8);
-        pvCurrentProduct = product;
-        pvSelectedVariant = (product.variants && product.variants.length) ? 0 : null;
-        pvSelectedImage = 0;
-        pvQuantity = 1;
-
-        renderProductPage(product, related);
-    } catch (err) {
-        console.error('Product load error:', err);
-        const errHtml = '<div class="product-view"><div class="pv-error"><h3>Something went wrong</h3><p>Please try again later.</p></div></div>';
-        if (desktopRoot) desktopRoot.innerHTML = errHtml;
-        if (mobileRoot) mobileRoot.innerHTML = errHtml;
-    }
-}
-
-function renderProductPage(product, related) {
-    const images = (product.images && product.images.length) ? product.images : [product.image || 'https://placehold.co/600x800/f0e7de/6b5b4e?text=Pickle'];
-    const variants = product.variants || [];
-    const mrp = product.mrp || product.price;
-    const price = product.price;
-    const disc = pvDisc(mrp, price);
-
-    // ★ CHANGE 1: Use longName from Firestore, fallback to name
-    const displayName = product.longName || product.name || 'Product';
-
-    const thumbStripHtml = images.map((img, i) => `<div class="pv-thumb ${i === 0 ? 'active' : ''}" data-idx="${i}" onclick="pvSelectImage(${i})"><img src="${img}" alt="" onerror="this.src='https://placehold.co/85'"></div>`).join('');
-
-    const variantHtml = variants.length ? `
-        <div class="pv-variant-section">
-            <div class="pv-variant-label">Select Variant</div>
-            <div class="pv-variant-row">
-                ${variants.map((v, i) => `<button class="pv-variant-btn ${i === 0 ? 'active' : ''}" data-idx="${i}" onclick="pvSelectVariant(${i})">${pvEsc(v.label || v.name || v)}</button>`).join('')}
-            </div>
-        </div>` : '';
-
-    // ★ Also display additional Firestore fields if available
-    const extraDetailsHtml = [];
-    if (product.weight) extraDetailsHtml.push(`<span class="pv-detail-tag">⚖️ ${pvEsc(product.weight)}</span>`);
-    if (product.shelfLife) extraDetailsHtml.push(`<span class="pv-detail-tag">📅 ${pvEsc(product.shelfLife)}</span>`);
-    if (product.ingredients) extraDetailsHtml.push(`<p class="pv-desc" style="margin-top:6px;"><strong>Ingredients:</strong> ${pvEsc(product.ingredients)}</p>`);
-    const extraDetailsBlock = extraDetailsHtml.length ? `<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;">${extraDetailsHtml.join('')}</div>` : '';
-
-    const relatedHtml = related.length ? `
-        <div class="pv-related-section">
-            <h3 class="pv-related-heading">You may also like</h3>
-            <div class="pv-related-grid">
-                ${related.map(r => `
-                    <div class="pv-related-card" onclick="window.location.href='view.html?id=${r.productId}'">
-                        <div class="pv-related-img"><img src="${r.image || 'https://placehold.co/300x300/f3ede7/C0392B?text=Pickle'}" alt="" onerror="this.src='https://placehold.co/300x300'"></div>
-                        <div class="pv-related-info">
-                            <div class="pv-related-name">${pvEsc(r.longName || r.name)}</div>
-                            <div class="pv-related-price">${pvFmt(r.price)}</div>
-                        </div>
-                    </div>`).join('')}
-            </div>
-        </div>` : '';
-
-    const html = `
-        <div class="product-view">
-            <div class="pv-container">
-                <div class="pv-gallery">
-                    <div class="pv-thumb-strip">${thumbStripHtml}</div>
-                    <div class="pv-main-img"><img id="pvMainImage" src="${images[0]}" alt="${pvEsc(displayName)}" onerror="this.src='https://placehold.co/600x800'"></div>
-                </div>
-                <div class="pv-info">
-                    <h1 class="pv-title">${pvEsc(displayName)}</h1>
-                    <div class="pv-rating"><span class="stars">${pvStars(product.rating)}</span> &nbsp;${product.rating || '4.5'} (${product.reviewCount || 0} reviews)</div>
-                    <div class="pv-price-group">
-                        <span class="pv-current-price">${pvFmt(price)}</span>
-                        ${mrp && mrp > price ? `<span class="pv-old-price">${pvFmt(mrp)}</span>` : ''}
-                        ${disc ? `<span class="pv-discount-badge">${disc}% OFF</span>` : ''}
-                    </div>
-                    <p class="pv-desc">${pvEsc(product.description || 'A traditional, handcrafted recipe made with the finest spices and authentic flavours.')}</p>
-                    ${extraDetailsBlock}
-                    ${variantHtml}
-                    <div class="pv-qty-row">
-                        <div class="pv-qty-control">
-                            <button onclick="pvChangeQty(-1)">−</button>
-                            <input type="text" id="pvQtyInput" value="1" readonly>
-                            <button onclick="pvChangeQty(1)">+</button>
-                        </div>
-                        <span class="pv-stock">✓ In Stock</span>
-                    </div>
-                    <div class="pv-button-row">
-                        <button class="pv-btn-cart" onclick="pvAddToCart()">🛒 Add to Cart</button>
-                        <button class="pv-btn-wishlist" onclick="pvAddToWishlist()">♥ Wishlist</button>
-                        <button class="pv-btn-buynow" onclick="pvBuyNow()">Buy Now</button>
-                    </div>
-                </div>
-            </div>
-            ${relatedHtml}
-        </div>`;
-
-    const desktopRoot = document.getElementById('productDetailRoot');
-    const mobileRoot = document.getElementById('productDetailRootMobile');
-    if (desktopRoot) desktopRoot.innerHTML = html;
-    if (mobileRoot) mobileRoot.innerHTML = html;
-
-    document.querySelectorAll('.pv-container').forEach(el => {
-        el.classList.add('pv-reveal');
-        requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('visible')));
-    });
-}
-
-function pvSelectImage(idx) {
-    pvSelectedImage = idx;
-    const images = (pvCurrentProduct.images && pvCurrentProduct.images.length) ? pvCurrentProduct.images : [pvCurrentProduct.image];
-    document.querySelectorAll('.pv-main-img img').forEach(img => img.src = images[idx]);
-    document.querySelectorAll('.pv-thumb').forEach((t, i) => t.classList.toggle('active', i === idx));
-}
-function pvSelectVariant(idx) {
-    pvSelectedVariant = idx;
-    document.querySelectorAll('.pv-variant-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
-}
-function pvChangeQty(delta) {
-    pvQuantity = Math.max(1, pvQuantity + delta);
-    document.querySelectorAll('#pvQtyInput').forEach(inp => inp.value = pvQuantity);
-}
-function pvAddToCart() {
-    if (!pvCurrentProduct) return;
-    const variantLabel = (pvSelectedVariant !== null && pvCurrentProduct.variants) ? (pvCurrentProduct.variants[pvSelectedVariant].label || pvCurrentProduct.variants[pvSelectedVariant]) : null;
-    const uniqueId = `${pvCurrentProduct.productId}${variantLabel ? '-' + variantLabel : ''}`;
-    let existing = cart.find(i => String(i.uniqueId) === String(uniqueId));
-    if (existing) existing.quantity += pvQuantity;
-    else cart.push({
-        uniqueId,
-        productId: pvCurrentProduct.productId,
-        name: (pvCurrentProduct.longName || pvCurrentProduct.name) + (variantLabel ? ` (${variantLabel})` : ''),
-        price: pvCurrentProduct.price,
-        image: (pvCurrentProduct.images && pvCurrentProduct.images[0]) || pvCurrentProduct.image,
-        quantity: pvQuantity
-    });
-    saveCart(true);
-    renderCart();
-    showToast('Added to cart!');
-}
-function pvAddToWishlist() {
-    if (!currentUser) { openAuthModal(); return; }
-    if (!pvCurrentProduct) return;
-    if (!wishlist.includes(pvCurrentProduct.productId)) {
-        wishlist.push(pvCurrentProduct.productId);
-        db.collection('users').doc(currentUser.uid).set({ wishlist }, { merge: true });
-        showToast('Added to wishlist!');
-    } else {
-        showToast('Already in wishlist');
-    }
-}
-function pvBuyNow() {
-    pvAddToCart();
-    window.location.href = 'checkout.html';
-}
-
-// ===== Combo section =====
-let comboAllPickles = [];
-let comboSelectedIds = [];
-let comboMaxSelect = 4;
-
-function comboShowSkeleton(context) {
-    let container = context === 'desktop' ? document.getElementById('comboPickleGridContainerDesktop') : document.getElementById('comboPickleGridContainerMobile');
-    if (container) container.innerHTML = `<div class="combo-skeleton-grid">${Array(4).fill(0).map(() => `<div class="combo-skeleton-item"><div class="combo-skeleton-img"></div><div class="combo-skeleton-txt"></div></div>`).join('')}</div>`;
-    let statusEl = context === 'desktop' ? document.getElementById('comboStatusMsgDesktop') : document.getElementById('comboStatusMsgMobile');
-    if (statusEl) statusEl.textContent = 'Loading combo…';
-}
-
-// ★ CHANGE 2: Update related pickles when combo selections change
-function updateComboRelatedPickles(context) {
-    const gridContainer = context === 'desktop' ? document.getElementById('comboRelatedGridDesktop') : document.getElementById('comboRelatedGridMobile');
-    const emptyEl = context === 'desktop' ? document.getElementById('comboRelatedEmptyDesktop') : document.getElementById('comboRelatedEmptyMobile');
-    if (!gridContainer || !emptyEl) return;
-
-    if (!comboSelectedIds.length || !allNavProducts.length) {
-        gridContainer.innerHTML = '';
-        emptyEl.style.display = 'block';
-        return;
-    }
-
-    // Get selected combo pickles
-    const selectedPickles = comboAllPickles.filter(p => comboSelectedIds.includes(p.id));
-    if (!selectedPickles.length) {
-        gridContainer.innerHTML = '';
-        emptyEl.style.display = 'block';
-        return;
-    }
-
-    // Find matching products in allNavProducts by name or id to get their categories
-    const selectedNames = selectedPickles.map(p => p.name.toLowerCase().trim());
-    const selectedIds = selectedPickles.map(p => p.id);
-    const matchedProducts = allNavProducts.filter(prod => {
-        const prodName = (prod.name || '').toLowerCase().trim();
-        return selectedNames.includes(prodName) || selectedIds.includes(prod.productId) || selectedIds.includes(prod._docId);
-    });
-
-    // Collect unique categories from matched products
-    const categories = new Set();
-    matchedProducts.forEach(prod => {
-        if (prod.category) categories.add(prod.category.toLowerCase().trim());
-        if (prod.categories && Array.isArray(prod.categories)) {
-            prod.categories.forEach(c => categories.add(c.toLowerCase().trim()));
-        }
-    });
-
-    // If no categories found, try fuzzy matching by name substring
-    if (!categories.size) {
-        allNavProducts.forEach(prod => {
-            const prodName = (prod.name || '').toLowerCase().trim();
-            selectedNames.forEach(selName => {
-                if (prodName.includes(selName) || selName.includes(prodName)) {
-                    if (prod.category) categories.add(prod.category.toLowerCase().trim());
-                }
-            });
-        });
-    }
-
-    if (!categories.size) {
-        gridContainer.innerHTML = '';
-        emptyEl.style.display = 'block';
-        emptyEl.textContent = 'No category data available for related recommendations.';
-        return;
-    }
-
-    // Filter allNavProducts by the collected categories, excluding already-selected combo items
-    const relatedProducts = allNavProducts.filter(prod => {
-        const prodCategory = (prod.category || '').toLowerCase().trim();
-        const prodCategories = prod.categories ? prod.categories.map(c => c.toLowerCase().trim()) : [];
-        const allCats = [prodCategory, ...prodCategories];
-        const matchesCategory = allCats.some(c => categories.has(c));
-        if (!matchesCategory) return false;
-
-        // Exclude products already in the combo selection
-        const prodName = (prod.name || '').toLowerCase().trim();
-        const isSelected = selectedNames.includes(prodName) || selectedIds.includes(prod.productId) || selectedIds.includes(prod._docId);
-        return !isSelected;
-    });
-
-    // Deduplicate by productId
-    const seen = new Set();
-    const uniqueRelated = relatedProducts.filter(prod => {
-        const key = prod.productId || prod._docId;
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-    }).slice(0, 8);
-
-    if (!uniqueRelated.length) {
-        gridContainer.innerHTML = '';
-        emptyEl.style.display = 'block';
-        emptyEl.textContent = 'No related pickles found for the selected categories.';
-        return;
-    }
-
-    emptyEl.style.display = 'none';
-    gridContainer.innerHTML = `<div class="combo-related-grid">
-        ${uniqueRelated.map(r => `
-            <div class="combo-related-card" onclick="window.location.href='view.html?id=${r.productId || r._docId}'">
-                <div class="combo-related-img"><img src="${r.image || 'https://placehold.co/300x300/f3ede7/C0392B?text=Pickle'}" alt="${pvEsc(r.longName || r.name)}" onerror="this.src='https://placehold.co/300x300'"></div>
-                <div class="combo-related-info">
-                    <div class="combo-related-name">${pvEsc(r.longName || r.name)}</div>
-                    <div class="combo-related-price">${pvFmt(r.price)}</div>
-                </div>
-            </div>`).join('')}
-    </div>`;
-}
-
-function comboUpdateUI(context) {
-    let count = comboSelectedIds.length;
-    let selectedCountEl = context === 'desktop' ? document.getElementById('comboSelectedCountDesktop') : document.getElementById('comboSelectedCountMobile');
-    let statusMsgEl = context === 'desktop' ? document.getElementById('comboStatusMsgDesktop') : document.getElementById('comboStatusMsgMobile');
-    let addBtn = context === 'desktop' ? document.getElementById('comboAddToCartBtnDesktop') : document.getElementById('comboAddToCartBtnMobile');
-    let buyBtn = context === 'desktop' ? document.getElementById('comboBuyNowBtnDesktop') : document.getElementById('comboBuyNowBtnMobile');
-    let gridContainer = context === 'desktop' ? document.getElementById('comboPickleGridContainerDesktop') : document.getElementById('comboPickleGridContainerMobile');
-    if (selectedCountEl) selectedCountEl.textContent = count;
-    let limitReached = count === comboMaxSelect;
-    let gridEl = gridContainer?.querySelector('.combo-pickle-grid');
-    if (gridEl) gridEl.classList.toggle('limit-reached', limitReached);
-    gridContainer?.querySelectorAll('.combo-pickle-item').forEach(item => {
-        item.classList.toggle('selected', comboSelectedIds.includes(item.dataset.id));
-    });
-    if (count === comboMaxSelect) {
-        if (addBtn) addBtn.classList.remove('combo-btn-hidden');
-        if (buyBtn) buyBtn.classList.remove('combo-btn-hidden');
-        if (statusMsgEl) statusMsgEl.textContent = '🎉 Perfect combo! You can now checkout.';
-    } else {
-        if (addBtn) addBtn.classList.add('combo-btn-hidden');
-        if (buyBtn) buyBtn.classList.add('combo-btn-hidden');
-        let remaining = comboMaxSelect - count;
-        if (statusMsgEl) statusMsgEl.textContent = remaining > 0 ? `Select ${remaining} more pickle${remaining > 1 ? 's' : ''} to unlock.` : '';
-    }
-
-    // ★ Update related pickles for both contexts
-    updateComboRelatedPickles('desktop');
-    updateComboRelatedPickles('mobile');
-}
-
-function comboTogglePickle(pickleId, context) {
-    let idx = comboSelectedIds.indexOf(pickleId);
-    let statusMsgEl = context === 'desktop' ? document.getElementById('comboStatusMsgDesktop') : document.getElementById('comboStatusMsgMobile');
-    if (idx !== -1) {
-        comboSelectedIds.splice(idx, 1);
-    } else {
-        if (comboSelectedIds.length >= comboMaxSelect) {
-            if (statusMsgEl) statusMsgEl.textContent = `⚠️ You can only select ${comboMaxSelect} pickles. Remove one first.`;
-            setTimeout(() => {
-                let remaining = comboMaxSelect - comboSelectedIds.length;
-                if (statusMsgEl) statusMsgEl.textContent = remaining > 0 ? `Select ${remaining} more pickle${remaining > 1 ? 's' : ''} to unlock.` : '🎉 Perfect combo! You can now checkout.';
-            }, 1500);
-            return;
-        }
-        comboSelectedIds.push(pickleId);
-    }
-    comboUpdateUI(context);
-}
-
-function comboRenderGrid(context) {
-    let container = context === 'desktop' ? document.getElementById('comboPickleGridContainerDesktop') : document.getElementById('comboPickleGridContainerMobile');
-    if (!container) return;
-    if (!comboAllPickles.length) {
-        container.innerHTML = `<div class="empty-state">🍃 No pickles available in combo right now.</div>`;
-        return;
-    }
-    let gridEl = document.createElement('div');
-    gridEl.className = 'combo-pickle-grid';
-    comboAllPickles.forEach(pickle => {
-        let item = document.createElement('div');
-        item.className = 'combo-pickle-item';
-        if (comboSelectedIds.includes(pickle.id)) item.classList.add('selected');
-        item.dataset.id = pickle.id;
-        item.innerHTML = `
-            <div class="combo-pickle-img-circle"><img src="${pickle.imageUrl || 'https://placehold.co/400x400/f5e9e7/C0392B?text=Pickle'}" alt="${pvEsc(pickle.name)}" onerror="this.src='https://placehold.co/400x400/e2d6ca/5a3a2a?text=Oops'"></div>
-            <div class="combo-pickle-info"><div class="combo-pickle-name">${pvEsc(pickle.name)}</div><div class="combo-pickle-price">${pickle.price || '₹199'}</div></div>
-        `;
-        item.addEventListener('click', (e) => { e.stopPropagation(); comboTogglePickle(pickle.id, context); });
-        gridEl.appendChild(item);
-    });
-    container.innerHTML = '';
-    container.appendChild(gridEl);
-    comboUpdateUI(context);
-}
-
-async function comboFetchFromFirestore() {
-    try {
-        const snapshot = await productsDb.collection('combos').get();
-        if (snapshot.empty) throw new Error('No combo documents found');
-        const comboDoc = snapshot.docs[0];
-        const data = comboDoc.data();
-        if (!data.items || !Array.isArray(data.items) || data.items.length === 0) throw new Error('No items array');
-        comboAllPickles = data.items.slice(0, 8).map(item => ({
-            id: item.id || item.pickleId || `item_${Math.random()}`,
-            name: item.name || 'Unnamed Pickle',
-            price: item.price || '₹199',
-            imageUrl: item.imageUrl || item.image || 'https://placehold.co/400x400/f5e9e7/C0392B?text=Pickle'
-        }));
-        if (data.maxSelect && typeof data.maxSelect === 'number') comboMaxSelect = data.maxSelect;
-        comboSelectedIds = [];
-
-        let bannerTitle = data.title || 'Special Combo';
-        let bannerDesc = data.description || 'Select your favourite pickles';
-        let bannerImg = data.bannerImage || 'https://placehold.co/800x600/C0392B/white?text=Pickle+Combo';
-        ['Desktop', 'Mobile'].forEach(suffix => {
-            let titleEl = document.getElementById(`comboBannerTitle${suffix}`);
-            let descEl = document.getElementById(`comboBannerDesc${suffix}`);
-            let bannerEl = document.getElementById(`comboBannerPanel${suffix}`);
-            let maxSpan = document.getElementById(`comboMaxSpan${suffix}`);
-            if (titleEl) titleEl.textContent = bannerTitle;
-            if (descEl) descEl.textContent = bannerDesc;
-            if (bannerEl) bannerEl.style.backgroundImage = `url('${bannerImg}')`;
-            if (maxSpan) maxSpan.textContent = comboMaxSelect;
-        });
-        comboRenderGrid('desktop');
-        comboRenderGrid('mobile');
-        // Initialize related pickles (empty state)
-        updateComboRelatedPickles('desktop');
-        updateComboRelatedPickles('mobile');
-    } catch (err) {
-        console.error('Combo error:', err);
-        ['Desktop', 'Mobile'].forEach(suffix => {
-            let container = document.getElementById(`comboPickleGridContainer${suffix}`);
-            if (container) container.innerHTML = `<div class="empty-state">⚠️ Could not load combo data. Please check back later.</div>`;
-            let status = document.getElementById(`comboStatusMsg${suffix}`);
-            if (status) status.textContent = '';
-            let grid = document.getElementById(`comboRelatedGrid${suffix}`);
-            if (grid) grid.innerHTML = '';
-            let empty = document.getElementById(`comboRelatedEmpty${suffix}`);
-            if (empty) { empty.style.display = 'block'; empty.textContent = 'Combo data unavailable — related recommendations cannot be loaded.'; }
-        });
-    }
-}
-
-function initComboSection() {
-    comboShowSkeleton('desktop');
-    comboShowSkeleton('mobile');
-    comboFetchFromFirestore();
-    ['Desktop', 'Mobile'].forEach(suffix => {
-        let addBtn = document.getElementById(`comboAddToCartBtn${suffix}`);
-        let buyBtn = document.getElementById(`comboBuyNowBtn${suffix}`);
-        if (addBtn) addBtn.addEventListener('click', () => {
-            if (comboSelectedIds.length !== comboMaxSelect) { showToast(`Please select exactly ${comboMaxSelect} pickles.`); return; }
-            let chosen = comboAllPickles.filter(p => comboSelectedIds.includes(p.id));
-            chosen.forEach(p => {
-                let uniqueId = `combo-${p.id}`;
-                let existing = cart.find(i => String(i.uniqueId) === String(uniqueId));
-                if (existing) existing.quantity += 1;
-                else cart.push({ uniqueId, productId: p.id, name: `${p.name} (Combo)`, price: parseInt(String(p.price).replace(/[^\d]/g, '')) || 199, image: p.imageUrl, quantity: 1 });
-            });
-            saveCart(true);
-            renderCart();
-            showToast('Combo added to cart!');
-        });
-        if (buyBtn) buyBtn.addEventListener('click', () => {
-            if (comboSelectedIds.length !== comboMaxSelect) { showToast(`Select ${comboMaxSelect} pickles to continue.`); return; }
-            if (addBtn) addBtn.click();
-            window.location.href = 'checkout.html';
-        });
-    });
-}
-
-// ===== Live search =====
-function initLiveSearch() {
-    async function fetchNavProducts() {
         try {
             let snap = await productsDb.collectionGroup('products').get();
-            let map = new Map();
-            snap.docs.forEach(d => { let data = d.data(); if (data.productId && !map.has(data.productId)) map.set(data.productId, data); });
-            allNavProducts = Array.from(map.values());
-        } catch(e) { console.error(e); }
-    }
-    fetchNavProducts();
-    const performSearch = (q, cid) => {
-        let el = document.getElementById(cid);
-        if (!el) return;
-        if (!q || q.length < 2) { el.classList.remove('show'); el.innerHTML = ''; return; }
-        let res = allNavProducts.filter(p => p.name?.toLowerCase().includes(q.toLowerCase())).slice(0, 6);
-        el.innerHTML = res.length
-            ? res.map(p => `<a href="view.html?id=${p.productId}" class="search-result-item"><img src="${p.image||''}" class="search-result-img" onerror="this.src='https://placehold.co/48'"><div class="search-result-info"><div class="search-result-name">${pvEsc(p.longName || p.name)}</div><div class="search-result-price">₹${p.price}</div></div></a>`).join('')
-            : '<div class="search-no-results">No products found</div>';
-        if (cid === 'desktop-search-results') el.classList.add('show');
-    };
-    let dInput = document.getElementById('desktop-search'), mInput = document.getElementById('mobile-search');
-    if (dInput) dInput.addEventListener('input', (e) => performSearch(e.target.value, 'desktop-search-results'));
-    if (mInput) mInput.addEventListener('input', (e) => performSearch(e.target.value, 'mobile-search-results'));
-    document.addEventListener('click', (e) => { if (!e.target.closest('.d-search-container')) document.getElementById('desktop-search-results')?.classList.remove('show'); });
-}
+            let product = null;
+            let allProducts = [];
+            snap.docs.forEach(d => {
+                let data = { ...d.data(), _docId: d.id };
+                allProducts.push(data);
+                if (String(data.productId) === String(id) || d.id === id) product = data;
+            });
 
-// ===== Auth modal =====
-function initAuthModal() {
-    const overlay = document.getElementById('login-modal-overlay');
-    const closeBtn = document.getElementById('close-modal-btn');
-    const showLoginBtn = document.getElementById('show-login-btn');
-    const showSignupBtn = document.getElementById('show-signup-btn');
-    const loginForm = document.getElementById('login-form');
-    const signupForm = document.getElementById('signup-form');
-    const loader = document.getElementById('loader');
-    const switchToSignup = document.querySelector('.switch-to-signup');
-    const switchToLogin = document.querySelector('.switch-to-login');
-    const googleBtn = document.getElementById('google-login-btn');
-    const forgotLink = document.getElementById('forgot-password-link');
+            if (!product) {
+                const errHtml = '<div class="product-view"><div class="pv-error"><h3>Product not found</h3><p>We couldn\'t find the product you were looking for.</p></div></div>';
+                if (desktopRoot) desktopRoot.innerHTML = errHtml;
+                if (mobileRoot) mobileRoot.innerHTML = errHtml;
+                return;
+            }
 
-    function showLogin() {
-        showLoginBtn.classList.add('active'); showSignupBtn.classList.remove('active');
-        loginForm.classList.add('active'); signupForm.classList.remove('active');
-    }
-    function showSignup() {
-        showSignupBtn.classList.add('active'); showLoginBtn.classList.remove('active');
-        signupForm.classList.add('active'); loginForm.classList.remove('active');
+            let related = allProducts.filter(p => p.productId !== product.productId).slice(0, 8);
+            pvCurrentProduct = product;
+            pvSelectedVariant = (product.variants && product.variants.length) ? 0 : null;
+            pvSelectedImage = 0;
+            pvQuantity = 1;
+
+            renderProductPage(product, related);
+        } catch (err) {
+            console.error('Product load error:', err);
+            const errHtml = '<div class="product-view"><div class="pv-error"><h3>Something went wrong</h3><p>Please try again later.</p></div></div>';
+            if (desktopRoot) desktopRoot.innerHTML = errHtml;
+            if (mobileRoot) mobileRoot.innerHTML = errHtml;
+        }
     }
 
-    closeBtn?.addEventListener('click', closeAuthModal);
-    overlay?.addEventListener('click', (e) => { if (e.target === overlay) closeAuthModal(); });
-    showLoginBtn?.addEventListener('click', showLogin);
-    showSignupBtn?.addEventListener('click', showSignup);
-    switchToSignup?.addEventListener('click', (e) => { e.preventDefault(); showSignup(); });
-    switchToLogin?.addEventListener('click', (e) => { e.preventDefault(); showLogin(); });
+    function renderProductPage(product, related) {
+        const images = (product.images && product.images.length) ? product.images : [product.image || 'https://placehold.co/600x800/f0e7de/6b5b4e?text=Pickle'];
+        const variants = product.variants || [];
+        const mrp = product.mrp || product.price;
+        const price = product.price;
+        const disc = pvDisc(mrp, price);
+        const displayName = product.longName || product.name || 'Product';
 
-    loginForm?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        loader.classList.add('active');
+        const thumbStripHtml = images.map((img, i) => `<div class="pv-thumb ${i === 0 ? 'active' : ''}" data-idx="${i}" onclick="pvSelectImage(${i})"><img src="${img}" alt="" onerror="this.src='https://placehold.co/85'"></div>`).join('');
+
+        const variantHtml = variants.length ? `
+            <div class="pv-variant-section">
+                <div class="pv-variant-label">Select Variant</div>
+                <div class="pv-variant-row">
+                    ${variants.map((v, i) => `<button class="pv-variant-btn ${i === 0 ? 'active' : ''}" data-idx="${i}" onclick="pvSelectVariant(${i})">${pvEsc(v.label || v.name || v)}</button>`).join('')}
+                </div>
+            </div>` : '';
+
+        const extraDetailsHtml = [];
+        if (product.weight) extraDetailsHtml.push(`<span class="pv-detail-tag">⚖️ ${pvEsc(product.weight)}</span>`);
+        if (product.shelfLife) extraDetailsHtml.push(`<span class="pv-detail-tag">📅 ${pvEsc(product.shelfLife)}</span>`);
+        if (product.ingredients) extraDetailsHtml.push(`<p class="pv-desc" style="margin-top:6px;"><strong>Ingredients:</strong> ${pvEsc(product.ingredients)}</p>`);
+        const extraDetailsBlock = extraDetailsHtml.length ? `<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;">${extraDetailsHtml.join('')}</div>` : '';
+
+        const relatedHtml = related.length ? `
+            <div class="pv-related-section">
+                <h3 class="pv-related-heading">You may also like</h3>
+                <div class="pv-related-grid">
+                    ${related.map(r => `
+                        <div class="pv-related-card" onclick="window.location.href='view.html?id=${r.productId}'">
+                            <div class="pv-related-img"><img src="${r.image || 'https://placehold.co/300x300/f3ede7/C0392B?text=Pickle'}" alt="" onerror="this.src='https://placehold.co/300x300'"></div>
+                            <div class="pv-related-info">
+                                <div class="pv-related-name">${pvEsc(r.longName || r.name)}</div>
+                                <div class="pv-related-price">${pvFmt(r.price)}</div>
+                            </div>
+                        </div>`).join('')}
+                </div>
+            </div>` : '';
+
+        const html = `
+            <div class="product-view">
+                <div class="pv-container">
+                    <div class="pv-gallery">
+                        <div class="pv-thumb-strip">${thumbStripHtml}</div>
+                        <div class="pv-main-img"><img id="pvMainImage" src="${images[0]}" alt="${pvEsc(displayName)}" onerror="this.src='https://placehold.co/600x800'"></div>
+                    </div>
+                    <div class="pv-info">
+                        <h1 class="pv-title">${pvEsc(displayName)}</h1>
+                        <div class="pv-rating"><span class="stars">${pvStars(product.rating)}</span> &nbsp;${product.rating || '4.5'} (${product.reviewCount || 0} reviews)</div>
+                        <div class="pv-price-group">
+                            <span class="pv-current-price">${pvFmt(price)}</span>
+                            ${mrp && mrp > price ? `<span class="pv-old-price">${pvFmt(mrp)}</span>` : ''}
+                            ${disc ? `<span class="pv-discount-badge">${disc}% OFF</span>` : ''}
+                        </div>
+                        <p class="pv-desc">${pvEsc(product.description || 'A traditional, handcrafted recipe made with the finest spices and authentic flavours.')}</p>
+                        ${extraDetailsBlock}
+                        ${variantHtml}
+                        <div class="pv-qty-row">
+                            <div class="pv-qty-control">
+                                <button onclick="pvChangeQty(-1)">−</button>
+                                <input type="text" id="pvQtyInput" value="1" readonly>
+                                <button onclick="pvChangeQty(1)">+</button>
+                            </div>
+                            <span class="pv-stock">✓ In Stock</span>
+                        </div>
+                        <div class="pv-button-row">
+                            <button class="pv-btn-cart" onclick="pvAddToCart()">🛒 Add to Cart</button>
+                            <button class="pv-btn-wishlist" onclick="pvAddToWishlist()">♥ Wishlist</button>
+                            <button class="pv-btn-buynow" onclick="pvBuyNow()">Buy Now</button>
+                        </div>
+                    </div>
+                </div>
+                ${relatedHtml}
+            </div>`;
+
+        const desktopRoot = document.getElementById('productDetailRoot');
+        const mobileRoot = document.getElementById('productDetailRootMobile');
+        if (desktopRoot) desktopRoot.innerHTML = html;
+        if (mobileRoot) mobileRoot.innerHTML = html;
+
+        document.querySelectorAll('.pv-container').forEach(el => {
+            el.classList.add('pv-reveal');
+            requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('visible')));
+        });
+    }
+
+    function pvSelectImage(idx) {
+        pvSelectedImage = idx;
+        const images = (pvCurrentProduct.images && pvCurrentProduct.images.length) ? pvCurrentProduct.images : [pvCurrentProduct.image];
+        document.querySelectorAll('.pv-main-img img').forEach(img => img.src = images[idx]);
+        document.querySelectorAll('.pv-thumb').forEach((t, i) => t.classList.toggle('active', i === idx));
+    }
+    function pvSelectVariant(idx) {
+        pvSelectedVariant = idx;
+        document.querySelectorAll('.pv-variant-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+    }
+    function pvChangeQty(delta) {
+        pvQuantity = Math.max(1, pvQuantity + delta);
+        document.querySelectorAll('#pvQtyInput').forEach(inp => inp.value = pvQuantity);
+    }
+    function pvAddToCart() {
+        if (!pvCurrentProduct) return;
+        const variantLabel = (pvSelectedVariant !== null && pvCurrentProduct.variants) ? (pvCurrentProduct.variants[pvSelectedVariant].label || pvCurrentProduct.variants[pvSelectedVariant]) : null;
+        const uniqueId = `${pvCurrentProduct.productId}${variantLabel ? '-' + variantLabel : ''}`;
+        let existing = cart.find(i => String(i.uniqueId) === String(uniqueId));
+        if (existing) existing.quantity += pvQuantity;
+        else cart.push({
+            uniqueId,
+            productId: pvCurrentProduct.productId,
+            name: (pvCurrentProduct.longName || pvCurrentProduct.name) + (variantLabel ? ` (${variantLabel})` : ''),
+            price: pvCurrentProduct.price,
+            image: (pvCurrentProduct.images && pvCurrentProduct.images[0]) || pvCurrentProduct.image,
+            quantity: pvQuantity
+        });
+        saveCart(true);
+        renderCart();
+        showToast('Added to cart!');
+    }
+    function pvAddToWishlist() {
+        if (!currentUser) { openAuthModal(); return; }
+        if (!pvCurrentProduct) return;
+        if (!wishlist.includes(pvCurrentProduct.productId)) {
+            wishlist.push(pvCurrentProduct.productId);
+            db.collection('users').doc(currentUser.uid).set({ wishlist }, { merge: true });
+            showToast('Added to wishlist!');
+        } else {
+            showToast('Already in wishlist');
+        }
+    }
+    function pvBuyNow() {
+        pvAddToCart();
+        window.location.href = 'checkout.html';
+    }
+
+    let comboAllPickles = [];
+    let comboSelectedIds = [];
+    let comboMaxSelect = 4;
+
+    function comboShowSkeleton(context) {
+        let container = context === 'desktop' ? document.getElementById('comboPickleGridContainerDesktop') : document.getElementById('comboPickleGridContainerMobile');
+        if (container) container.innerHTML = `<div class="combo-skeleton-grid">${Array(4).fill(0).map(() => `<div class="combo-skeleton-item"><div class="combo-skeleton-img"></div><div class="combo-skeleton-txt"></div></div>`).join('')}</div>`;
+        let statusEl = context === 'desktop' ? document.getElementById('comboStatusMsgDesktop') : document.getElementById('comboStatusMsgMobile');
+        if (statusEl) statusEl.textContent = 'Loading combo…';
+    }
+
+    function updateComboRelatedPickles(context) {
+        const gridContainer = context === 'desktop' ? document.getElementById('comboRelatedGridDesktop') : document.getElementById('comboRelatedGridMobile');
+        const emptyEl = context === 'desktop' ? document.getElementById('comboRelatedEmptyDesktop') : document.getElementById('comboRelatedEmptyMobile');
+        if (!gridContainer || !emptyEl) return;
+
+        if (!comboSelectedIds.length || !allNavProducts.length) {
+            gridContainer.innerHTML = '';
+            emptyEl.style.display = 'block';
+            return;
+        }
+
+        const selectedPickles = comboAllPickles.filter(p => comboSelectedIds.includes(p.id));
+        if (!selectedPickles.length) {
+            gridContainer.innerHTML = '';
+            emptyEl.style.display = 'block';
+            return;
+        }
+
+        const selectedNames = selectedPickles.map(p => p.name.toLowerCase().trim());
+        const selectedIds = selectedPickles.map(p => p.id);
+        const matchedProducts = allNavProducts.filter(prod => {
+            const prodName = (prod.name || '').toLowerCase().trim();
+            return selectedNames.includes(prodName) || selectedIds.includes(prod.productId) || selectedIds.includes(prod._docId);
+        });
+
+        const categories = new Set();
+        matchedProducts.forEach(prod => {
+            if (prod.category) categories.add(prod.category.toLowerCase().trim());
+            if (prod.categories && Array.isArray(prod.categories)) {
+                prod.categories.forEach(c => categories.add(c.toLowerCase().trim()));
+            }
+        });
+
+        if (!categories.size) {
+            allNavProducts.forEach(prod => {
+                const prodName = (prod.name || '').toLowerCase().trim();
+                selectedNames.forEach(selName => {
+                    if (prodName.includes(selName) || selName.includes(prodName)) {
+                        if (prod.category) categories.add(prod.category.toLowerCase().trim());
+                    }
+                });
+            });
+        }
+
+        if (!categories.size) {
+            gridContainer.innerHTML = '';
+            emptyEl.style.display = 'block';
+            emptyEl.textContent = 'No category data available for related recommendations.';
+            return;
+        }
+
+        const relatedProducts = allNavProducts.filter(prod => {
+            const prodCategory = (prod.category || '').toLowerCase().trim();
+            const prodCategories = prod.categories ? prod.categories.map(c => c.toLowerCase().trim()) : [];
+            const allCats = [prodCategory, ...prodCategories];
+            const matchesCategory = allCats.some(c => categories.has(c));
+            if (!matchesCategory) return false;
+
+            const prodName = (prod.name || '').toLowerCase().trim();
+            const isSelected = selectedNames.includes(prodName) || selectedIds.includes(prod.productId) || selectedIds.includes(prod._docId);
+            return !isSelected;
+        });
+
+        const seen = new Set();
+        const uniqueRelated = relatedProducts.filter(prod => {
+            const key = prod.productId || prod._docId;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        }).slice(0, 8);
+
+        if (!uniqueRelated.length) {
+            gridContainer.innerHTML = '';
+            emptyEl.style.display = 'block';
+            emptyEl.textContent = 'No related pickles found for the selected categories.';
+            return;
+        }
+
+        emptyEl.style.display = 'none';
+        gridContainer.innerHTML = `<div class="combo-related-grid">
+            ${uniqueRelated.map(r => `
+                <div class="combo-related-card" onclick="window.location.href='view.html?id=${r.productId || r._docId}'">
+                    <div class="combo-related-img"><img src="${r.image || 'https://placehold.co/300x300/f3ede7/C0392B?text=Pickle'}" alt="${pvEsc(r.longName || r.name)}" onerror="this.src='https://placehold.co/300x300'"></div>
+                    <div class="combo-related-info">
+                        <div class="combo-related-name">${pvEsc(r.longName || r.name)}</div>
+                        <div class="combo-related-price">${pvFmt(r.price)}</div>
+                    </div>
+                </div>`).join('')}
+        </div>`;
+    }
+
+    function comboUpdateUI(context) {
+        let count = comboSelectedIds.length;
+        let selectedCountEl = context === 'desktop' ? document.getElementById('comboSelectedCountDesktop') : document.getElementById('comboSelectedCountMobile');
+        let statusMsgEl = context === 'desktop' ? document.getElementById('comboStatusMsgDesktop') : document.getElementById('comboStatusMsgMobile');
+        let addBtn = context === 'desktop' ? document.getElementById('comboAddToCartBtnDesktop') : document.getElementById('comboAddToCartBtnMobile');
+        let buyBtn = context === 'desktop' ? document.getElementById('comboBuyNowBtnDesktop') : document.getElementById('comboBuyNowBtnMobile');
+        let gridContainer = context === 'desktop' ? document.getElementById('comboPickleGridContainerDesktop') : document.getElementById('comboPickleGridContainerMobile');
+        if (selectedCountEl) selectedCountEl.textContent = count;
+        let limitReached = count === comboMaxSelect;
+        let gridEl = gridContainer?.querySelector('.combo-pickle-grid');
+        if (gridEl) gridEl.classList.toggle('limit-reached', limitReached);
+        gridContainer?.querySelectorAll('.combo-pickle-item').forEach(item => {
+            item.classList.toggle('selected', comboSelectedIds.includes(item.dataset.id));
+        });
+        if (count === comboMaxSelect) {
+            if (addBtn) addBtn.classList.remove('combo-btn-hidden');
+            if (buyBtn) buyBtn.classList.remove('combo-btn-hidden');
+            if (statusMsgEl) statusMsgEl.textContent = '🎉 Perfect combo! You can now checkout.';
+        } else {
+            if (addBtn) addBtn.classList.add('combo-btn-hidden');
+            if (buyBtn) buyBtn.classList.add('combo-btn-hidden');
+            let remaining = comboMaxSelect - count;
+            if (statusMsgEl) statusMsgEl.textContent = remaining > 0 ? `Select ${remaining} more pickle${remaining > 1 ? 's' : ''} to unlock.` : '';
+        }
+
+        updateComboRelatedPickles('desktop');
+        updateComboRelatedPickles('mobile');
+    }
+
+    function comboTogglePickle(pickleId, context) {
+        let idx = comboSelectedIds.indexOf(pickleId);
+        let statusMsgEl = context === 'desktop' ? document.getElementById('comboStatusMsgDesktop') : document.getElementById('comboStatusMsgMobile');
+        if (idx !== -1) {
+            comboSelectedIds.splice(idx, 1);
+        } else {
+            if (comboSelectedIds.length >= comboMaxSelect) {
+                if (statusMsgEl) statusMsgEl.textContent = `⚠️ You can only select ${comboMaxSelect} pickles. Remove one first.`;
+                setTimeout(() => {
+                    let remaining = comboMaxSelect - comboSelectedIds.length;
+                    if (statusMsgEl) statusMsgEl.textContent = remaining > 0 ? `Select ${remaining} more pickle${remaining > 1 ? 's' : ''} to unlock.` : '🎉 Perfect combo! You can now checkout.';
+                }, 1500);
+                return;
+            }
+            comboSelectedIds.push(pickleId);
+        }
+        comboUpdateUI(context);
+    }
+
+    function comboRenderGrid(context) {
+        let container = context === 'desktop' ? document.getElementById('comboPickleGridContainerDesktop') : document.getElementById('comboPickleGridContainerMobile');
+        if (!container) return;
+        if (!comboAllPickles.length) {
+            container.innerHTML = `<div class="empty-state">🍃 No pickles available in combo right now.</div>`;
+            return;
+        }
+        let gridEl = document.createElement('div');
+        gridEl.className = 'combo-pickle-grid';
+        comboAllPickles.forEach(pickle => {
+            let item = document.createElement('div');
+            item.className = 'combo-pickle-item';
+            if (comboSelectedIds.includes(pickle.id)) item.classList.add('selected');
+            item.dataset.id = pickle.id;
+            item.innerHTML = `
+                <div class="combo-pickle-img-circle"><img src="${pickle.imageUrl || 'https://placehold.co/400x400/f5e9e7/C0392B?text=Pickle'}" alt="${pvEsc(pickle.name)}" onerror="this.src='https://placehold.co/400x400/e2d6ca/5a3a2a?text=Oops'"></div>
+                <div class="combo-pickle-info"><div class="combo-pickle-name">${pvEsc(pickle.name)}</div><div class="combo-pickle-price">${pickle.price || '₹199'}</div></div>
+            `;
+            item.addEventListener('click', (e) => { e.stopPropagation(); comboTogglePickle(pickle.id, context); });
+            gridEl.appendChild(item);
+        });
+        container.innerHTML = '';
+        container.appendChild(gridEl);
+        comboUpdateUI(context);
+    }
+
+    async function comboFetchFromFirestore() {
         try {
+            const snapshot = await productsDb.collection('combos').get();
+            if (snapshot.empty) throw new Error('No combo documents found');
+            const comboDoc = snapshot.docs[0];
+            const data = comboDoc.data();
+            if (!data.items || !Array.isArray(data.items) || data.items.length === 0) throw new Error('No items array');
+            comboAllPickles = data.items.slice(0, 8).map(item => ({
+                id: item.id || item.pickleId || `item_${Math.random()}`,
+                name: item.name || 'Unnamed Pickle',
+                price: item.price || '₹199',
+                imageUrl: item.imageUrl || item.image || 'https://placehold.co/400x400/f5e9e7/C0392B?text=Pickle'
+            }));
+            if (data.maxSelect && typeof data.maxSelect === 'number') comboMaxSelect = data.maxSelect;
+            comboSelectedIds = [];
+
+            let bannerTitle = data.title || 'Special Combo';
+            let bannerDesc = data.description || 'Select your favourite pickles';
+            let bannerImg = data.bannerImage || 'https://placehold.co/800x600/C0392B/white?text=Pickle+Combo';
+            ['Desktop', 'Mobile'].forEach(suffix => {
+                let titleEl = document.getElementById(`comboBannerTitle${suffix}`);
+                let descEl = document.getElementById(`comboBannerDesc${suffix}`);
+                let bannerEl = document.getElementById(`comboBannerPanel${suffix}`);
+                let maxSpan = document.getElementById(`comboMaxSpan${suffix}`);
+                if (titleEl) titleEl.textContent = bannerTitle;
+                if (descEl) descEl.textContent = bannerDesc;
+                if (bannerEl) bannerEl.style.backgroundImage = `url('${bannerImg}')`;
+                if (maxSpan) maxSpan.textContent = comboMaxSelect;
+            });
+            comboRenderGrid('desktop');
+            comboRenderGrid('mobile');
+            updateComboRelatedPickles('desktop');
+            updateComboRelatedPickles('mobile');
+        } catch (err) {
+            console.error('Combo error:', err);
+            ['Desktop', 'Mobile'].forEach(suffix => {
+                let container = document.getElementById(`comboPickleGridContainer${suffix}`);
+                if (container) container.innerHTML = `<div class="empty-state">⚠️ Could not load combo data. Please check back later.</div>`;
+                let status = document.getElementById(`comboStatusMsg${suffix}`);
+                if (status) status.textContent = '';
+                let grid = document.getElementById(`comboRelatedGrid${suffix}`);
+                if (grid) grid.innerHTML = '';
+                let empty = document.getElementById(`comboRelatedEmpty${suffix}`);
+                if (empty) { empty.style.display = 'block'; empty.textContent = 'Combo data unavailable — related recommendations cannot be loaded.'; }
+            });
+        }
+    }
+
+    function initComboSection() {
+        comboShowSkeleton('desktop');
+        comboShowSkeleton('mobile');
+        comboFetchFromFirestore();
+        ['Desktop', 'Mobile'].forEach(suffix => {
+            let addBtn = document.getElementById(`comboAddToCartBtn${suffix}`);
+            let buyBtn = document.getElementById(`comboBuyNowBtn${suffix}`);
+            if (addBtn) addBtn.addEventListener('click', () => {
+                if (comboSelectedIds.length !== comboMaxSelect) { showToast(`Please select exactly ${comboMaxSelect} pickles.`); return; }
+                let chosen = comboAllPickles.filter(p => comboSelectedIds.includes(p.id));
+                chosen.forEach(p => {
+                    let uniqueId = `combo-${p.id}`;
+                    let existing = cart.find(i => String(i.uniqueId) === String(uniqueId));
+                    if (existing) existing.quantity += 1;
+                    else cart.push({ uniqueId, productId: p.id, name: `${p.name} (Combo)`, price: parseInt(String(p.price).replace(/[^\d]/g, '')) || 199, image: p.imageUrl, quantity: 1 });
+                });
+                saveCart(true);
+                renderCart();
+                showToast('Combo added to cart!');
+            });
+            if (buyBtn) buyBtn.addEventListener('click', () => {
+                if (comboSelectedIds.length !== comboMaxSelect) { showToast(`Select ${comboMaxSelect} pickles to continue.`); return; }
+                if (addBtn) addBtn.click();
+                window.location.href = 'checkout.html';
+            });
+        });
+    }
+
+    function initLiveSearch() {
+        async function fetchNavProducts() {
+            try {
+                let snap = await productsDb.collectionGroup('products').get();
+                let map = new Map();
+                snap.docs.forEach(d => { let data = d.data(); if (data.productId && !map.has(data.productId)) map.set(data.productId, data); });
+                allNavProducts = Array.from(map.values());
+            } catch(e) { console.error(e); }
+        }
+        fetchNavProducts();
+        const performSearch = (q, cid) => {
+            let el = document.getElementById(cid);
+            if (!el) return;
+            if (!q || q.length < 2) { el.classList.remove('show'); el.innerHTML = ''; return; }
+            let res = allNavProducts.filter(p => p.name?.toLowerCase().includes(q.toLowerCase())).slice(0, 6);
+            el.innerHTML = res.length
+                ? res.map(p => `<a href="view.html?id=${p.productId}" class="search-result-item"><img src="${p.image||''}" class="search-result-img" onerror="this.src='https://placehold.co/48'"><div class="search-result-info"><div class="search-result-name">${pvEsc(p.longName || p.name)}</div><div class="search-result-price">₹${p.price}</div></div></a>`).join('')
+                : '<div class="search-no-results">No products found</div>';
+            if (cid === 'desktop-search-results') el.classList.add('show');
+        };
+        let dInput = document.getElementById('desktop-search'), mInput = document.getElementById('mobile-search');
+        if (dInput) dInput.addEventListener('input', (e) => performSearch(e.target.value, 'desktop-search-results'));
+        if (mInput) mInput.addEventListener('input', (e) => performSearch(e.target.value, 'mobile-search-results'));
+        document.addEventListener('click', (e) => { if (!e.target.closest('.d-search-container')) document.getElementById('desktop-search-results')?.classList.remove('show'); });
+    }
+
+    function initAuthModal() {
+        const overlay = document.getElementById('login-modal-overlay');
+        const closeBtn = document.getElementById('close-modal-btn');
+        const showLoginBtn = document.getElementById('show-login-btn');
+        const showSignupBtn = document.getElementById('show-signup-btn');
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const loader = document.getElementById('loader');
+        const switchToSignup = document.querySelector('.switch-to-signup');
+        const switchToLogin = document.querySelector('.switch-to-login');
+        const googleBtn = document.getElementById('google-login-btn');
+        const forgotLink = document.getElementById('forgot-password-link');
+
+        function showLogin() {
+            showLoginBtn.classList.add('active'); showSignupBtn.classList.remove('active');
+            loginForm.classList.add('active'); signupForm.classList.remove('active');
+        }
+        function showSignup() {
+            showSignupBtn.classList.add('active'); showLoginBtn.classList.remove('active');
+            signupForm.classList.add('active'); loginForm.classList.remove('active');
+        }
+
+        closeBtn?.addEventListener('click', closeAuthModal);
+        overlay?.addEventListener('click', (e) => { if (e.target === overlay) closeAuthModal(); });
+        showLoginBtn?.addEventListener('click', showLogin);
+        showSignupBtn?.addEventListener('click', showSignup);
+        switchToSignup?.addEventListener('click', (e) => { e.preventDefault(); showSignup(); });
+        switchToLogin?.addEventListener('click', (e) => { e.preventDefault(); showLogin(); });
+
+        loginForm?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loader.classList.add('active');
+            try {
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                await auth.signInWithEmailAndPassword(email, password);
+                closeAuthModal();
+                showToast('Signed in successfully!');
+            } catch(err) {
+                showToast(err.message || 'Sign in failed');
+            } finally {
+                loader.classList.remove('active');
+            }
+        });
+
+        signupForm?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loader.classList.add('active');
+            try {
+                const name = document.getElementById('signup-name').value;
+                const email = document.getElementById('signup-email').value;
+                const password = document.getElementById('signup-password').value;
+                const cred = await auth.createUserWithEmailAndPassword(email, password);
+                await cred.user.updateProfile({ displayName: name });
+                await db.collection('users').doc(cred.user.uid).set({ name, email, cart: [], wishlist: [] }, { merge: true });
+                closeAuthModal();
+                showToast('Account created!');
+            } catch(err) {
+                showToast(err.message || 'Sign up failed');
+            } finally {
+                loader.classList.remove('active');
+            }
+        });
+
+        googleBtn?.addEventListener('click', async () => {
+            loader.classList.add('active');
+            try {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                const result = await auth.signInWithPopup(provider);
+                await db.collection('users').doc(result.user.uid).set({ name: result.user.displayName, email: result.user.email }, { merge: true });
+                closeAuthModal();
+                showToast('Signed in with Google!');
+            } catch(err) {
+                showToast(err.message || 'Google sign-in failed');
+            } finally {
+                loader.classList.remove('active');
+            }
+        });
+
+        forgotLink?.addEventListener('click', async (e) => {
+            e.preventDefault();
             const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            await auth.signInWithEmailAndPassword(email, password);
-            closeAuthModal();
-            showToast('Signed in successfully!');
-        } catch(err) {
-            showToast(err.message || 'Sign in failed');
-        } finally {
-            loader.classList.remove('active');
-        }
+            if (!email) { showToast('Enter your email first'); return; }
+            try {
+                await auth.sendPasswordResetEmail(email);
+                showToast('Password reset email sent!');
+            } catch(err) {
+                showToast(err.message || 'Could not send reset email');
+            }
+        });
+    }
+
+    function initRevealObserver() {
+        const obs = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.15 });
+        document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initNavbarUI();
+        checkAuth();
+        renderCart();
+        updateWishlistCount();
+        loadCategories();
+        initLiveSearch();
+        initAuthModal();
+        loadProductPage();
+        initComboSection();
+        initRevealObserver();
     });
-
-    signupForm?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        loader.classList.add('active');
-        try {
-            const name = document.getElementById('signup-name').value;
-            const email = document.getElementById('signup-email').value;
-            const password = document.getElementById('signup-password').value;
-            const cred = await auth.createUserWithEmailAndPassword(email, password);
-            await cred.user.updateProfile({ displayName: name });
-            await db.collection('users').doc(cred.user.uid).set({ name, email, cart: [], wishlist: [] }, { merge: true });
-            closeAuthModal();
-            showToast('Account created!');
-        } catch(err) {
-            showToast(err.message || 'Sign up failed');
-        } finally {
-            loader.classList.remove('active');
-        }
-    });
-
-    googleBtn?.addEventListener('click', async () => {
-        loader.classList.add('active');
-        try {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            const result = await auth.signInWithPopup(provider);
-            await db.collection('users').doc(result.user.uid).set({ name: result.user.displayName, email: result.user.email }, { merge: true });
-            closeAuthModal();
-            showToast('Signed in with Google!');
-        } catch(err) {
-            showToast(err.message || 'Google sign-in failed');
-        } finally {
-            loader.classList.remove('active');
-        }
-    });
-
-    forgotLink?.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('login-email').value;
-        if (!email) { showToast('Enter your email first'); return; }
-        try {
-            await auth.sendPasswordResetEmail(email);
-            showToast('Password reset email sent!');
-        } catch(err) {
-            showToast(err.message || 'Could not send reset email');
-        }
-    });
-}
-
-// ===== Scroll reveal =====
-function initRevealObserver() {
-    const obs = new IntersectionObserver((entries) => {
-        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.15 });
-    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-}
-
-// ===== Init =====
-document.addEventListener('DOMContentLoaded', () => {
-    initNavbarUI();
-    checkAuth();
-    renderCart();
-    updateWishlistCount();
-    loadCategories();
-    initLiveSearch();
-    initAuthModal();
-    loadProductPage();
-    initComboSection();
-    initRevealObserver();
-});
 </script>
 </body>
 </html>
