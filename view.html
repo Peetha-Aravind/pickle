@@ -68,13 +68,13 @@
     .nav-links a:hover { color: var(--rust); }
     .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; font-size: 26px; font-weight: bold; color: var(--rust); }
     
-    /* PRODUCT CONTAINER: main image width reduced by ~10% (from 1.2fr to 1.08fr approx) */
+    /* PRODUCT CONTAINER: main image width reduced by ~10% */
     .product-container {
       max-width: 1400px;
       margin: 30px auto 60px;
       padding: 0 5vw;
       display: grid;
-      grid-template-columns: 1.08fr 0.92fr;  /* 8% reduction in image column, info column compensates */
+      grid-template-columns: 1.08fr 0.92fr;
       gap: 56px;
       align-items: start;
     }
@@ -340,7 +340,7 @@
     .qty-control button { background: #fff; border: none; padding: 8px 18px; font-size: 1.2rem; cursor: pointer; font-weight: bold; }
     .qty-control input { width: 50px; text-align: center; border: none; font-weight: 600; font-size: 1rem; }
 
-    /* rating stars - ONLY RED (no grey/empty stars, no fading) */
+    /* rating stars - ONLY RED (no empty/grey stars) */
     .stars {
       font-size: 1.6rem;
       font-weight: bold;
@@ -358,7 +358,6 @@
       line-height: 1;
       background: transparent;
     }
-    /* All stars are red (full and half) — no empty/grey stars */
     .star-full, .star-half {
       color: var(--rust);
     }
@@ -370,12 +369,8 @@
       left: 0;
       white-space: nowrap;
     }
-    /* ensure no grey background or fading */
-    .star-wrapper, .stars, .star-full, .star-half {
-      background: transparent;
-    }
 
-    /* toggle sections */
+    /* toggle sections - description: enforce single column, multiple rows (no multi-column layout) */
     .toggle-section {
       background: transparent;
       border-radius: 0;
@@ -409,17 +404,26 @@
     .toggle-content.collapsed {
       display: none;
     }
-    /* Description: fixed column width, allows multiple rows (no column layout) */
+    /* Description: fixed width, only one column, text wraps into multiple rows */
+    .desc-preview, .full-description-text {
+      column-count: 1;
+      column-width: auto;
+      column-gap: normal;
+      width: 100%;
+      max-width: 100%;
+      word-wrap: break-word;
+      word-break: normal;
+      line-height: 1.5;
+    }
     .desc-preview {
       display: -webkit-box;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
-      line-height: 1.5;
     }
     .full-description-text {
+      display: block;
       margin-top: 8px;
-      line-height: 1.5;
     }
 
     /* 5 demo icons */
@@ -626,20 +630,17 @@
   function formatPrice(p) { return `₹${Math.round(Number(p) || 0)}`; }
   function getDiscountPercent(mrp, price) { if (!mrp || !price || mrp <= price) return null; return Math.round(((mrp - price) / mrp) * 100); }
   
-  // NEW: rating stars - ONLY RED (no empty/grey stars, half star if needed but still solid red)
+  // rating stars - only red (full or half, no empty)
   function renderStars(rating) {
     const full = Math.floor(rating);
     const hasHalf = (rating % 1) >= 0.5;
     let starsHtml = '';
-    // Full red stars
     for (let i = 0; i < full; i++) {
       starsHtml += `<span class="star-wrapper"><span class="star-full">★</span></span>`;
     }
-    // Half red star (if applicable)
     if (hasHalf) {
       starsHtml += `<span class="star-wrapper"><span class="star-half">★</span></span>`;
     }
-    // No empty/grey stars — only red stars
     return starsHtml;
   }
 
