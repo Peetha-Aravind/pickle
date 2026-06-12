@@ -7,7 +7,6 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥒</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- FIX: Added Playfair Display, which is referenced by --ff-display but was missing from the font request -->
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800;900&family=Inter:wght@300;400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
     <style>
@@ -38,13 +37,11 @@
             --r-pill: 999px;
             --ff-display: 'Playfair Display', Georgia, serif;
             --ff-body: 'DM Sans', sans-serif;
-            /* FIX: provided a value for --text-light, previously undefined and used by .profile-email */
             --text-light: #8a7a6c;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { min-height: 100vh; background: #fffaf3; font-family: "DM Sans", Roboto, sans-serif; overflow-x: hidden; color: #2c1a0e; width: 100%; }
 
-        /* Icon system */
         .icon-wrap { position: relative; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; pointer-events: none; }
         .icon-wrap .icon-default, .icon-wrap .icon-fill { width: 20px; height: 20px; display: block; position: absolute; top: 0; left: 0; transition: opacity 0.18s ease; }
         .icon-wrap .icon-fill { opacity: 0; }
@@ -58,7 +55,6 @@
         .icon-wrap.force-fill .icon-fill { opacity: 1; }
         .icon-wrap.force-fill .icon-default { opacity: 0; }
 
-        /* Desktop Navbar */
         .page-desktop { min-height: 100vh; display: flex; flex-direction: column; width: 100%; }
         .d-navbar { height: var(--header-height-desktop); background: var(--surface-card); border-bottom: 1px solid var(--border-subtle); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; box-shadow: var(--shadow-light); }
         .d-navbar-container { max-width: 1440px; margin: 0 auto; height: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; gap: 24px; }
@@ -123,7 +119,6 @@
         .buy-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(230,29,38,0.3); }
         .empty-cart-msg { text-align: center; padding: 2rem; color: #666; }
 
-        /* Mobile navbar */
         .page-mobile { min-height: 100vh; display: none; flex-direction: column; width: 100%; }
         .m-navbar { height: var(--navbar-height-mobile); background: var(--surface-card); border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; }
         .m-navbar .d-navbar-logo { height: 40px; }
@@ -131,7 +126,6 @@
         .m-right-icons { display: flex; align-items: center; gap: 12px; }
         .mobile-cart-badge, .mobile-wishlist-badge { position: absolute; top: -4px; right: -4px; background: var(--brand-primary); color: white; font-size: 10px; font-weight: 700; min-width: 18px; height: 18px; padding: 0 3px; border-radius: 9px; display: flex; align-items: center; justify-content: center; border: 2px solid var(--surface-card); }
 
-        /* FIX: search overlay was used in markup but never styled */
         .m-search-overlay { position: fixed; inset: 0; background: var(--surface-card); z-index: 2500; display: flex; flex-direction: column; transform: translateY(-100%); transition: transform 0.25s ease; }
         .m-search-overlay.open { transform: translateY(0); }
         .m-search-header { height: var(--navbar-height-mobile); display: flex; align-items: center; gap: 12px; padding: 0 16px; border-bottom: 1px solid var(--border-subtle); flex-shrink: 0; }
@@ -157,7 +151,6 @@
         .m-categories-toggle:hover { background: var(--surface-hover); }
         .m-categories-toggle.active .chevron-wrap { transform: rotate(180deg); }
         .chevron-wrap { transition: transform 0.2s; }
-        /* FIX: m-categories-content existed only as a "display: none" toggle target but was never defined */
         .m-categories-content { display: none; flex-direction: column; margin-left: 20px; padding-left: 16px; border-left: 2px solid var(--border-subtle); margin-bottom: 8px; }
         .m-categories-content.open { display: flex; }
         .m-category-item { display: flex; align-items: center; height: 44px; padding: 0 16px; color: #333; text-decoration: none; font-size: 15px; border-radius: 8px; }
@@ -188,7 +181,6 @@
         .mobile-cart-total-amount { font-weight: 700; font-size: 20px; color: var(--brand-primary); }
         .mobile-buy-btn { width: 100%; padding: 16px; background: var(--brand-gradient); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
 
-        /* ===== AUTH MODAL (FIX: was entirely missing, markup referenced classes with no rules) ===== */
         .modal-overlay { position: fixed; inset: 0; background: rgba(28,16,9,0.45); backdrop-filter: blur(4px); z-index: 5000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.25s; padding: 20px; }
         .modal-overlay.active { opacity: 1; visibility: visible; }
         .login-container { background: var(--surface-card); border-radius: 24px; box-shadow: var(--shadow-modal); width: 100%; max-width: 900px; max-height: 90vh; display: flex; overflow: hidden; position: relative; transform: scale(0.95); transition: transform 0.25s; }
@@ -329,7 +321,6 @@
         .combo-btn-secondary { background: var(--ink); color: white; }
         .combo-btn-secondary:hover { background: #1f1108; transform: translateY(-2px); }
         .combo-btn-hidden { display: none !important; }
-        /* FIX: skeleton/empty-state classes used by JS but never defined */
         .combo-skeleton-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1.5rem 0; }
         .combo-skeleton-item { display: flex; align-items: center; gap: 1rem; background: #fff; border-radius: 80px; padding: 0.5rem 1rem 0.5rem 0.5rem; border: 1px solid #f0e2d4; }
         .combo-skeleton-img { width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%); background-size: 200% 100%; animation: skeletonShine 1.4s infinite; flex-shrink: 0; }
@@ -341,6 +332,31 @@
             .combo-pickle-img-circle, .combo-skeleton-img { width: 55px; height: 55px; }
             .combo-counter-circle { width: 65px; height: 65px; }
             .combo-section .combo-inner { padding: 48px 5vw; }
+        }
+
+        /* ===== Combo-related pickles section ===== */
+        .combo-related-section { max-width: 1440px; margin: 0 auto; padding: 40px 5vw 60px; background: #fffaf3; }
+        .combo-related-section .combo-related-inner { max-width: 1280px; margin: 0 auto; }
+        .combo-related-heading { font-family: var(--ff-display); font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 800; color: var(--ink); margin-bottom: 6px; }
+        .combo-related-sub { font-size: 0.9rem; color: var(--ash); margin-bottom: 28px; }
+        .combo-related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 24px; }
+        .combo-related-card { background: white; border-radius: var(--r-card); overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: transform 0.25s, box-shadow 0.25s; }
+        .combo-related-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+        .combo-related-img { aspect-ratio: 1/1; background: #f3ede7; }
+        .combo-related-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .combo-related-info { padding: 14px 16px; }
+        .combo-related-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .combo-related-price { color: var(--rust); font-weight: 700; font-size: 0.95rem; }
+        .combo-related-empty { text-align: center; padding: 2.5rem; color: var(--ash); font-size: 0.9rem; background: #f9f5f0; border-radius: 16px; border: 1px dashed var(--border); }
+        .combo-related-skeleton { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 24px; }
+        .combo-related-skeleton-card { background: white; border-radius: var(--r-card); overflow: hidden; border: 1px solid var(--border); }
+        .combo-related-skeleton-img { aspect-ratio: 1/1; background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%); background-size: 200% 100%; animation: skeletonShine 1.4s infinite; }
+        .combo-related-skeleton-txt { height: 14px; margin: 14px 16px 10px; border-radius: 6px; background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%); background-size: 200% 100%; animation: skeletonShine 1.4s infinite; }
+        .combo-related-skeleton-price { height: 14px; width: 40%; margin: 0 16px 14px; border-radius: 6px; background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%); background-size: 200% 100%; animation: skeletonShine 1.4s infinite; }
+        @media (max-width: 760px) {
+            .combo-related-section { padding: 24px 5vw 40px; }
+            .combo-related-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+            .combo-related-skeleton { grid-template-columns: repeat(2, 1fr); gap: 16px; }
         }
 
         /* Footer */
@@ -372,7 +388,6 @@
         .reveal { opacity: 0; transform: translateY(30px); transition: opacity .6s ease, transform .6s ease; }
         .reveal.visible { opacity: 1; transform: translateY(0); }
 
-        /* FIX: page-desktop/page-mobile visibility was never toggled by media query */
         @media (max-width: 768px) {
             .page-desktop { display: none; }
             .page-mobile { display: flex; }
@@ -463,6 +478,15 @@
                 </div>
             </div>
         </div>
+        <!-- NEW: Combo-related pickles section (desktop) -->
+        <section class="combo-related-section reveal" id="comboRelatedDesktop">
+            <div class="combo-related-inner">
+                <h3 class="combo-related-heading">🍽️ Related to Your Selection</h3>
+                <p class="combo-related-sub">Explore more pickles from the same categories</p>
+                <div id="comboRelatedGridDesktop"></div>
+                <div class="combo-related-empty" id="comboRelatedEmptyDesktop">Select pickles above to see related recommendations</div>
+            </div>
+        </section>
     </main>
     <footer class="demo-footer">
         <div class="footer-container">
@@ -497,7 +521,6 @@
         </div>
     </nav>
 
-    <!-- Search overlay -->
     <div class="m-search-overlay" id="m-search-overlay">
         <div class="m-search-header">
             <input type="text" class="m-search-input" placeholder="Search products..." id="mobile-search">
@@ -508,7 +531,6 @@
         <div class="mobile-results-container" id="mobile-search-results"></div>
     </div>
 
-    <!-- Drawer -->
     <div class="m-overlay" id="m-overlay">
         <div class="m-drawer">
             <div class="m-drawer-header">
@@ -580,7 +602,6 @@
         </div>
     </div>
 
-    <!-- Cart drawer -->
     <div class="cart-overlay" id="cart-overlay">
         <div class="cart-drawer">
             <div class="cart-drawer-header">
@@ -631,9 +652,17 @@
                 </div>
             </div>
         </div>
+        <!-- NEW: Combo-related pickles section (mobile) -->
+        <section class="combo-related-section reveal" id="comboRelatedMobile">
+            <div class="combo-related-inner">
+                <h3 class="combo-related-heading">🍽️ Related to Your Selection</h3>
+                <p class="combo-related-sub">Explore more pickles from the same categories</p>
+                <div id="comboRelatedGridMobile"></div>
+                <div class="combo-related-empty" id="comboRelatedEmptyMobile">Select pickles above to see related recommendations</div>
+            </div>
+        </section>
     </main>
 
-    <!-- FIX: mobile footer was a placeholder "..."; now complete -->
     <footer class="demo-footer">
         <div class="footer-container">
             <div class="footer-brand-col">
@@ -874,9 +903,8 @@ function renderCart() {
     if (mC) mC.textContent = `Your Cart (${count})`;
 }
 
-// ===== Navbar interactions (desktop + mobile) =====
+// ===== Navbar interactions =====
 function initNavbarUI() {
-    // Desktop cart popup
     const dCartToggle = document.getElementById('d-cart-toggle');
     const cartPopup = document.getElementById('cart-popup');
     const dProfileToggle = document.getElementById('d-profile-toggle');
@@ -896,7 +924,6 @@ function initNavbarUI() {
         if (profilePopup && !e.target.closest('.d-profile-dropdown')) profilePopup.classList.remove('show');
     });
 
-    // Mobile drawer
     const menuToggle = document.getElementById('m-menu-toggle');
     const mOverlay = document.getElementById('m-overlay');
     const drawerClose = document.getElementById('m-drawer-close');
@@ -904,7 +931,6 @@ function initNavbarUI() {
     if (drawerClose) drawerClose.addEventListener('click', () => mOverlay.classList.remove('open'));
     if (mOverlay) mOverlay.addEventListener('click', (e) => { if (e.target === mOverlay) mOverlay.classList.remove('open'); });
 
-    // Mobile categories accordion
     const catToggle = document.getElementById('m-categories-toggle');
     const catContent = document.getElementById('mobile-nav-categories');
     if (catToggle) catToggle.addEventListener('click', () => {
@@ -912,7 +938,6 @@ function initNavbarUI() {
         catContent.classList.toggle('open');
     });
 
-    // Mobile search overlay
     const searchToggle = document.getElementById('m-search-toggle');
     const searchOverlay = document.getElementById('m-search-overlay');
     const searchClose = document.getElementById('m-search-close');
@@ -922,7 +947,6 @@ function initNavbarUI() {
     });
     if (searchClose) searchClose.addEventListener('click', () => searchOverlay.classList.remove('open'));
 
-    // Mobile cart drawer
     const mCartToggle = document.getElementById('m-cart-toggle');
     const cartOverlay = document.getElementById('cart-overlay');
     const cartDrawerClose = document.getElementById('cart-drawer-close');
@@ -930,7 +954,6 @@ function initNavbarUI() {
     if (cartDrawerClose) cartDrawerClose.addEventListener('click', () => cartOverlay.classList.remove('open'));
     if (cartOverlay) cartOverlay.addEventListener('click', (e) => { if (e.target === cartOverlay) cartOverlay.classList.remove('open'); });
 
-    // Mobile profile popup
     const mobileProfileTrigger = document.getElementById('mobile-profile-trigger');
     const mProfilePopup = document.getElementById('m-profile-popup');
     if (mobileProfileTrigger) mobileProfileTrigger.addEventListener('click', (e) => {
@@ -1054,6 +1077,9 @@ function renderProductPage(product, related) {
     const price = product.price;
     const disc = pvDisc(mrp, price);
 
+    // ★ CHANGE 1: Use longName from Firestore, fallback to name
+    const displayName = product.longName || product.name || 'Product';
+
     const thumbStripHtml = images.map((img, i) => `<div class="pv-thumb ${i === 0 ? 'active' : ''}" data-idx="${i}" onclick="pvSelectImage(${i})"><img src="${img}" alt="" onerror="this.src='https://placehold.co/85'"></div>`).join('');
 
     const variantHtml = variants.length ? `
@@ -1064,6 +1090,13 @@ function renderProductPage(product, related) {
             </div>
         </div>` : '';
 
+    // ★ Also display additional Firestore fields if available
+    const extraDetailsHtml = [];
+    if (product.weight) extraDetailsHtml.push(`<span class="pv-detail-tag">⚖️ ${pvEsc(product.weight)}</span>`);
+    if (product.shelfLife) extraDetailsHtml.push(`<span class="pv-detail-tag">📅 ${pvEsc(product.shelfLife)}</span>`);
+    if (product.ingredients) extraDetailsHtml.push(`<p class="pv-desc" style="margin-top:6px;"><strong>Ingredients:</strong> ${pvEsc(product.ingredients)}</p>`);
+    const extraDetailsBlock = extraDetailsHtml.length ? `<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;">${extraDetailsHtml.join('')}</div>` : '';
+
     const relatedHtml = related.length ? `
         <div class="pv-related-section">
             <h3 class="pv-related-heading">You may also like</h3>
@@ -1072,7 +1105,7 @@ function renderProductPage(product, related) {
                     <div class="pv-related-card" onclick="window.location.href='view.html?id=${r.productId}'">
                         <div class="pv-related-img"><img src="${r.image || 'https://placehold.co/300x300/f3ede7/C0392B?text=Pickle'}" alt="" onerror="this.src='https://placehold.co/300x300'"></div>
                         <div class="pv-related-info">
-                            <div class="pv-related-name">${pvEsc(r.name)}</div>
+                            <div class="pv-related-name">${pvEsc(r.longName || r.name)}</div>
                             <div class="pv-related-price">${pvFmt(r.price)}</div>
                         </div>
                     </div>`).join('')}
@@ -1084,10 +1117,10 @@ function renderProductPage(product, related) {
             <div class="pv-container">
                 <div class="pv-gallery">
                     <div class="pv-thumb-strip">${thumbStripHtml}</div>
-                    <div class="pv-main-img"><img id="pvMainImage" src="${images[0]}" alt="${pvEsc(product.name)}" onerror="this.src='https://placehold.co/600x800'"></div>
+                    <div class="pv-main-img"><img id="pvMainImage" src="${images[0]}" alt="${pvEsc(displayName)}" onerror="this.src='https://placehold.co/600x800'"></div>
                 </div>
                 <div class="pv-info">
-                    <h1 class="pv-title">${pvEsc(product.name)}</h1>
+                    <h1 class="pv-title">${pvEsc(displayName)}</h1>
                     <div class="pv-rating"><span class="stars">${pvStars(product.rating)}</span> &nbsp;${product.rating || '4.5'} (${product.reviewCount || 0} reviews)</div>
                     <div class="pv-price-group">
                         <span class="pv-current-price">${pvFmt(price)}</span>
@@ -1095,6 +1128,7 @@ function renderProductPage(product, related) {
                         ${disc ? `<span class="pv-discount-badge">${disc}% OFF</span>` : ''}
                     </div>
                     <p class="pv-desc">${pvEsc(product.description || 'A traditional, handcrafted recipe made with the finest spices and authentic flavours.')}</p>
+                    ${extraDetailsBlock}
                     ${variantHtml}
                     <div class="pv-qty-row">
                         <div class="pv-qty-control">
@@ -1119,7 +1153,6 @@ function renderProductPage(product, related) {
     if (desktopRoot) desktopRoot.innerHTML = html;
     if (mobileRoot) mobileRoot.innerHTML = html;
 
-    // Reveal animation
     document.querySelectorAll('.pv-container').forEach(el => {
         el.classList.add('pv-reveal');
         requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('visible')));
@@ -1149,7 +1182,7 @@ function pvAddToCart() {
     else cart.push({
         uniqueId,
         productId: pvCurrentProduct.productId,
-        name: pvCurrentProduct.name + (variantLabel ? ` (${variantLabel})` : ''),
+        name: (pvCurrentProduct.longName || pvCurrentProduct.name) + (variantLabel ? ` (${variantLabel})` : ''),
         price: pvCurrentProduct.price,
         image: (pvCurrentProduct.images && pvCurrentProduct.images[0]) || pvCurrentProduct.image,
         quantity: pvQuantity
@@ -1186,6 +1219,105 @@ function comboShowSkeleton(context) {
     if (statusEl) statusEl.textContent = 'Loading combo…';
 }
 
+// ★ CHANGE 2: Update related pickles when combo selections change
+function updateComboRelatedPickles(context) {
+    const gridContainer = context === 'desktop' ? document.getElementById('comboRelatedGridDesktop') : document.getElementById('comboRelatedGridMobile');
+    const emptyEl = context === 'desktop' ? document.getElementById('comboRelatedEmptyDesktop') : document.getElementById('comboRelatedEmptyMobile');
+    if (!gridContainer || !emptyEl) return;
+
+    if (!comboSelectedIds.length || !allNavProducts.length) {
+        gridContainer.innerHTML = '';
+        emptyEl.style.display = 'block';
+        return;
+    }
+
+    // Get selected combo pickles
+    const selectedPickles = comboAllPickles.filter(p => comboSelectedIds.includes(p.id));
+    if (!selectedPickles.length) {
+        gridContainer.innerHTML = '';
+        emptyEl.style.display = 'block';
+        return;
+    }
+
+    // Find matching products in allNavProducts by name or id to get their categories
+    const selectedNames = selectedPickles.map(p => p.name.toLowerCase().trim());
+    const selectedIds = selectedPickles.map(p => p.id);
+    const matchedProducts = allNavProducts.filter(prod => {
+        const prodName = (prod.name || '').toLowerCase().trim();
+        return selectedNames.includes(prodName) || selectedIds.includes(prod.productId) || selectedIds.includes(prod._docId);
+    });
+
+    // Collect unique categories from matched products
+    const categories = new Set();
+    matchedProducts.forEach(prod => {
+        if (prod.category) categories.add(prod.category.toLowerCase().trim());
+        if (prod.categories && Array.isArray(prod.categories)) {
+            prod.categories.forEach(c => categories.add(c.toLowerCase().trim()));
+        }
+    });
+
+    // If no categories found, try fuzzy matching by name substring
+    if (!categories.size) {
+        allNavProducts.forEach(prod => {
+            const prodName = (prod.name || '').toLowerCase().trim();
+            selectedNames.forEach(selName => {
+                if (prodName.includes(selName) || selName.includes(prodName)) {
+                    if (prod.category) categories.add(prod.category.toLowerCase().trim());
+                }
+            });
+        });
+    }
+
+    if (!categories.size) {
+        gridContainer.innerHTML = '';
+        emptyEl.style.display = 'block';
+        emptyEl.textContent = 'No category data available for related recommendations.';
+        return;
+    }
+
+    // Filter allNavProducts by the collected categories, excluding already-selected combo items
+    const relatedProducts = allNavProducts.filter(prod => {
+        const prodCategory = (prod.category || '').toLowerCase().trim();
+        const prodCategories = prod.categories ? prod.categories.map(c => c.toLowerCase().trim()) : [];
+        const allCats = [prodCategory, ...prodCategories];
+        const matchesCategory = allCats.some(c => categories.has(c));
+        if (!matchesCategory) return false;
+
+        // Exclude products already in the combo selection
+        const prodName = (prod.name || '').toLowerCase().trim();
+        const isSelected = selectedNames.includes(prodName) || selectedIds.includes(prod.productId) || selectedIds.includes(prod._docId);
+        return !isSelected;
+    });
+
+    // Deduplicate by productId
+    const seen = new Set();
+    const uniqueRelated = relatedProducts.filter(prod => {
+        const key = prod.productId || prod._docId;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+    }).slice(0, 8);
+
+    if (!uniqueRelated.length) {
+        gridContainer.innerHTML = '';
+        emptyEl.style.display = 'block';
+        emptyEl.textContent = 'No related pickles found for the selected categories.';
+        return;
+    }
+
+    emptyEl.style.display = 'none';
+    gridContainer.innerHTML = `<div class="combo-related-grid">
+        ${uniqueRelated.map(r => `
+            <div class="combo-related-card" onclick="window.location.href='view.html?id=${r.productId || r._docId}'">
+                <div class="combo-related-img"><img src="${r.image || 'https://placehold.co/300x300/f3ede7/C0392B?text=Pickle'}" alt="${pvEsc(r.longName || r.name)}" onerror="this.src='https://placehold.co/300x300'"></div>
+                <div class="combo-related-info">
+                    <div class="combo-related-name">${pvEsc(r.longName || r.name)}</div>
+                    <div class="combo-related-price">${pvFmt(r.price)}</div>
+                </div>
+            </div>`).join('')}
+    </div>`;
+}
+
 function comboUpdateUI(context) {
     let count = comboSelectedIds.length;
     let selectedCountEl = context === 'desktop' ? document.getElementById('comboSelectedCountDesktop') : document.getElementById('comboSelectedCountMobile');
@@ -1210,6 +1342,10 @@ function comboUpdateUI(context) {
         let remaining = comboMaxSelect - count;
         if (statusMsgEl) statusMsgEl.textContent = remaining > 0 ? `Select ${remaining} more pickle${remaining > 1 ? 's' : ''} to unlock.` : '';
     }
+
+    // ★ Update related pickles for both contexts
+    updateComboRelatedPickles('desktop');
+    updateComboRelatedPickles('mobile');
 }
 
 function comboTogglePickle(pickleId, context) {
@@ -1220,8 +1356,6 @@ function comboTogglePickle(pickleId, context) {
     } else {
         if (comboSelectedIds.length >= comboMaxSelect) {
             if (statusMsgEl) statusMsgEl.textContent = `⚠️ You can only select ${comboMaxSelect} pickles. Remove one first.`;
-            // FIX: previous version compared selectedIds.length to comboMaxSelect AFTER nothing changed,
-            // so the warning could be overwritten incorrectly. Now restores the correct remaining-count message.
             setTimeout(() => {
                 let remaining = comboMaxSelect - comboSelectedIds.length;
                 if (statusMsgEl) statusMsgEl.textContent = remaining > 0 ? `Select ${remaining} more pickle${remaining > 1 ? 's' : ''} to unlock.` : '🎉 Perfect combo! You can now checkout.';
@@ -1290,186 +1424,5 @@ async function comboFetchFromFirestore() {
         });
         comboRenderGrid('desktop');
         comboRenderGrid('mobile');
-    } catch (err) {
-        console.error('Combo error:', err);
-        ['Desktop', 'Mobile'].forEach(suffix => {
-            let container = document.getElementById(`comboPickleGridContainer${suffix}`);
-            if (container) container.innerHTML = `<div class="empty-state">⚠️ Could not load combo data. Please check back later.</div>`;
-            let status = document.getElementById(`comboStatusMsg${suffix}`);
-            if (status) status.textContent = '';
-        });
-    }
-}
-
-function initComboSection() {
-    comboShowSkeleton('desktop');
-    comboShowSkeleton('mobile');
-    comboFetchFromFirestore();
-    ['Desktop', 'Mobile'].forEach(suffix => {
-        let addBtn = document.getElementById(`comboAddToCartBtn${suffix}`);
-        let buyBtn = document.getElementById(`comboBuyNowBtn${suffix}`);
-        if (addBtn) addBtn.addEventListener('click', () => {
-            if (comboSelectedIds.length !== comboMaxSelect) { showToast(`Please select exactly ${comboMaxSelect} pickles.`); return; }
-            let chosen = comboAllPickles.filter(p => comboSelectedIds.includes(p.id));
-            chosen.forEach(p => {
-                let uniqueId = `combo-${p.id}`;
-                let existing = cart.find(i => String(i.uniqueId) === String(uniqueId));
-                if (existing) existing.quantity += 1;
-                else cart.push({ uniqueId, productId: p.id, name: `${p.name} (Combo)`, price: parseInt(String(p.price).replace(/[^\d]/g, '')) || 199, image: p.imageUrl, quantity: 1 });
-            });
-            saveCart(true);
-            renderCart();
-            showToast('Combo added to cart!');
-        });
-        if (buyBtn) buyBtn.addEventListener('click', () => {
-            if (comboSelectedIds.length !== comboMaxSelect) { showToast(`Select ${comboMaxSelect} pickles to continue.`); return; }
-            if (addBtn) addBtn.click();
-            window.location.href = 'checkout.html';
-        });
-    });
-}
-
-// ===== Live search =====
-function initLiveSearch() {
-    async function fetchNavProducts() {
-        try {
-            let snap = await productsDb.collectionGroup('products').get();
-            let map = new Map();
-            snap.docs.forEach(d => { let data = d.data(); if (data.productId && !map.has(data.productId)) map.set(data.productId, data); });
-            allNavProducts = Array.from(map.values());
-        } catch(e) { console.error(e); }
-    }
-    fetchNavProducts();
-    const performSearch = (q, cid) => {
-        let el = document.getElementById(cid);
-        if (!el) return;
-        if (!q || q.length < 2) { el.classList.remove('show'); el.innerHTML = ''; return; }
-        let res = allNavProducts.filter(p => p.name?.toLowerCase().includes(q.toLowerCase())).slice(0, 6);
-        el.innerHTML = res.length
-            ? res.map(p => `<a href="view.html?id=${p.productId}" class="search-result-item"><img src="${p.image||''}" class="search-result-img" onerror="this.src='https://placehold.co/48'"><div class="search-result-info"><div class="search-result-name">${pvEsc(p.name)}</div><div class="search-result-price">₹${p.price}</div></div></a>`).join('')
-            : '<div class="search-no-results">No products found</div>';
-        if (cid === 'desktop-search-results') el.classList.add('show');
-    };
-    let dInput = document.getElementById('desktop-search'), mInput = document.getElementById('mobile-search');
-    if (dInput) dInput.addEventListener('input', (e) => performSearch(e.target.value, 'desktop-search-results'));
-    if (mInput) mInput.addEventListener('input', (e) => performSearch(e.target.value, 'mobile-search-results'));
-    document.addEventListener('click', (e) => { if (!e.target.closest('.d-search-container')) document.getElementById('desktop-search-results')?.classList.remove('show'); });
-}
-
-// ===== Auth modal =====
-function initAuthModal() {
-    const overlay = document.getElementById('login-modal-overlay');
-    const closeBtn = document.getElementById('close-modal-btn');
-    const showLoginBtn = document.getElementById('show-login-btn');
-    const showSignupBtn = document.getElementById('show-signup-btn');
-    const loginForm = document.getElementById('login-form');
-    const signupForm = document.getElementById('signup-form');
-    const loader = document.getElementById('loader');
-    const switchToSignup = document.querySelector('.switch-to-signup');
-    const switchToLogin = document.querySelector('.switch-to-login');
-    const googleBtn = document.getElementById('google-login-btn');
-    const forgotLink = document.getElementById('forgot-password-link');
-
-    function showLogin() {
-        showLoginBtn.classList.add('active'); showSignupBtn.classList.remove('active');
-        loginForm.classList.add('active'); signupForm.classList.remove('active');
-    }
-    function showSignup() {
-        showSignupBtn.classList.add('active'); showLoginBtn.classList.remove('active');
-        signupForm.classList.add('active'); loginForm.classList.remove('active');
-    }
-
-    closeBtn?.addEventListener('click', closeAuthModal);
-    overlay?.addEventListener('click', (e) => { if (e.target === overlay) closeAuthModal(); });
-    showLoginBtn?.addEventListener('click', showLogin);
-    showSignupBtn?.addEventListener('click', showSignup);
-    switchToSignup?.addEventListener('click', (e) => { e.preventDefault(); showSignup(); });
-    switchToLogin?.addEventListener('click', (e) => { e.preventDefault(); showLogin(); });
-
-    loginForm?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        loader.classList.add('active');
-        try {
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            await auth.signInWithEmailAndPassword(email, password);
-            closeAuthModal();
-            showToast('Signed in successfully!');
-        } catch(err) {
-            showToast(err.message || 'Sign in failed');
-        } finally {
-            loader.classList.remove('active');
-        }
-    });
-
-    signupForm?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        loader.classList.add('active');
-        try {
-            const name = document.getElementById('signup-name').value;
-            const email = document.getElementById('signup-email').value;
-            const password = document.getElementById('signup-password').value;
-            const cred = await auth.createUserWithEmailAndPassword(email, password);
-            await cred.user.updateProfile({ displayName: name });
-            await db.collection('users').doc(cred.user.uid).set({ name, email, cart: [], wishlist: [] }, { merge: true });
-            closeAuthModal();
-            showToast('Account created!');
-        } catch(err) {
-            showToast(err.message || 'Sign up failed');
-        } finally {
-            loader.classList.remove('active');
-        }
-    });
-
-    googleBtn?.addEventListener('click', async () => {
-        loader.classList.add('active');
-        try {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            const result = await auth.signInWithPopup(provider);
-            await db.collection('users').doc(result.user.uid).set({ name: result.user.displayName, email: result.user.email }, { merge: true });
-            closeAuthModal();
-            showToast('Signed in with Google!');
-        } catch(err) {
-            showToast(err.message || 'Google sign-in failed');
-        } finally {
-            loader.classList.remove('active');
-        }
-    });
-
-    forgotLink?.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('login-email').value;
-        if (!email) { showToast('Enter your email first'); return; }
-        try {
-            await auth.sendPasswordResetEmail(email);
-            showToast('Password reset email sent!');
-        } catch(err) {
-            showToast(err.message || 'Could not send reset email');
-        }
-    });
-}
-
-// ===== Scroll reveal =====
-function initRevealObserver() {
-    const obs = new IntersectionObserver((entries) => {
-        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.15 });
-    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-}
-
-// ===== Init =====
-document.addEventListener('DOMContentLoaded', () => {
-    initNavbarUI();
-    checkAuth();
-    renderCart();
-    updateWishlistCount();
-    loadCategories();
-    initLiveSearch();
-    initAuthModal();
-    loadProductPage();
-    initComboSection();
-    initRevealObserver();
-});
-</script>
-</body>
-</html>
+        // Initialize related pickles (empty state)
+        updateCombo
