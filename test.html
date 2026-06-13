@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy NonVeg Pickles | Categories & Products from Firestore</title>
+    <title>Happy NonVeg Pickles | Artisan Pickles by Category</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* --- GLOBAL CSS VARIABLES (preserved original style) --- */
+        /* --- GLOBAL CSS VARIABLES --- */
         :root {
             --primary-red: #e02828;
             --bg-color: #f8f9fa;
@@ -49,7 +49,7 @@
         .sort-container { display: flex; align-items: center; gap: 10px; font-size: 14px; }
         .sort-container select { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; cursor: pointer; }
 
-        /* --- MAIN LAYOUT: LEFT FILTERS | RIGHT CONTENT (category sections) --- */
+        /* --- MAIN LAYOUT: LEFT FILTERS | RIGHT CONTENT --- */
         .shop-container {
             display: grid;
             grid-template-columns: 280px 1fr;
@@ -59,7 +59,7 @@
             padding: 0 40px 60px 40px;
         }
 
-        /* SIDEBAR FILTERS (simplified: only price & new arrival) */
+        /* SIDEBAR FILTERS */
         .sidebar {
             background: var(--card-bg);
             border-radius: 12px;
@@ -128,7 +128,7 @@
         .no-results { text-align: center; padding: 60px; background: #fff4eb; border-radius: 24px; color: #7c5e42; grid-column: 1/-1; }
         .empty-category-message { text-align: center; padding: 30px; background: #f9f9f9; border-radius: 20px; color: #888; font-style: italic; margin-top: 10px; }
 
-        /* FOOTER (original design) */
+        /* FOOTER */
         .site-footer {
             background-color: var(--footer-bg);
             color: var(--footer-text);
@@ -181,7 +181,7 @@
 </div>
 
 <div class="shop-container">
-    <!-- LEFT SIDEBAR: FILTERS (simplified: price + new arrival only) -->
+    <!-- LEFT SIDEBAR: FILTERS -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <h2>Filters</h2>
@@ -205,16 +205,16 @@
         </div>
         <div class="filter-section" style="border-bottom: none;">
             <div class="filter-title" style="font-size:13px; color:#e02828;">📦 Data from Firestore</div>
-            <div style="font-size:12px; color:gray;">Categories → products[] → product details</div>
+            <div style="font-size:12px; color:gray;">Categories → products[] → Products collection</div>
         </div>
     </aside>
 
     <!-- RIGHT SIDE: CATEGORY SECTIONS DYNAMICALLY RENDERED -->
     <main class="main-content">
         <h1>🔥 Artisan Pickles <span style="color: #e02828;">by Category</span></h1>
-        <div class="subhead">Loaded from Firestore: categories collection + products collection (via product IDs)</div>
+        <div class="subhead">Loaded from Firestore: categories collection (with `products` array) + products collection (full details)</div>
         <div id="categoriesContainer">
-            <div class="loading-spinner">🥒 Loading categories & pickles from Firestore (categories → products[] → product details)...</div>
+            <div class="loading-spinner">🥒 Loading categories & pickles from Firestore...</div>
         </div>
     </main>
 </div>
@@ -275,7 +275,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Firebase config (same as provided)
+    // Firebase config
     const firebaseConfig = {
         apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
         authDomain: "pickle-fdc54.firebaseapp.com",
@@ -288,13 +288,10 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // ---------- DATA STRUCTURE ----------
-    // categoriesData will hold: [{ id, name, productIds: [] }]
-    // productsMap: Map<productId, productObject>
-    let categoriesData = [];         // raw categories from Firestore (with productIds)
-    let productsMap = new Map();      // key: product doc id, value: product details { name, price, isNew, emoji? }
-    let allProductsFlat = [];         // used for price slider max & quick lookups
-
+    // ---------- DATA STRUCTURES ----------
+    let categoriesData = [];           // array of { id, name, products: [productObj] }
+    let allProductsFlat = [];          // flat list of all products (for price slider max)
+    
     // UI state
     let activeFilters = {
         priceMax: 500,
@@ -311,7 +308,7 @@
     const clearBtn = document.getElementById("clearAllBtn");
     const newOnlyCheck = document.getElementById("newOnlyCheckbox");
 
-    // Helper: emoji based on product name (same as original)
+    // Helper: emoji based on product name
     function getEmojiForName(name) {
         const emojiMap = { garlic: "🧄", tomato: "🍅", mixed: "🥕", mango: "🥭", lemon: "🍋", chicken: "🍗", mutton: "🍖", prawn: "🦐", egg: "🥚", chilli: "🌶️", ginger: "🫚", lime: "🍈", pickle: "🥒", fish: "🐟", meat: "🍖" };
         const lower = name.toLowerCase();
@@ -332,13 +329,12 @@
         });
     }
 
-    // Step 1: Fetch all categories from "categories" collection
+    // Fetch all categories and their products array
     async function fetchCategories() {
         const categoriesRef = collection(db, "categories");
         const snapshot = await getDocs(categoriesRef);
-        if (snapshot.empty) {
-            throw new Error("No categories found in 'categories' collection. Please create documents with 'name' and 'products' (array of product IDs).");
-        }
+        if (snapshot.empty) throw new Error("No categories found in 'categories' collection.");
+        
         const categories = [];
         snapshot.forEach(doc => {
             const data = doc.data();
@@ -353,27 +349,25 @@
         return categories;
     }
 
-    // Step 2: Fetch all products from "products" collection (to resolve IDs)
+    // Fetch all products from 'products' collection
     async function fetchAllProducts() {
         const productsRef = collection(db, "products");
         const snapshot = await getDocs(productsRef);
-        const products = new Map();
-        if (!snapshot.empty) {
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const name = data.name || "Unnamed Product";
-                let price = typeof data.price === 'number' ? data.price : (parseInt(data.price) || 99);
-                const isNew = data.isNew === true;
-                products.set(doc.id, {
-                    id: doc.id,
-                    name: name,
-                    price: price,
-                    isNew: isNew,
-                    emoji: getEmojiForName(name)
-                });
+        const productsMap = new Map();
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const name = data.name || data.longName || "Unnamed Product";
+            let price = typeof data.price === 'number' ? data.price : (parseInt(data.price) || 99);
+            const isNew = data.isNew === true;
+            productsMap.set(doc.id, {
+                id: doc.id,
+                name: name,
+                price: price,
+                isNew: isNew,
+                emoji: getEmojiForName(name)
             });
-        }
-        return products;
+        });
+        return productsMap;
     }
 
     // Combine categories with actual product objects
@@ -385,7 +379,7 @@
                 if (product) {
                     productObjects.push(product);
                 } else {
-                    console.warn(`Product ID ${prodId} not found in products collection for category ${cat.name}`);
+                    console.warn(`Product ID "${prodId}" not found in products collection for category "${cat.name}"`);
                 }
             }
             return {
@@ -393,8 +387,7 @@
                 name: cat.name,
                 products: productObjects
             };
-        }).filter(cat => cat.products.length > 0); // optional: keep categories with at least one product, but we still show empty? better show empty message.
-        // but we keep all categories, will show "no products after filter" message.
+        }).filter(cat => cat.products.length > 0);
     }
 
     // Apply filters & sort to a list of products
@@ -404,7 +397,6 @@
             if (activeFilters.newOnly && !p.isNew) return false;
             return true;
         });
-        // Sorting
         switch (currentSort) {
             case "price-low":
                 filtered.sort((a,b) => a.price - b.price);
@@ -421,10 +413,10 @@
         return filtered;
     }
 
-    // Render all category sections based on current filters & sort
-    function renderCategories(originalCategoryData) {
-        if (!originalCategoryData || originalCategoryData.length === 0) {
-            categoriesContainer.innerHTML = `<div class="no-results">⚠️ No categories found. Make sure 'categories' collection exists with documents having 'name' and 'products' (array).</div>`;
+    // Render all category sections
+    function renderCategories() {
+        if (!categoriesData.length) {
+            categoriesContainer.innerHTML = `<div class="no-results">⚠️ No categories found. Make sure 'categories' collection exists with documents having 'name' and 'products' array.</div>`;
             productCountSpan.innerText = "0";
             return;
         }
@@ -432,12 +424,11 @@
         let totalDisplayedProducts = 0;
         let html = "";
 
-        for (let category of originalCategoryData) {
+        for (let category of categoriesData) {
             const filteredProducts = filterAndSortProducts(category.products);
             totalDisplayedProducts += filteredProducts.length;
             
             if (filteredProducts.length === 0) {
-                // Show category header but with empty message (optional)
                 html += `
                     <div class="category-section">
                         <h2 class="category-title">${escapeHtml(category.name)}</h2>
@@ -493,11 +484,11 @@
     // Refresh everything: re-filter and re-render categories
     function refreshUI() {
         if (!categoriesData.length) return;
-        renderCategories(categoriesData);
+        renderCategories();
         updatePriceLabel();
     }
 
-    // Reset all filters (price max to highest product price, newOnly false, sort default)
+    // Reset all filters
     function resetAllFilters() {
         if (allProductsFlat.length === 0) return;
         const maxPrice = Math.max(...allProductsFlat.map(p => p.price), 500);
@@ -530,7 +521,7 @@
         });
     }
 
-    // Main initialization: fetch categories → fetch products → combine → render
+    // Main initialization
     async function init() {
         try {
             categoriesContainer.innerHTML = `<div class="loading-spinner">📦 Loading categories from Firestore 'categories' collection ...</div>`;
@@ -541,17 +532,13 @@
             
             // 2. Fetch all products from 'products' collection
             categoriesContainer.innerHTML = `<div class="loading-spinner">🥫 Loading product details from 'products' collection ...</div>`;
-            const fetchedProductsMap = await fetchAllProducts();
-            if (fetchedProductsMap.size === 0) {
-                throw new Error("No products found in 'products' collection. Please add product documents with 'name', 'price' fields.");
-            }
-            productsMap = fetchedProductsMap;
+            const productsMap = await fetchAllProducts();
+            if (productsMap.size === 0) throw new Error("No products found in 'products' collection.");
             
             // 3. Build full categories array with actual product objects
             const categoriesWithProducts = buildCategoryProductsArray(rawCategories, productsMap);
-            if (categoriesWithProducts.length === 0) {
-                throw new Error("No categories contain valid product IDs (matching products in 'products' collection).");
-            }
+            if (categoriesWithProducts.length === 0) throw new Error("No categories contain valid product IDs matching products in 'products' collection.");
+            
             categoriesData = categoriesWithProducts;
             
             // 4. Build flat list of all products for price slider max
