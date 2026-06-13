@@ -393,8 +393,6 @@
             font-family: var(--pg-ff-body);
             font-size: 15px;
             line-height: 1.5;
-            /* Push content below the fixed dashboard navbar instead of the
-               page's own nav (which has been removed). */
             padding-top: var(--header-height-desktop);
         }
         @media (max-width: 768px) {
@@ -419,10 +417,10 @@
         .pg-root .pg-skeleton-price { height: 2.5rem; width: 50%; margin-bottom: 20px; }
         .pg-root .pg-skeleton-variant { height: 70px; width: 120px; border-radius: 14px; }
         .pg-root .pg-skeleton-btn { height: 48px; width: 100%; border-radius: 12px; margin-bottom: 12px; }
-        .pg-root .pg-skeleton-image { width: 100%; aspect-ratio: 1 / 1; border-radius: var(--pg-r-card); }
+        .pg-root .pg-skeleton-image { width: 100%; aspect-ratio: 4 / 5; border-radius: var(--pg-r-card); }
         .pg-root .pg-skeleton-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 28px; margin-top: 40px; }
         .pg-root .pg-skeleton-card { background: white; border-radius: var(--pg-r-card); overflow: hidden; border: 1px solid var(--pg-border); }
-        .pg-root .pg-skeleton-card-img { width: 100%; aspect-ratio: 1 / 1; background: #e9dfd5; }
+        .pg-root .pg-skeleton-card-img { width: 100%; aspect-ratio: 4 / 5; background: #e9dfd5; }
         .pg-root .pg-skeleton-card-text { padding: 14px; }
 
         /* PRODUCT CONTAINER */
@@ -451,8 +449,8 @@
             flex-shrink: 0;
         }
         .pg-root .pg-thumbnail {
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            aspect-ratio: 4 / 5;
             border-radius: 14px;
             overflow: hidden;
             cursor: pointer;
@@ -464,20 +462,20 @@
         .pg-root .pg-thumbnail.active { border-color: var(--pg-rust); transform: scale(0.96); }
         .pg-root .pg-main-image {
             flex: 1;
-            aspect-ratio: 1 / 1;
+            aspect-ratio: 4 / 5;
             background: #f0e7de;
             border-radius: var(--pg-r-card);
             overflow: hidden;
             box-shadow: var(--pg-shadow-sm);
         }
-        .pg-root .pg-main-image img { width: 500px; height: 725px; object-fit: cover; }
+        .pg-root .pg-main-image img { width: 100%; height: 100%; object-fit: cover; }
 
         /* MOBILE CAROUSEL */
         .pg-root .pg-mobile-carousel {
             display: none;
             position: relative;
             width: 100%;
-            aspect-ratio: 1 / 1;
+            aspect-ratio: 4 / 5;
             background: #f0e7de;
             border-radius: var(--pg-r-card);
             overflow: hidden;
@@ -942,7 +940,7 @@
             position: relative;
         }
         .pg-root .pg-related-card:hover { transform: translateY(-5px); box-shadow: var(--pg-shadow-sm); }
-        .pg-root .pg-related-img { aspect-ratio: 1 / 1; background: #f3ede7; }
+        .pg-root .pg-related-img { aspect-ratio: 4 / 5; background: #f3ede7; }
         .pg-root .pg-related-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .pg-root .pg-related-info { padding: 14px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
         .pg-root .pg-related-name { font-weight: 700; font-size: 0.95rem; }
@@ -1338,8 +1336,6 @@
 
 <!-- ═══════════════════════════════════════════════════════
      PAGE CONTENT (Product Detail) — wrapped in .pg-root
-     Original <nav> from this file removed (dashboard navbar
-     replaces it). All page classes/IDs prefixed "pg-".
 ═══════════════════════════════════════════════════════ -->
 <div class="pg-root">
 <main id="pg-productDetailRoot">
@@ -1348,9 +1344,9 @@
     <div class="pg-product-container" style="pointer-events: none;">
       <div class="pg-product-gallery pg-desktop-gallery">
         <div class="pg-thumbnail-strip">
-          <div class="pg-skeleton" style="width:100px; height:100px; border-radius:14px;"></div>
-          <div class="pg-skeleton" style="width:100px; height:100px; border-radius:14px;"></div>
-          <div class="pg-skeleton" style="width:100px; height:100px; border-radius:14px;"></div>
+          <div class="pg-skeleton" style="width:80px; aspect-ratio:4/5; border-radius:14px;"></div>
+          <div class="pg-skeleton" style="width:80px; aspect-ratio:4/5; border-radius:14px;"></div>
+          <div class="pg-skeleton" style="width:80px; aspect-ratio:4/5; border-radius:14px;"></div>
         </div>
         <div class="pg-main-image pg-skeleton"></div>
       </div>
