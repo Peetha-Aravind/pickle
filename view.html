@@ -428,8 +428,8 @@
         /* PRODUCT CONTAINER */
         .pg-root .pg-product-container {
             max-width: 1400px;
-            margin: 0 auto 60px;
-            padding: 24px 5vw 0;
+            margin: 30px auto 60px;
+            padding: 0 5vw;
             display: grid;
             grid-template-columns: 0.85fr 1.15fr;
             gap: 56px;
@@ -438,7 +438,7 @@
 
         /* DESKTOP GALLERY */
         .pg-root .pg-product-gallery.pg-desktop-gallery {
-            position: sticky; top: calc(var(--header-height-desktop) + 20px);
+            position: sticky; top: calc(var(--header-height-desktop) + 30px);
             display: flex;
             gap: 24px;
             flex-direction: row;
@@ -943,7 +943,7 @@
         }
         .pg-root .pg-related-card:hover { transform: translateY(-5px); box-shadow: var(--pg-shadow-sm); }
         .pg-root .pg-related-img { aspect-ratio: 1 / 1; background: #f3ede7; }
-        .pg-root .pg-related-img img { width: 100%; height: 100%; object-fit: cover; }
+        .pg-root .pg-related-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .pg-root .pg-related-info { padding: 14px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
         .pg-root .pg-related-name { font-weight: 700; font-size: 0.95rem; }
         .pg-root .pg-related-pricing { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin: 4px 0; }
@@ -977,10 +977,10 @@
 <div class="page-desktop">
     <nav class="d-navbar">
         <div class="d-navbar-container">
-            <img class="d-navbar-logo" src="./assets/logo.png" alt="Happy NonVeg Pickle" onclick="window.location.href='index.html'" />
+            <img class="d-navbar-logo" src="./assets/logo.png" alt="Vastramaya Logo" onclick="window.location.href='index.html'" />
 
             <div class="d-nav-links">
-                <a href="landing-page.html" class="d-nav-link active">Home</a>
+                <a href="index.html" class="d-nav-link active">Home</a>
                 <a href="shop.html" class="d-nav-link">Shop</a>
                 <div class="d-categories-dropdown">
                     <a href="javascript:void(0)" class="d-nav-link" style="cursor:default">Categories</a>
@@ -1096,7 +1096,7 @@
                 <img src="./assets/menu-fill.svg" class="icon-fill" alt="">
             </span>
         </button>
-        <img class="d-navbar-logo" src="./assets/logo.png" alt="Happy NonVeg Pickles" onclick="window.location.href='index.html'" />
+        <img class="d-navbar-logo" src="./assets/logo.png" alt="Vastramaya Logo" onclick="window.location.href='index.html'" />
         <div class="m-right-icons">
             <button class="m-icon-btn icon-trigger" id="m-search-toggle" aria-label="Search">
                 <span class="icon-wrap">
@@ -1144,7 +1144,7 @@
             <nav class="m-drawer-nav">
                 <div class="nav-section">
 
-                    <a href="landing-page.html" class="m-nav-link active icon-trigger">
+                    <a href="index.html" class="m-nav-link active icon-trigger">
                         <div class="m-link-content">
                             <span class="icon-wrap">
                                 <img src="./assets/home.svg" class="icon-default" alt="">
@@ -1298,10 +1298,10 @@
             </span>
         </button>
         <div class="info-panel">
-            <div class="info-panel-header">Happy NoonVeg Pickles</div>
+            <div class="info-panel-header">Vastramaya</div>
             <div class="info-panel-text">
                 <h2>Heritage meets Elegance.</h2>
-                <p>Sign in to access exclusive collections, personalized quality, and manage your bespoke orders.</p>
+                <p>Sign in to access exclusive collections, personalized styling, and manage your bespoke orders.</p>
             </div>
         </div>
         <div class="form-panel-wrapper">
@@ -1343,13 +1343,13 @@
                             <svg class="google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.222,0-9.655-3.344-11.303-7.962l-6.571,4.819C9.656,40.909,16.318,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.089,5.571l6.19,5.238C42.012,36.494,44,30.638,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>
                             Sign in with Google
                         </button>
-                        <p class="switch-form-text">New to Happy NonVeg Pickles? <a class="switch-to-signup">Create Account</a></p>
+                        <p class="switch-form-text">New to Vastramaya? <a class="switch-to-signup">Create Account</a></p>
                     </form>
 
                     <!-- SIGNUP FORM -->
                     <form id="signup-form">
                         <div class="form-header">
-                            <h2>Join Happy NonVeg pickles</h2>
+                            <h2>Join Vastramaya</h2>
                             <p>Register to explore our exclusive collections.</p>
                         </div>
                         <div class="input-group">
@@ -1452,12 +1452,10 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-window.db = db;
-window.auth = auth;
 
-window.cart = JSON.parse(localStorage.getItem('vastramaya_cart')) || [];
-window.wishlist = [];
-window.currentUser = null;
+let cart = JSON.parse(localStorage.getItem('vastramaya_cart')) || [];
+let wishlist = [];
+let currentUser = null;
 let wishlistUnsubscribe = null;
 let allProducts = [];
 
@@ -1537,23 +1535,22 @@ function initLiveSearch() {
 // --- WISHLIST ---
 function handleWishlistClick(e) {
     e.preventDefault();
-    if (window.currentUser) window.location.href = 'wishlist.html';
+    if (currentUser) window.location.href = 'wishlist.html';
     else openAuthModal();
 }
 
 function updateWishlistCount() {
-    const count = window.wishlist.length;
+    const count = wishlist.length;
     const dBadge = document.getElementById('wishlist-badge-desktop');
     const mBadge = document.getElementById('wishlist-badge-mobile');
     if (dBadge) { dBadge.textContent = count; dBadge.style.display = count > 0 ? 'flex' : 'none'; }
     if (mBadge) { mBadge.textContent = count; mBadge.style.display = count > 0 ? 'flex' : 'none'; }
 }
-window.updateWishlistCount = updateWishlistCount;
 
 function setupWishlistListener(user) {
     if (wishlistUnsubscribe) wishlistUnsubscribe();
     wishlistUnsubscribe = db.collection('users').doc(user.uid).onSnapshot(doc => {
-        window.wishlist = (doc.exists && doc.data().wishlist) ? doc.data().wishlist : [];
+        wishlist = (doc.exists && doc.data().wishlist) ? doc.data().wishlist : [];
         updateWishlistCount();
     }, err => console.error("Wishlist sync error:", err));
 }
@@ -1668,7 +1665,7 @@ async function loadCategories() {
 
 function checkAuth() {
     auth.onAuthStateChanged(async user => {
-        window.currentUser = user;
+        currentUser = user;
         const triggerDesktop = document.getElementById('login-trigger-desktop');
         const triggerMobile = document.getElementById('mobile-profile-trigger');
         const mProfilePopup = document.getElementById('m-profile-popup');
@@ -1694,7 +1691,7 @@ function checkAuth() {
         } else {
             authOnlyLinks.forEach(el => el.classList.add('auth-hidden'));
             if (wishlistUnsubscribe) { wishlistUnsubscribe(); wishlistUnsubscribe = null; }
-            window.wishlist = []; updateWishlistCount();
+            wishlist = []; updateWishlistCount();
             document.getElementById('user-name').textContent = "Guest User";
             document.getElementById('user-email').textContent = "Sign in to sync";
             triggerDesktop.innerHTML = `<span class="icon-wrap"><img src="./assets/login.svg" class="icon-default" alt=""><img src="./assets/login-fill.svg" class="icon-fill" alt=""></span> Sign In`;
@@ -1760,45 +1757,42 @@ function initNavbarUI() {
 
 // --- CART LOGIC ---
 function removeFromCart(uniqueId) {
-    window.cart = window.cart.filter(item => String(item.uniqueId) !== String(uniqueId));
+    cart = cart.filter(item => String(item.uniqueId) !== String(uniqueId));
     saveCart(true); renderCart();
 }
-window.removeFromCart = removeFromCart;
 
 function updateQuantity(uniqueId, change) {
-    const item = window.cart.find(item => String(item.uniqueId) === String(uniqueId));
+    const item = cart.find(item => String(item.uniqueId) === String(uniqueId));
     if (item) {
         item.quantity += change;
         if (item.quantity <= 0) removeFromCart(uniqueId);
         else { saveCart(true); renderCart(); }
     }
 }
-window.updateQuantity = updateQuantity;
 
 async function syncCartToFirestore() {
-    if (!window.currentUser) return;
+    if (!currentUser) return;
     try {
-        const doc = await db.collection('users').doc(window.currentUser.uid).get();
+        const doc = await db.collection('users').doc(currentUser.uid).get();
         if (doc.exists && doc.data().cart) {
-            if (window.cart.length === 0) { window.cart = doc.data().cart; saveCart(false); renderCart(); }
+            if (cart.length === 0) { cart = doc.data().cart; saveCart(false); renderCart(); }
             else {
                 const dbCart = doc.data().cart || [];
-                window.cart.forEach(localItem => {
+                cart.forEach(localItem => {
                     const existing = dbCart.find(d => String(d.uniqueId) === String(localItem.uniqueId));
                     if (existing) existing.quantity = Math.max(existing.quantity, localItem.quantity);
                     else dbCart.push(localItem);
                 });
-                window.cart = dbCart; saveCart(true); renderCart();
+                cart = dbCart; saveCart(true); renderCart();
             }
-        } else if (window.cart.length > 0) saveCart(true);
+        } else if (cart.length > 0) saveCart(true);
     } catch (e) { console.error("Sync error", e); }
 }
 
 function saveCart(syncDB) {
-    localStorage.setItem('vastramaya_cart', JSON.stringify(window.cart));
-    if (syncDB && window.currentUser) db.collection('users').doc(window.currentUser.uid).update({ cart: window.cart }).catch(err => console.log("Error syncing cart", err));
+    localStorage.setItem('vastramaya_cart', JSON.stringify(cart));
+    if (syncDB && currentUser) db.collection('users').doc(currentUser.uid).update({ cart }).catch(err => console.log("Error syncing cart", err));
 }
-window.saveCart = saveCart;
 
 function renderCart() {
     const desktopBody = document.getElementById('cart-items-desktop');
@@ -1811,7 +1805,6 @@ function renderCart() {
     const countMobile = document.getElementById('cart-count-mobile');
 
     let total = 0, count = 0, html = '';
-    const cart = window.cart;
 
     if (cart.length === 0) {
         html = '<div class="empty-cart-msg">Your cart is empty</div>';
@@ -1859,6 +1852,40 @@ function showToast(msg) {
     container.appendChild(el);
     setTimeout(() => el.remove(), 3000);
 }
+
+// ─────────────────────────────────────────────────────────
+// GLOBAL BRIDGE API
+// Exposes cart/wishlist operations on `window` so the product
+// page's module script (separate scope) can update the shared
+// cart/wishlist state and have the navbar badges refresh.
+// ─────────────────────────────────────────────────────────
+window.vastramayaAddToCart = function(item) {
+    const existing = cart.find(c => String(c.uniqueId) === String(item.uniqueId));
+    if (existing) {
+        existing.quantity += item.quantity;
+    } else {
+        cart.push(item);
+    }
+    saveCart(true);
+    renderCart();
+};
+
+window.vastramayaAddToWishlist = function(item) {
+    const existsAlready = wishlist.some(w => String(w.productId) === String(item.productId));
+    if (existsAlready) return { added: false, signedIn: !!currentUser };
+
+    wishlist.push(item);
+    updateWishlistCount();
+
+    if (currentUser) {
+        db.collection('users').doc(currentUser.uid).set({ wishlist }, { merge: true })
+            .catch(err => console.error("Wishlist sync error:", err));
+    }
+    return { added: true, signedIn: !!currentUser };
+};
+
+window.vastramayaShowToast = showToast;
+
 </script>
 
 <!-- ═══════════════════════════════════════════════════════
@@ -2029,7 +2056,7 @@ function showToast(msg) {
             const price = firstVar.price || prod.price || 0;
             const mrp = firstVar.mrp || prod.mrp || 0;
             const discPercent = pgGetDiscountPercent(mrp, price);
-            return `<div class="pg-related-card" data-id="${prod.id}">${discPercent ? `<div class="pg-related-discount-tag">${discPercent}% OFF</div>` : ''}<div class="pg-related-img"><img src="${prod.mainImage || 'https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle'}" alt="${prod.name}" loading="lazy"></div><div class="pg-related-info"><div class="pg-related-name">${pgEscapeHtml(prod.name)}</div><div class="pg-related-stars">${pgRenderStars(prod.rating || 4.5)}</div><div class="pg-related-pricing"><span class="pg-related-price">${pgFormatPrice(price)}</span>${mrp && mrp > price ? `<span class="pg-related-mrp">${pgFormatPrice(mrp)}</span>` : ''}</div><div class="pg-related-view-btn">View Product</div></div></div>`;
+            return `<div class="pg-related-card" data-id="${prod.id}">${discPercent ? `<div class="pg-related-discount-tag">${discPercent}% OFF</div>` : ''}<div class="pg-related-img"><img src="${prod.mainImage || prod.image || (prod.thumbnailImages && prod.thumbnailImages[0]) || (prod.additionalImages && prod.additionalImages[0]) || 'https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle'}" alt="${pgEscapeHtml(prod.name)}" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle'"></div><div class="pg-related-info"><div class="pg-related-name">${pgEscapeHtml(prod.name)}</div><div class="pg-related-stars">${pgRenderStars(prod.rating || 4.5)}</div><div class="pg-related-pricing"><span class="pg-related-price">${pgFormatPrice(price)}</span>${mrp && mrp > price ? `<span class="pg-related-mrp">${pgFormatPrice(mrp)}</span>` : ''}</div><div class="pg-related-view-btn">View Product</div></div></div>`;
           }).join('')}
         </div>
       </div>
@@ -2065,45 +2092,50 @@ function showToast(msg) {
     document.getElementById('pg-addToCartBtn')?.addEventListener('click', () => {
       const qty = parseInt(qtyInput.value);
       const v = pgGetActiveVariant();
-      const uniqueId = `${product.id}_${v.weight}`;
-      const existing = window.cart.find(item => String(item.uniqueId) === String(uniqueId));
-      if (existing) {
-        existing.quantity += qty;
-      } else {
-        window.cart.push({
+      const uniqueId = `${product.id}-${v.weight}`;
+      const mainImg = product.mainImage || product.image || "https://placehold.co/100x100/f5e9e7/c0392b?text=Pickle";
+
+      if (typeof window.vastramayaAddToCart === 'function') {
+        window.vastramayaAddToCart({
           uniqueId,
           productId: product.id,
           name: displayName,
-          image: uniqueImages[0],
+          image: mainImg,
           price: Number(v.price),
           quantity: qty,
           size: v.weight
         });
       }
-      window.saveCart(true);
-      window.renderCart();
-      window.showToast(`🛒 Added to cart: ${displayName} (${v.weight}) x ${qty}`);
+
+      if (typeof window.vastramayaShowToast === 'function') {
+        window.vastramayaShowToast(`Added to cart: ${displayName} (${v.weight}) x ${qty}`);
+      } else {
+        alert(`🛒 Added to cart: ${displayName} (${v.weight}) x ${qty} = ${pgFormatPrice(v.price * qty)}`);
+      }
     });
 
     document.getElementById('pg-wishlistBtn')?.addEventListener('click', () => {
-      if (!window.currentUser) {
-        window.openAuthModal();
+      const mainImg = product.mainImage || product.image || "https://placehold.co/100x100/f5e9e7/c0392b?text=Pickle";
+      const wishlistItem = { productId: product.id, name: displayName, image: mainImg, price: defaultVariant.price };
+
+      let result = { added: true, signedIn: false };
+      if (typeof window.vastramayaAddToWishlist === 'function') {
+        result = window.vastramayaAddToWishlist(wishlistItem);
+      }
+
+      const showToastFn = window.vastramayaShowToast;
+      if (!result.added) {
+        if (typeof showToastFn === 'function') showToastFn(`${displayName} is already in your wishlist`);
         return;
       }
-      const wishItem = {
-        productId: product.id,
-        name: displayName,
-        image: uniqueImages[0]
-      };
-      if (!window.wishlist.find(w => w.productId === product.id)) {
-        window.wishlist.push(wishItem);
-        window.db.collection('users').doc(window.currentUser.uid).update({ wishlist: window.wishlist })
-          .catch(err => console.error("Error updating wishlist", err));
-        window.showToast(`❤️ ${displayName} saved to wishlist!`);
+      if (typeof showToastFn === 'function') {
+        showToastFn(result.signedIn ? `❤️ ${displayName} saved to wishlist!` : `❤️ ${displayName} saved to wishlist! Sign in to keep it synced.`);
       } else {
-        window.showToast(`${displayName} is already in your wishlist.`);
+        alert(`❤️ ${displayName} saved to wishlist!`);
       }
     });
+
+
     document.getElementById('pg-buyNowBtn')?.addEventListener('click', () => {
       const qty = parseInt(qtyInput.value);
       const variant = pgGetActiveVariant();
