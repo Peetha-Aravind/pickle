@@ -3,15 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy NonVeg Pickles | Products from Category Field</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <title>Happy NonVeg Pickles | Categories & Products from Firestore</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* --- GLOBAL CSS VARIABLES (preserved original style) --- */
         :root {
             --primary-red: #e02828;
             --bg-color: #f8f9fa;
@@ -28,6 +23,8 @@
 
         body {
             font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
             background-color: var(--bg-color);
             color: var(--text-dark);
             display: flex;
@@ -35,7 +32,7 @@
             min-height: 100vh;
         }
 
-        /* Top bar */
+        /* --- TOP BAR --- */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -47,160 +44,91 @@
             flex-wrap: wrap;
             gap: 15px;
         }
-        .stats {
-            color: var(--text-muted);
-            font-size: 14px;
-            background: #f1f5f9;
-            padding: 6px 16px;
-            border-radius: 40px;
-        }
-        .stats span {
-            font-weight: 700;
-            color: var(--text-dark);
-            font-size: 16px;
-            margin-right: 4px;
-        }
+        .product-count { color: var(--text-muted); font-size: 14px; background: #f1f5f9; padding: 6px 16px; border-radius: 40px; }
+        .product-count span { font-weight: 700; color: var(--text-dark); font-size: 16px; margin-right: 4px; }
+        .sort-container { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+        .sort-container select { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; cursor: pointer; }
 
-        /* Main container */
-        .container {
+        /* --- MAIN LAYOUT: LEFT FILTERS | RIGHT CONTENT (category sections) --- */
+        .shop-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 30px;
             max-width: 1400px;
             margin: 0 auto;
             padding: 0 40px 60px 40px;
-            width: 100%;
         }
 
-        /* Category section */
-        .category-section {
-            margin-bottom: 60px;
+        /* SIDEBAR FILTERS (simplified: only price & new arrival) */
+        .sidebar {
             background: var(--card-bg);
-            border-radius: 24px;
-            padding: 28px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            transition: box-shadow 0.2s;
+            border-radius: 12px;
+            padding: 24px;
+            height: fit-content;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-        .category-section:hover {
-            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .sidebar-header h2 { margin: 0; font-size: 18px; font-weight: 700; }
+        .clear-all { color: var(--primary-red); background: #fdf2f2; border: 1px solid #fbd5d5; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        
+        .filter-section { border-top: 1px solid var(--border-color); padding: 20px 0; }
+        .filter-title { font-weight: 600; font-size: 15px; margin-bottom: 16px; display: flex; justify-content: space-between; }
+        
+        .price-slider-container { margin-top: 10px; }
+        .price-range { width: 100%; accent-color: var(--primary-red); cursor: pointer; }
+        .price-inputs { display: flex; justify-content: space-between; margin-top: 10px; }
+        .price-inputs span { background: #f3f4f6; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; }
+        .checkbox-group { display: flex; flex-direction: column; gap: 12px; }
+        .checkbox-label { display: flex; align-items: center; font-size: 14px; cursor: pointer; gap: 12px; }
+
+        /* RIGHT SIDE: CATEGORY SECTIONS WITH PRODUCT GRIDS */
+        .main-content { width: 100%; }
+        .main-content h1 { font-size: 24px; margin: 0 0 8px 0; display: flex; align-items: center; gap: 10px; }
+        .subhead { color: var(--text-muted); margin-bottom: 32px; font-size: 14px; border-left: 3px solid var(--primary-red); padding-left: 16px; }
+        
+        .category-section {
+            margin-bottom: 48px;
         }
-        .category-header {
-            border-left: 5px solid var(--primary-red);
-            padding-left: 20px;
-            margin-bottom: 28px;
-        }
-        .category-name {
+        .category-title {
+            font-family: 'Playfair Display', serif;
             font-size: 28px;
             font-weight: 700;
-            margin: 0 0 6px 0;
-            letter-spacing: -0.3px;
-            color: var(--text-dark);
-        }
-        .product-count-badge {
+            margin: 0 0 20px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border-color);
             display: inline-block;
-            background: #f1f5f9;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            color: var(--text-muted);
+            letter-spacing: -0.3px;
         }
-
-        /* Product grid */
         .product-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 24px;
         }
+        
         .product-card {
-            background: white;
-            border-radius: 16px;
+            background: var(--card-bg);
+            border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            transition: all 0.2s ease;
-            border: 1px solid var(--border-color);
+            transition: box-shadow 0.2s ease;
             display: flex;
             flex-direction: column;
         }
-        .product-card:hover {
-            box-shadow: 0 12px 24px rgba(0,0,0,0.08);
-            transform: translateY(-3px);
-        }
-        .product-img {
-            height: 200px;
-            background: #eef2e6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 64px;
-            position: relative;
-        }
-        .badge-new {
-            position: absolute;
-            top: 16px;
-            left: 16px;
-            background: #f3e8ff;
-            color: #7e22ce;
-            padding: 6px 12px;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-        .product-info {
-            padding: 20px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        .product-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-        .product-price {
-            font-size: 20px;
-            font-weight: 700;
-            color: #b45309;
-            margin-bottom: 18px;
-        }
-        .add-to-cart {
-            background: #1f2937;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 40px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: 0.2s;
-            margin-top: auto;
-        }
-        .add-to-cart:hover {
-            background: #111827;
-        }
+        .product-card:hover { box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+        .product-image-container { height: 200px; background-color: #eef2e6; display: flex; align-items: center; justify-content: center; font-size: 60px; position: relative; }
+        .badge-new { position: absolute; top: 16px; left: 16px; background: #f3e8ff; color: #7e22ce; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .product-info { padding: 20px; border-top: 1px solid var(--border-color); flex: 1; display: flex; flex-direction: column; }
+        .category-tag { color: var(--primary-red); font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
+        .product-title { font-size: 18px; font-weight: 600; margin: 0 0 10px 0; }
+        .product-price { font-weight: 700; font-size: 18px; margin-bottom: 15px; color: #b45309; }
+        .add-to-cart-btn { background: #1f2937; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; margin-top: auto; }
+        .add-to-cart-btn:hover { background: #111827; }
 
-        /* Empty / loading / error states */
-        .empty-category {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-muted);
-            background: #faf9f8;
-            border-radius: 20px;
-            margin-top: 16px;
-        }
-        .loading-spinner, .error-message, .no-data {
-            text-align: center;
-            padding: 60px;
-            background: #fff4eb;
-            border-radius: 28px;
-            color: #7c5e42;
-            font-size: 18px;
-        }
-        .loading-spinner {
-            background: transparent;
-            color: var(--text-muted);
-        }
+        .loading-spinner { text-align: center; padding: 60px; color: #6c757d; font-size: 18px; }
+        .no-results { text-align: center; padding: 60px; background: #fff4eb; border-radius: 24px; color: #7c5e42; grid-column: 1/-1; }
+        .empty-category-message { text-align: center; padding: 30px; background: #f9f9f9; border-radius: 20px; color: #888; font-style: italic; margin-top: 10px; }
 
-        /* Footer */
+        /* FOOTER (original design) */
         .site-footer {
             background-color: var(--footer-bg);
             color: var(--footer-text);
@@ -210,120 +138,85 @@
             gap: 40px;
             margin-top: auto;
         }
-        .brand-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            border: 1px solid var(--footer-card-border);
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            letter-spacing: 1px;
-            margin-bottom: 30px;
-        }
-        .brand-badge::before {
-            content: '';
-            width: 6px;
-            height: 6px;
-            background-color: white;
-            border-radius: 50%;
-        }
-        .brand-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 42px;
-            line-height: 1.2;
-            margin: 0 0 20px 0;
-            letter-spacing: 2px;
-        }
-        .brand-desc {
-            color: var(--footer-muted);
-            line-height: 1.6;
-            font-size: 14px;
-            max-width: 300px;
-        }
-        .footer-heading {
-            font-size: 14px;
-            letter-spacing: 2px;
-            margin-bottom: 25px;
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-        .footer-links {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .footer-links a {
-            color: var(--footer-muted);
-            text-decoration: none;
-            font-size: 15px;
-            transition: color 0.2s;
-        }
+        .brand-badge { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--footer-card-border); padding: 6px 16px; border-radius: 20px; font-size: 12px; letter-spacing: 1px; margin-bottom: 30px; }
+        .brand-badge::before { content: ''; width: 6px; height: 6px; background-color: white; border-radius: 50%; }
+        .brand-title { font-family: 'Playfair Display', serif; font-size: 42px; line-height: 1.2; margin: 0 0 20px 0; letter-spacing: 2px; }
+        .brand-desc { color: var(--footer-muted); line-height: 1.6; font-size: 14px; max-width: 300px; }
+        .footer-heading { font-size: 14px; letter-spacing: 2px; margin-bottom: 25px; text-transform: uppercase; font-weight: 600; }
+        .footer-links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 15px; }
+        .footer-links a { color: var(--footer-muted); text-decoration: none; font-size: 15px; transition: color 0.2s; }
         .footer-links a:hover { color: white; }
-        .contact-cards {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .contact-card {
-            background-color: var(--footer-card-bg);
-            border: 1px solid var(--footer-card-border);
-            border-radius: 12px;
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            transition: background-color 0.2s;
-        }
+        .contact-cards { display: flex; flex-direction: column; gap: 15px; }
+        .contact-card { background-color: var(--footer-card-bg); border: 1px solid var(--footer-card-border); border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 15px; transition: background-color 0.2s; }
         .contact-card:hover { background-color: rgba(255, 255, 255, 0.15); }
-        .contact-icon {
-            width: 40px;
-            height: 40px;
-            border: 1px solid var(--footer-card-border);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-        .contact-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .contact-label {
-            font-size: 10px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--footer-muted);
-        }
-        .contact-value {
-            font-size: 14px;
-            font-weight: 500;
-        }
+        .contact-icon { width: 40px; height: 40px; border: 1px solid var(--footer-card-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .contact-info { display: flex; flex-direction: column; gap: 4px; }
+        .contact-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--footer-muted); }
+        .contact-value { font-size: 14px; font-weight: 500; }
 
         @media (max-width: 900px) {
-            .container { padding: 0 20px 40px 20px; }
-            .top-bar { padding: 15px 20px; }
+            .shop-container { grid-template-columns: 1fr; padding: 20px; }
+            .top-bar { padding: 15px 20px; flex-direction: column; align-items: stretch; }
         }
         @media (max-width: 600px) {
             .site-footer { grid-template-columns: 1fr; padding: 40px 20px; }
             .product-grid { grid-template-columns: 1fr; }
-            .category-name { font-size: 24px; }
+            .category-title { font-size: 24px; }
         }
     </style>
 </head>
 <body>
 
 <div class="top-bar">
-    <div class="stats"><span id="totalCategories">0</span> categories · <span id="totalProducts">0</span> products</div>
+    <div class="product-count"><span id="productCountValue">0</span> pickles (all categories)</div>
+    <div class="sort-container">
+        <label for="sort">Sort products:</label>
+        <select id="sortSelect">
+            <option value="default">Default (Priority)</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="new">Newest First</option>
+        </select>
+    </div>
 </div>
 
-<div class="container" id="mainContent">
-    <div class="loading-spinner">🔥 Loading categories & products from Firestore...</div>
+<div class="shop-container">
+    <!-- LEFT SIDEBAR: FILTERS (simplified: price + new arrival only) -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Filters</h2>
+            <button class="clear-all" id="clearAllBtn">Clear All</button>
+        </div>
+        <div class="filter-section">
+            <div class="filter-title">💰 Price Range</div>
+            <div class="price-slider-container">
+                <input type="range" id="priceSlider" min="0" max="500" value="500" step="5" class="price-range">
+                <div class="price-inputs">
+                    <span>₹0</span>
+                    <span id="priceValueLabel">₹500+</span>
+                </div>
+            </div>
+        </div>
+        <div class="filter-section">
+            <div class="filter-title">🏷️ Special Labels</div>
+            <div class="checkbox-group">
+                <label class="checkbox-label"><input type="checkbox" id="newOnlyCheckbox"> ✨ New Arrival only</label>
+            </div>
+        </div>
+        <div class="filter-section" style="border-bottom: none;">
+            <div class="filter-title" style="font-size:13px; color:#e02828;">📦 Data from Firestore</div>
+            <div style="font-size:12px; color:gray;">Categories → products[] → product details</div>
+        </div>
+    </aside>
+
+    <!-- RIGHT SIDE: CATEGORY SECTIONS DYNAMICALLY RENDERED -->
+    <main class="main-content">
+        <h1>🔥 Artisan Pickles <span style="color: #e02828;">by Category</span></h1>
+        <div class="subhead">Loaded from Firestore: categories collection + products collection (via product IDs)</div>
+        <div id="categoriesContainer">
+            <div class="loading-spinner">🥒 Loading categories & pickles from Firestore (categories → products[] → product details)...</div>
+        </div>
+    </main>
 </div>
 
 <footer class="site-footer">
@@ -380,9 +273,9 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Firebase configuration (your existing project)
+    // Firebase config (same as provided)
     const firebaseConfig = {
         apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
         authDomain: "pickle-fdc54.firebaseapp.com",
@@ -395,27 +288,43 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const mainContainer = document.getElementById("mainContent");
-    const totalCategoriesSpan = document.getElementById("totalCategories");
-    const totalProductsSpan = document.getElementById("totalProducts");
+    // ---------- DATA STRUCTURE ----------
+    // categoriesData will hold: [{ id, name, productIds: [] }]
+    // productsMap: Map<productId, productObject>
+    let categoriesData = [];         // raw categories from Firestore (with productIds)
+    let productsMap = new Map();      // key: product doc id, value: product details { name, price, isNew, emoji? }
+    let allProductsFlat = [];         // used for price slider max & quick lookups
 
-    // Helper: emoji based on product name
-    function getProductEmoji(name) {
-        const map = {
-            garlic: "🧄", tomato: "🍅", mixed: "🥕", mango: "🥭", lemon: "🍋",
-            chicken: "🍗", mutton: "🍖", prawn: "🦐", egg: "🥚", chilli: "🌶️",
-            ginger: "🫚", lime: "🍈", pickle: "🥒", fish: "🐟", pork: "🐷", beef: "🐄"
-        };
+    // UI state
+    let activeFilters = {
+        priceMax: 500,
+        newOnly: false
+    };
+    let currentSort = "default";
+
+    // DOM elements
+    const categoriesContainer = document.getElementById("categoriesContainer");
+    const productCountSpan = document.getElementById("productCountValue");
+    const priceSlider = document.getElementById("priceSlider");
+    const priceLabel = document.getElementById("priceValueLabel");
+    const sortSelect = document.getElementById("sortSelect");
+    const clearBtn = document.getElementById("clearAllBtn");
+    const newOnlyCheck = document.getElementById("newOnlyCheckbox");
+
+    // Helper: emoji based on product name (same as original)
+    function getEmojiForName(name) {
+        const emojiMap = { garlic: "🧄", tomato: "🍅", mixed: "🥕", mango: "🥭", lemon: "🍋", chicken: "🍗", mutton: "🍖", prawn: "🦐", egg: "🥚", chilli: "🌶️", ginger: "🫚", lime: "🍈", pickle: "🥒", fish: "🐟", meat: "🍖" };
         const lower = name.toLowerCase();
-        for (const [key, emoji] of Object.entries(map)) {
+        for (let [key, emoji] of Object.entries(emojiMap)) {
             if (lower.includes(key)) return emoji;
         }
         return "🥒";
     }
 
+    // Escape HTML
     function escapeHtml(str) {
         if (!str) return '';
-        return str.replace(/[&<>]/g, (m) => {
+        return str.replace(/[&<>]/g, function(m) {
             if (m === '&') return '&amp;';
             if (m === '<') return '&lt;';
             if (m === '>') return '&gt;';
@@ -423,157 +332,255 @@
         });
     }
 
-    // Render all categories and their products
-    function renderPage(categoriesData) {
-        if (!categoriesData.length) {
-            mainContainer.innerHTML = `<div class="no-data">📭 No categories found. Please add documents to 'categories' collection with a 'name' field and a 'products' array of product IDs.</div>`;
+    // Step 1: Fetch all categories from "categories" collection
+    async function fetchCategories() {
+        const categoriesRef = collection(db, "categories");
+        const snapshot = await getDocs(categoriesRef);
+        if (snapshot.empty) {
+            throw new Error("No categories found in 'categories' collection. Please create documents with 'name' and 'products' (array of product IDs).");
+        }
+        const categories = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const name = data.name || "Unnamed Category";
+            const productIds = Array.isArray(data.products) ? data.products : [];
+            categories.push({
+                id: doc.id,
+                name: name,
+                productIds: productIds
+            });
+        });
+        return categories;
+    }
+
+    // Step 2: Fetch all products from "products" collection (to resolve IDs)
+    async function fetchAllProducts() {
+        const productsRef = collection(db, "products");
+        const snapshot = await getDocs(productsRef);
+        const products = new Map();
+        if (!snapshot.empty) {
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const name = data.name || "Unnamed Product";
+                let price = typeof data.price === 'number' ? data.price : (parseInt(data.price) || 99);
+                const isNew = data.isNew === true;
+                products.set(doc.id, {
+                    id: doc.id,
+                    name: name,
+                    price: price,
+                    isNew: isNew,
+                    emoji: getEmojiForName(name)
+                });
+            });
+        }
+        return products;
+    }
+
+    // Combine categories with actual product objects
+    function buildCategoryProductsArray(categories, productsMap) {
+        return categories.map(cat => {
+            const productObjects = [];
+            for (let prodId of cat.productIds) {
+                const product = productsMap.get(prodId);
+                if (product) {
+                    productObjects.push(product);
+                } else {
+                    console.warn(`Product ID ${prodId} not found in products collection for category ${cat.name}`);
+                }
+            }
+            return {
+                id: cat.id,
+                name: cat.name,
+                products: productObjects
+            };
+        }).filter(cat => cat.products.length > 0); // optional: keep categories with at least one product, but we still show empty? better show empty message.
+        // but we keep all categories, will show "no products after filter" message.
+    }
+
+    // Apply filters & sort to a list of products
+    function filterAndSortProducts(productsArray) {
+        let filtered = productsArray.filter(p => {
+            if (p.price > activeFilters.priceMax) return false;
+            if (activeFilters.newOnly && !p.isNew) return false;
+            return true;
+        });
+        // Sorting
+        switch (currentSort) {
+            case "price-low":
+                filtered.sort((a,b) => a.price - b.price);
+                break;
+            case "price-high":
+                filtered.sort((a,b) => b.price - a.price);
+                break;
+            case "new":
+                filtered.sort((a,b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
+                break;
+            default:
+                filtered.sort((a,b) => (a.id < b.id ? -1 : 1));
+        }
+        return filtered;
+    }
+
+    // Render all category sections based on current filters & sort
+    function renderCategories(originalCategoryData) {
+        if (!originalCategoryData || originalCategoryData.length === 0) {
+            categoriesContainer.innerHTML = `<div class="no-results">⚠️ No categories found. Make sure 'categories' collection exists with documents having 'name' and 'products' (array).</div>`;
+            productCountSpan.innerText = "0";
             return;
         }
 
-        let totalCat = categoriesData.length;
-        let totalProd = 0;
-        let html = '';
+        let totalDisplayedProducts = 0;
+        let html = "";
 
-        for (const cat of categoriesData) {
-            const catName = cat.name || "Unnamed Category";
-            const products = cat.productsList || [];
-            totalProd += products.length;
-
-            html += `
-                <div class="category-section">
-                    <div class="category-header">
-                        <h2 class="category-name">${escapeHtml(catName)}</h2>
-                        <div class="product-count-badge">🍽️ ${products.length} items</div>
+        for (let category of originalCategoryData) {
+            const filteredProducts = filterAndSortProducts(category.products);
+            totalDisplayedProducts += filteredProducts.length;
+            
+            if (filteredProducts.length === 0) {
+                // Show category header but with empty message (optional)
+                html += `
+                    <div class="category-section">
+                        <h2 class="category-title">${escapeHtml(category.name)}</h2>
+                        <div class="empty-category-message">🥫 No pickles match current filters in this category.</div>
                     </div>
-            `;
-
-            if (products.length === 0) {
-                html += `<div class="empty-category">✨ No products linked to this category yet. Add product IDs to the 'products' array.</div>`;
+                `;
             } else {
-                html += `<div class="product-grid">`;
-                for (const p of products) {
-                    const name = p.name || "Delicious Pickle";
-                    const price = p.price ?? 99;
-                    const isNew = p.isNew === true;
-                    const emoji = getProductEmoji(name);
-                    html += `
-                        <div class="product-card">
-                            <div class="product-img">
-                                ${isNew ? '<div class="badge-new">✨ New</div>' : ''}
-                                <span>${emoji}</span>
-                            </div>
-                            <div class="product-info">
-                                <h3 class="product-title">${escapeHtml(name)}</h3>
-                                <div class="product-price">₹${price}</div>
-                                <button class="add-to-cart" data-name="${escapeHtml(name)}" data-price="${price}">🛒 Add to Cart</button>
-                            </div>
+                const productsHtml = filteredProducts.map(p => `
+                    <div class="product-card">
+                        <div class="product-image-container">
+                            ${p.isNew ? '<div class="badge-new">✨ New Arrival</div>' : ''}
+                            <span style="font-size: 3rem;">${p.emoji}</span>
                         </div>
-                    `;
-                }
-                html += `</div>`;
+                        <div class="product-info">
+                            <span class="category-tag">${escapeHtml(category.name)}</span>
+                            <h3 class="product-title">${escapeHtml(p.name)}</h3>
+                            <div class="product-price">₹${p.price}</div>
+                            <button class="add-to-cart-btn" data-name="${escapeHtml(p.name)}" data-price="${p.price}">🛒 Add to Cart</button>
+                        </div>
+                    </div>
+                `).join("");
+                
+                html += `
+                    <div class="category-section">
+                        <h2 class="category-title">${escapeHtml(category.name)}</h2>
+                        <div class="product-grid">
+                            ${productsHtml}
+                        </div>
+                    </div>
+                `;
             }
-            html += `</div>`;
         }
-
-        mainContainer.innerHTML = html;
-        totalCategoriesSpan.textContent = totalCat;
-        totalProductsSpan.textContent = totalProd;
-
-        // Attach "Add to Cart" event listeners
-        document.querySelectorAll('.add-to-cart').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const name = btn.getAttribute('data-name');
-                const price = btn.getAttribute('data-price');
+        
+        categoriesContainer.innerHTML = html;
+        productCountSpan.innerText = totalDisplayedProducts;
+        
+        // Attach cart event listeners
+        document.querySelectorAll("#categoriesContainer .add-to-cart-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                const name = btn.getAttribute("data-name");
+                const price = btn.getAttribute("data-price");
                 alert(`🛒 Added to cart: ${name} (₹${price})`);
             });
         });
     }
 
-    // MAIN FUNCTION: 
-    // 1. Fetch all category documents
-    // 2. For each category, read its "products" field (array of product IDs)
-    // 3. Fetch each product document from the "products" collection using those IDs
-    // 4. Display products as cards under that category
-    async function fetchCategoriesAndProducts() {
+    // Update price label
+    function updatePriceLabel() {
+        if (activeFilters.priceMax >= priceSlider.max) priceLabel.innerText = `₹${priceSlider.max}+`;
+        else priceLabel.innerText = `₹${activeFilters.priceMax}`;
+    }
+
+    // Refresh everything: re-filter and re-render categories
+    function refreshUI() {
+        if (!categoriesData.length) return;
+        renderCategories(categoriesData);
+        updatePriceLabel();
+    }
+
+    // Reset all filters (price max to highest product price, newOnly false, sort default)
+    function resetAllFilters() {
+        if (allProductsFlat.length === 0) return;
+        const maxPrice = Math.max(...allProductsFlat.map(p => p.price), 500);
+        activeFilters.priceMax = maxPrice;
+        priceSlider.value = maxPrice;
+        priceSlider.max = maxPrice;
+        activeFilters.newOnly = false;
+        newOnlyCheck.checked = false;
+        currentSort = "default";
+        sortSelect.value = "default";
+        updatePriceLabel();
+        refreshUI();
+    }
+
+    // Attach event listeners to filter controls
+    function attachEventListeners() {
+        priceSlider.addEventListener("input", (e) => {
+            activeFilters.priceMax = parseInt(e.target.value, 10);
+            updatePriceLabel();
+            refreshUI();
+        });
+        sortSelect.addEventListener("change", (e) => {
+            currentSort = e.target.value;
+            refreshUI();
+        });
+        clearBtn.addEventListener("click", resetAllFilters);
+        newOnlyCheck.addEventListener("change", (e) => {
+            activeFilters.newOnly = e.target.checked;
+            refreshUI();
+        });
+    }
+
+    // Main initialization: fetch categories → fetch products → combine → render
+    async function init() {
         try {
-            mainContainer.innerHTML = `<div class="loading-spinner">🥒 Fetching categories & their products...</div>`;
-
-            const categoriesRef = collection(db, "categories");
-            const categoriesSnap = await getDocs(categoriesRef);
-
-            if (categoriesSnap.empty) {
-                mainContainer.innerHTML = `<div class="error-message">⚠️ No category documents found. Create a 'categories' collection with documents containing a 'name' (string) and a 'products' (array of product IDs).</div>`;
-                return;
+            categoriesContainer.innerHTML = `<div class="loading-spinner">📦 Loading categories from Firestore 'categories' collection ...</div>`;
+            
+            // 1. Fetch categories (each contains 'products' array of IDs)
+            const rawCategories = await fetchCategories();
+            if (rawCategories.length === 0) throw new Error("No category documents found.");
+            
+            // 2. Fetch all products from 'products' collection
+            categoriesContainer.innerHTML = `<div class="loading-spinner">🥫 Loading product details from 'products' collection ...</div>`;
+            const fetchedProductsMap = await fetchAllProducts();
+            if (fetchedProductsMap.size === 0) {
+                throw new Error("No products found in 'products' collection. Please add product documents with 'name', 'price' fields.");
             }
-
-            const result = [];
-
-            for (const catDoc of categoriesSnap.docs) {
-                const data = catDoc.data();
-                const categoryName = data.name;
-                if (!categoryName) {
-                    console.warn(`Category doc ${catDoc.id} has no 'name' field → skipped`);
-                    continue;
-                }
-
-                // 👇 The important part: read the 'products' field (array of IDs)
-                let productIds = [];
-                if (data.products && Array.isArray(data.products)) {
-                    productIds = data.products.filter(id => typeof id === 'string');
-                }
-
-                const productDetails = [];
-                for (const prodId of productIds) {
-                    try {
-                        const prodRef = doc(db, "products", prodId);
-                        const prodSnap = await getDoc(prodRef);
-                        if (prodSnap.exists()) {
-                            const prodData = prodSnap.data();
-                            productDetails.push({
-                                id: prodId,
-                                name: prodData.name || "Unnamed Product",
-                                price: typeof prodData.price === 'number' ? prodData.price : (parseInt(prodData.price) || 99),
-                                isNew: prodData.isNew === true,
-                            });
-                        } else {
-                            console.warn(`Product ID "${prodId}" not found in 'products' collection (category: ${categoryName})`);
-                        }
-                    } catch (err) {
-                        console.error(`Error fetching product ${prodId}:`, err);
-                    }
-                }
-
-                result.push({
-                    name: categoryName,
-                    productsList: productDetails
-                });
+            productsMap = fetchedProductsMap;
+            
+            // 3. Build full categories array with actual product objects
+            const categoriesWithProducts = buildCategoryProductsArray(rawCategories, productsMap);
+            if (categoriesWithProducts.length === 0) {
+                throw new Error("No categories contain valid product IDs (matching products in 'products' collection).");
             }
-
-            if (result.length === 0) {
-                mainContainer.innerHTML = `<div class="error-message">❌ No valid categories with a 'name' field found. Please add a string field 'name' to each category document.</div>`;
-                return;
-            }
-
-            renderPage(result);
-
+            categoriesData = categoriesWithProducts;
+            
+            // 4. Build flat list of all products for price slider max
+            allProductsFlat = [];
+            categoriesData.forEach(cat => {
+                allProductsFlat.push(...cat.products);
+            });
+            const maxGlobalPrice = allProductsFlat.length ? Math.max(...allProductsFlat.map(p => p.price), 500) : 500;
+            priceSlider.max = maxGlobalPrice;
+            priceSlider.value = maxGlobalPrice;
+            activeFilters.priceMax = maxGlobalPrice;
+            updatePriceLabel();
+            
+            // 5. Attach UI listeners
+            attachEventListeners();
+            
+            // 6. Render initial view
+            refreshUI();
         } catch (error) {
-            console.error("Firestore error:", error);
-            mainContainer.innerHTML = `<div class="error-message">❌ Error: ${error.message}<br><br>
-                <strong>Expected Firestore structure:</strong><br>
-                • Collection <code>categories</code><br>
-                &nbsp;&nbsp;- Field <code>name</code> (string) — displayed as category heading<br>
-                &nbsp;&nbsp;- Field <code>products</code> (array of strings) — product document IDs<br>
-                • Collection <code>products</code><br>
-                &nbsp;&nbsp;- Field <code>name</code> (string)<br>
-                &nbsp;&nbsp;- Field <code>price</code> (number)<br>
-                &nbsp;&nbsp;- Field <code>isNew</code> (boolean, optional)<br><br>
-                Check browser console for details.
-            </div>`;
+            console.error("Firestore initialization error:", error);
+            categoriesContainer.innerHTML = `<div class="no-results">❌ Error: ${error.message}<br><br>⚠️ Expected Firestore structure:<br>
+            • Collection 'categories' — each document: { name: "CategoryName", products: ["productId1","productId2"] }<br>
+            • Collection 'products' — each document: { name: "Pickle Name", price: 249, isNew: true }<br><br>
+            Make sure both collections exist and product IDs match.</div>`;
+            productCountSpan.innerText = "0";
         }
     }
 
-    // Start the app
-    fetchCategoriesAndProducts();
+    init();
 </script>
 </body>
 </html>
