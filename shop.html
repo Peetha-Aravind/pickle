@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Shop – Happy NonVeg Pickles</title>
     
-    <!-- Fonts -->
+    <!-- Fonts & Icons (same as landing) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -72,8 +72,8 @@
         }
         @media (max-width: 768px) { :root { --nav-h: 70px; } }
 
-        /* ---------- NAVBAR STYLES (same as landing) ---------- */
-        .d-navbar, .m-navbar, .m-drawer, .cart-drawer, .modal-overlay, #toast-container {
+        /* ---------- NAVBAR STYLES (from landing page) ---------- */
+        .d-navbar, .m-navbar, .m-drawer, .cart-drawer, .modal-overlay, .filter-drawer, #toast-container {
             font-family: "DM Sans", Roboto, sans-serif;
             color: var(--text-primary);
         }
@@ -231,8 +231,6 @@
             display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 5;
         }
         .cart-item-remove:hover { background: #fef2f2; border-color: #fecaca; }
-        .cart-item-remove .icon-wrap { width: 14px; height: 14px; }
-        .cart-item-remove .icon-wrap .icon-default, .cart-item-remove .icon-wrap .icon-fill { width: 14px; height: 14px; }
         .cart-popup-footer {
             padding: 20px; border-top: 1px solid var(--border-subtle);
             background: var(--surface-card); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); flex-shrink: 0;
@@ -248,7 +246,7 @@
         .buy-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(230, 29, 38, 0.3); }
         .empty-cart-msg { text-align: center; padding: 2rem; color: var(--text-light); }
 
-        /* MOBILE NAVBAR (same as landing) */
+        /* MOBILE NAVBAR (same as landing page) */
         .page-mobile { display: none; width: 100%; }
         .m-navbar {
             height: var(--navbar-height-mobile); background: var(--surface-card);
@@ -398,7 +396,7 @@
         }
         .mobile-buy-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(230, 29, 38, 0.3); }
 
-        /* FILTER SIDEBAR & PRODUCTS */
+        /* FILTER SIDEBAR (desktop) */
         .shop-layout { display: flex; gap: 32px; max-width: 1440px; margin: 0 auto; padding: 40px 5vw; align-items: flex-start; }
         .filter-sidebar {
             width: 250px; flex-shrink: 0; position: sticky; top: 100px;
@@ -425,6 +423,35 @@
         .filter-apply-btn:hover { background: var(--brand-secondary); }
         .filter-clear-btn { background: var(--surface-light); color: var(--text-primary); border: 1px solid var(--border-subtle); }
         .filter-clear-btn:hover { background: var(--surface-hover); }
+
+        /* Mobile filter drawer */
+        .filter-toggle-btn {
+            display: none; /* shown on mobile */
+            width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border-subtle);
+            background: var(--surface-light); align-items: center; justify-content: center;
+            cursor: pointer; position: fixed; bottom: 20px; left: 20px; z-index: 1500;
+            box-shadow: var(--shadow-sm);
+        }
+        .filter-toggle-btn:hover { background: var(--surface-hover); }
+        .filter-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px);
+            opacity: 0; pointer-events: none; transition: opacity 0.25s ease-out; z-index: 2500;
+        }
+        .filter-overlay.open { opacity: 1; pointer-events: auto; }
+        .filter-drawer {
+            position: absolute; left: 0; top: 0; width: 300px; max-width: 85vw; height: 100%;
+            background: var(--surface-card); transform: translateX(-100%); transition: transform 0.25s ease-out;
+            overflow-y: auto; box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+            padding: 24px;
+        }
+        .filter-overlay.open .filter-drawer { transform: translateX(0); }
+        .filter-drawer-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 24px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 16px;
+        }
+        .filter-drawer-title { font-weight: 700; font-size: 18px; color: var(--ink); }
+
+        /* PRODUCT AREA */
         .products-container { flex: 1; min-width: 0; }
         .products-header {
             display: flex; justify-content: space-between; align-items: center;
@@ -436,14 +463,14 @@
         .category-section { margin-bottom: 40px; }
         .category-section h2 {
             font-family: var(--ff-display); font-size: 1.5rem; font-weight: 700;
-            color: var(--ink); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--brand-primary);
+            color: var(--ink); margin-bottom: 16px; padding-bottom: 8px; /* removed border-bottom */
         }
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 24px; }
         .product-card {
             background: #fff; border-radius: var(--r-card); overflow: hidden;
             border: 1px solid var(--border); box-shadow: var(--shadow-sm);
             transition: transform .25s, box-shadow .25s;
-            display: flex; flex-direction: column;
+            display: flex; flex-direction: column; cursor: pointer; /* card clickable */
         }
         .product-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
         .product-card-img {
@@ -464,17 +491,25 @@
 
         @media (max-width: 768px) {
             .shop-layout { flex-direction: column; padding: 20px 4vw; }
-            .filter-sidebar { width: 100%; position: static; margin-bottom: 20px; }
+            .filter-sidebar { display: none; } /* hide desktop filter */
+            .filter-toggle-btn { display: flex; } /* show mobile filter button */
             .product-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
             .product-card-body { padding: 12px; }
             .product-card-actions { padding: 0 12px 12px; }
             .page-desktop { display: none; }
             .page-mobile { display: block; }
+            .products-header { padding: 0 8px; }
+            .category-section h2 { margin-left: 8px; }
         }
         @media (min-width: 769px) {
             .page-mobile { display: none; }
             .page-desktop { display: block; }
+            .filter-toggle-btn { display: none; }
         }
+
+        /* Toast container */
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
+        .toast { background: var(--ink); color: white; padding: 12px 20px; border-radius: 8px; margin-top: 8px; box-shadow: var(--shadow-sm); font-weight: 500; }
     </style>
 </head>
 <body>
@@ -485,7 +520,7 @@
         <div class="d-navbar-container">
             <img class="d-navbar-logo" src="./assets/logo.png" alt="Happy NonVeg pickles" onclick="window.location.href='index.html'" />
             <div class="d-nav-links">
-                <a href="landing-page.html" class="d-nav-link">Home</a>
+                <a href="index.html" class="d-nav-link">Home</a>
                 <a href="shop.html" class="d-nav-link active">Shop</a>
                 <div class="d-categories-dropdown" id="desktop-categories-dropdown">
                     <a href="javascript:void(0)" class="d-nav-link">Categories</a>
@@ -528,9 +563,9 @@
                             </div>
                         </div>
                         <div class="profile-links" id="profile-links-container">
-                            <a href="my-profile.html" class="profile-link auth-only auth-hidden"><span class="icon-wrap"><img src="./assets/user.svg" class="icon-default"><img src="./assets/user-fill.svg" class="icon-fill"></span>My Profile</a>
-                            <a href="my-orders.html" class="profile-link auth-only auth-hidden"><span class="icon-wrap"><img src="./assets/orders.svg" class="icon-default"><img src="./assets/orders-fill.svg" class="icon-fill"></span>My Orders</a>
-                            <div id="login-trigger-desktop" class="profile-link"><span class="icon-wrap"><img src="./assets/login.svg" class="icon-default"><img src="./assets/login-fill.svg" class="icon-fill"></span>Sign In</div>
+                            <a href="my-profile.html" class="profile-link auth-only auth-hidden"><span class="icon-wrap"><img src="./assets/user.svg"><img src="./assets/user-fill.svg"></span>My Profile</a>
+                            <a href="my-orders.html" class="profile-link auth-only auth-hidden"><span class="icon-wrap"><img src="./assets/orders.svg"><img src="./assets/orders-fill.svg"></span>My Orders</a>
+                            <div id="login-trigger-desktop" class="profile-link"><span class="icon-wrap"><img src="./assets/login.svg"><img src="./assets/login-fill.svg"></span>Sign In</div>
                         </div>
                     </div>
                 </div>
@@ -539,14 +574,128 @@
     </nav>
 </div>
 
-<!-- ═══════════ MOBILE NAVBAR (same structure) ═══════════ -->
+<!-- ═══════════ MOBILE NAVBAR ═══════════ -->
 <div class="page-mobile">
-    <!-- (All mobile navbar code exactly as in landing page – included in script) -->
+    <nav class="m-navbar">
+        <button class="m-menu-btn icon-trigger" id="m-menu-toggle" aria-label="Open menu">
+            <span class="icon-wrap"><img src="./assets/menu.svg" class="icon-default" alt=""><img src="./assets/menu-fill.svg" class="icon-fill" alt=""></span>
+        </button>
+        <img class="d-navbar-logo m-logo" src="./assets/logo.png" alt="Happy NonVeg Pickles" onclick="window.location.href='index.html'" />
+        <div class="m-right-icons">
+            <button class="m-icon-btn icon-trigger" id="m-search-toggle" aria-label="Search">
+                <span class="icon-wrap"><img src="./assets/search.svg" class="icon-default" alt=""><img src="./assets/search-fill.svg" class="icon-fill" alt=""></span>
+            </button>
+            <button class="m-icon-btn icon-trigger" id="m-cart-toggle" aria-label="Cart">
+                <span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default" alt=""><img src="./assets/cart-fill.svg" class="icon-fill" alt=""></span>
+                <span class="mobile-cart-badge" id="cart-badge-mobile" style="display:none">0</span>
+            </button>
+        </div>
+    </nav>
+    <!-- Mobile search overlay -->
+    <div class="m-search-overlay" id="m-search-overlay">
+        <div class="m-search-header">
+            <input type="text" class="m-search-input" placeholder="Search products..." id="mobile-search">
+            <button class="m-search-close icon-trigger" id="m-search-close" aria-label="Close search">
+                <span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span>
+            </button>
+        </div>
+        <div class="mobile-results-container" id="mobile-search-results"></div>
+    </div>
+    <!-- Mobile menu overlay -->
+    <div class="m-overlay" id="m-overlay">
+        <div class="m-drawer">
+            <div class="m-drawer-header">
+                <img class="m-drawer-logo" src="./assets/logo.png" alt="Logo" />
+                <button class="m-drawer-close icon-trigger" id="m-drawer-close" aria-label="Close menu">
+                    <span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span>
+                </button>
+            </div>
+            <nav class="m-drawer-nav">
+                <div class="nav-section">
+                    <a href="index.html" class="m-nav-link icon-trigger">
+                        <div class="m-link-content">
+                            <span class="icon-wrap"><img src="./assets/home.svg" class="icon-default"><img src="./assets/home-fill.svg" class="icon-fill"></span>
+                            <span>Home</span>
+                        </div>
+                    </a>
+                    <a href="shop.html" class="m-nav-link active icon-trigger">
+                        <div class="m-link-content">
+                            <span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default"><img src="./assets/cart-fill.svg" class="icon-fill"></span>
+                            <span>Shop</span>
+                        </div>
+                    </a>
+                    <div class="m-categories-dropdown">
+                        <div class="m-categories-toggle icon-trigger" id="m-categories-toggle">
+                            <div class="m-link-content">
+                                <span class="icon-wrap"><img src="./assets/category.svg" class="icon-default"><img src="./assets/category-fill.svg" class="icon-fill"></span>
+                                <span>Categories</span>
+                            </div>
+                            <span class="icon-wrap icon-muted chevron-wrap"><img src="./assets/chevron.svg" class="icon-default"><img src="./assets/chevron-fill.svg" class="icon-fill"></span>
+                        </div>
+                        <div class="m-categories-content" id="mobile-nav-categories"></div>
+                    </div>
+                </div>
+            </nav>
+            <div class="m-drawer-profile" id="mobile-profile-trigger">
+                <!-- (same as landing page, omitted for brevity) -->
+            </div>
+        </div>
+    </div>
+    <!-- Mobile cart overlay -->
+    <div class="cart-overlay" id="cart-overlay">
+        <div class="cart-drawer">
+            <div class="cart-drawer-header">
+                <div class="cart-drawer-title" id="cart-count-mobile">Your Cart (0)</div>
+                <button class="m-drawer-close icon-trigger" id="cart-drawer-close" aria-label="Close cart">
+                    <span class="icon-wrap"><img src="./assets/close.svg" class="icon-default"><img src="./assets/close-fill.svg" class="icon-fill"></span>
+                </button>
+            </div>
+            <div class="cart-drawer-body" id="cart-items-mobile"></div>
+            <div class="cart-drawer-footer">
+                <div class="mobile-cart-total">
+                    <div class="mobile-cart-total-label">Total</div>
+                    <div class="mobile-cart-total-amount" id="cart-total-mobile">₹0.00</div>
+                </div>
+                <button class="mobile-buy-btn" onclick="window.location.href='checkout.html'">Checkout Now</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════ MOBILE FILTER DRAWER ═══════════ -->
+<button class="filter-toggle-btn icon-trigger" id="filterToggleBtn" aria-label="Open filters">
+    <span class="icon-wrap"><img src="./assets/filter.svg" class="icon-default"><img src="./assets/filter-fill.svg" class="icon-fill"></span>
+</button>
+<div class="filter-overlay" id="filterOverlay">
+    <div class="filter-drawer">
+        <div class="filter-drawer-header">
+            <span class="filter-drawer-title">Filters</span>
+            <button class="m-drawer-close icon-trigger" id="filterDrawerClose">
+                <span class="icon-wrap"><img src="./assets/close.svg" class="icon-default"><img src="./assets/close-fill.svg" class="icon-fill"></span>
+            </button>
+        </div>
+        <div class="filter-section">
+            <h4>Category</h4>
+            <ul class="filter-list" id="mobileCategoryFilterList">
+                <li><label><input type="radio" name="categoryFilter" value="" checked> All Categories</label></li>
+            </ul>
+        </div>
+        <div class="filter-section">
+            <h4>Price Range</h4>
+            <div class="price-range-inputs">
+                <input type="number" placeholder="Min" id="priceMinInputMob" min="0" step="10">
+                <span>–</span>
+                <input type="number" placeholder="Max" id="priceMaxInputMob" min="0" step="10">
+            </div>
+            <button class="filter-apply-btn" onclick="applyFiltersMobile()">Apply</button>
+            <button class="filter-clear-btn" onclick="clearFiltersMobile()">Clear All Filters</button>
+        </div>
+    </div>
 </div>
 
 <!-- ═══════════ SHOP CONTENT ═══════════ -->
 <main class="shop-layout">
-    <!-- FILTER SIDEBAR -->
+    <!-- DESKTOP FILTER SIDEBAR (hidden on mobile) -->
     <aside class="filter-sidebar" id="filterSidebar">
         <div class="filter-section">
             <h4>Category</h4>
@@ -621,25 +770,51 @@
 
     // ═══════════ GLOBAL STATE ═══════════
     let allProducts = [];               // { id, name, image, minPrice, maxPrice, categoryId, categoryName }
-    let allCategories = [];            // { id, name, isavailable }
-    let currentFilters = { categoryId: '', priceMin: null, priceMax: null, sort: 'priority' };
+    let allCategories = [];            // { id, name, products }
+    let currentFilters = { categoryId: '', minPrice: null, maxPrice: null, sort: 'priority' };
 
-    // Cart (reused from landing page)
+    // Cart
     let cart = JSON.parse(localStorage.getItem('vastramaya_cart')) || [];
     let currentUser = null;
 
-    // ═══════════ NAVBAR UI & AUTH (simplified from landing) ═══════════
+    // ═══════════ NAVBAR / UI INIT ═══════════
     function initNavbar() {
         // Desktop search
         const dSearch = document.getElementById('desktop-search');
         if (dSearch) dSearch.addEventListener('input', debounce(e => searchProducts(e.target.value, 'desktop-search-results'), 300));
         // Cart toggle
         document.getElementById('d-cart-toggle')?.addEventListener('click', e => { e.stopPropagation(); document.getElementById('cart-popup').classList.toggle('show'); });
-        document.addEventListener('click', () => document.getElementById('cart-popup').classList.remove('show'));
+        document.addEventListener('click', () => document.getElementById('cart-popup')?.classList.remove('show'));
         // Profile popup
         document.getElementById('d-profile-toggle')?.addEventListener('click', e => { e.stopPropagation(); document.getElementById('profile-popup').classList.toggle('show'); });
-        document.addEventListener('click', () => document.getElementById('profile-popup').classList.remove('show'));
-        // Categories dropdown (load categories later)
+        document.addEventListener('click', () => document.getElementById('profile-popup')?.classList.remove('show'));
+        // Mobile menu
+        const mOverlay = document.getElementById('m-overlay');
+        document.getElementById('m-menu-toggle')?.addEventListener('click', () => mOverlay.classList.add('open'));
+        document.getElementById('m-drawer-close')?.addEventListener('click', () => mOverlay.classList.remove('open'));
+        mOverlay?.addEventListener('click', e => { if (e.target === mOverlay) mOverlay.classList.remove('open'); });
+        // Mobile search
+        document.getElementById('m-search-toggle')?.addEventListener('click', () => { document.getElementById('m-search-overlay').style.display = 'flex'; document.getElementById('mobile-search').focus(); });
+        document.getElementById('m-search-close')?.addEventListener('click', () => document.getElementById('m-search-overlay').style.display = 'none');
+        document.getElementById('mobile-search')?.addEventListener('input', debounce(e => searchProducts(e.target.value, 'mobile-search-results'), 300));
+        // Mobile cart
+        const cartOverlay = document.getElementById('cart-overlay');
+        document.getElementById('m-cart-toggle')?.addEventListener('click', () => cartOverlay.classList.add('open'));
+        document.getElementById('cart-drawer-close')?.addEventListener('click', () => cartOverlay.classList.remove('open'));
+        cartOverlay?.addEventListener('click', e => { if (e.target === cartOverlay) cartOverlay.classList.remove('open'); });
+        // Categories toggle
+        document.getElementById('m-categories-toggle')?.addEventListener('click', () => {
+            const content = document.getElementById('mobile-nav-categories');
+            const toggle = document.getElementById('m-categories-toggle');
+            const isOpen = content.style.display === 'block';
+            content.style.display = isOpen ? 'none' : 'block';
+            toggle.classList.toggle('active', !isOpen);
+        });
+
+        // Mobile filter drawer
+        document.getElementById('filterToggleBtn')?.addEventListener('click', () => document.getElementById('filterOverlay').classList.add('open'));
+        document.getElementById('filterDrawerClose')?.addEventListener('click', () => document.getElementById('filterOverlay').classList.remove('open'));
+        document.getElementById('filterOverlay')?.addEventListener('click', e => { if (e.target === document.getElementById('filterOverlay')) document.getElementById('filterOverlay').classList.remove('open'); });
     }
 
     function debounce(func, wait) {
@@ -649,6 +824,7 @@
 
     function searchProducts(query, containerId) {
         const container = document.getElementById(containerId);
+        if (!container) return;
         if (!query || query.length < 2) { container.classList.remove('show'); container.innerHTML = ''; return; }
         const lower = query.toLowerCase();
         const results = allProducts.filter(p => p.name.toLowerCase().includes(lower)).slice(0, 6);
@@ -692,7 +868,6 @@
     }
 
     function openAuthModal() {
-        // Reuse landing page auth modal (if you add it) or redirect to login
         alert('Please sign in to use cart sync. (Auth modal from landing page can be added here.)');
     }
 
@@ -722,7 +897,8 @@
         }).catch(console.error);
     }
 
-    function addToCart(product) {
+    function addToCart(product, event) {
+        if (event) event.stopPropagation(); // prevent card click navigation
         const existing = cart.find(item => String(item.id) === String(product.id));
         if (existing) existing.quantity += 1;
         else cart.push({ id: product.id, name: product.name, image: product.image, price: product.minPrice || product.maxPrice || 0, quantity: 1 });
@@ -747,9 +923,13 @@
 
     function renderCart() {
         const desktopBody = document.getElementById('cart-items-desktop');
+        const mobileBody = document.getElementById('cart-items-mobile');
         const badgeDesktop = document.getElementById('cart-badge-desktop');
+        const badgeMobile = document.getElementById('cart-badge-mobile');
         const totalDesktop = document.getElementById('cart-total-desktop');
+        const totalMobile = document.getElementById('cart-total-mobile');
         const countDesktop = document.getElementById('cart-count-desktop');
+        const countMobile = document.getElementById('cart-count-mobile');
         let total = 0, count = 0, html = '';
         if (cart.length === 0) html = '<div class="empty-cart-msg">Your cart is empty</div>';
         else cart.forEach(item => {
@@ -761,23 +941,26 @@
                             <div class="cart-item-title">${item.name}</div>
                             <div class="cart-item-price">₹${item.price}</div>
                             <div class="cart-item-quantity">
-                                <div class="quantity-btn" onclick="updateQuantity('${item.id}', -1)">−</div>
+                                <div class="quantity-btn" onclick="updateQuantity('${item.id}', -1); event.stopPropagation();">−</div>
                                 <div class="quantity-value">${item.quantity}</div>
-                                <div class="quantity-btn" onclick="updateQuantity('${item.id}', 1)">+</div>
+                                <div class="quantity-btn" onclick="updateQuantity('${item.id}', 1); event.stopPropagation();">+</div>
                             </div>
                         </div>
-                        <div class="cart-item-remove" onclick="removeFromCart('${item.id}')">×</div>
+                        <div class="cart-item-remove" onclick="removeFromCart('${item.id}'); event.stopPropagation();">×</div>
                      </div>`;
         });
         if (desktopBody) desktopBody.innerHTML = html;
+        if (mobileBody) mobileBody.innerHTML = html;
         if (badgeDesktop) { badgeDesktop.textContent = count; badgeDesktop.style.display = count > 0 ? 'flex' : 'none'; }
+        if (badgeMobile) { badgeMobile.textContent = count; badgeMobile.style.display = count > 0 ? 'flex' : 'none'; }
         if (totalDesktop) totalDesktop.textContent = `₹${total.toFixed(2)}`;
+        if (totalMobile) totalMobile.textContent = `₹${total.toFixed(2)}`;
         if (countDesktop) countDesktop.textContent = `${count} item${count !== 1 ? 's' : ''}`;
-        // Also update mobile cart if present (from landing page code)
+        if (countMobile) countMobile.textContent = `Your Cart (${count})`;
     }
 
     function showToast(msg) {
-        const container = document.getElementById('toast-container') || (() => { const div = document.createElement('div'); div.id = 'toast-container'; div.style.cssText = 'position:fixed; bottom:20px; right:20px; z-index:9999;'; document.body.appendChild(div); return div; })();
+        const container = document.getElementById('toast-container') || (() => { const div = document.createElement('div'); div.id = 'toast-container'; document.body.appendChild(div); return div; })();
         const toast = document.createElement('div');
         toast.className = 'toast';
         toast.textContent = msg;
@@ -803,16 +986,15 @@
                             productMap.set(prod.id, {
                                 ...prod,
                                 categoryId: catId,
-                                categoryName: catName,
-                                price: prod.minPrice || prod.maxPrice || null
+                                categoryName: catName
                             });
                         }
                     });
                 }
             });
             allProducts = Array.from(productMap.values());
-            allCategories = categoriesList.filter(c => Object.keys(c.products).length > 0); // Only categories that have products
-            populateCategoryFilter();
+            allCategories = categoriesList.filter(c => Object.keys(c.products).length > 0);
+            populateCategoryFilters();
             applyFilters(); // initial render
         } catch (err) {
             console.error('Failed to load shop products:', err);
@@ -820,28 +1002,88 @@
         }
     }
 
-    function populateCategoryFilter() {
-        const list = document.getElementById('categoryFilterList');
-        list.innerHTML = '<li><label><input type="radio" name="categoryFilter" value="" checked> All Categories</label></li>';
+    function populateCategoryFilters() {
+        const listDesktop = document.getElementById('categoryFilterList');
+        const listMobile = document.getElementById('mobileCategoryFilterList');
+        const baseHTML = '<li><label><input type="radio" name="categoryFilter" value="" checked> All Categories</label></li>';
+        listDesktop.innerHTML = baseHTML;
+        listMobile.innerHTML = baseHTML;
         allCategories.forEach(cat => {
-            list.innerHTML += `<li><label><input type="radio" name="categoryFilter" value="${cat.id}"> ${cat.name}</label></li>`;
+            const optionHTML = `<li><label><input type="radio" name="categoryFilter" value="${cat.id}"> ${cat.name}</label></li>`;
+            listDesktop.innerHTML += optionHTML;
+            listMobile.innerHTML += optionHTML;
         });
-        // Attach event
-        list.querySelectorAll('input[type="radio"]').forEach(radio => {
+        // Attach event listeners
+        document.querySelectorAll('#categoryFilterList input[type="radio"]').forEach(radio => {
             radio.addEventListener('change', applyFilters);
         });
+        // For mobile, we'll attach listeners when drawer opens or just use applyFiltersMobile which reads the mobile radio
+        // We'll also attach to mobile radios whenever they change, but they need separate handling to not conflict with desktop
+        // We'll clone selection from desktop to mobile when opening filter drawer, and vice versa
     }
 
+    // Sync mobile filter values with desktop and vice versa
+    function syncFiltersToMobile() {
+        const selectedDeskCat = document.querySelector('#categoryFilterList input[name="categoryFilter"]:checked');
+        const selectedMobCat = document.querySelector('#mobileCategoryFilterList input[name="categoryFilter"]');
+        if (selectedDeskCat && selectedMobCat) {
+            const mobInput = document.querySelector(`#mobileCategoryFilterList input[value="${selectedDeskCat.value}"]`);
+            if (mobInput) mobInput.checked = true;
+        }
+        document.getElementById('priceMinInputMob').value = document.getElementById('priceMinInput').value;
+        document.getElementById('priceMaxInputMob').value = document.getElementById('priceMaxInput').value;
+    }
+
+    function syncFiltersToDesktop() {
+        const selectedMobCat = document.querySelector('#mobileCategoryFilterList input[name="categoryFilter"]:checked');
+        const selectedDeskCat = document.querySelector('#categoryFilterList input[name="categoryFilter"]');
+        if (selectedMobCat && selectedDeskCat) {
+            const deskInput = document.querySelector(`#categoryFilterList input[value="${selectedMobCat.value}"]`);
+            if (deskInput) deskInput.checked = true;
+        }
+        document.getElementById('priceMinInput').value = document.getElementById('priceMinInputMob').value;
+        document.getElementById('priceMaxInput').value = document.getElementById('priceMaxInputMob').value;
+    }
+
+    // Apply filters from desktop
     function applyFilters() {
-        // Read filters
-        const selectedCatRadio = document.querySelector('input[name="categoryFilter"]:checked');
-        const categoryId = selectedCatRadio ? selectedCatRadio.value : '';
+        const selectedCat = document.querySelector('#categoryFilterList input[name="categoryFilter"]:checked');
+        const categoryId = selectedCat ? selectedCat.value : '';
         const minPrice = parseFloat(document.getElementById('priceMinInput').value) || null;
         const maxPrice = parseFloat(document.getElementById('priceMaxInput').value) || null;
         const sort = document.getElementById('sortSelect').value;
         currentFilters = { categoryId, minPrice, maxPrice, sort };
+        renderProducts();
+    }
 
-        // Filter products
+    // Apply filters from mobile drawer
+    function applyFiltersMobile() {
+        syncFiltersToDesktop();
+        applyFilters();
+        document.getElementById('filterOverlay').classList.remove('open');
+    }
+
+    function clearFilters() {
+        // Reset desktop inputs
+        document.querySelector('#categoryFilterList input[value=""]').checked = true;
+        document.getElementById('priceMinInput').value = '';
+        document.getElementById('priceMaxInput').value = '';
+        document.getElementById('sortSelect').value = 'priority';
+        // Reset mobile inputs
+        document.querySelector('#mobileCategoryFilterList input[value=""]').checked = true;
+        document.getElementById('priceMinInputMob').value = '';
+        document.getElementById('priceMaxInputMob').value = '';
+        currentFilters = { categoryId: '', minPrice: null, maxPrice: null, sort: 'priority' };
+        renderProducts();
+    }
+
+    function clearFiltersMobile() {
+        clearFilters();
+        document.getElementById('filterOverlay').classList.remove('open');
+    }
+
+    function renderProducts() {
+        const { categoryId, minPrice, maxPrice, sort } = currentFilters;
         let filtered = allProducts.filter(p => {
             if (categoryId && p.categoryId !== categoryId) return false;
             const price = p.minPrice || p.maxPrice || 0;
@@ -856,7 +1098,6 @@
         else if (sort === 'price-desc') filtered.sort((a, b) => sortPrice(b) - sortPrice(a));
         else if (sort === 'name-asc') filtered.sort((a, b) => a.name.localeCompare(b.name));
         else if (sort === 'name-desc') filtered.sort((a, b) => b.name.localeCompare(a.name));
-        // priority is original order
 
         // Group by category
         const grouped = {};
@@ -866,7 +1107,6 @@
             grouped[catName].push(p);
         });
 
-        // Render
         const container = document.getElementById('shopProductSections');
         container.innerHTML = '';
         let totalCount = filtered.length;
@@ -875,12 +1115,12 @@
         Object.entries(grouped).forEach(([catName, products]) => {
             const section = document.createElement('div');
             section.className = 'category-section';
-            section.innerHTML = `<h2>${catName}</h2><div class="product-grid" id="grid-${catName.replace(/\s/g,'')}"></div>`;
-            container.appendChild(section);
+            section.innerHTML = `<h2>${catName}</h2><div class="product-grid"></div>`;
             const grid = section.querySelector('.product-grid');
             products.forEach(prod => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
+                card.onclick = () => window.location.href = `view.html?id=${prod.id}`;
                 const priceDisplay = (prod.minPrice && prod.maxPrice && prod.minPrice !== prod.maxPrice)
                     ? `₹${prod.minPrice} – ₹${prod.maxPrice}`
                     : `₹${prod.minPrice || prod.maxPrice || 0}`;
@@ -893,20 +1133,19 @@
                         <div class="product-card-price-range">${priceDisplay}</div>
                     </div>
                     <div class="product-card-actions">
-                        <button class="add-to-cart-btn" onclick="addToCart({id:'${prod.id}', name:'${prod.name.replace(/'/g, "\\'")}', image:'${prod.image}', minPrice:${prod.minPrice||null}, maxPrice:${prod.maxPrice||null}})">Add to Cart</button>
+                        <button class="add-to-cart-btn" onclick="event.stopPropagation(); addToCart({id:'${prod.id}', name:'${prod.name.replace(/'/g, "\\'")}', image:'${prod.image}', minPrice:${prod.minPrice||null}, maxPrice:${prod.maxPrice||null}})">Add to Cart</button>
                     </div>`;
                 grid.appendChild(card);
             });
+            container.appendChild(section);
         });
     }
 
-    function clearFilters() {
-        document.querySelector('input[name="categoryFilter"][value=""]').checked = true;
-        document.getElementById('priceMinInput').value = '';
-        document.getElementById('priceMaxInput').value = '';
-        document.getElementById('sortSelect').value = 'priority';
-        applyFilters();
-    }
+    // Sync filters on mobile drawer open
+    document.getElementById('filterToggleBtn')?.addEventListener('click', () => {
+        syncFiltersToMobile();
+        document.getElementById('filterOverlay').classList.add('open');
+    });
 
     // ═══════════ INIT ═══════════
     document.addEventListener('DOMContentLoaded', () => {
@@ -915,9 +1154,6 @@
         renderCart();
     });
 </script>
-
-<!-- MOBILE NAVBAR CODE (exact copy from landing page, omitted for brevity but you can copy it) -->
-<!-- ... -->
 
 </body>
 </html>
