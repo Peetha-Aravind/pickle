@@ -383,9 +383,7 @@
         .icon-wrap.force-fill .icon-default { opacity: 0; }
 
         /* ════════════════════════════════════════════════════════
-           PRODUCT PAGE STYLES (namespaced under .pg-root, prefix "pg-")
-           All page classes/IDs renamed with "pg-" prefix.
-           Generic element selectors (button, p, h1...) scoped to .pg-root.
+           PRODUCT PAGE STYLES
         ════════════════════════════════════════════════════════ */
         .pg-root {
             background-color: var(--pg-cream);
@@ -417,9 +415,13 @@
         .pg-root .pg-skeleton-price { height: 2.5rem; width: 50%; margin-bottom: 20px; }
         .pg-root .pg-skeleton-variant { height: 70px; width: 120px; border-radius: 14px; }
         .pg-root .pg-skeleton-btn { height: 48px; width: 100%; border-radius: 12px; margin-bottom: 12px; }
+
+        /* FIX 1: Skeleton image uses 4:5 ratio */
         .pg-root .pg-skeleton-image { width: 100%; aspect-ratio: 4 / 5; border-radius: var(--pg-r-card); }
         .pg-root .pg-skeleton-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 28px; margin-top: 40px; }
         .pg-root .pg-skeleton-card { background: white; border-radius: var(--pg-r-card); overflow: hidden; border: 1px solid var(--pg-border); }
+
+        /* FIX 1: Skeleton card image uses 4:5 ratio */
         .pg-root .pg-skeleton-card-img { width: 100%; aspect-ratio: 4 / 5; background: #e9dfd5; }
         .pg-root .pg-skeleton-card-text { padding: 14px; }
 
@@ -450,6 +452,7 @@
         }
         .pg-root .pg-thumbnail {
             width: 80px;
+            /* FIX 1: Thumbnail also 4:5 */
             aspect-ratio: 4 / 5;
             border-radius: 14px;
             overflow: hidden;
@@ -462,19 +465,26 @@
         .pg-root .pg-thumbnail.active { border-color: var(--pg-rust); transform: scale(0.96); }
         .pg-root .pg-main-image {
             flex: 1;
+            /* FIX 1: Main image enforces 4:5 ratio */
             aspect-ratio: 4 / 5;
             background: #f0e7de;
             border-radius: var(--pg-r-card);
             overflow: hidden;
             box-shadow: var(--pg-shadow-sm);
         }
-        .pg-root .pg-main-image img { width: 100%; height: 100%; object-fit: cover; }
+        .pg-root .pg-main-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
 
         /* MOBILE CAROUSEL */
         .pg-root .pg-mobile-carousel {
             display: none;
             position: relative;
             width: 100%;
+            /* FIX 1: Mobile carousel 4:5 ratio */
             aspect-ratio: 4 / 5;
             background: #f0e7de;
             border-radius: var(--pg-r-card);
@@ -940,8 +950,26 @@
             position: relative;
         }
         .pg-root .pg-related-card:hover { transform: translateY(-5px); box-shadow: var(--pg-shadow-sm); }
-        .pg-root .pg-related-img { aspect-ratio: 4 / 5; background: #f3ede7; }
-        .pg-root .pg-related-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        /* FIX 1: Related card image wrapper enforces 4:5 ratio */
+        .pg-root .pg-related-img {
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            background: #f3ede7;
+            overflow: hidden;
+            position: relative;
+            flex-shrink: 0;
+        }
+        /* FIX 2: Image fills container absolutely to prevent aspect-ratio collapse */
+        .pg-root .pg-related-img img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
         .pg-root .pg-related-info { padding: 14px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
         .pg-root .pg-related-name { font-weight: 700; font-size: 0.95rem; }
         .pg-root .pg-related-pricing { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin: 4px 0; }
@@ -1201,36 +1229,6 @@
                 <button class="mobile-buy-btn" onclick="window.location.href='checkout.html'">
                     <span>Checkout Now</span>
                     <span class="icon-wrap icon-white"><img src="./assets/arrow-right.svg" class="icon-default" alt=""><img src="./assets/arrow-right-fill.svg" class="icon-fill" alt=""></span>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-    <!-- Mobile Cart Drawer -->
-    <div class="cart-overlay" id="cart-overlay">
-        <div class="cart-drawer">
-            <div class="cart-drawer-header">
-                <div class="cart-drawer-title" id="cart-count-mobile">Your Cart (0)</div>
-                <button class="m-drawer-close icon-trigger" id="cart-drawer-close" aria-label="Close cart">
-                    <span class="icon-wrap">
-                        <img src="./assets/close.svg" class="icon-default" alt="">
-                        <img src="./assets/close-fill.svg" class="icon-fill" alt="">
-                    </span>
-                </button>
-            </div>
-            <div class="cart-drawer-body" id="cart-items-mobile"></div>
-            <div class="cart-drawer-footer">
-                <div class="mobile-cart-total">
-                    <div class="mobile-cart-total-label">Total</div>
-                    <div class="mobile-cart-total-amount" id="cart-total-mobile">₹0.00</div>
-                </div>
-                <button class="mobile-buy-btn" onclick="window.location.href='checkout.html'">
-                    <span>Checkout Now</span>
-                    <span class="icon-wrap icon-white">
-                        <img src="./assets/arrow-right.svg" class="icon-default" alt="">
-                        <img src="./assets/arrow-right-fill.svg" class="icon-fill" alt="">
-                    </span>
                 </button>
             </div>
         </div>
@@ -1804,9 +1802,6 @@ function showToast(msg) {
 
 // ─────────────────────────────────────────────────────────
 // GLOBAL BRIDGE API
-// Exposes cart/wishlist operations on `window` so the product
-// page's module script (separate scope) can update the shared
-// cart/wishlist state and have the navbar badges refresh.
 // ─────────────────────────────────────────────────────────
 window.vastramayaAddToCart = function(item) {
     const existing = cart.find(c => String(c.uniqueId) === String(item.uniqueId));
@@ -1879,6 +1874,16 @@ window.vastramayaShowToast = showToast;
 
   function pgEscapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
 
+  // FIX 2: Safe helper to get the first valid image from a product object
+  // Handles missing/null arrays without throwing errors
+  function pgGetProductImage(prod, fallback) {
+    if (prod.mainImage) return prod.mainImage;
+    if (prod.image) return prod.image;
+    if (Array.isArray(prod.thumbnailImages) && prod.thumbnailImages.length > 0) return prod.thumbnailImages[0];
+    if (Array.isArray(prod.additionalImages) && prod.additionalImages.length > 0) return prod.additionalImages[0];
+    return fallback || 'https://placehold.co/400x500/f5e9e7/c0392b?text=Pickle';
+  }
+
   async function pgLoadProductPage() {
     const root = document.getElementById('pg-productDetailRoot');
     const productId = pgGetProductId();
@@ -1920,8 +1925,16 @@ window.vastramayaShowToast = showToast;
     const root = document.getElementById('pg-productDetailRoot');
     const variants = product.variants || [];
     const defaultVariant = variants[0] || { weight: "Standard", price: product.price || 249, mrp: product.mrp || 299 };
-    const allImages = [product.mainImage || product.image || "https://placehold.co/600x600/f5e9e7/c0392b?text=Pickle", ...(product.thumbnailImages || product.additionalImages || [])].filter(Boolean);
+
+    // FIX 2: Use safe helper for main product images
+    const mainImg = pgGetProductImage(product, 'https://placehold.co/600x750/f5e9e7/c0392b?text=Pickle');
+    const extraImages = [
+      ...(Array.isArray(product.thumbnailImages) ? product.thumbnailImages : []),
+      ...(Array.isArray(product.additionalImages) ? product.additionalImages : [])
+    ].filter(Boolean);
+    const allImages = [mainImg, ...extraImages];
     const uniqueImages = [...new Map(allImages.map(img => [img, img])).values()];
+
     const displayName = product.longName || product.name || "Artisan Pickle";
     const fullDescriptionText = product.fullDescription || product.description || "No detailed description available.";
     const shippingText = product.shippingPolicy || "Free shipping on orders above ₹499. Delivery within 3-5 business days.";
@@ -1944,9 +1957,9 @@ window.vastramayaShowToast = showToast;
       <div class="pg-product-container">
         <div class="pg-product-gallery pg-desktop-gallery">
           <div class="pg-thumbnail-strip" id="pg-desktopThumbStrip">
-            ${uniqueImages.map((img, idx) => `<div class="pg-thumbnail ${idx === 0 ? 'active' : ''}" data-img="${img}"><img src="${img}" loading="lazy" onerror="this.src='https://placehold.co/85x85/f5e9e7/c0392b?text=img'"></div>`).join('')}
+            ${uniqueImages.map((img, idx) => `<div class="pg-thumbnail ${idx === 0 ? 'active' : ''}" data-img="${img}"><img src="${img}" loading="lazy" onerror="this.src='https://placehold.co/80x100/f5e9e7/c0392b?text=img'"></div>`).join('')}
           </div>
-          <div class="pg-main-image"><img id="pg-desktopMainImg" src="${uniqueImages[0]}" onerror="this.src='https://placehold.co/600x600/f5e9e7/c0392b?text=Pickle'"></div>
+          <div class="pg-main-image"><img id="pg-desktopMainImg" src="${uniqueImages[0]}" onerror="this.src='https://placehold.co/600x750/f5e9e7/c0392b?text=Pickle'"></div>
         </div>
         <div class="pg-mobile-carousel" id="pg-mobileCarouselContainer">
           <div class="pg-carousel-track" id="pg-carouselTrack"></div>
@@ -1982,7 +1995,6 @@ window.vastramayaShowToast = showToast;
               <div class="pg-toggle-header"><h4>📦 Shipping & Return</h4><div class="pg-toggle-btn">View more</div></div>
               <div class="pg-toggle-content collapsed"><p>${pgEscapeHtml(shippingText)}</p><p style="margin-top:8px;">${pgEscapeHtml(returnText)}</p></div>
             </div>
-            <!-- Description section with heading and expand/collapse -->
             <div class="pg-description-section">
               <div class="pg-desc-header">
                 <h4>📖 Description</h4>
@@ -2005,7 +2017,28 @@ window.vastramayaShowToast = showToast;
             const price = firstVar.price || prod.price || 0;
             const mrp = firstVar.mrp || prod.mrp || 0;
             const discPercent = pgGetDiscountPercent(mrp, price);
-            return `<div class="pg-related-card" data-id="${prod.id}">${discPercent ? `<div class="pg-related-discount-tag">${discPercent}% OFF</div>` : ''}<div class="pg-related-img"><img src="${prod.mainImage || prod.image || (prod.thumbnailImages && prod.thumbnailImages[0]) || (prod.additionalImages && prod.additionalImages[0]) || 'https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle'}" alt="${pgEscapeHtml(prod.name)}" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle'"></div><div class="pg-related-info"><div class="pg-related-name">${pgEscapeHtml(prod.name)}</div><div class="pg-related-stars">${pgRenderStars(prod.rating || 4.5)}</div><div class="pg-related-pricing"><span class="pg-related-price">${pgFormatPrice(price)}</span>${mrp && mrp > price ? `<span class="pg-related-mrp">${pgFormatPrice(mrp)}</span>` : ''}</div><div class="pg-related-view-btn">View Product</div></div></div>`;
+            // FIX 2: Use safe helper — no more unsafe array access on possibly-undefined arrays
+            const prodImg = pgGetProductImage(prod, 'https://placehold.co/400x500/f5e9e7/c0392b?text=Pickle');
+            return `<div class="pg-related-card" data-id="${prod.id}">
+              ${discPercent ? `<div class="pg-related-discount-tag">${discPercent}% OFF</div>` : ''}
+              <div class="pg-related-img">
+                <img
+                  src="${prodImg}"
+                  alt="${pgEscapeHtml(prod.name || 'Pickle')}"
+                  loading="lazy"
+                  onerror="this.onerror=null;this.src='https://placehold.co/400x500/f5e9e7/c0392b?text=Pickle'"
+                >
+              </div>
+              <div class="pg-related-info">
+                <div class="pg-related-name">${pgEscapeHtml(prod.name || 'Pickle')}</div>
+                <div class="pg-related-stars">${pgRenderStars(prod.rating || 4.5)}</div>
+                <div class="pg-related-pricing">
+                  <span class="pg-related-price">${pgFormatPrice(price)}</span>
+                  ${mrp && mrp > price ? `<span class="pg-related-mrp">${pgFormatPrice(mrp)}</span>` : ''}
+                </div>
+                <div class="pg-related-view-btn">View Product</div>
+              </div>
+            </div>`;
           }).join('')}
         </div>
       </div>
@@ -2015,12 +2048,34 @@ window.vastramayaShowToast = showToast;
     // desktop thumbnails
     const thumbs = document.querySelectorAll('.pg-thumbnail');
     const desktopMain = document.getElementById('pg-desktopMainImg');
-    thumbs.forEach(t => t.addEventListener('click', () => { const src = t.getAttribute('data-img'); if (src) desktopMain.src = src; thumbs.forEach(th => th.classList.remove('active')); t.classList.add('active'); }));
+    thumbs.forEach(t => t.addEventListener('click', () => {
+      const src = t.getAttribute('data-img');
+      if (src) desktopMain.src = src;
+      thumbs.forEach(th => th.classList.remove('active'));
+      t.classList.add('active');
+    }));
 
     // variant selection
     const variantBtns = document.querySelectorAll('.pg-variant-btn');
-    const currPriceSpan = document.getElementById('pg-currentPrice'), oldSpan = document.getElementById('pg-oldPrice'), discSpan = document.getElementById('pg-discountBadge');
-    variantBtns.forEach(btn => btn.addEventListener('click', () => { variantBtns.forEach(b => b.classList.remove('active')); btn.classList.add('active'); const price = btn.getAttribute('data-price'), mrp = btn.getAttribute('data-mrp'); currPriceSpan.innerText = pgFormatPrice(price); if (oldSpan) { if (mrp && mrp !== 'null') oldSpan.innerText = pgFormatPrice(mrp); else oldSpan.style.display = 'none'; } const disc = pgGetDiscountPercent(mrp, price); if (discSpan) { if (disc) { discSpan.innerText = `${disc}% OFF`; discSpan.style.display = 'inline-block'; } else discSpan.style.display = 'none'; } }));
+    const currPriceSpan = document.getElementById('pg-currentPrice');
+    const oldSpan = document.getElementById('pg-oldPrice');
+    const discSpan = document.getElementById('pg-discountBadge');
+    variantBtns.forEach(btn => btn.addEventListener('click', () => {
+      variantBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const price = btn.getAttribute('data-price');
+      const mrp = btn.getAttribute('data-mrp');
+      if (currPriceSpan) currPriceSpan.innerText = pgFormatPrice(price);
+      if (oldSpan) {
+        if (mrp && mrp !== 'null' && mrp !== '') { oldSpan.innerText = pgFormatPrice(mrp); oldSpan.style.display = ''; }
+        else oldSpan.style.display = 'none';
+      }
+      const disc = pgGetDiscountPercent(mrp, price);
+      if (discSpan) {
+        if (disc) { discSpan.innerText = `${disc}% OFF`; discSpan.style.display = 'inline-block'; }
+        else discSpan.style.display = 'none';
+      }
+    }));
 
     const qtyInput = document.getElementById('pg-qtyInput');
     document.getElementById('pg-qtyMinus')?.addEventListener('click', () => { let v = parseInt(qtyInput.value); if (v > 1) qtyInput.value = v - 1; });
@@ -2042,36 +2097,30 @@ window.vastramayaShowToast = showToast;
       const qty = parseInt(qtyInput.value);
       const v = pgGetActiveVariant();
       const uniqueId = `${product.id}-${v.weight}`;
-      const mainImg = product.mainImage || product.image || "https://placehold.co/100x100/f5e9e7/c0392b?text=Pickle";
-
+      const productMainImg = pgGetProductImage(product, 'https://placehold.co/100x125/f5e9e7/c0392b?text=Pickle');
       if (typeof window.vastramayaAddToCart === 'function') {
         window.vastramayaAddToCart({
           uniqueId,
           productId: product.id,
           name: displayName,
-          image: mainImg,
+          image: productMainImg,
           price: Number(v.price),
           quantity: qty,
           size: v.weight
         });
       }
-
       if (typeof window.vastramayaShowToast === 'function') {
         window.vastramayaShowToast(`Added to cart: ${displayName} (${v.weight}) x ${qty}`);
-      } else {
-        alert(`🛒 Added to cart: ${displayName} (${v.weight}) x ${qty} = ${pgFormatPrice(v.price * qty)}`);
       }
     });
 
     document.getElementById('pg-wishlistBtn')?.addEventListener('click', () => {
-      const mainImg = product.mainImage || product.image || "https://placehold.co/100x100/f5e9e7/c0392b?text=Pickle";
-      const wishlistItem = { productId: product.id, name: displayName, image: mainImg, price: defaultVariant.price };
-
+      const productMainImg = pgGetProductImage(product, 'https://placehold.co/100x125/f5e9e7/c0392b?text=Pickle');
+      const wishlistItem = { productId: product.id, name: displayName, image: productMainImg, price: defaultVariant.price };
       let result = { added: true, signedIn: false };
       if (typeof window.vastramayaAddToWishlist === 'function') {
         result = window.vastramayaAddToWishlist(wishlistItem);
       }
-
       const showToastFn = window.vastramayaShowToast;
       if (!result.added) {
         if (typeof showToastFn === 'function') showToastFn(`${displayName} is already in your wishlist`);
@@ -2079,58 +2128,74 @@ window.vastramayaShowToast = showToast;
       }
       if (typeof showToastFn === 'function') {
         showToastFn(result.signedIn ? `❤️ ${displayName} saved to wishlist!` : `❤️ ${displayName} saved to wishlist! Sign in to keep it synced.`);
-      } else {
-        alert(`❤️ ${displayName} saved to wishlist!`);
       }
     });
-
 
     document.getElementById('pg-buyNowBtn')?.addEventListener('click', () => {
       const qty = parseInt(qtyInput.value);
       const variant = pgGetActiveVariant();
-      const selectedPrice = variant.price;
-      const selectedWeight = variant.weight;
-      const totalAmount = selectedPrice * qty;
       const params = new URLSearchParams();
       params.set('id', product.id);
       params.set('name', displayName);
-      params.set('weight', selectedWeight);
-      params.set('price', selectedPrice);
+      params.set('weight', variant.weight);
+      params.set('price', variant.price);
       params.set('quantity', qty);
-      params.set('total', totalAmount);
+      params.set('total', variant.price * qty);
       window.location.href = `checkout.html?${params.toString()}`;
     });
 
-    document.querySelectorAll('.pg-related-card').forEach(card => card.addEventListener('click', (e) => {
+    document.querySelectorAll('.pg-related-card').forEach(card => card.addEventListener('click', () => {
       const pid = card.getAttribute('data-id');
       if (pid) window.location.href = `view.html?id=${pid}`;
     }));
   }
 
   function pgInitMobileCarousel(product) {
-    const allImages = [product.mainImage || product.image, ...(product.thumbnailImages || product.additionalImages || [])].filter(Boolean);
+    // FIX 2: Use safe helper for carousel images
+    const mainImg = pgGetProductImage(product, 'https://placehold.co/600x750/f5e9e7/c0392b?text=Pickle');
+    const extraImages = [
+      ...(Array.isArray(product.thumbnailImages) ? product.thumbnailImages : []),
+      ...(Array.isArray(product.additionalImages) ? product.additionalImages : [])
+    ].filter(Boolean);
+    const allImages = [mainImg, ...extraImages];
     const unique = [...new Map(allImages.map(img => [img, img])).values()];
+
     const track = document.getElementById('pg-carouselTrack');
     const dotsContainer = document.getElementById('pg-carouselDots');
     if (!track || !dotsContainer || unique.length === 0) return;
-    const slides = [...unique, ...unique.slice(0, 2)];
-    track.innerHTML = slides.map(img => `<div class="pg-carousel-slide"><img src="${img}" onerror="this.src='https://placehold.co/600x600/f5e9e7/c0392b?text=img'"></div>`).join('');
+
+    track.innerHTML = unique.map(img =>
+      `<div class="pg-carousel-slide"><img src="${img}" onerror="this.src='https://placehold.co/600x750/f5e9e7/c0392b?text=img'"></div>`
+    ).join('');
+
     let currentIdx = 0;
     const totalReal = unique.length;
-    const updateCarousel = (idx, immediate = false) => {
-      currentIdx = idx;
-      track.style.transition = immediate ? 'none' : 'transform 0.3s ease-out';
+
+    const updateCarousel = (idx) => {
+      currentIdx = ((idx % totalReal) + totalReal) % totalReal;
+      track.style.transition = 'transform 0.3s ease-out';
       track.style.transform = `translateX(-${currentIdx * 100}%)`;
-      let realIndex = ((currentIdx % totalReal) + totalReal) % totalReal;
-      document.querySelectorAll('.pg-carousel-dot').forEach((dot, i) => dot.classList.toggle('active', i === realIndex));
+      document.querySelectorAll('.pg-carousel-dot').forEach((dot, i) => dot.classList.toggle('active', i === currentIdx));
     };
-    dotsContainer.innerHTML = unique.map((_, i) => `<div class="pg-carousel-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></div>`).join('');
-    document.querySelectorAll('.pg-carousel-dot').forEach(dot => dot.addEventListener('click', (e) => { const idx = parseInt(e.target.getAttribute('data-index')); updateCarousel(idx, false); }));
+
+    dotsContainer.innerHTML = unique.map((_, i) =>
+      `<div class="pg-carousel-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></div>`
+    ).join('');
+    document.querySelectorAll('.pg-carousel-dot').forEach(dot =>
+      dot.addEventListener('click', e => updateCarousel(parseInt(e.target.getAttribute('data-index'))))
+    );
+
     let startX = 0, isDragging = false;
-    track.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; isDragging = true; });
-    track.addEventListener('touchmove', (e) => { if (!isDragging) return; const diff = e.touches[0].clientX - startX; if (Math.abs(diff) > 40) { if (diff > 0) { let newIdx = currentIdx - 1; if (newIdx < 0) newIdx = totalReal - 1; updateCarousel(newIdx); } else { let newIdx = currentIdx + 1; if (newIdx >= totalReal) newIdx = 0; updateCarousel(newIdx); } isDragging = false; } });
+    track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; isDragging = true; });
+    track.addEventListener('touchmove', e => {
+      if (!isDragging) return;
+      const diff = e.touches[0].clientX - startX;
+      if (Math.abs(diff) > 40) {
+        updateCarousel(diff > 0 ? currentIdx - 1 : currentIdx + 1);
+        isDragging = false;
+      }
+    });
     track.addEventListener('touchend', () => { isDragging = false; });
-    updateCarousel(0, true);
   }
 
   function pgInitDescriptionToggle() {
