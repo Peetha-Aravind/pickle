@@ -238,7 +238,6 @@
             cursor: pointer; flex-shrink: 0; transition: all 0.2s ease; z-index: 2; min-width: 40px;
         }
         .m-menu-btn:hover { background: var(--surface-hover); }
-        /* === Added .m-logo rule (centered logo, same as landing page) === */
         .m-logo {
             height: 50px; width: auto; object-fit: contain;
             position: absolute; left: calc(42.5%); transform: translateX(-50%);
@@ -579,6 +578,7 @@
             border: 1px solid var(--border); box-shadow: var(--shadow-sm);
             transition: transform .25s, box-shadow .25s;
             display: flex; flex-direction: column; cursor: pointer;
+            position: relative; /* allow discount badge to be placed absolutely if needed */
         }
         .product-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
         .product-card-img {
@@ -588,7 +588,24 @@
         .product-card:hover .product-card-img img { transform: scale(1.07); }
         .product-card-body { padding: 16px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
         .product-card-name { font-weight: 700; font-size: 15px; color: var(--ink); line-height: 1.3; }
+        /* Rating row */
+        .product-card-rating {
+            display: flex; align-items: center; gap: 4px; font-size: 13px; color: #777;
+        }
+        .product-card-rating .stars { color: var(--rust); letter-spacing: 1px; }
+        .product-card-rating .rating-value { font-weight: 600; color: var(--ink); margin-left: 4px; }
         .product-card-price-range { font-size: 14px; font-weight: 600; color: var(--rust); }
+        /* MRP and discount row */
+        .product-card-pricing {
+            display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-top: 2px;
+        }
+        .product-card-mrp {
+            font-size: 12px; color: var(--ash); text-decoration: line-through;
+        }
+        .product-card-discount {
+            font-size: 11px; font-weight: 700; color: #fff; background: var(--rust);
+            padding: 2px 8px; border-radius: 20px;
+        }
         .product-card-actions { padding: 0 16px 16px; }
         .add-to-cart-btn {
             display: block; width: 100%; background: var(--ink); color: #fff;
@@ -697,7 +714,7 @@
         <button class="m-menu-btn icon-trigger" id="m-menu-toggle" aria-label="Open menu">
             <span class="icon-wrap"><img src="./assets/menu.svg" class="icon-default" alt=""><img src="./assets/menu-fill.svg" class="icon-fill" alt=""></span>
         </button>
-        <img class="d-navbar-logo" src="./assets/logo.png" alt="Happy NonVeg Pickles" onclick="window.location.href='index.html'" />
+        <img class="m-logo" src="./assets/logo.png" alt="Happy NonVeg Pickles" onclick="window.location.href='index.html'" />
         <div class="m-right-icons">
             <button class="m-icon-btn icon-trigger" id="m-search-toggle" aria-label="Search">
                 <span class="icon-wrap"><img src="./assets/search.svg" class="icon-default" alt=""><img src="./assets/search-fill.svg" class="icon-fill" alt=""></span>
@@ -973,32 +990,25 @@
     }
 
     function initNavbar() {
-        // Desktop search
         const desktopSearch = document.getElementById('desktop-search');
         if (desktopSearch) desktopSearch.addEventListener('input', debounce(e => searchProducts(e.target.value, 'desktop-search-results'), 300));
-        // Cart toggle
         const cartToggle = document.getElementById('d-cart-toggle');
         if (cartToggle) cartToggle.addEventListener('click', e => { e.stopPropagation(); document.getElementById('cart-popup').classList.toggle('show'); });
         document.addEventListener('click', () => document.getElementById('cart-popup')?.classList.remove('show'));
-        // Profile popup
         const profileToggle = document.getElementById('d-profile-toggle');
         if (profileToggle) profileToggle.addEventListener('click', e => { e.stopPropagation(); document.getElementById('profile-popup').classList.toggle('show'); });
         document.addEventListener('click', () => document.getElementById('profile-popup')?.classList.remove('show'));
-        // Mobile menu
         const mOverlay = document.getElementById('m-overlay');
         document.getElementById('m-menu-toggle')?.addEventListener('click', () => mOverlay.classList.add('open'));
         document.getElementById('m-drawer-close')?.addEventListener('click', () => mOverlay.classList.remove('open'));
         mOverlay?.addEventListener('click', e => { if (e.target === mOverlay) mOverlay.classList.remove('open'); });
-        // Mobile search
         document.getElementById('m-search-toggle')?.addEventListener('click', () => { document.getElementById('m-search-overlay').style.display = 'flex'; document.getElementById('mobile-search').focus(); });
         document.getElementById('m-search-close')?.addEventListener('click', () => document.getElementById('m-search-overlay').style.display = 'none');
         document.getElementById('mobile-search')?.addEventListener('input', debounce(e => searchProducts(e.target.value, 'mobile-search-results'), 300));
-        // Mobile cart
         const cartOverlay = document.getElementById('cart-overlay');
         document.getElementById('m-cart-toggle')?.addEventListener('click', () => cartOverlay.classList.add('open'));
         document.getElementById('cart-drawer-close')?.addEventListener('click', () => cartOverlay.classList.remove('open'));
         cartOverlay?.addEventListener('click', e => { if (e.target === cartOverlay) cartOverlay.classList.remove('open'); });
-        // Categories toggle
         document.getElementById('m-categories-toggle')?.addEventListener('click', () => {
             const content = document.getElementById('mobile-nav-categories');
             const toggle = document.getElementById('m-categories-toggle');
@@ -1006,11 +1016,9 @@
             content.style.display = isOpen ? 'none' : 'block';
             toggle.classList.toggle('active', !isOpen);
         });
-        // Filter drawer
         document.getElementById('filterTriggerText')?.addEventListener('click', () => { syncFiltersToMobile(); document.getElementById('filterOverlay').classList.add('open'); });
         document.getElementById('filterDrawerClose')?.addEventListener('click', () => document.getElementById('filterOverlay').classList.remove('open'));
         document.getElementById('filterOverlay')?.addEventListener('click', e => { if (e.target === document.getElementById('filterOverlay')) document.getElementById('filterOverlay').classList.remove('open'); });
-        // Wishlist click
         window.handleWishlistClick = e => { e.preventDefault(); currentUser ? window.location.href = 'wishlist.html' : openAuthModal(); };
     }
 
@@ -1026,7 +1034,6 @@
         container.classList.add('show');
     }
 
-    // AUTH MODAL (with null checks)
     function initAuthModal() {
         const modalOverlay = document.getElementById('login-modal-overlay');
         const closeBtn = document.getElementById('close-modal-btn');
@@ -1086,7 +1093,6 @@
     function openAuthModal() { document.getElementById('login-modal-overlay').classList.add('active'); }
     function togglePassword(id, btn) { const input = document.getElementById(id); input.type = input.type === 'password' ? 'text' : 'password'; }
 
-    // AUTH STATE
     auth.onAuthStateChanged(user => {
         currentUser = user;
         updateAuthUI();
@@ -1128,7 +1134,6 @@
         }
     }
 
-    // WISHLIST
     function setupWishlistListener(user) {
         if (wishlistUnsubscribe) wishlistUnsubscribe();
         wishlistUnsubscribe = cartDb.collection('users').doc(user.uid).onSnapshot(doc => {
@@ -1143,7 +1148,6 @@
         if (mBadge) { mBadge.textContent = count; mBadge.style.display = count > 0 ? 'flex' : 'none'; }
     }
 
-    // CART
     function saveCart(syncDB) {
         localStorage.setItem('vastramaya_cart', JSON.stringify(cart));
         if (syncDB && currentUser) cartDb.collection('users').doc(currentUser.uid).update({ cart }).catch(() => {});
@@ -1228,7 +1232,7 @@
             allProducts = Array.from(productMap.values());
             allCategories = categoriesList.filter(c => Object.keys(c.products).length > 0);
             populateCategoryFilters();
-            applyFilters(); // removes skeleton, shows products
+            applyFilters();
         } catch (err) {
             console.error(err);
             document.getElementById('shopProductSections').innerHTML = '<div class="empty-state">Error loading products.</div>';
@@ -1257,8 +1261,10 @@
 
     function applyFilters() {
         const catId = document.querySelector('#categoryFilterList input[name="categoryFilter"]:checked')?.value || '';
-        const minPrice = parseFloat(document.getElementById('priceMinInput').value) || null;
-        const maxPrice = parseFloat(document.getElementById('priceMaxInput').value) || null;
+        const minPriceRaw = document.getElementById('priceMinInput').value;
+        const maxPriceRaw = document.getElementById('priceMaxInput').value;
+        const minPrice = minPriceRaw !== '' ? Number(minPriceRaw) : null;
+        const maxPrice = maxPriceRaw !== '' ? Number(maxPriceRaw) : null;
         const sort = document.getElementById('sortSelect').value;
         currentFilters = { categoryId: catId, minPrice, maxPrice, sort };
         renderProducts();
@@ -1289,13 +1295,14 @@
         const { categoryId, minPrice, maxPrice, sort } = currentFilters;
         let filtered = allProducts.filter(p => {
             if (categoryId && p.categoryId !== categoryId) return false;
-            const price = p.minPrice || p.maxPrice || 0;
+            // Use the lowest available price for filtering (minPrice is the selling price)
+            const price = parseFloat(p.minPrice || p.maxPrice) || 0;
             if (minPrice !== null && price < minPrice) return false;
             if (maxPrice !== null && price > maxPrice) return false;
             return true;
         });
 
-        const sortPrice = p => p.minPrice || p.maxPrice || 0;
+        const sortPrice = p => parseFloat(p.minPrice || p.maxPrice) || 0;
         if (sort === 'price-asc') filtered.sort((a, b) => sortPrice(a) - sortPrice(b));
         else if (sort === 'price-desc') filtered.sort((a, b) => sortPrice(b) - sortPrice(a));
         else if (sort === 'name-asc') filtered.sort((a, b) => a.name.localeCompare(b.name));
@@ -1324,15 +1331,41 @@
             section.innerHTML = `<h2>${catName}</h2><div class="product-grid"></div>`;
             const grid = section.querySelector('.product-grid');
             products.forEach(prod => {
-                const priceDisplay = (prod.minPrice && prod.maxPrice && prod.minPrice !== prod.maxPrice)
-                    ? `₹${prod.minPrice} – ₹${prod.maxPrice}`
-                    : `₹${prod.minPrice || prod.maxPrice || 0}`;
+                const minPrice = parseFloat(prod.minPrice) || 0;
+                const maxPrice = parseFloat(prod.maxPrice) || 0;
+                const priceDisplay = (minPrice && maxPrice && minPrice !== maxPrice)
+                    ? `₹${minPrice} – ₹${maxPrice}`
+                    : `₹${minPrice || maxPrice}`;
+
+                // Rating display
+                const rating = prod.rating ? parseFloat(prod.rating) : null;
+                const ratingHtml = rating ? `<div class="product-card-rating"><span class="stars">${'★'.repeat(Math.round(rating))}</span><span class="rating-value">${rating.toFixed(1)}</span></div>` : '';
+
+                // Discount and MRP
+                let discountHtml = '';
+                let mrpHtml = '';
+                if (maxPrice && minPrice && maxPrice > minPrice) {
+                    const discountPercent = Math.round((1 - minPrice / maxPrice) * 100);
+                    if (discountPercent > 0) {
+                        mrpHtml = `<span class="product-card-mrp">₹${maxPrice}</span>`;
+                        discountHtml = `<span class="product-card-discount">${discountPercent}% OFF</span>`;
+                    }
+                }
+
                 const card = document.createElement('div'); card.className = 'product-card';
                 card.onclick = () => window.location.href = `view.html?id=${prod.id}`;
                 card.innerHTML = `
                     <div class="product-card-img"><img src="${prod.image || 'https://placehold.co/400x500/f5e9e7/C0392B?text=Pickle'}" alt="${prod.name}" loading="lazy" onerror="this.src='https://placehold.co/400x500/e2d6ca/5a3a2a?text=Oops'"></div>
-                    <div class="product-card-body"><div class="product-card-name">${prod.name}</div><div class="product-card-price-range">${priceDisplay}</div></div>
-                    <div class="product-card-actions"><button class="add-to-cart-btn" onclick="event.stopPropagation(); addToCart({id:'${prod.id}', name:'${prod.name.replace(/'/g, "\\'")}', image:'${prod.image}', minPrice:${prod.minPrice||null}, maxPrice:${prod.maxPrice||null}})">Add to Cart</button></div>`;
+                    <div class="product-card-body">
+                        <div class="product-card-name">${prod.name}</div>
+                        ${ratingHtml}
+                        <div class="product-card-price-range">${priceDisplay}</div>
+                        <div class="product-card-pricing">
+                            ${mrpHtml}
+                            ${discountHtml}
+                        </div>
+                    </div>
+                    <div class="product-card-actions"><button class="add-to-cart-btn" onclick="event.stopPropagation(); addToCart({id:'${prod.id}', name:'${prod.name.replace(/'/g, "\\'")}', image:'${prod.image}', minPrice:${minPrice}, maxPrice:${maxPrice}})">Add to Cart</button></div>`;
                 grid.appendChild(card);
             });
             container.appendChild(section);
