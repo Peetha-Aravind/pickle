@@ -64,7 +64,7 @@
 
     .checkout-container {
       max-width: 1200px;
-      margin: 80px auto 40px;  /* extra top margin to clear fixed back button */
+      margin: 80px auto 40px;
       padding: 0 5vw;
       display: grid;
       grid-template-columns: 1fr 1.2fr;
@@ -94,14 +94,16 @@
     .payment-radio .label { flex: 1; }
     .payment-radio .name { font-weight: 700; display: block; }
     .payment-radio .fee { font-size: 0.7rem; color: var(--ash); }
+    
     .order-summary {
       background: white; border-radius: var(--r-card); box-shadow: var(--shadow-sm);
       overflow: hidden; position: sticky; top: 20px;
       display: flex; flex-direction: column;
     }
     .summary-header { background: var(--rust); color: white; padding: 18px 24px; font-weight: 700; font-size: 1.2rem; }
-    .summary-items { padding: 20px 24px; border-bottom: 1px solid var(--border); }
+    .summary-items { padding: 20px 24px; border-bottom: 1px solid var(--border); max-height: 300px; overflow-y: auto; }
     .cart-item { display: flex; gap: 16px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px dashed var(--border); }
+    .cart-item:last-child { margin-bottom: 0; border-bottom: none; }
     .cart-item-img { width: 70px; height: 70px; border-radius: 12px; background: #f0e7de; overflow: hidden; flex-shrink: 0; }
     .cart-item-img img { width: 100%; height: 100%; object-fit: cover; }
     .cart-item-details { flex: 1; }
@@ -249,43 +251,81 @@
 
   function formatPrice(p) { return `₹${Math.round(Number(p) || 0)}`; }
 
-  let checkoutItem = null;
+  // Global state
+  let checkoutItems = [];      // array of { id, name, image, variant, quantity, price }
   let appliedCoupon = null;
   let selectedPayment = 'online';
   let savedAddress = null;
 
-  async function getCheckoutItem() {
+  // ─── Determine checkout flow and gather items ─────────────────
+  async function getCheckoutItems() {
     const params = new URLSearchParams(window.location.search);
-    const productId = params.get('productId');
-    const quantity = parseInt(params.get('quantity')) || 1;
-    const variant = params.get('variant') || '';
-    if (!productId) return null;
-    try {
-      const prodSnap = await getDoc(doc(db, "products", productId));
-      if (!prodSnap.exists()) return null;
-      const product = prodSnap.data();
-      let selectedVariant = null;
-      if (variant && product.variants) {
-        selectedVariant = product.variants.find(v => v.weight === variant);
-      }
-      if (!selectedVariant && product.variants && product.variants.length > 0) {
-        selectedVariant = product.variants[0];
-      }
-      const itemPrice = selectedVariant ? selectedVariant.price : (product.price || 0);
-      return {
+    const productId = params.get('id') || params.get('productId');
+
+    // ── Direct Buy Now flow ──
+    if (productId) {
+      const qty = parseInt(params.get('quantity')) || 1;
+      const variantWeight = params.get('weight') || '';
+      const directPrice = params.get('price');   // optional fallback
+      const directName = params.get('name');     // optional fallback
+      const directImage = params.get('image');   // optional fallback
+
+      try {
+        const prodSnap = await getDoc(doc(db, "products", productId));
+        if (prodSnap.exists()) {
+          const product = prodSnap.data();
+          let selectedVariant = null;
+          if (variantWeight && product.variants) {
+            selectedVariant = product.variants.find(v => v.weight === variantWeight);
+          }
+          if (!selectedVariant && product.variants && product.variants.length > 0) {
+            selectedVariant = product.variants[0];
+          }
+          const itemPrice = selectedVariant ? selectedVariant.price : (product.price || directPrice || 0);
+          const imageUrl = product.mainImage || product.image || directImage || "https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle";
+          return [{
+            id: productId,
+            name: product.longName || product.name || directName || "Pickle",
+            image: imageUrl,
+            variant: selectedVariant ? selectedVariant.weight : (variantWeight || "Standard"),
+            quantity: qty,
+            price: Number(itemPrice)
+          }];
+        }
+      } catch(e) { console.warn("Firestore fetch failed, using URL params", e); }
+
+      // Fallback: construct item from URL params only
+      return [{
         id: productId,
-        name: product.longName || product.name,
-        image: product.mainImage || product.image || "https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle",
-        variant: selectedVariant ? selectedVariant.weight : (variant || "Standard"),
-        quantity: quantity,
-        price: itemPrice,
-      };
-    } catch(e) { console.warn(e); return null; }
+        name: directName || "Product",
+        image: directImage || "https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle",
+        variant: variantWeight || "Standard",
+        quantity: qty,
+        price: Number(directPrice) || 0
+      }];
+    }
+
+    // ── Cart Checkout flow ──
+    const rawCart = JSON.parse(localStorage.getItem('vastramaya_cart')) || [];
+    if (!rawCart.length) return [];   // empty cart
+
+    return rawCart.map(item => ({
+      id: item.productId || item.id,
+      name: item.name,
+      image: item.image || "https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle",
+      variant: item.size || item.variant || "Standard",
+      quantity: item.quantity || 1,
+      price: Number(item.price) || 0
+    }));
   }
 
+  // ─── Totals calculation ──────────────────────────────────────
   function getCurrentTotals() {
-    if (!checkoutItem) return { subtotal: 0, discount: 0, shipping: 0, total: 0, handlingFee: 0, discountText: '' };
-    let subtotal = checkoutItem.price * checkoutItem.quantity;
+    let subtotal = 0;
+    checkoutItems.forEach(item => {
+      subtotal += item.price * item.quantity;
+    });
+
     let discount = 0;
     let discountText = '';
     if (appliedCoupon) {
@@ -298,9 +338,11 @@
       }
       discount = Math.min(discount, subtotal);
     }
+
     let shipping = subtotal > 499 ? 0 : 40;
     let handlingFee = 0;
     if (selectedPayment === 'cod') handlingFee = 100;
+
     const total = subtotal - discount + shipping + handlingFee;
     return { subtotal, discount, discountText, shipping, handlingFee, total };
   }
@@ -321,6 +363,7 @@
     if (payBtn) payBtn.innerText = `Pay ${formatPrice(totals.total)}`;
   }
 
+  // ─── Coupon logic ────────────────────────────────────────────
   async function applyCoupon(code) {
     if (!code) return { success: false, message: 'Enter a coupon code' };
     const upperCode = code.toUpperCase();
@@ -337,7 +380,7 @@
           return { success: false, message: 'Coupon expired' };
         }
       }
-      const subtotal = checkoutItem.price * checkoutItem.quantity;
+      const subtotal = getCurrentTotals().subtotal;
       if (data.minOrder && subtotal < data.minOrder) {
         return { success: false, message: `Minimum order ₹${data.minOrder} required` };
       }
@@ -356,6 +399,7 @@
     }
   }
 
+  // ─── Render left panel (address + payment) ──────────────────
   function renderLeftPanel() {
     const leftContainer = document.getElementById('leftPanelContainer');
     if (!leftContainer) return;
@@ -367,7 +411,8 @@
         Phone: ${escapeHtml(savedAddress.phone)}
       </div>
     ` : '<p style="color:var(--ash); margin-top:10px;">No address added yet.</p>';
-    const html = `
+
+    leftContainer.innerHTML = `
       <div class="card">
         <div class="card-title">📦 Delivery Address</div>
         <button class="add-address-btn" id="openAddressBtn">+ Add Address</button>
@@ -393,7 +438,7 @@
         </div>
       </div>
     `;
-    leftContainer.innerHTML = html;
+
     document.getElementById('openAddressBtn')?.addEventListener('click', () => openAddressModal());
     const radios = document.querySelectorAll('.payment-radio');
     radios.forEach(radio => {
@@ -409,22 +454,30 @@
     });
   }
 
+  // ─── Render right column (order summary) ────────────────────
   function renderRightColumn() {
     const rightContainer = document.getElementById('rightColumnContainer');
     if (!rightContainer) return;
+
+    // Build cart items HTML
+    const itemsHtml = checkoutItems.map(item => `
+      <div class="cart-item">
+        <div class="cart-item-img"><img src="${item.image}" alt="${escapeHtml(item.name)}" onerror="this.src='https://placehold.co/70x70/f5e9e7/c0392b?text=Pickle'"></div>
+        <div class="cart-item-details">
+          <div class="cart-item-name">${escapeHtml(item.name)}</div>
+          <div class="cart-item-variant">${escapeHtml(item.variant)}</div>
+          <div class="cart-item-price-row">
+            <span class="cart-item-qty">Qty: ${item.quantity}</span>
+            <span class="cart-item-total">${formatPrice(item.price * item.quantity)}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
     rightContainer.innerHTML = `
       <div class="order-summary">
         <div class="summary-header">Order Summary</div>
-        <div class="summary-items">
-          <div class="cart-item">
-            <div class="cart-item-img"><img src="${checkoutItem.image}" alt="${checkoutItem.name}" onerror="this.src='https://placehold.co/70x70/f5e9e7/c0392b?text=Pickle'"></div>
-            <div class="cart-item-details">
-              <div class="cart-item-name">${escapeHtml(checkoutItem.name)}</div>
-              <div class="cart-item-variant">${escapeHtml(checkoutItem.variant)}</div>
-              <div class="cart-item-price-row"><span class="cart-item-qty">Qty: ${checkoutItem.quantity}</span><span class="cart-item-total">${formatPrice(checkoutItem.price * checkoutItem.quantity)}</span></div>
-            </div>
-          </div>
-        </div>
+        <div class="summary-items">${itemsHtml}</div>
         <div class="coupon-section">
           <div class="coupon-row">
             <input type="text" id="couponInputRight" placeholder="Enter coupon code">
@@ -436,6 +489,8 @@
         <button class="pay-btn" id="payNowBtn">Pay Now</button>
       </div>
     `;
+
+    // Coupon handlers
     const applyBtn = document.getElementById('applyCouponBtnRight');
     const couponInput = document.getElementById('couponInputRight');
     if (applyBtn) {
@@ -451,10 +506,12 @@
         }
       };
     }
+
     updateTotalsAndButton();
     document.getElementById('payNowBtn')?.addEventListener('click', () => processOrder());
   }
 
+  // ─── Address modal handlers ──────────────────────────────────
   function openAddressModal() {
     document.getElementById('addressModal').style.display = 'flex';
   }
@@ -483,31 +540,43 @@
     closeAddressModal();
   };
 
+  // ─── Final order processing ──────────────────────────────────
   function processOrder() {
     if (!savedAddress) { alert('Please add a delivery address first'); return; }
-    if (!checkoutItem) { alert('No product in checkout'); return; }
+    if (!checkoutItems.length) { alert('No items in checkout'); return; }
+
     const totals = getCurrentTotals();
     const paymentMethod = selectedPayment === 'online' ? 'Online Payment' : 'Cash on Delivery';
-    alert(`✅ Order placed successfully!\n\nDeliver to: ${savedAddress.name}, ${savedAddress.address}, ${savedAddress.city}\nProduct: ${checkoutItem.name} (${checkoutItem.variant}) x ${checkoutItem.quantity}\nTotal: ${formatPrice(totals.total)}\nPayment: ${paymentMethod}\n\nThank you for shopping!`);
+    const itemList = checkoutItems.map(i => `${i.name} (${i.variant}) x ${i.quantity}`).join(', ');
+
+    // Clear cart if it came from the cart flow (not direct buy)
+    if (!new URLSearchParams(window.location.search).get('id')) {
+      localStorage.removeItem('vastramaya_cart');
+    }
+
+    alert(`✅ Order placed successfully!\n\nDeliver to: ${savedAddress.name}, ${savedAddress.address}, ${savedAddress.city}\nItems: ${itemList}\nTotal: ${formatPrice(totals.total)}\nPayment: ${paymentMethod}\n\nThank you for shopping!`);
     window.location.href = 'index.html';
   }
 
   function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
 
+  // ─── Main initialisation ─────────────────────────────────────
   async function initCheckout() {
     const root = document.getElementById('checkoutRoot');
-    const item = await getCheckoutItem();
-    if (!item) {
-      root.innerHTML = `<div style="text-align:center; padding:40px;">❌ No item to checkout. <a href="index.html" style="color:var(--rust);">Continue Shopping</a></div>`;
+    checkoutItems = await getCheckoutItems();
+
+    if (!checkoutItems.length) {
+      root.innerHTML = `<div style="text-align:center; padding:40px;">❌ No items to checkout. <a href="index.html" style="color:var(--rust);">Continue Shopping</a></div>`;
       return;
     }
-    checkoutItem = item;
+
     root.innerHTML = `
       <div class="checkout-container">
         <div class="left-panel" id="leftPanelContainer"></div>
         <div id="rightColumnContainer"></div>
       </div>
     `;
+
     renderLeftPanel();
     renderRightColumn();
   }
