@@ -292,7 +292,7 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 32px 24px 40px;
-            background: transparent; /* uses dashboard bg */
+            background: transparent;
         }
         .manage-orders-page .page-title {
             font-size: 24px; font-weight: 700;
@@ -389,7 +389,7 @@
 
         /* Mobile Filter Bar */
         .manage-orders-page .mobile-filter-bar {
-            display: none; /* hidden on desktop */
+            display: none;
             background: #ffffff; border-radius: 12px;
             padding: 12px 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);
             margin-bottom: 24px;
@@ -472,7 +472,7 @@
 
         .manage-orders-page .dropdown-menu {
             position: absolute;
-            bottom: calc(100% + 6px); /* Opens UPWARDS */
+            bottom: calc(100% + 6px);
             right: 0;
             background: #ffffff;
             min-width: 170px;
@@ -593,12 +593,23 @@
             .manage-orders-page .filter-bar-desktop { display: none !important; }
             .manage-orders-page .mobile-controls { display: flex; }
             .manage-orders-page .mobile-filter-bar { display: flex; }
-            .manage-orders-page .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .manage-orders-page .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
             .manage-orders-page .stat-card { padding: 16px; gap: 12px; }
             .manage-orders-page .stat-icon { width: 40px; height: 40px; }
+            .manage-orders-page .stat-icon svg { width: 20px; height: 20px; }
             .manage-orders-page .stat-info .value { font-size: 22px; }
             .manage-orders-page .desktop-only { display: none !important; }
             .manage-orders-page .mobile-orders-container { display: block; }
+        }
+
+        /* Force 4 stat cards in a single row on desktop / tablet */
+        @media (min-width: 769px) {
+            .manage-orders-page .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
     </style>
 </head>
@@ -628,7 +639,6 @@
             </div>
 
             <nav class="m-drawer-nav">
-                <!-- DASHBOARD ACTIVE -->
                 <a href="dashboard.html" class="nav-item active">
                     <span class="icon icon-custom icon-dashboard">
                         <span class="icon-normal"></span>
