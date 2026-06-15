@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=1.0">
+  <title>Dashboard – Happy NonVeg Pickles</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ─── RESET & GLOBAL VARIABLES ─── */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    a { text-decoration: none !important; color: inherit; }
+
+    :root {
+      --page-bg: #f4f5f7;
+      --header-bg: #ffffff;
+      --sidebar-bg: #ffffff;
+      --text-color: rgb(24, 24, 26);
+      --text-sub: #6b7280;
+      --icon-color: #6b7280;
+      --icon-active: #5127ba;
+      --active-bg: #f3f4f6;
+      --hover-bg: #f3f4f6;
+      --border-subtle: #e5e7eb;
+      --brand-primary: #5127ba;
+      --brand-gradient: linear-gradient(135deg, #5127ba 0%, #673de6 100%);
+      --danger-color: #ef4444;
+      --success-color: #10B981;
+      --warning-color: #f59e0b;
+      --switch-on: #5127ba;
+      --switch-off: #9CA3AF;
+      --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    body {
+      background: var(--page-bg);
+      font-family: "DM Sans", Roboto, sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 20px;
+      color: var(--text-color);
+      overflow-x: hidden;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    /* ─── CONTENT CONTAINER ─── */
+    .main-content {
+      width: 100%;
+      max-width: 1110px;
+      margin: 0 auto;
+      padding: 24px 24px 40px;
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        padding: 16px;
+      }
+    }
+
+    /* ─── PAGE TITLE & BREADCRUMB ─── */
+    .page-title {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 32px;
+      color: rgb(29, 30, 32);
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .page-title {
+        font-size: 22px;
+      }
+    }
+
+    .breadcrumb {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 24px;
+    }
+    .breadcrumb span { color: #6b7280; }
+    .breadcrumb .active { color: rgb(29, 30, 32); font-weight: 600; }
+    .breadcrumb .divider { color: #d1d5db; }
+
+    /* ─── CONTROLS: SEARCH + FILTER ─── */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 24px;
+      align-items: center;
+    }
+
+    .search-input-wrap {
+      background: #f9fafb;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      padding: 12px 16px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: border-color 0.15s ease;
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .search-input-wrap:focus-within {
+      border-color: #673de6;
+      box-shadow: 0 0 0 3px rgba(81, 39, 186, 0.1);
+    }
+
+    .search-input-wrap svg {
+      width: 16px;
+      stroke: #9ca3af;
+      flex-shrink: 0;
+    }
+
+    .search-input-wrap input {
+      background: transparent;
+      border: none;
+      outline: none;
+      width: 100%;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text-color);
+    }
+
+    .filter-select {
+      padding: 12px 20px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      background: #ffffff;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text-color);
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.15s ease;
+      min-width: 160px;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+    }
+
+    .filter-select:focus {
+      border-color: #673de6;
+      box-shadow: 0 0 0 3px rgba(81, 39, 186, 0.1);
+    }
+
+    /* ─── STATS GRID ─── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .stat-card h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-sub);
+      margin-bottom: 8px;
+    }
+
+    .stat-card .value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-color);
+      line-height: 1.2;
+    }
+
+    /* ─── CARD (TABLE WRAPPER) ─── */
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      overflow: hidden;
+      width: 100%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .card-header {
+      padding: 24px 20px;
+      border-bottom: 1px solid #e5e7eb;
+      font-weight: 700;
+      font-size: 16px;
+      color: rgb(29, 30, 32);
+    }
+
+    /* ─── DESKTOP TABLE ─── */
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      overflow: visible !important;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      z-index: 1;
+      position: relative;
+    }
+
+    thead {
+      height: 48px;
+    }
+
+    th {
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 24px;
+      color: rgb(29, 30, 32);
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+      white-space: nowrap;
+      background-color: #ffffff;
+      padding: 12px 20px;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #f3f4f6;
+      background-color: #ffffff;
+      transition: background-color 0.15s ease;
+    }
+
+    tbody tr:hover {
+      background-color: #f9fafb;
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    td {
+      padding: 12px 20px;
+      vertical-align: middle;
+      text-align: left;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    .badge.pending { background: #FFF3E0; color: #E65100; }
+    .badge.confirmed { background: #E8F5E9; color: #2E7D32; }
+    .badge.shipped { background: #E3F2FD; color: #0D47A1; }
+    .badge.delivered { background: #E8F5E9; color: #2E7D32; }
+
+    .order-id {
+      font-family: monospace;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--brand-primary);
+    }
+
+    /* Action dropdown in table */
+    .status-select {
+      padding: 6px 28px 6px 12px;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      font-family: inherit;
+      font-size: 13px;
+      color: var(--text-color);
+      background: white;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      cursor: pointer;
+      min-width: 140px;
+      transition: border-color 0.15s ease;
+    }
+
+    .status-select:focus {
+      border-color: #673de6;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(81, 39, 186, 0.1);
+    }
+
+    .status-select:disabled {
+      background: #f3f4f6;
+      color: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    /* ─── MOBILE CARDS (hidden on desktop) ─── */
+    .mobile-orders-container {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .desktop-only {
+        display: none !important;
+      }
+      .mobile-orders-container {
+        display: block;
+      }
+
+      .mobile-product-cards {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .mobile-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid #e5e7eb;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        width: 100%;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      .mobile-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .mobile-card-img {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        background: var(--brand-gradient);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .mobile-card-img svg {
+        width: 28px;
+        height: 28px;
+        stroke: white;
+      }
+
+      .mobile-card-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .mobile-card-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: rgb(29, 30, 32);
+      }
+
+      .mobile-card-subtitle {
+        font-size: 14px;
+        font-weight: 600;
+        color: #5127ba;
+      }
+
+      .mobile-card-meta {
+        font-size: 12px;
+        font-weight: 500;
+        color: #6b7280;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .mobile-card-actions {
+        margin-left: auto;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+    }
+
+    /* ─── LOADING SKELETON ─── */
+    .skeleton {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 8px;
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+  </style>
+</head>
+<body>
+  <main class="main-content">
+    <!-- Page Title & Breadcrumb -->
+    <h1 class="page-title">Dashboard</h1>
+    <div class="breadcrumb">
+      <span>Home</span>
+      <span class="divider">/</span>
+      <span class="active">Dashboard</span>
+    </div>
+
+    <!-- Search & Filter Controls -->
+    <div class="controls">
+      <div class="search-input-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Search by Order ID or Customer Name...">
+      </div>
+      <select class="filter-select" id="filterSelect">
+        <option value="today" selected>Today's Arrivals</option>
+        <option value="pending">Pending Orders</option>
+        <option value="shipped">Shipping Orders</option>
+        <option value="all">Full History</option>
+      </select>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card"><h3>Total Orders</h3><div class="value skeleton" style="width:60px; height:32px;"></div></div>
+      <div class="stat-card"><h3>Today's Orders</h3><div class="value skeleton" style="width:60px; height:32px;"></div></div>
+      <div class="stat-card"><h3>Pending</h3><div class="value skeleton" style="width:60px; height:32px;"></div></div>
+      <div class="stat-card"><h3>Total Revenue</h3><div class="value skeleton" style="width:80px; height:32px;"></div></div>
+    </div>
+
+    <!-- Desktop Table View (hidden on mobile) -->
+    <div class="desktop-only card">
+      <div class="card-header">Recent Orders</div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="ordersBodyDesktop">
+            <tr><td colspan="6" style="text-align:center; padding:24px;">
+              <div class="skeleton" style="width:100%; height:24px; margin:8px 0;"></div>
+              <div class="skeleton" style="width:100%; height:24px; margin:8px 0;"></div>
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Mobile Cards View (hidden on desktop) -->
+    <div class="mobile-orders-container" id="ordersMobileContainer">
+      <div class="card-header" style="border-bottom:1px solid #e5e7eb; margin-bottom:0;">Recent Orders</div>
+      <div class="mobile-product-cards" id="ordersBodyMobile">
+        <div class="mobile-card"><div class="skeleton" style="width:100%; height:80px; border-radius:16px;"></div></div>
+        <div class="mobile-card"><div class="skeleton" style="width:100%; height:80px; border-radius:16px;"></div></div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+      getFirestore, collection, getDocs, query, orderBy, doc, updateDoc 
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
+      authDomain: "pickle-fdc54.firebaseapp.com",
+      projectId: "pickle-fdc54",
+      storageBucket: "pickle-fdc54.firebasestorage.app",
+      messagingSenderId: "650348710985",
+      appId: "1:650348710985:web:b8eedb551a79b536578398",
+      measurementId: "G-B40NG5KQDL"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let allOrders = [];
+
+    // Helper to safely convert Firestore timestamp
+    function toDate(ts) {
+      if (!ts) return null;
+      if (ts.toDate) return ts.toDate();
+      return new Date(ts);
+    }
+
+    function formatDate(ts) {
+      const d = toDate(ts);
+      return d ? d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+    }
+
+    function isToday(ts) {
+      const d = toDate(ts);
+      return d ? d.toDateString() === new Date().toDateString() : false;
+    }
+
+    // ─── LOAD ALL ORDERS ───
+    async function loadOrders() {
+      const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+      const snap = await getDocs(q);
+      allOrders = [];
+      snap.forEach(doc => allOrders.push({ id: doc.id, ...doc.data() }));
+    }
+
+    // ─── RENDER STATS ───
+    function renderStats() {
+      const total = allOrders.length;
+      const todayCnt = allOrders.filter(o => isToday(o.createdAt)).length;
+      const pendingCnt = allOrders.filter(o => o.status === 'pending').length;
+      const revenue = allOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+
+      document.getElementById('statsGrid').innerHTML = `
+        <div class="stat-card"><h3>Total Orders</h3><div class="value">${total}</div></div>
+        <div class="stat-card"><h3>Today's Orders</h3><div class="value">${todayCnt}</div></div>
+        <div class="stat-card"><h3>Pending</h3><div class="value">${pendingCnt}</div></div>
+        <div class="stat-card"><h3>Total Revenue</h3><div class="value">₹${revenue.toLocaleString('en-IN')}</div></div>
+      `;
+    }
+
+    // ─── FILTER & SEARCH ───
+    function getFilteredOrders() {
+      const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+      const filter = document.getElementById('filterSelect').value;
+
+      return allOrders.filter(order => {
+        if (searchTerm) {
+          const idMatch = order.id.toLowerCase().includes(searchTerm);
+          const nameMatch = (order.shippingAddress?.name || '').toLowerCase().includes(searchTerm);
+          if (!idMatch && !nameMatch) return false;
+        }
+
+        switch (filter) {
+          case 'today': return isToday(order.createdAt);
+          case 'pending': return order.status === 'pending';
+          case 'shipped': return order.status === 'shipped';
+          case 'all': return true;
+          default: return true;
+        }
+      });
+    }
+
+    // ─── BADGE HELPER ───
+    function getBadgeClass(status) {
+      if (status === 'pending') return 'pending';
+      if (status === 'shipped') return 'shipped';
+      if (status === 'delivered') return 'delivered';
+      return 'confirmed';
+    }
+
+    // ─── RENDER DESKTOP TABLE ───
+    function renderDesktopTable() {
+      const filtered = getFilteredOrders();
+      const tbody = document.getElementById('ordersBodyDesktop');
+      if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px; color:#6b7280;">No orders found</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(order => {
+        const shortId = order.id.slice(-8);
+        const date = formatDate(order.createdAt);
+        const customer = order.shippingAddress?.name || 'Unknown';
+        const total = `₹${Math.round(order.total || 0).toLocaleString('en-IN')}`;
+        const status = order.status || 'pending';
+        const badgeClass = getBadgeClass(status);
+
+        let options = '';
+        if (status === 'pending') {
+          options = `<option value="">Change Status</option>
+                     <option value="shipped">Mark Shipped</option>
+                     <option value="delivered">Mark Delivered</option>`;
+        } else if (status === 'shipped') {
+          options = `<option value="">Change Status</option>
+                     <option value="delivered">Mark Delivered</option>`;
+        } else {
+          options = `<option value="">No action</option>`;
+        }
+
+        return `
+          <tr data-order-id="${order.id}">
+            <td><span class="order-id">#${shortId}</span></td>
+            <td>${date}</td>
+            <td>${customer}</td>
+            <td><strong>${total}</strong></td>
+            <td><span class="badge ${badgeClass}">${status}</span></td>
+            <td>
+              <select class="status-select" ${status === 'delivered' ? 'disabled' : ''}>
+                ${options}
+              </select>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      // Attach event listeners
+      document.querySelectorAll('#ordersBodyDesktop .status-select').forEach(select => {
+        select.addEventListener('change', handleStatusChange);
+      });
+    }
+
+    // ─── RENDER MOBILE CARDS ───
+    function renderMobileCards() {
+      const filtered = getFilteredOrders();
+      const container = document.getElementById('ordersBodyMobile');
+      if (!filtered.length) {
+        container.innerHTML = '<div style="padding:24px; text-align:center; color:#6b7280;">No orders found</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(order => {
+        const shortId = order.id.slice(-8);
+        const date = formatDate(order.createdAt);
+        const customer = order.shippingAddress?.name || 'Unknown';
+        const total = `₹${Math.round(order.total || 0).toLocaleString('en-IN')}`;
+        const status = order.status || 'pending';
+        const badgeClass = getBadgeClass(status);
+
+        let options = '';
+        if (status === 'pending') {
+          options = `<option value="">Change</option>
+                     <option value="shipped">Shipped</option>
+                     <option value="delivered">Delivered</option>`;
+        } else if (status === 'shipped') {
+          options = `<option value="">Change</option>
+                     <option value="delivered">Delivered</option>`;
+        } else {
+          options = `<option value="">—</option>`;
+        }
+
+        return `
+          <div class="mobile-card" data-order-id="${order.id}">
+            <div class="mobile-card-img">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+              </svg>
+            </div>
+            <div class="mobile-card-content">
+              <div class="mobile-card-title">#${shortId}</div>
+              <div class="mobile-card-subtitle">${customer}</div>
+              <div class="mobile-card-meta">
+                <span>${date}</span>
+                <span>·</span>
+                <span><strong>${total}</strong></span>
+                <span class="badge ${badgeClass}" style="margin-left:4px;">${status}</span>
+              </div>
+            </div>
+            <div class="mobile-card-actions">
+              <select class="status-select" ${status === 'delivered' ? 'disabled' : ''} style="min-width:110px;">
+                ${options}
+              </select>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Attach event listeners for mobile selects
+      document.querySelectorAll('#ordersBodyMobile .status-select').forEach(select => {
+        select.addEventListener('change', handleStatusChange);
+      });
+    }
+
+    // ─── STATUS UPDATE HANDLER ───
+    async function handleStatusChange(e) {
+      const newStatus = e.target.value;
+      if (!newStatus) return;
+      const parent = e.target.closest('[data-order-id]');
+      const orderId = parent.dataset.orderId;
+
+      if (!confirm(`Update order #${orderId.slice(-8)} to "${newStatus}"?`)) {
+        e.target.value = '';
+        return;
+      }
+
+      try {
+        await updateDoc(doc(db, 'orders', orderId), { status: newStatus });
+        const order = allOrders.find(o => o.id === orderId);
+        if (order) order.status = newStatus;
+        renderAll();
+      } catch (err) {
+        alert('Update failed: ' + err.message);
+        e.target.value = '';
+      }
+    }
+
+    // ─── RE-RENDER EVERYTHING ───
+    function renderAll() {
+      renderStats();
+      renderDesktopTable();
+      renderMobileCards();
+    }
+
+    // ─── INIT ───
+    async function init() {
+      try {
+        await loadOrders();
+        renderAll();
+
+        document.getElementById('searchInput').addEventListener('input', () => {
+          renderDesktopTable();
+          renderMobileCards();
+        });
+        document.getElementById('filterSelect').addEventListener('change', () => {
+          renderDesktopTable();
+          renderMobileCards();
+        });
+      } catch (err) {
+        document.getElementById('statsGrid').innerHTML = 
+          `<div class="stat-card" style="grid-column:1/-1; color:var(--danger-color);">Error: ${err.message}</div>`;
+        document.getElementById('ordersBodyDesktop').innerHTML = 
+          '<tr><td colspan="6" style="color:var(--danger-color);">Failed to load orders</td></tr>';
+        document.getElementById('ordersBodyMobile').innerHTML = 
+          '<div style="padding:24px; color:var(--danger-color);">Failed to load orders</div>';
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
