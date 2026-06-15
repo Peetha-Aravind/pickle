@@ -189,7 +189,7 @@
     .save-address { background: var(--rust); color: white; }
     .close-modal { background: #ccc; }
 
-    /* ─── FULL-SCREEN ANIMATION OVERLAY (Desktop & Mobile) ─── */
+    /* ─── FULL-SCREEN ANIMATION OVERLAY (Desktop & Mobile View) ─── */
     .animation-overlay {
       display: none;
       position: fixed;
@@ -197,7 +197,7 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background-color: #C0392B; /* Matches your core brand/video fallback background color */
+      background-color: #C0392B; /* Brand primary matching video canvas frame */
       z-index: 9999;
       justify-content: center;
       align-items: center;
@@ -206,7 +206,7 @@
     .animation-overlay video {
       width: 100%;
       height: 100%;
-      object-fit: contain; /* Ensures the complete animation canvas fits elegantly on mobile & desktop screens */
+      object-fit: contain;
       max-width: 100%;
       max-height: 100%;
     }
@@ -253,7 +253,7 @@
 </div>
 
 <div id="animationOverlay" class="animation-overlay">
-  <video id="placedAnimationVideo" playsinline muted>
+  <video id="placedAnimationVideo" autoplay playsinline webkit-playsinline muted preload="auto">
     <source src="large-thumbnail20250211-1846070-1x65j2q.mp4" type="video/mp4">
     Your browser does not support the video tag.
   </video>
@@ -262,7 +262,6 @@
 <footer><p>© 2025 Happy NonVeg Pickles — handcrafted with tradition.</p></footer>
 
 <script>
-  // Back navigation function
   function goBack() {
     if (document.referrer && document.referrer !== "") {
       window.history.back();
@@ -292,7 +291,6 @@
 
   function formatPrice(p) { return `₹${Math.round(Number(p) || 0)}`; }
 
-  // ─── SKELETON HTML ─────────────────────────────────────────
   const skeletonHTML = `
   <div class="checkout-container">
     <div class="left-panel">
@@ -342,14 +340,12 @@
     </div>
   </div>`;
 
-  // Global state
   let checkoutItems = [];
   let appliedCoupon = null;
   let selectedPayment = 'online';
   let savedAddress = null;
   let isProcessing = false;
 
-  // ─── Determine checkout flow and gather items ─────────────────
   async function getCheckoutItems() {
     const params = new URLSearchParams(window.location.search);
     const productId = params.get('id') || params.get('productId');
@@ -408,7 +404,6 @@
     }));
   }
 
-  // ─── Totals calculation ──────────────────────────────────────
   function getCurrentTotals() {
     let subtotal = 0;
     checkoutItems.forEach(item => {
@@ -452,7 +447,6 @@
     if (payBtn && !isProcessing) payBtn.innerText = `Pay ${formatPrice(totals.total)}`;
   }
 
-  // ─── Coupon logic – aligned with admin schema ──────────────────
   async function applyCoupon(code) {
     if (!code) return { success: false, message: 'Enter a coupon code' };
     const upperCode = code.toUpperCase();
@@ -508,7 +502,6 @@
     }
   }
 
-  // ─── Render left panel (address + payment) ──────────────────
   function renderLeftPanel() {
     const leftContainer = document.getElementById('leftPanelContainer');
     if (!leftContainer) return;
@@ -563,7 +556,6 @@
     });
   }
 
-  // ─── Render right column (order summary) ────────────────────
   function renderRightColumn() {
     const rightContainer = document.getElementById('rightColumnContainer');
     if (!rightContainer) return;
@@ -617,7 +609,6 @@
     document.getElementById('payNowBtn')?.addEventListener('click', () => navigateToPayment());
   }
 
-  // ─── Address modal handlers ──────────────────────────────────
   function openAddressModal() {
     document.getElementById('addressModal').style.display = 'flex';
   }
@@ -646,13 +637,12 @@
     closeAddressModal();
   };
 
-  // ─── Modified: Collect data, store in session, show animation, then redirect ───
+  // ─── Fixed Auto-Play Logic & Structural Callbacks ───
   function navigateToPayment() {
     if (isProcessing) return;
     const payBtn = document.getElementById('payNowBtn');
     if (!payBtn) return;
 
-    // Validations
     if (!savedAddress) { alert('Please add a delivery address first'); return; }
     if (!checkoutItems.length) { alert('No items in checkout'); return; }
 
@@ -667,7 +657,6 @@
       createdAt: new Date().toISOString(), 
       status: 'pending',
       paymentMethod: paymentMethod,
-
       shippingAddress: {
         name: savedAddress.name,
         phone: savedAddress.phone,
@@ -675,7 +664,6 @@
         city: savedAddress.city,
         pincode: savedAddress.pincode
       },
-
       items: checkoutItems.map(item => ({
         productId: item.id,
         name: item.name,
@@ -685,13 +673,11 @@
         unitPrice: item.price,
         totalPrice: item.price * item.quantity
       })),
-
       subtotal: totals.subtotal,
       discount: totals.discount,
       shipping: totals.shipping,
       handlingFee: totals.handlingFee,
       total: totals.total,
-
       coupon: appliedCoupon ? {
         code: appliedCoupon.code,
         type: appliedCoupon.type,
@@ -699,37 +685,49 @@
       } : null
     };
 
-    // Store in sessionStorage
     sessionStorage.setItem('checkoutData', JSON.stringify(checkoutData));
 
-    // Show Full-Screen Video Animation Canvas
     const overlay = document.getElementById('animationOverlay');
     const video = document.getElementById('placedAnimationVideo');
-    const nextPage = 'order-placed.html'; // <-- Replace with your actual page link
+    const nextPage = 'order-placed.html'; 
 
     if (overlay && video) {
+      // 1. Force state transformation block visible
       overlay.style.display = 'flex';
-      video.play().catch(err => {
-        console.warn("Video auto-play blocked or failed, navigating directly:", err);
-        window.location.href = nextPage;
-      });
+      
+      // 2. Unbind timeline configuration constraints
+      video.load();
+      video.currentTime = 0;
 
-      // Navigate automatically immediately when the video finishes playing
+      // 3. Attach complete execution hook path
       video.onended = () => {
         window.location.href = nextPage;
       };
+
+      // 4. Fire media execution cycle promise
+      const playPromise = video.play();
+
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          // Playback initialized successfully.
+        }).catch(err => {
+          console.warn("Autoplay block parsed. Implementing timing fallback loop:", err);
+          // Safety Net: Bypasses automated sandbox protection frameworks if media block fails to spin completely
+          setTimeout(() => {
+            window.location.href = nextPage;
+          }, 1200);
+        });
+      }
     } else {
-      // Fallback if elements aren't present
       window.location.href = nextPage;
     }
   }
 
   function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
 
-  // ─── Main initialisation ─────────────────────────────────────
   async function initCheckout() {
     const root = document.getElementById('checkoutRoot');
-    root.innerHTML = skeletonHTML;   // immediate skeleton
+    root.innerHTML = skeletonHTML;
 
     checkoutItems = await getCheckoutItems();
 
