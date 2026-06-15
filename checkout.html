@@ -189,28 +189,6 @@
     .save-address { background: var(--rust); color: white; }
     .close-modal { background: #ccc; }
 
-    /* ─── FULL-SCREEN ANIMATION OVERLAY (Desktop & Mobile View) ─── */
-    .animation-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: #C0392B; /* Brand primary matching video canvas frame */
-      z-index: 9999;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
-    .animation-overlay video {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      max-width: 100%;
-      max-height: 100%;
-    }
-
     footer {
       background: var(--ink);
       color: rgba(255,255,255,0.6);
@@ -252,13 +230,6 @@
   </div>
 </div>
 
-<div id="animationOverlay" class="animation-overlay">
-  <video id="placedAnimationVideo" autoplay playsinline webkit-playsinline muted preload="auto">
-    <source src="large-thumbnail20250211-1846070-1x65j2q.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-</div>
-
 <footer><p>© 2025 Happy NonVeg Pickles — handcrafted with tradition.</p></footer>
 
 <script>
@@ -274,7 +245,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
   import { 
-    getFirestore, doc, getDoc, updateDoc, increment, collection, addDoc, serverTimestamp 
+    getFirestore, doc, getDoc, collection, addDoc 
   } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -316,25 +287,9 @@
               <div class="skeleton" style="width:30%; height:14px;"></div>
             </div>
           </div>
-          <div class="cart-item skeleton-line" style="margin-bottom:16px;">
-            <div class="skeleton" style="width:70px; height:70px; border-radius:12px;"></div>
-            <div style="flex:1;">
-              <div class="skeleton" style="width:80%; height:16px; margin-bottom:8px;"></div>
-              <div class="skeleton" style="width:50%; height:14px; margin-bottom:8px;"></div>
-              <div class="skeleton" style="width:30%; height:14px;"></div>
-            </div>
-          </div>
-        </div>
-        <div class="coupon-section">
-          <div class="skeleton" style="width:60%; height:40px; border-radius:60px;"></div>
         </div>
         <div class="summary-totals" style="padding:20px 24px;">
-          <div class="skeleton" style="width:80%; height:14px; margin-bottom:12px;"></div>
-          <div class="skeleton" style="width:60%; height:14px; margin-bottom:12px;"></div>
           <div class="skeleton" style="width:40%; height:20px; margin-top:12px;"></div>
-        </div>
-        <div style="padding:0 24px 24px;">
-          <div class="skeleton" style="width:100%; height:50px; border-radius:40px;"></div>
         </div>
       </div>
     </div>
@@ -454,51 +409,29 @@
       const couponRef = doc(db, "coupons", upperCode);
       const couponSnap = await getDoc(couponRef);
 
-      if (!couponSnap.exists()) {
-        return { success: false, message: 'Invalid coupon code' };
-      }
-
+      if (!couponSnap.exists()) return { success: false, message: 'Invalid coupon code' };
       const data = couponSnap.data();
-
-      if (data.isActive === false) {
-        return { success: false, message: 'Coupon is not active' };
-      }
+      if (data.isActive === false) return { success: false, message: 'Coupon is not active' };
 
       if (data.expiry) {
         const today = new Date();
         today.setHours(0,0,0,0);
-        const expiryDate = new Date(data.expiry);
-        if (expiryDate < today) {
-          return { success: false, message: 'Coupon has expired' };
-        }
+        if (new Date(data.expiry) < today) return { success: false, message: 'Coupon has expired' };
       }
 
-      if (data.totalLimit) {
-        const used = data.usage || 0;
-        if (used >= data.totalLimit) {
-          return { success: false, message: 'Coupon usage limit reached' };
-        }
+      if (data.totalLimit && (data.usage || 0) >= data.totalLimit) {
+        return { success: false, message: 'Coupon usage limit reached' };
       }
 
       const type = data.type;
       const value = Number(data.value);
-      if (!type || !value || value <= 0) {
-        return { success: false, message: 'Invalid coupon configuration' };
-      }
+      if (!type || !value || value <= 0) return { success: false, message: 'Invalid coupon configuration' };
 
-      appliedCoupon = {
-        code: upperCode,
-        type: type,
-        value: value,
-        docId: upperCode
-      };
-
-      const discountText = type === 'percentage' ? `${value}% off` : `₹${value} off`;
+      appliedCoupon = { code: upperCode, type, value, docId: upperCode };
       updateTotalsAndButton();
-      return { success: true, message: `Coupon applied! ${discountText}` };
+      return { success: true, message: `Coupon applied! ${type === 'percentage' ? `${value}% off` : `₹${value} off`}` };
     } catch(e) {
-      console.error("Coupon apply error:", e);
-      return { success: false, message: 'Error validating coupon. Please try again.' };
+      return { success: false, message: 'Error validating coupon.' };
     }
   }
 
@@ -541,12 +474,11 @@
       </div>
     `;
 
-    document.getElementById('openAddressBtn')?.addEventListener('click', () => openAddressModal());
+    document.getElementById('openAddressBtn')?.addEventListener('click', openAddressModal);
     const radios = document.querySelectorAll('.payment-radio');
     radios.forEach(radio => {
       radio.addEventListener('click', () => {
-        const method = radio.getAttribute('data-payment');
-        selectedPayment = method;
+        selectedPayment = radio.getAttribute('data-payment');
         radios.forEach(r => r.classList.remove('active'));
         radio.classList.add('active');
         const inp = radio.querySelector('input');
@@ -590,80 +522,46 @@
       </div>
     `;
 
-    const applyBtn = document.getElementById('applyCouponBtnRight');
-    const couponInput = document.getElementById('couponInputRight');
-    if (applyBtn) {
-      applyBtn.onclick = async () => {
-        const code = couponInput.value.trim();
-        const result = await applyCoupon(code);
-        const msgDiv = document.getElementById('discountMsgRight');
-        if (result.success) {
-          msgDiv.innerHTML = `<span style="color:#2e7d32;">✅ ${result.message}</span>`;
-        } else {
-          msgDiv.innerHTML = `<span style="color:#d32f2f;">❌ ${result.message}</span>`;
-        }
-      };
-    }
+    document.getElementById('applyCouponBtnRight').onclick = async () => {
+      const code = document.getElementById('couponInputRight').value.trim();
+      const result = await applyCoupon(code);
+      document.getElementById('discountMsgRight').innerHTML = result.success ? 
+        `<span style="color:#2e7d32;">✅ ${result.message}</span>` : `<span style="color:#d32f2f;">❌ ${result.message}</span>`;
+    };
 
     updateTotalsAndButton();
-    document.getElementById('payNowBtn')?.addEventListener('click', () => navigateToPayment());
+    document.getElementById('payNowBtn')?.addEventListener('click', navigateToPaymentPage);
   }
 
-  function openAddressModal() {
-    document.getElementById('addressModal').style.display = 'flex';
-  }
-  window.closeAddressModal = function() {
-    document.getElementById('addressModal').style.display = 'none';
-  };
+  function openAddressModal() { document.getElementById('addressModal').style.display = 'flex'; }
+  window.closeAddressModal = function() { document.getElementById('addressModal').style.display = 'none'; };
   window.saveAddress = function() {
     const name = document.getElementById('addrName').value.trim();
     const phone = document.getElementById('addrPhone').value.trim();
     const address = document.getElementById('addrFull').value.trim();
     const city = document.getElementById('addrCity').value.trim();
     const pincode = document.getElementById('addrPincode').value.trim();
-    if (!name || !phone || !address || !city || !pincode) {
-      alert('Please fill all address fields');
-      return;
-    }
+    if (!name || !phone || !address || !city || !pincode) { alert('Please fill all fields'); return; }
     savedAddress = { name, phone, address, city, pincode };
-    document.getElementById('addressDisplay').innerHTML = `
-      <div class="address-display">
-        <strong>${escapeHtml(name)}</strong><br>
-        ${escapeHtml(address)}<br>
-        ${escapeHtml(city)} - ${escapeHtml(pincode)}<br>
-        Phone: ${escapeHtml(phone)}
-      </div>
-    `;
+    renderLeftPanel();
     closeAddressModal();
   };
 
-  // ─── Fixed Auto-Play Logic & Structural Callbacks ───
-  function navigateToPayment() {
+  function navigateToPaymentPage() {
     if (isProcessing) return;
-    const payBtn = document.getElementById('payNowBtn');
-    if (!payBtn) return;
-
     if (!savedAddress) { alert('Please add a delivery address first'); return; }
     if (!checkoutItems.length) { alert('No items in checkout'); return; }
 
     isProcessing = true;
+    const payBtn = document.getElementById('payNowBtn');
     payBtn.disabled = true;
-    payBtn.innerText = 'Preparing...';
+    payBtn.innerText = 'Redirecting...';
 
     const totals = getCurrentTotals();
-    const paymentMethod = selectedPayment === 'online' ? 'Online Payment' : 'Cash on Delivery';
-
     const checkoutData = {
-      createdAt: new Date().toISOString(), 
       status: 'pending',
-      paymentMethod: paymentMethod,
-      shippingAddress: {
-        name: savedAddress.name,
-        phone: savedAddress.phone,
-        address: savedAddress.address,
-        city: savedAddress.city,
-        pincode: savedAddress.pincode
-      },
+      paymentMethod: selectedPayment === 'online' ? 'Online Payment' : 'Cash on Delivery',
+      shippingAddress: savedAddress,
       items: checkoutItems.map(item => ({
         productId: item.id,
         name: item.name,
@@ -678,49 +576,11 @@
       shipping: totals.shipping,
       handlingFee: totals.handlingFee,
       total: totals.total,
-      coupon: appliedCoupon ? {
-        code: appliedCoupon.code,
-        type: appliedCoupon.type,
-        value: appliedCoupon.value
-      } : null
+      coupon: appliedCoupon ? { code: appliedCoupon.code, type: appliedCoupon.type, value: appliedCoupon.value } : null
     };
 
     sessionStorage.setItem('checkoutData', JSON.stringify(checkoutData));
-
-    const overlay = document.getElementById('animationOverlay');
-    const video = document.getElementById('placedAnimationVideo');
-    const nextPage = 'order-placed.html'; 
-
-    if (overlay && video) {
-      // 1. Force state transformation block visible
-      overlay.style.display = 'flex';
-      
-      // 2. Unbind timeline configuration constraints
-      video.load();
-      video.currentTime = 0;
-
-      // 3. Attach complete execution hook path
-      video.onended = () => {
-        window.location.href = nextPage;
-      };
-
-      // 4. Fire media execution cycle promise
-      const playPromise = video.play();
-
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          // Playback initialized successfully.
-        }).catch(err => {
-          console.warn("Autoplay block parsed. Implementing timing fallback loop:", err);
-          // Safety Net: Bypasses automated sandbox protection frameworks if media block fails to spin completely
-          setTimeout(() => {
-            window.location.href = nextPage;
-          }, 1200);
-        });
-      }
-    } else {
-      window.location.href = nextPage;
-    }
+    window.location.href = 'order-placed.html';
   }
 
   function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
@@ -728,21 +588,12 @@
   async function initCheckout() {
     const root = document.getElementById('checkoutRoot');
     root.innerHTML = skeletonHTML;
-
     checkoutItems = await getCheckoutItems();
-
     if (!checkoutItems.length) {
       root.innerHTML = `<div style="text-align:center; padding:40px;">❌ No items to checkout. <a href="index.html" style="color:var(--rust);">Continue Shopping</a></div>`;
       return;
     }
-
-    root.innerHTML = `
-      <div class="checkout-container">
-        <div class="left-panel" id="leftPanelContainer"></div>
-        <div id="rightColumnContainer"></div>
-      </div>
-    `;
-
+    root.innerHTML = `<div class="checkout-container"><div class="left-panel" id="leftPanelContainer"></div><div id="rightColumnContainer"></div></div>`;
     renderLeftPanel();
     renderRightColumn();
   }
