@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Happy NonVeg Pickles – Orders Dashboard</title>
+    <title>Manage Orders – Happy NonVeg Pickles</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,7 +39,7 @@
     <link rel="preload" as="image" href="./assets/fill_combo.svg">
 
     <style>
-        /* ========== GLOBAL VARIABLES (Dashboard) ========== */
+        /* ========== GLOBAL VARIABLES ========== */
         :root {
             --text-sub: #6b7280;
             --header-height-desktop: 70px;
@@ -202,7 +202,7 @@
             height: 80px; background: var(--header-bg); border-bottom: 1px solid var(--border-subtle);
             padding: 0 40px; display: flex; align-items: center; font-weight: 700; font-size: 20px;
         }
-        .d-content { flex: 1; overflow-y: auto; background: #f3f4f6; display: block; padding: 0; }
+        .d-content { flex: 1; padding: 16px; overflow-y: auto; display: flex; align-items: flex-start; justify-content: center; }
 
         /* COLLAPSED SIDEBAR */
         .d-sidebar.collapsed { width: var(--sidebar-collapsed-width); }
@@ -231,7 +231,7 @@
             border-color: transparent var(--tooltip-bg) transparent transparent;
         }
 
-        /* MOBILE HEADER & OVERLAY */
+        /* MOBILE HEADER & OVERLAY (hidden on desktop) */
         .m-header { display: none; }
         .m-header {
             height: 72px; background: #fff; border-bottom: 1px solid var(--border-subtle);
@@ -276,331 +276,307 @@
         .popup-list a { display: flex; align-items: center; gap: 12px; padding: 12px; text-decoration: none; color: var(--text-color); border-radius: 8px; cursor: pointer; }
         .popup-list a:hover { background: #f3f4f6; }
 
-        /* ========== ORDERS PAGE (scoped) ========== */
-        .orders-page {
-            /* Orders-specific variables, overriding :root only inside this container */
-            --page-bg: #f3f4f6;
-            --card-bg: #ffffff;
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
-            --brand-purple: #5127ba;
-            --brand-purple-light: rgba(81, 39, 186, 0.1);
-            --color-live: #5127ba; --bg-live: #f0ebfa;
-            --color-done: #10B981; --bg-done: #e6f7f0;
-            --color-pending: #f59e0b; --bg-pending: #fef6e7;
-            --color-cancel: #ef4444; --bg-cancel: #fdebeb;
-            --shadow-premium: 0 4px 20px rgba(0, 0, 0, 0.05);
-            --border-subtle: #eaeaea;
-            --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
-
-            font-family: "DM Sans", Roboto, sans-serif;
-            font-weight: 500;
-            font-size: 14px;
-            line-height: 20px;
-            color: var(--text-main);
-            min-height: 100%;
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .d-sidebar { display: none; }
+            .d-topbar { display: none; }
+            .d-content { padding: 8px; padding-top: 80px; }
+            .m-header { display: flex; }
+            .profile-popup { bottom: 100px; left: 50%; transform: translateX(-50%); }
+            .brand-logo img { height: 45px; }
         }
 
-        .orders-page .main-content {
+        /* ---------- MANAGE ORDERS PAGE (scoped) ---------- */
+        .manage-orders-page {
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
             padding: 32px 24px 40px;
+            background: transparent; /* uses dashboard bg */
         }
-
-        .orders-page .page-title {
+        .manage-orders-page .page-title {
             font-size: 24px; font-weight: 700;
             color: #111827; margin-bottom: 6px;
         }
-        .orders-page .breadcrumb {
+        .manage-orders-page .breadcrumb {
             display: flex; gap: 6px; align-items: center;
-            font-size: 13px; color: var(--text-muted); margin-bottom: 28px;
+            font-size: 13px; color: #6b7280; margin-bottom: 28px;
         }
-        .orders-page .breadcrumb svg { width: 14px; height: 14px; stroke: var(--text-muted); vertical-align: middle; }
-        .orders-page .breadcrumb .active { color: var(--text-muted); font-weight: 500; }
-        .orders-page .breadcrumb .divider { color: #d1d5db; }
+        .manage-orders-page .breadcrumb svg { width: 14px; height: 14px; stroke: #6b7280; vertical-align: middle; }
+        .manage-orders-page .breadcrumb .active { color: #6b7280; font-weight: 500; }
+        .manage-orders-page .breadcrumb .divider { color: #d1d5db; }
 
         /* Stats Grid */
-        .orders-page .stats-grid {
+        .manage-orders-page .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
             margin-bottom: 24px;
         }
-        .orders-page .stat-card {
-            background: var(--card-bg); border-radius: var(--radius-md);
+        .manage-orders-page .stat-card {
+            background: #ffffff; border-radius: 12px;
             padding: 20px; display: flex; align-items: center; gap: 16px;
-            box-shadow: var(--shadow-premium);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             cursor: default;
         }
-        .orders-page .stat-card:hover {
+        .manage-orders-page .stat-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
         }
-        .orders-page .stat-icon {
-            width: 48px; height: 48px; border-radius: var(--radius-sm);
+        .manage-orders-page .stat-icon {
+            width: 48px; height: 48px; border-radius: 8px;
             display: flex; align-items: center; justify-content: center; flex-shrink: 0;
         }
-        .orders-page .stat-icon svg { width: 22px; height: 22px; }
-        .orders-page .stat-icon.live { background: var(--bg-live); stroke: var(--color-live); fill: var(--bg-live); }
-        .orders-page .stat-icon.done { background: var(--bg-done); stroke: var(--color-done); }
-        .orders-page .stat-icon.pending { background: var(--bg-pending); stroke: var(--color-pending); fill: var(--color-pending); }
-        .orders-page .stat-icon.cancel { background: var(--bg-cancel); stroke: var(--color-cancel); }
-        .orders-page .stat-info h3 {
+        .manage-orders-page .stat-icon svg { width: 22px; height: 22px; }
+        .manage-orders-page .stat-icon.live { background: #f0ebfa; stroke: #5127ba; fill: #f0ebfa; }
+        .manage-orders-page .stat-icon.done { background: #e6f7f0; stroke: #10B981; }
+        .manage-orders-page .stat-icon.pending { background: #fef6e7; stroke: #f59e0b; fill: #f59e0b; }
+        .manage-orders-page .stat-icon.cancel { background: #fdebeb; stroke: #ef4444; }
+        .manage-orders-page .stat-info h3 {
             font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
-            font-weight: 700; color: var(--text-muted); margin-bottom: 2px;
+            font-weight: 700; color: #6b7280; margin-bottom: 2px;
         }
-        .orders-page .stat-info .value { font-size: 26px; font-weight: 700; color: #111827; line-height: 1.2; }
+        .manage-orders-page .stat-info .value { font-size: 26px; font-weight: 700; color: #111827; line-height: 1.2; }
 
-        /* Desktop Filter Bar */
-        .orders-page .filter-bar-desktop {
-            background: var(--card-bg); border-radius: var(--radius-md);
+        /* Filter Bar Desktop */
+        .manage-orders-page .filter-bar-desktop {
+            background: #ffffff; border-radius: 12px;
             padding: 16px; display: flex; flex-wrap: wrap;
             justify-content: space-between; align-items: center; gap: 16px;
-            margin-bottom: 24px; box-shadow: var(--shadow-premium);
+            margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
-        .orders-page .tabs-container {
-            background: #f3f4f6; padding: 6px; border-radius: var(--radius-sm);
+        .manage-orders-page .tabs-container {
+            background: #f3f4f6; padding: 6px; border-radius: 8px;
             display: flex; gap: 4px;
         }
-        .orders-page .tab-btn {
+        .manage-orders-page .tab-btn {
             background: transparent; border: none; padding: 8px 18px;
             font-family: inherit; font-size: 14px; font-weight: 600;
-            color: var(--text-muted); border-radius: 6px; cursor: pointer;
+            color: #6b7280; border-radius: 6px; cursor: pointer;
             transition: all 0.2s ease;
         }
-        .orders-page .tab-btn.active { background: var(--brand-purple); color: #ffffff; }
-        .orders-page .search-wrap-desktop {
+        .manage-orders-page .tab-btn.active { background: #5127ba; color: #ffffff; }
+        .manage-orders-page .search-wrap-desktop {
             background: #f3f4f6; border-radius: 999px; padding: 0 16px;
             height: 44px; display: flex; align-items: center; gap: 10px;
             width: 320px; max-width: 100%;
         }
-        .orders-page .search-wrap-desktop svg { width: 18px; height: 18px; stroke: #9ca3af; flex-shrink: 0; }
-        .orders-page .search-wrap-desktop input {
+        .manage-orders-page .search-wrap-desktop svg { width: 18px; height: 18px; stroke: #9ca3af; flex-shrink: 0; }
+        .manage-orders-page .search-wrap-desktop input {
             background: transparent; border: none; outline: none;
-            width: 100%; font-family: inherit; font-size: 14px; color: var(--text-main);
+            width: 100%; font-family: inherit; font-size: 14px; color: #1f2937;
         }
 
-        /* Mobile controls */
-        .orders-page .mobile-controls {
+        /* Mobile Controls */
+        .manage-orders-page .mobile-controls {
             display: none;
             flex-direction: column;
             gap: 16px;
             margin-bottom: 24px;
         }
-        .orders-page .search-wrap-mobile {
+        .manage-orders-page .search-wrap-mobile {
             background: #ffffff; border-radius: 999px;
             padding: 0 16px; height: 48px; display: flex;
             align-items: center; gap: 12px;
-            box-shadow: var(--shadow-premium); border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #e5e7eb;
         }
-        .orders-page .search-wrap-mobile svg { width: 20px; height: 20px; stroke: #9ca3af; }
-        .orders-page .search-wrap-mobile input {
+        .manage-orders-page .search-wrap-mobile svg { width: 20px; height: 20px; stroke: #9ca3af; }
+        .manage-orders-page .search-wrap-mobile input {
             background: transparent; border: none; outline: none;
-            width: 100%; font-family: inherit; font-size: 14px; color: var(--text-main);
+            width: 100%; font-family: inherit; font-size: 14px; color: #1f2937;
         }
 
-        /* Mobile filter bar */
-        .orders-page .mobile-filter-bar {
-            display: none;
-            background: var(--card-bg); border-radius: var(--radius-md);
-            padding: 12px 16px; box-shadow: var(--shadow-premium);
+        /* Mobile Filter Bar */
+        .manage-orders-page .mobile-filter-bar {
+            display: none; /* hidden on desktop */
+            background: #ffffff; border-radius: 12px;
+            padding: 12px 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);
             margin-bottom: 24px;
             align-items: center; gap: 8px;
         }
-        .orders-page .filter-dropdown {
-            position: relative; flex: 1;
-        }
-        .orders-page .filter-dropdown-trigger {
+        .manage-orders-page .filter-dropdown { position: relative; flex: 1; }
+        .manage-orders-page .filter-dropdown-trigger {
             background: #f3f4f6; border-radius: 999px; padding: 10px 16px;
             width: 100%; display: flex; align-items: center; justify-content: space-between;
             font-family: inherit; font-size: 14px; font-weight: 600; color: #111827;
             border: 1px solid #e5e7eb; cursor: pointer;
         }
-        .orders-page .filter-dropdown-trigger svg { width: 16px; height: 16px; stroke: #6b7280; transition: transform 0.2s; }
-        .orders-page .filter-dropdown.open .filter-dropdown-trigger svg { transform: rotate(180deg); }
-        .orders-page .filter-dropdown-menu {
+        .manage-orders-page .filter-dropdown-trigger svg { width: 16px; height: 16px; stroke: #6b7280; transition: transform 0.2s; }
+        .manage-orders-page .filter-dropdown.open .filter-dropdown-trigger svg { transform: rotate(180deg); }
+        .manage-orders-page .filter-dropdown-menu {
             position: absolute; top: calc(100% + 4px); left: 0; right: 0;
-            background: #ffffff; border-radius: var(--radius-sm);
+            background: #ffffff; border-radius: 8px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid #e5e7eb;
             padding: 6px; display: none; z-index: 30;
         }
-        .orders-page .filter-dropdown.open .filter-dropdown-menu { display: block; }
-        .orders-page .filter-dropdown-item {
+        .manage-orders-page .filter-dropdown.open .filter-dropdown-menu { display: block; }
+        .manage-orders-page .filter-dropdown-item {
             width: 100%; padding: 10px 12px; background: transparent;
             border: none; text-align: left; font-family: inherit;
             font-size: 14px; font-weight: 600; color: #111827;
             border-radius: 6px; cursor: pointer;
         }
-        .orders-page .filter-dropdown-item:hover { background: #f3f4f6; }
-        .orders-page .filter-dropdown-item.active { color: var(--brand-purple); }
+        .manage-orders-page .filter-dropdown-item:hover { background: #f3f4f6; }
+        .manage-orders-page .filter-dropdown-item.active { color: #5127ba; }
 
-        /* Table */
-        .orders-page .table-card {
-            background: var(--card-bg); border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-premium);
+        /* Table / Cards */
+        .manage-orders-page .table-card {
+            background: #ffffff; border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
             overflow: visible !important;
         }
-        .orders-page .table-wrapper { width: 100%; overflow-x: auto; overflow-y: visible !important; }
-        .orders-page table { width: 100%; border-collapse: collapse; }
-        .orders-page th {
+        .manage-orders-page .table-wrapper { width: 100%; overflow: visible !important; }
+        .manage-orders-page table { width: 100%; border-collapse: collapse; }
+        .manage-orders-page th {
             font-weight: 700; font-size: 12px; text-transform: uppercase;
-            letter-spacing: 0.8px; color: var(--text-muted); text-align: left;
-            border-bottom: 1px solid var(--border-subtle); padding: 18px 24px;
+            letter-spacing: 0.8px; color: #6b7280; text-align: left;
+            border-bottom: 1px solid #eaeaea; padding: 18px 24px;
         }
-        .orders-page tbody tr { border-bottom: 1px solid var(--border-subtle); transition: background-color 0.15s; }
-        .orders-page tbody tr:last-child { border-bottom: none; }
-        .orders-page tbody tr:hover { background-color: #fafbfc; }
-        .orders-page td { padding: 16px 24px; vertical-align: middle; color: var(--text-main); }
+        .manage-orders-page tbody tr { border-bottom: 1px solid #eaeaea; transition: background-color 0.15s; }
+        .manage-orders-page tbody tr:last-child { border-bottom: none; }
+        .manage-orders-page tbody tr:hover { background-color: #fafbfc; }
+        .manage-orders-page td { padding: 16px 24px; vertical-align: middle; color: #1f2937; }
 
-        .orders-page .product-cell { display: flex; align-items: center; gap: 14px; }
-        .orders-page .product-img {
-            width: 50px; height: 50px; border-radius: var(--radius-sm);
+        .manage-orders-page .product-cell { display: flex; align-items: center; gap: 14px; }
+        .manage-orders-page .product-img {
+            width: 50px; height: 50px; border-radius: 8px;
             object-fit: cover; background: #eaeaea; flex-shrink: 0;
         }
-        .orders-page .product-info-text { display: flex; flex-direction: column; }
-        .orders-page .product-title { font-weight: 700; font-size: 14px; color: #111827; }
-        .orders-page .order-id { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
-        .orders-page .customer-name { font-weight: 700; color: #111827; }
-        .orders-page .price-container { display: flex; flex-direction: column; }
-        .orders-page .price-value { font-weight: 700; font-size: 15px; color: var(--brand-purple); }
-        .orders-page .fee-badge {
+        .manage-orders-page .product-info-text { display: flex; flex-direction: column; }
+        .manage-orders-page .product-title { font-weight: 700; font-size: 14px; color: #111827; }
+        .manage-orders-page .order-id { font-size: 13px; color: #6b7280; margin-top: 2px; }
+        .manage-orders-page .customer-name { font-weight: 700; color: #111827; }
+        .manage-orders-page .price-container { display: flex; flex-direction: column; }
+        .manage-orders-page .price-value { font-weight: 700; font-size: 15px; color: #5127ba; }
+        .manage-orders-page .fee-badge {
             display: flex; align-items: center; gap: 4px; font-size: 10px;
             font-weight: 700; color: #ef4444; margin-top: 4px; text-transform: uppercase;
         }
-        .orders-page .fee-badge svg { width: 12px; height: 12px; fill: currentColor; }
+        .manage-orders-page .fee-badge svg { width: 12px; height: 12px; fill: currentColor; }
 
-        /* Status dropdown */
-        .orders-page .dropdown-container { position: relative; display: inline-block; }
-        .orders-page .dropdown-trigger {
+        /* Status Dropdown (opens upward) */
+        .manage-orders-page .dropdown-container { position: relative; display: inline-block; }
+        .manage-orders-page .dropdown-trigger {
             display: inline-flex; align-items: center; justify-content: space-between;
             gap: 8px; padding: 10px 14px; min-width: 150px; background: #f3f4f6;
             border: none; border-radius: 20px; font-family: inherit; font-size: 13px;
             font-weight: 700; cursor: pointer; transition: background 0.2s;
         }
-        .orders-page .dropdown-trigger svg.arrow { width: 14px; height: 14px; stroke: #6b7280; transition: transform 0.2s; }
-        .orders-page .dropdown-container.open .dropdown-trigger svg.arrow { transform: rotate(180deg); }
-        .orders-page .dropdown-trigger.pending { background: var(--bg-pending); color: var(--color-pending); }
-        .orders-page .dropdown-trigger.shipped { background: var(--bg-live); color: var(--color-live); }
-        .orders-page .dropdown-trigger.delivered { background: var(--bg-done); color: var(--color-done); }
-        .orders-page .dropdown-trigger.cancelled { background: var(--bg-cancel); color: var(--color-cancel); }
+        .manage-orders-page .dropdown-trigger svg.arrow { width: 14px; height: 14px; stroke: #6b7280; transition: transform 0.2s; }
+        .manage-orders-page .dropdown-container.open .dropdown-trigger svg.arrow { transform: rotate(180deg); }
+        .manage-orders-page .dropdown-trigger.pending { background: #fef6e7; color: #f59e0b; }
+        .manage-orders-page .dropdown-trigger.shipped { background: #f0ebfa; color: #5127ba; }
+        .manage-orders-page .dropdown-trigger.delivered { background: #e6f7f0; color: #10B981; }
+        .manage-orders-page .dropdown-trigger.cancelled { background: #fdebeb; color: #ef4444; }
 
-        .orders-page .dropdown-menu {
+        .manage-orders-page .dropdown-menu {
             position: absolute;
-            bottom: calc(100% + 6px);
+            bottom: calc(100% + 6px); /* Opens UPWARDS */
             right: 0;
             background: #ffffff;
             min-width: 170px;
-            border-radius: var(--radius-md);
+            border-radius: 12px;
             box-shadow: 0 -10px 30px rgba(0,0,0,0.12);
             border: 1px solid rgba(0,0,0,0.04);
             padding: 6px;
             display: none;
             z-index: 9999;
         }
-        .orders-page .dropdown-container.open .dropdown-menu { display: block; }
-        .orders-page .dropdown-item {
+        .manage-orders-page .dropdown-container.open .dropdown-menu { display: block; }
+        .manage-orders-page .dropdown-item {
             display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px;
             background: transparent; border: none; font-family: inherit; font-size: 13px;
-            font-weight: 700; color: #111827; border-radius: var(--radius-sm); cursor: pointer;
+            font-weight: 700; color: #111827; border-radius: 8px; cursor: pointer;
         }
-        .orders-page .dropdown-item:hover { background: #f3f4f6; }
-        .orders-page .dropdown-item svg { width: 16px; height: 16px; flex-shrink: 0; }
-        .orders-page .dropdown-item.pending svg { fill: var(--color-pending); stroke: none; }
-        .orders-page .dropdown-item.shipped svg { stroke: var(--color-live); fill: none; }
-        .orders-page .dropdown-item.delivered svg { stroke: var(--color-done); fill: none; }
-        .orders-page .dropdown-item.cancelled svg { stroke: var(--color-cancel); fill: none; }
+        .manage-orders-page .dropdown-item:hover { background: #f3f4f6; }
+        .manage-orders-page .dropdown-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+        .manage-orders-page .dropdown-item.pending svg { fill: #f59e0b; stroke: none; }
+        .manage-orders-page .dropdown-item.shipped svg { stroke: #5127ba; fill: none; }
+        .manage-orders-page .dropdown-item.delivered svg { stroke: #10B981; fill: none; }
+        .manage-orders-page .dropdown-item.cancelled svg { stroke: #ef4444; fill: none; }
 
-        .orders-page .btn-details {
-            background: transparent; border: 2px solid var(--brand-purple); color: var(--brand-purple);
+        .manage-orders-page .btn-details {
+            background: transparent; border: 2px solid #5127ba; color: #5127ba;
             padding: 8px 20px; font-family: inherit; font-weight: 700; font-size: 13px;
-            border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s;
+            border-radius: 8px; cursor: pointer; transition: all 0.2s;
         }
-        .orders-page .btn-details:hover { background: var(--brand-purple); color: #ffffff; }
+        .manage-orders-page .btn-details:hover { background: #5127ba; color: #ffffff; }
 
-        .orders-page .empty-state { text-align: center; padding: 60px 24px; color: var(--text-muted); }
-        .orders-page .empty-state svg { width: 64px; height: 64px; stroke: #d1d5db; margin-bottom: 16px; }
+        .manage-orders-page .empty-state { text-align: center; padding: 60px 24px; color: #6b7280; }
+        .manage-orders-page .empty-state svg { width: 64px; height: 64px; stroke: #d1d5db; margin-bottom: 16px; }
 
-        /* Mobile cards */
-        .orders-page .mobile-orders-container { display: none; }
-        .orders-page .mobile-orders-container,
-        .orders-page .mobile-product-cards,
-        .orders-page .mobile-card {
+        /* Mobile Cards */
+        .manage-orders-page .mobile-orders-container { display: none; overflow: visible !important; }
+        .manage-orders-page .mobile-product-cards { display: flex; flex-direction: column; gap: 14px; }
+        .manage-orders-page .mobile-card {
+            background: #ffffff; border-radius: 12px; padding: 16px;
+            display: flex; flex-direction: column; gap: 14px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
             overflow: visible !important;
         }
-        .orders-page .mobile-product-cards { display: flex; flex-direction: column; gap: 14px; }
-        .orders-page .mobile-card {
-            background: var(--card-bg); border-radius: var(--radius-md); padding: 16px;
-            display: flex; flex-direction: column; gap: 14px;
-            box-shadow: var(--shadow-premium);
-        }
-        .orders-page .mobile-top-row {
-            display: flex; align-items: center; gap: 12px;
-        }
-        .orders-page .mobile-top-row .product-img { width: 50px; height: 50px; flex-shrink: 0; }
-        .orders-page .mobile-top-info { flex: 1; }
-        .orders-page .mobile-top-info .product-title { font-size: 16px; font-weight: 700; }
-        .orders-page .mobile-top-info .order-id { font-size: 13px; color: var(--text-muted); }
-        .orders-page .mobile-top-row .dropdown-container { margin-left: auto; }
-        .orders-page .mobile-bottom-row {
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .orders-page .mobile-bottom-row .customer-name { font-size: 13px; font-weight: 600; }
-        .orders-page .mobile-bottom-row .price-value { font-size: 15px; font-weight: 700; color: var(--brand-purple); }
-        .orders-page .mobile-details-btn { margin-top: 8px; width: 100%; }
+        .manage-orders-page .mobile-top-row { display: flex; align-items: center; gap: 12px; }
+        .manage-orders-page .mobile-top-row .product-img { width: 50px; height: 50px; flex-shrink: 0; }
+        .manage-orders-page .mobile-top-info { flex: 1; }
+        .manage-orders-page .mobile-top-info .product-title { font-size: 16px; font-weight: 700; }
+        .manage-orders-page .mobile-top-info .order-id { font-size: 13px; color: #6b7280; }
+        .manage-orders-page .mobile-top-row .dropdown-container { margin-left: auto; }
+        .manage-orders-page .mobile-bottom-row { display: flex; justify-content: space-between; align-items: center; }
+        .manage-orders-page .mobile-bottom-row .customer-name { font-size: 13px; font-weight: 600; }
+        .manage-orders-page .mobile-bottom-row .price-value { font-size: 15px; font-weight: 700; color: #5127ba; }
+        .manage-orders-page .mobile-details-btn { margin-top: 8px; width: 100%; }
 
-        /* Slide panel (z-index raised to overlay dashboard) */
-        .orders-page .slide-overlay {
+        /* Right Slide Panel */
+        .slide-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5); z-index: 5000;
+            background: rgba(0, 0, 0, 0.5); z-index: 1000;
             display: flex; justify-content: flex-end;
             visibility: hidden; opacity: 0;
             transition: visibility 0.3s, opacity 0.3s;
         }
-        .orders-page .slide-overlay.open { visibility: visible; opacity: 1; }
-        .orders-page .slide-panel {
+        .slide-overlay.open { visibility: visible; opacity: 1; }
+        .slide-panel {
             width: 420px; max-width: 90vw; height: 100%;
             background: #ffffff; box-shadow: -10px 0 30px rgba(0,0,0,0.1);
             transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex; flex-direction: column; overflow-y: auto;
         }
-        .orders-page .slide-overlay.open .slide-panel { transform: translateX(0); }
-        .orders-page .slide-header {
+        .slide-overlay.open .slide-panel { transform: translateX(0); }
+        .slide-header {
             display: flex; justify-content: space-between; align-items: flex-start;
             padding: 20px 24px; border-bottom: 1px solid #e5e7eb;
         }
-        .orders-page .slide-header h3 { font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 4px; }
-        .orders-page .slide-header .order-date { font-size: 13px; color: var(--text-muted); }
-        .orders-page .slide-close { background: none; border: none; font-size: 28px; color: #6b7280; cursor: pointer; line-height: 1; }
-        .orders-page .slide-body { padding: 24px; flex: 1; }
-        .orders-page .detail-section { margin-bottom: 24px; }
-        .orders-page .detail-section-label {
+        .slide-header h3 { font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 4px; }
+        .slide-header .order-date { font-size: 13px; color: #6b7280; }
+        .slide-close { background: none; border: none; font-size: 28px; color: #6b7280; cursor: pointer; line-height: 1; }
+        .slide-body { padding: 24px; flex: 1; }
+        .detail-section { margin-bottom: 24px; }
+        .detail-section-label {
             display: flex; align-items: center; gap: 8px;
             font-size: 13px; font-weight: 700; text-transform: uppercase;
-            letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 12px;
+            letter-spacing: 0.5px; color: #6b7280; margin-bottom: 12px;
         }
-        .orders-page .detail-section-label svg { width: 16px; height: 16px; stroke: var(--text-muted); }
-        .orders-page .detail-card {
-            background: #f9fafb; border-radius: var(--radius-sm); padding: 16px;
+        .detail-section-label svg { width: 16px; height: 16px; stroke: #6b7280; }
+        .detail-card {
+            background: #f9fafb; border-radius: 8px; padding: 16px;
             display: flex; flex-direction: column; gap: 8px;
         }
-        .orders-page .detail-card-row { display: flex; justify-content: space-between; font-size: 14px; }
-        .orders-page .detail-card-row strong { color: #111827; }
-        .orders-page .detail-card-row span { color: var(--text-main); }
-        .orders-page .detail-items-list { display: flex; flex-direction: column; gap: 12px; }
-        .orders-page .detail-item { display: flex; align-items: center; gap: 12px; }
-        .orders-page .detail-item img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
-        .orders-page .detail-item-info { flex: 1; }
-        .orders-page .detail-item-name { font-weight: 600; font-size: 14px; }
-        .orders-page .detail-item-qty { font-size: 12px; color: var(--text-muted); }
-        .orders-page .detail-total-row {
+        .detail-card-row { display: flex; justify-content: space-between; font-size: 14px; }
+        .detail-card-row strong { color: #111827; }
+        .detail-card-row span { color: #1f2937; }
+        .detail-items-list { display: flex; flex-direction: column; gap: 12px; }
+        .detail-item { display: flex; align-items: center; gap: 12px; }
+        .detail-item img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+        .detail-item-info { flex: 1; }
+        .detail-item-name { font-weight: 600; font-size: 14px; }
+        .detail-item-qty { font-size: 12px; color: #6b7280; }
+        .detail-total-row {
             display: flex; justify-content: space-between; align-items: center;
-            font-size: 18px; font-weight: 700; color: var(--brand-purple);
+            font-size: 18px; font-weight: 700; color: #5127ba;
             margin-top: 16px; border-top: 2px solid #e5e7eb; padding-top: 16px;
         }
 
-        .orders-page .skeleton {
+        .skeleton {
             background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
             background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 6px;
         }
@@ -609,27 +585,20 @@
             100% { background-position: 200% 0; }
         }
 
-        /* ========== RESPONSIVE ========== */
+        /* Responsive overrides for manage orders */
         @media (max-width: 768px) {
-            .d-sidebar { display: none; }
-            .d-topbar { display: none; }
-            .d-content { padding: 0; padding-top: 80px; }
-
-            .m-header { display: flex; }
-
-            .profile-popup { bottom: 100px; left: 50%; transform: translateX(-50%); }
-            .brand-logo img { height: 45px; }
-
-            .orders-page .main-content { padding: 16px; }
-            .orders-page .filter-bar-desktop { display: none !important; }
-            .orders-page .mobile-controls { display: flex; }
-            .orders-page .mobile-filter-bar { display: flex; }
-            .orders-page .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-            .orders-page .stat-card { padding: 16px; gap: 12px; }
-            .orders-page .stat-icon { width: 40px; height: 40px; }
-            .orders-page .stat-info .value { font-size: 22px; }
-            .orders-page .desktop-only { display: none !important; }
-            .orders-page .mobile-orders-container { display: block; }
+            .manage-orders-page {
+                padding: 16px;
+            }
+            .manage-orders-page .filter-bar-desktop { display: none !important; }
+            .manage-orders-page .mobile-controls { display: flex; }
+            .manage-orders-page .mobile-filter-bar { display: flex; }
+            .manage-orders-page .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .manage-orders-page .stat-card { padding: 16px; gap: 12px; }
+            .manage-orders-page .stat-icon { width: 40px; height: 40px; }
+            .manage-orders-page .stat-info .value { font-size: 22px; }
+            .manage-orders-page .desktop-only { display: none !important; }
+            .manage-orders-page .mobile-orders-container { display: block; }
         }
     </style>
 </head>
@@ -659,6 +628,7 @@
             </div>
 
             <nav class="m-drawer-nav">
+                <!-- DASHBOARD ACTIVE -->
                 <a href="dashboard.html" class="nav-item active">
                     <span class="icon icon-custom icon-dashboard">
                         <span class="icon-normal"></span>
@@ -848,121 +818,91 @@
         </aside>
 
         <div class="d-main-wrapper">
-            <header class="d-topbar">Dashboard</header>
+            <header class="d-topbar">Manage Orders</header>
             <main class="d-content">
-                <!-- ========== MANAGE ORDERS (scoped) ========== -->
-                <div class="orders-page">
-                    <div class="main-content">
-                        <h1 class="page-title">Manage Orders</h1>
-                        <div class="breadcrumb">
-                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                <!-- ========== MANAGE ORDERS PAGE ========== -->
+                <div class="manage-orders-page">
+                    <h1 class="page-title">Manage Orders</h1>
+                    <div class="breadcrumb">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        <span>Home</span>
+                        <span class="divider">/</span>
+                        <span class="active">Manage Orders</span>
+                    </div>
+
+                    <!-- Mobile Search -->
+                    <div class="mobile-controls">
+                        <div class="search-wrap-mobile">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
                             </svg>
-                            <span>Home</span>
-                            <span class="divider">/</span>
-                            <span class="active">Manage Orders</span>
+                            <input type="text" id="searchInputMobile" placeholder="Search customer or ID...">
                         </div>
+                    </div>
 
-                        <!-- Mobile search -->
-                        <div class="mobile-controls">
-                            <div class="search-wrap-mobile">
-                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-                                </svg>
-                                <input type="text" id="searchInputMobile" placeholder="Search customer or ID...">
-                            </div>
-                        </div>
+                    <!-- Stats Grid -->
+                    <div class="stats-grid" id="statsGrid">
+                        <div class="stat-card"><div class="stat-icon live"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><div class="stat-info"><h3>Today Live</h3><div class="value skeleton" style="width:40px; height:28px;"></div></div></div>
+                        <div class="stat-card"><div class="stat-icon done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div><div class="stat-info"><h3>Done</h3><div class="value skeleton" style="width:40px; height:28px;"></div></div></div>
+                        <div class="stat-card"><div class="stat-icon pending"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="stat-info"><h3>Pending</h3><div class="value skeleton" style="width:40px; height:28px;"></div></div></div>
+                        <div class="stat-card"><div class="stat-icon cancel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div><div class="stat-info"><h3>Cancel</h3><div class="value skeleton" style="width:40px; height:28px;"></div></div></div>
+                    </div>
 
-                        <!-- Stats Grid -->
-                        <div class="stats-grid" id="statsGrid">
-                            <div class="stat-card">
-                                <div class="stat-icon live"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
-                                <div class="stat-info"><h3>Today Live</h3><div class="value skeleton" style="width:40px; height:28px;"></div></div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-icon done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
-                                <div class="stat-info"><h3>Done</h3><div class="value skeleton" style="width:40px; height:28px;"></div></div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-icon pending"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-                                <div class="stat-info"><h3>Pending</h3><div class="value skeleton" style="width:40px; height:28px;"></div></div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-icon cancel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div>
-                                <div class="stat-info"><h3>Cancel</h3><div class="value skeleton" style="width:40px; height:28px;"></div></div>
-                            </div>
-                        </div>
-
-                        <!-- Mobile filter -->
-                        <div class="mobile-filter-bar" id="mobileFilterBar">
-                            <div class="filter-dropdown" id="mobileFilterDropdown">
-                                <button class="filter-dropdown-trigger" id="mobileFilterTrigger">
-                                    <span id="mobileFilterLabel">Today</span>
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                                </button>
-                                <div class="filter-dropdown-menu" id="mobileFilterMenu">
-                                    <button class="filter-dropdown-item active" data-filter="today">Today's Arrivals</button>
-                                    <button class="filter-dropdown-item" data-filter="pending">Pending Orders</button>
-                                    <button class="filter-dropdown-item" data-filter="shipped">Shipping Orders</button>
-                                    <button class="filter-dropdown-item" data-filter="history">Delivered History</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Desktop Filter Bar -->
-                        <div class="filter-bar-desktop">
-                            <div class="tabs-container" id="tabsContainer">
-                                <button class="tab-btn active" data-filter="today">Today</button>
-                                <button class="tab-btn" data-filter="pending">Pending</button>
-                                <button class="tab-btn" data-filter="shipped">Shipped</button>
-                                <button class="tab-btn" data-filter="history">History</button>
-                            </div>
-                            <div class="search-wrap-desktop">
-                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-                                </svg>
-                                <input type="text" id="searchInputDesktop" placeholder="Search customer or ID...">
-                            </div>
-                        </div>
-
-                        <!-- Desktop Table -->
-                        <div class="desktop-only table-card">
-                            <div class="table-wrapper">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Order Info</th>
-                                            <th>Customer</th>
-                                            <th>Total</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="ordersBodyDesktop">
-                                        <tr><td colspan="5" style="text-align:center; padding:40px;">
-                                            <div class="skeleton" style="width:100%; height:24px; margin:8px 0;"></div>
-                                        </td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- Mobile Cards -->
-                        <div class="mobile-orders-container" id="ordersMobileContainer">
-                            <div class="mobile-product-cards" id="ordersBodyMobile">
-                                <div class="mobile-card"><div class="skeleton" style="width:100%; height:90px;"></div></div>
+                    <!-- Mobile Filter Bar -->
+                    <div class="mobile-filter-bar" id="mobileFilterBar">
+                        <div class="filter-dropdown" id="mobileFilterDropdown">
+                            <button class="filter-dropdown-trigger" id="mobileFilterTrigger">
+                                <span id="mobileFilterLabel">Today</span>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                            </button>
+                            <div class="filter-dropdown-menu" id="mobileFilterMenu">
+                                <button class="filter-dropdown-item active" data-filter="today">Today's Arrivals</button>
+                                <button class="filter-dropdown-item" data-filter="pending">Pending Orders</button>
+                                <button class="filter-dropdown-item" data-filter="shipped">Shipping Orders</button>
+                                <button class="filter-dropdown-item" data-filter="history">Delivered History</button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Slide panel -->
-                    <div class="slide-overlay" id="slideOverlay">
-                        <div class="slide-panel">
-                            <div class="slide-header" id="slideHeader"></div>
-                            <div class="slide-body" id="slideBody"></div>
+                    <!-- Desktop Filter Bar -->
+                    <div class="filter-bar-desktop">
+                        <div class="tabs-container" id="tabsContainer">
+                            <button class="tab-btn active" data-filter="today">Today</button>
+                            <button class="tab-btn" data-filter="pending">Pending</button>
+                            <button class="tab-btn" data-filter="shipped">Shipped</button>
+                            <button class="tab-btn" data-filter="history">History</button>
+                        </div>
+                        <div class="search-wrap-desktop">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                            </svg>
+                            <input type="text" id="searchInputDesktop" placeholder="Search customer or ID...">
                         </div>
                     </div>
-                </div><!-- end .orders-page -->
+
+                    <!-- Desktop Table -->
+                    <div class="desktop-only table-card">
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr><th>Order Info</th><th>Customer</th><th>Total</th><th>Status</th><th>Action</th></tr>
+                                </thead>
+                                <tbody id="ordersBodyDesktop">
+                                    <tr><td colspan="5" style="text-align:center; padding:40px;"><div class="skeleton" style="width:100%; height:24px; margin:8px 0;"></div></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Cards -->
+                    <div class="mobile-orders-container" id="ordersMobileContainer">
+                        <div class="mobile-product-cards" id="ordersBodyMobile">
+                            <div class="mobile-card"><div class="skeleton" style="width:100%; height:90px;"></div></div>
+                        </div>
+                    </div>
+                </div>
             </main>
         </div>
     </div>
@@ -981,14 +921,20 @@
         </ul>
     </div>
 
+    <!-- ========== ORDER DETAILS SLIDE PANEL ========== -->
+    <div class="slide-overlay" id="slideOverlay">
+        <div class="slide-panel">
+            <div class="slide-header" id="slideHeader"></div>
+            <div class="slide-body" id="slideBody"></div>
+        </div>
+    </div>
+
     <!-- ========== COMBINED JAVASCRIPT ========== -->
     <script type="module">
-        // ----- Firebase Init (once) -----
+        // ========== FIREBASE INIT ==========
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { 
-            getFirestore, collection, getDocs, query, orderBy, doc, updateDoc 
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, query, orderBy, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
@@ -1005,7 +951,7 @@
         const db = getFirestore(app);
         const ALLOWED_ADMIN = "harshavardhanjw@gmail.com";
 
-        // ----- SVG Preload -----
+        // ========== SVG PRELOAD ==========
         [
             './assets/dashboard.svg','./assets/hover_dashboard.svg','./assets/fill_dashboard.svg',
             './assets/inventory.svg','./assets/hover_inventory.svg','./assets/fill_inventory.svg',
@@ -1018,92 +964,120 @@
             './assets/panel_close.svg','./assets/panel_open.svg'
         ].forEach(src => { const i = new Image(); i.src = src; });
 
-        // ----- Dashboard UI Logic -----
-        function initDashboardUI() {
-            const sidebar = document.getElementById('sidebar');
-            document.getElementById('sidebar-toggle-btn').addEventListener('click', () => {
-                sidebar.classList.toggle('collapsed');
-            });
+        // ========== AUTH ==========
+        onAuthStateChanged(auth, (user) => {
+            if (!user || user.email !== ALLOWED_ADMIN) {
+                if (user) {
+                    signOut(auth).then(() => window.location.href = './');
+                } else {
+                    window.location.href = './';
+                }
+            } else {
+                document.body.style.display = 'block';
+                const avatars = document.querySelectorAll('.account-avatar');
+                const names = document.querySelectorAll('.account-name');
+                const emails = document.querySelectorAll('.account-email');
+                const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'Admin')}&background=673DE6&color=fff`;
+                avatars.forEach(img => img.src = user.photoURL || defaultAvatar);
+                names.forEach(name => name.textContent = user.displayName || 'Admin');
+                emails.forEach(email => email.textContent = user.email);
 
-            function clearNavActive(nav) {
-                nav.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                // Initialize manage orders page
+                initOrdersPage();
             }
+        });
 
-            function setupDropdown(toggleId, submenuId) {
-                const toggle  = document.getElementById(toggleId);
-                const submenu = document.getElementById(submenuId);
-                if (!toggle || !submenu) return;
+        document.getElementById('logout-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            signOut(auth).then(() => {
+                window.location.href = './';
+            });
+        });
 
-                toggle.addEventListener('click', () => {
-                    if (sidebar && sidebar.classList.contains('collapsed')) {
-                        sidebar.classList.remove('collapsed');
-                        setTimeout(() => {
-                            submenu.classList.add('open');
-                            toggle.classList.add('dropdown-open');
-                        }, 300);
-                        return;
-                    }
-                    const isOpen = submenu.classList.contains('open');
-                    submenu.classList.toggle('open', !isOpen);
-                    toggle.classList.toggle('dropdown-open', !isOpen);
-                });
+        // ========== DASHBOARD UI ==========
+        const sidebar = document.getElementById('sidebar');
+        document.getElementById('sidebar-toggle-btn').addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+        });
 
-                submenu.querySelectorAll('.nav-submenu-item').forEach(item => {
-                    item.addEventListener('click', function (e) {
-                        e.stopPropagation();
-                        const parentNav = toggle.closest('nav') || toggle.parentElement;
-                        clearNavActive(parentNav);
-                        submenu.querySelectorAll('.nav-submenu-item').forEach(i => i.classList.remove('active'));
-                        this.classList.add('active');
-                        toggle.classList.add('dropdown-open', 'active');
+        function clearNavActive(nav) {
+            nav.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        }
+
+        function setupDropdown(toggleId, submenuId) {
+            const toggle  = document.getElementById(toggleId);
+            const submenu = document.getElementById(submenuId);
+            if (!toggle || !submenu) return;
+
+            toggle.addEventListener('click', () => {
+                if (sidebar && sidebar.classList.contains('collapsed')) {
+                    sidebar.classList.remove('collapsed');
+                    setTimeout(() => {
                         submenu.classList.add('open');
-                    });
-                });
-            }
-            setupDropdown('d-site-toggle', 'd-site-submenu');
-            setupDropdown('m-site-toggle', 'm-site-submenu');
-
-            // Mobile drawer
-            const mOverlay = document.getElementById('m-overlay');
-            document.getElementById('m-open-drawer').onclick = () => mOverlay.classList.add('open');
-            document.getElementById('m-close-drawer').onclick = () => mOverlay.classList.remove('open');
-            mOverlay.onclick = (e) => { if (e.target === mOverlay) mOverlay.classList.remove('open'); };
-
-            // Profile popup
-            const pPopup = document.getElementById('profile-popup');
-            ['profile-trigger-desktop','profile-trigger-mobile'].forEach(id => {
-                const el = document.getElementById(id);
-                if (!el) return;
-                el.onclick = (e) => {
-                    e.stopPropagation();
-                    if (window.innerWidth > 768) { pPopup.style.left = '16px'; pPopup.style.bottom = '80px'; }
-                    pPopup.classList.toggle('active');
-                };
+                        toggle.classList.add('dropdown-open');
+                    }, 300);
+                    return;
+                }
+                const isOpen = submenu.classList.contains('open');
+                submenu.classList.toggle('open', !isOpen);
+                toggle.classList.toggle('dropdown-open', !isOpen);
             });
-            document.addEventListener('click', () => pPopup.classList.remove('active'));
 
-            // Regular nav active state (non-dropdown items)
-            document.querySelectorAll('.nav-item:not(#d-site-toggle):not(#m-site-toggle)').forEach(item => {
-                item.addEventListener('click', function () {
-                    const parentNav = this.closest('nav');
-                    if (parentNav) clearNavActive(parentNav);
+            submenu.querySelectorAll('.nav-submenu-item').forEach(item => {
+                item.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    const parentNav = toggle.closest('nav') || toggle.parentElement;
+                    clearNavActive(parentNav);
+                    submenu.querySelectorAll('.nav-submenu-item').forEach(i => i.classList.remove('active'));
                     this.classList.add('active');
-                    ['d-site-toggle', 'm-site-toggle'].forEach(id => {
-                        const t = document.getElementById(id);
-                        t?.classList.remove('active', 'dropdown-open');
-                    });
-                    ['d-site-submenu', 'm-site-submenu'].forEach(id => {
-                        const s = document.getElementById(id);
-                        if (s) {
-                            s.classList.remove('open');
-                            s.querySelectorAll('.nav-submenu-item').forEach(i => i.classList.remove('active'));
-                        }
-                    });
+                    toggle.classList.add('dropdown-open', 'active');
+                    submenu.classList.add('open');
                 });
             });
         }
+        setupDropdown('d-site-toggle', 'd-site-submenu');
+        setupDropdown('m-site-toggle', 'm-site-submenu');
 
-        // ----- Orders Logic -----
+        // Mobile drawer
+        const mOverlay = document.getElementById('m-overlay');
+        document.getElementById('m-open-drawer').onclick = () => mOverlay.classList.add('open');
+        document.getElementById('m-close-drawer').onclick = () => mOverlay.classList.remove('open');
+        mOverlay.onclick = (e) => { if (e.target === mOverlay) mOverlay.classList.remove('open'); };
+
+        // Profile popup
+        const pPopup = document.getElementById('profile-popup');
+        ['profile-trigger-desktop','profile-trigger-mobile'].forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.onclick = (e) => {
+                e.stopPropagation();
+                if (window.innerWidth > 768) { pPopup.style.left = '16px'; pPopup.style.bottom = '80px'; }
+                pPopup.classList.toggle('active');
+            };
+        });
+        document.addEventListener('click', () => pPopup.classList.remove('active'));
+
+        // Regular nav active state
+        document.querySelectorAll('.nav-item:not(#d-site-toggle):not(#m-site-toggle)').forEach(item => {
+            item.addEventListener('click', function () {
+                const parentNav = this.closest('nav');
+                if (parentNav) clearNavActive(parentNav);
+                this.classList.add('active');
+                ['d-site-toggle', 'm-site-toggle'].forEach(id => {
+                    const t = document.getElementById(id);
+                    t?.classList.remove('active', 'dropdown-open');
+                });
+                ['d-site-submenu', 'm-site-submenu'].forEach(id => {
+                    const s = document.getElementById(id);
+                    if (s) {
+                        s.classList.remove('open');
+                        s.querySelectorAll('.nav-submenu-item').forEach(i => i.classList.remove('active'));
+                    }
+                });
+            });
+        });
+
+        // ========== MANAGE ORDERS LOGIC ==========
         let allOrders = [];
         let currentFilter = 'today';
 
@@ -1148,20 +1122,20 @@
 
             document.getElementById('statsGrid').innerHTML = `
                 <div class="stat-card">
-                    <div class="stat-icon live"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
-                    <div class="stat-info"><h3>Today Live</h3><div class="value">${todayLive}</div></div>
+                  <div class="stat-icon live"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+                  <div class="stat-info"><h3>Today Live</h3><div class="value">${todayLive}</div></div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
-                    <div class="stat-info"><h3>Done</h3><div class="value">${done}</div></div>
+                  <div class="stat-icon done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                  <div class="stat-info"><h3>Done</h3><div class="value">${done}</div></div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon pending"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-                    <div class="stat-info"><h3>Pending</h3><div class="value">${pending}</div></div>
+                  <div class="stat-icon pending"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                  <div class="stat-info"><h3>Pending</h3><div class="value">${pending}</div></div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon cancel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div>
-                    <div class="stat-info"><h3>Cancel</h3><div class="value">${cancel}</div></div>
+                  <div class="stat-icon cancel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div>
+                  <div class="stat-info"><h3>Cancel</h3><div class="value">${cancel}</div></div>
                 </div>
             `;
         }
@@ -1192,7 +1166,7 @@
         function getEmptyStateHTML() {
             return `<div class="empty-state">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                 </svg>
                 <p>No orders found for this selection</p>
             </div>`;
@@ -1221,8 +1195,7 @@
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> Cancelled
                         </button>
                     </div>
-                </div>
-            `;
+                </div>`;
         }
 
         function renderDesktopTable() {
@@ -1240,8 +1213,8 @@
                 const customer = order.shippingAddress?.name || 'Unknown User';
                 const total = `₹${Math.round(order.total || 0).toLocaleString('en-IN')}`;
                 const status = order.status || 'pending';
-                const feeInfoHTML = (order.paymentMethod === 'COD') 
-                    ? `<div class="fee-badge"><svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5 .67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg> COD • ₹100 FEE</div>` 
+                const feeInfoHTML = (order.paymentMethod === 'COD')
+                    ? `<div class="fee-badge"><svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5 .67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg> COD • ₹100 FEE</div>`
                     : '';
 
                 return `
@@ -1266,8 +1239,7 @@
                         <td>
                             <button class="btn-details" onclick="openOrderDetails('${order.id}')">Details</button>
                         </td>
-                    </tr>
-                `;
+                    </tr>`;
             }).join('');
 
             attachDropdownListeners();
@@ -1304,8 +1276,7 @@
                             <span class="price-value">${total}</span>
                         </div>
                         <button class="btn-details mobile-details-btn" onclick="openOrderDetails('${order.id}')">View Details</button>
-                    </div>
-                `;
+                    </div>`;
             }).join('');
 
             attachDropdownListeners();
@@ -1364,6 +1335,7 @@
             renderMobileCards();
         }
 
+        // Slide panel details
         window.openOrderDetails = function(orderId) {
             const order = allOrders.find(o => o.id === orderId);
             if (!order) return;
@@ -1392,8 +1364,7 @@
                         <div class="detail-card-row"><strong>Phone</strong><span>${address.phone || 'N/A'}</span></div>
                         <div class="detail-card-row"><strong>Address</strong><span>${fullAddress || 'N/A'}</span></div>
                     </div>
-                </div>
-            `;
+                </div>`;
 
             const itemsHtml = items.length ? items.map(item => `
                 <div class="detail-item">
@@ -1402,8 +1373,7 @@
                         <div class="detail-item-name">${item.name} (${item.variant})</div>
                         <div class="detail-item-qty">Qty: ${item.quantity} × ₹${item.unitPrice} = ₹${item.totalPrice}</div>
                     </div>
-                </div>
-            `).join('') : '<p>No items</p>';
+                </div>`).join('') : '<p>No items</p>';
 
             const productsSection = `
                 <div class="detail-section">
@@ -1411,8 +1381,7 @@
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg> Products
                     </div>
                     <div class="detail-items-list">${itemsHtml}</div>
-                </div>
-            `;
+                </div>`;
 
             const couponInfo = order.coupon ? `
                 <div class="detail-card-row"><strong>Coupon</strong><span>${order.coupon.code} (${order.coupon.type} ${order.coupon.value})</span></div>` : '';
@@ -1430,15 +1399,13 @@
                         ${order.handlingFee ? `<div class="detail-card-row"><strong>COD Fee</strong><span>₹${order.handlingFee}</span></div>` : ''}
                         ${couponInfo}
                     </div>
-                </div>
-            `;
+                </div>`;
 
             const totalSection = `
                 <div class="detail-total-row">
                     <span>Total Paid</span>
                     <span>₹${Math.round(order.total || 0).toLocaleString('en-IN')}</span>
-                </div>
-            `;
+                </div>`;
 
             slideBody.innerHTML = addressSection + productsSection + paymentSection + totalSection;
 
@@ -1455,6 +1422,7 @@
             }
         });
 
+        // Mobile filter
         function setupMobileFilter() {
             const dropdown = document.getElementById('mobileFilterDropdown');
             const trigger = document.getElementById('mobileFilterTrigger');
@@ -1482,7 +1450,7 @@
             });
         }
 
-        async function initOrders() {
+        async function initOrdersPage() {
             try {
                 await loadOrders();
                 renderAll();
@@ -1513,37 +1481,6 @@
                 document.getElementById('statsGrid').innerHTML = `<div style="color:var(--color-cancel); padding:20px;">Error: ${err.message}</div>`;
             }
         }
-
-        // ----- Auth & Boot -----
-        onAuthStateChanged(auth, (user) => {
-            if (!user || user.email !== ALLOWED_ADMIN) {
-                if (user) {
-                    signOut(auth).then(() => window.location.href = './');
-                } else {
-                    window.location.href = './';
-                }
-            } else {
-                document.body.style.display = 'block';
-                const avatars = document.querySelectorAll('.account-avatar');
-                const names = document.querySelectorAll('.account-name');
-                const emails = document.querySelectorAll('.account-email');
-                const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'Admin')}&background=673DE6&color=fff`;
-                avatars.forEach(img => img.src = user.photoURL || defaultAvatar);
-                names.forEach(name => name.textContent = user.displayName || 'Admin');
-                emails.forEach(email => email.textContent = user.email);
-
-                // Init UI
-                initDashboardUI();
-                initOrders();
-            }
-        });
-
-        document.getElementById('logout-btn').addEventListener('click', (e) => {
-            e.preventDefault();
-            signOut(auth).then(() => {
-                window.location.href = './';
-            });
-        });
     </script>
 </body>
 </html>
