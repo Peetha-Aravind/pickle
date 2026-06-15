@@ -56,7 +56,7 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
-
+            min-height: 100vh;
             background: var(--page-bg);
             font-family: "DM Sans", Roboto, sans-serif;
             overflow-x: hidden;
@@ -99,7 +99,7 @@
         .m-categories-toggle.active .chevron-wrap { transform: rotate(90deg); }
 
         /* ── DESKTOP LAYOUT (navbar) ── */
-        .page-desktop { display: flex; flex-direction: column; width: 100%; }
+        .page-desktop { min-height: 100vh; display: flex; flex-direction: column; width: 100%; }
         .d-navbar { height: var(--header-height-desktop); background: var(--surface-card); border-bottom: 1px solid var(--border-subtle); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; box-shadow: var(--shadow-light); }
         .d-navbar-container { max-width: 1440px; margin: 0 auto; height: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; }
         .d-navbar-logo { height: 52px; width: auto; object-fit: contain; cursor: pointer; }
@@ -177,7 +177,7 @@
         .empty-cart-msg { text-align: center; padding: 2rem; color: var(--text-light); }
 
         /* ── MOBILE NAVBAR ── */
-        .page-mobile {display: flex; flex-direction: column; display: none; width: 100%; }
+        .page-mobile { min-height: 100vh; display: flex; flex-direction: column; display: none; width: 100%; }
         .m-navbar { height: var(--navbar-height-mobile); background: var(--surface-card); border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; box-shadow: var(--shadow-light); }
         .m-menu-btn { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--surface-light); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.2s ease; z-index: 2; min-width: 40px; }
         .m-menu-btn:hover { background: var(--surface-hover); }
@@ -372,7 +372,6 @@
         .filter-overlay.open .filter-drawer { transform: translateX(0); }
         .filter-drawer-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 16px; }
         .filter-drawer-title { font-weight: 700; font-size: 18px; color: var(--ink); }
-        /* reuse .m-drawer-close class for close button styling */
 
         /* PRODUCTS AREA */
         .products-container { flex: 1; min-width: 0; }
@@ -504,124 +503,56 @@
     </nav>
 </div>
 
-<!-- ═══════════════ MOBILE NAVBAR ═══════════════ -->
+<!-- ═══════════════════════════════════════════════════════
+     MOBILE NAVBAR
+═══════════════════════════════════════════════════════ -->
 <div class="page-mobile">
     <nav class="m-navbar">
-        <button class="m-menu-btn icon-trigger" id="m-menu-toggle" aria-label="Open menu">
-            <span class="icon-wrap"><img src="./assets/menu.svg" class="icon-default" alt=""><img src="./assets/menu-fill.svg" class="icon-fill" alt=""></span>
-        </button>
+        <button class="m-menu-btn icon-trigger" id="m-menu-toggle" aria-label="Open menu"><span class="icon-wrap"><img src="./assets/menu.svg" class="icon-default" alt=""><img src="./assets/menu-fill.svg" class="icon-fill" alt=""></span></button>
         <img class="d-navbar-logo" src="./assets/logo.png" alt="Happy NonVeg Pickles" onclick="window.location.href='index.html'" />
         <div class="m-right-icons">
-            <button class="m-icon-btn icon-trigger" id="m-search-toggle" aria-label="Search">
-                <span class="icon-wrap"><img src="./assets/search.svg" class="icon-default" alt=""><img src="./assets/search-fill.svg" class="icon-fill" alt=""></span>
-            </button>
-            <button class="m-icon-btn icon-trigger" id="m-cart-toggle" aria-label="Cart">
-                <span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default" alt=""><img src="./assets/cart-fill.svg" class="icon-fill" alt=""></span>
-                <span class="mobile-cart-badge" id="cart-badge-mobile" style="display:none">0</span>
-            </button>
+            <button class="m-icon-btn icon-trigger" id="m-search-toggle" aria-label="Search"><span class="icon-wrap"><img src="./assets/search.svg" class="icon-default" alt=""><img src="./assets/search-fill.svg" class="icon-fill" alt=""></span></button>
+            <button class="m-icon-btn icon-trigger" id="m-cart-toggle" aria-label="Cart"><span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default" alt=""><img src="./assets/cart-fill.svg" class="icon-fill" alt=""></span><span class="mobile-cart-badge" id="cart-badge-mobile" style="display:none">0</span></button>
         </div>
     </nav>
     <div class="m-search-overlay" id="m-search-overlay">
-        <div class="m-search-header">
-            <input type="text" class="m-search-input" placeholder="Search products..." id="mobile-search">
-            <button class="m-search-close icon-trigger" id="m-search-close" aria-label="Close search">
-                <span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span>
-            </button>
-        </div>
+        <div class="m-search-header"><input type="text" class="m-search-input" placeholder="Search products..." id="mobile-search"><button class="m-search-close icon-trigger" id="m-search-close" aria-label="Close search"><span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span></button></div>
         <div class="mobile-results-container" id="mobile-search-results"></div>
     </div>
     <div class="m-overlay" id="m-overlay">
         <div class="m-drawer">
-            <div class="m-drawer-header">
-                <img class="m-drawer-logo" src="./assets/logo.png" alt="Logo" />
-                <button class="m-drawer-close icon-trigger" id="m-drawer-close" aria-label="Close menu">
-                    <span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span>
-                </button>
-            </div>
+            <div class="m-drawer-header"><img class="m-drawer-logo" src="https://product-ecommerces.netlify.app/vastramaya.png" alt="Logo" /><button class="m-drawer-close icon-trigger" id="m-drawer-close" aria-label="Close menu"><span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span></button></div>
             <nav class="m-drawer-nav">
                 <div class="nav-section">
-                    <a href="landing.html" class="m-nav-link active icon-trigger">
-                        <div class="m-link-content">
-                            <span class="icon-wrap"><img src="./assets/home.svg" class="icon-default" alt=""><img src="./assets/home-fill.svg" class="icon-fill" alt=""></span>
-                            <span>Home</span>
-                        </div>
-                        <span class="icon-wrap icon-muted"><img src="./assets/chevron.svg" class="icon-default" alt=""><img src="./assets/chevron-fill.svg" class="icon-fill" alt=""></span>
-                    </a>
-                    <a href="shop.html" class="m-nav-link icon-trigger">
-                        <div class="m-link-content">
-                            <span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default" alt=""><img src="./assets/cart-fill.svg" class="icon-fill" alt=""></span>
-                            <span>Shop</span>
-                        </div>
-                        <span class="icon-wrap icon-muted"><img src="./assets/chevron.svg" class="icon-default" alt=""><img src="./assets/chevron-fill.svg" class="icon-fill" alt=""></span>
-                    </a>
+                    <a href="landing-page.html" class="m-nav-link active icon-trigger"><div class="m-link-content"><span class="icon-wrap"><img src="./assets/home.svg" class="icon-default" alt=""><img src="./assets/home-fill.svg" class="icon-fill" alt=""></span><span>Home</span></div><span class="icon-wrap icon-muted"><img src="./assets/chevron.svg" class="icon-default" alt=""><img src="./assets/chevron-fill.svg" class="icon-fill" alt=""></span></a>
+                    <a href="shop.html" class="m-nav-link icon-trigger"><div class="m-link-content"><span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default" alt=""><img src="./assets/cart-fill.svg" class="icon-fill" alt=""></span><span>Shop</span></div><span class="icon-wrap icon-muted"><img src="./assets/chevron.svg" class="icon-default" alt=""><img src="./assets/chevron-fill.svg" class="icon-fill" alt=""></span></a>
                     <div class="m-categories-dropdown">
-                        <div class="m-categories-toggle icon-trigger" id="m-categories-toggle">
-                            <div class="m-link-content">
-                                <span class="icon-wrap"><img src="./assets/category.svg" class="icon-default" alt=""><img src="./assets/category-fill.svg" class="icon-fill" alt=""></span>
-                                <span>Categories</span>
-                            </div>
-                            <span class="icon-wrap icon-muted chevron-wrap"><img src="./assets/chevron.svg" class="icon-default" alt=""><img src="./assets/chevron-fill.svg" class="icon-fill" alt=""></span>
-                        </div>
+                        <div class="m-categories-toggle icon-trigger" id="m-categories-toggle"><div class="m-link-content"><span class="icon-wrap"><img src="./assets/category.svg" class="icon-default" alt=""><img src="./assets/category-fill.svg" class="icon-fill" alt=""></span><span>Categories</span></div><span class="icon-wrap icon-muted chevron-wrap"><img src="./assets/chevron.svg" class="icon-default" alt=""><img src="./assets/chevron-fill.svg" class="icon-fill" alt=""></span></div>
                         <div class="m-categories-content" id="mobile-nav-categories"></div>
                     </div>
-                    <a href="#" class="m-nav-link icon-trigger" onclick="handleWishlistClick(event)">
-                        <div class="m-link-content">
-                            <span class="icon-wrap"><img src="./assets/heart.svg" class="icon-default" alt=""><img src="./assets/heart-fill.svg" class="icon-fill" alt=""></span>
-                            <span>Wishlist</span>
-                            <span class="mobile-wishlist-badge" id="wishlist-badge-mobile" style="display:none; position:relative; top:0; right:0; margin-left:8px;">0</span>
-                        </div>
-                        <span class="icon-wrap icon-muted"><img src="./assets/chevron.svg" class="icon-default" alt=""><img src="./assets/chevron-fill.svg" class="icon-fill" alt=""></span>
-                    </a>
-                    <a href="my-orders.html" class="m-nav-link icon-trigger auth-only auth-hidden">
-                        <div class="m-link-content">
-                            <span class="icon-wrap"><img src="./assets/orders.svg" class="icon-default" alt=""><img src="./assets/orders-fill.svg" class="icon-fill" alt=""></span>
-                            <span>My Orders</span>
-                        </div>
-                        <span class="icon-wrap icon-muted"><img src="./assets/chevron.svg" class="icon-default" alt=""><img src="./assets/chevron-fill.svg" class="icon-fill" alt=""></span>
-                    </a>
+                    <a href="#" class="m-nav-link icon-trigger" onclick="handleWishlistClick(event)"><div class="m-link-content"><span class="icon-wrap"><img src="./assets/heart.svg" class="icon-default" alt=""><img src="./assets/heart-fill.svg" class="icon-fill" alt=""></span><span>Wishlist</span><span class="mobile-wishlist-badge" id="wishlist-badge-mobile" style="display:none; position:relative; top:0; right:0; margin-left:8px;">0</span></div><span class="icon-wrap icon-muted"><img src="./assets/chevron.svg" class="icon-default" alt=""><img src="./assets/chevron-fill.svg" class="icon-fill" alt=""></span></a>
+                    <a href="my-orders.html" class="m-nav-link icon-trigger auth-only auth-hidden"><div class="m-link-content"><span class="icon-wrap"><img src="./assets/orders.svg" class="icon-default" alt=""><img src="./assets/orders-fill.svg" class="icon-fill" alt=""></span><span>My Orders</span></div><span class="icon-wrap icon-muted"><img src="./assets/chevron.svg" class="icon-default" alt=""><img src="./assets/chevron-fill.svg" class="icon-fill" alt=""></span></a>
                 </div>
             </nav>
             <div class="m-drawer-profile" id="mobile-profile-trigger">
                 <div class="m-profile-popup-menu" id="m-profile-popup">
-                    <a href="my-profile.html" class="m-profile-option icon-trigger">
-                        <span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span>
-                        My Profile
-                    </a>
-                    <div class="m-profile-option logout icon-trigger" id="mobile-logout-btn">
-                        <span class="icon-wrap icon-danger"><img src="./assets/logout.svg" class="icon-default" alt=""><img src="./assets/logout-fill.svg" class="icon-fill" alt=""></span>
-                        Logout
-                    </div>
+                    <a href="my-profile.html" class="m-profile-option icon-trigger"><span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span>My Profile</a>
+                    <div class="m-profile-option logout icon-trigger" id="mobile-logout-btn"><span class="icon-wrap icon-danger"><img src="./assets/logout.svg" class="icon-default" alt=""><img src="./assets/logout-fill.svg" class="icon-fill" alt=""></span>Logout</div>
                 </div>
                 <div class="m-profile-header">
-                    <div class="m-profile-icon-container icon-trigger">
-                        <span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span>
-                    </div>
-                    <div class="m-profile-info">
-                        <div class="m-profile-name" id="user-name-mobile">Guest</div>
-                        <div class="m-profile-email" id="user-phone-mobile"><span class="m-login-text">Login / Sign Up</span></div>
-                    </div>
+                    <div class="m-profile-icon-container icon-trigger"><span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span></div>
+                    <div class="m-profile-info"><div class="m-profile-name" id="user-name-mobile">Guest</div><div class="m-profile-email" id="user-phone-mobile"><span class="m-login-text">Login / Sign Up</span></div></div>
                 </div>
             </div>
         </div>
     </div>
     <div class="cart-overlay" id="cart-overlay">
         <div class="cart-drawer">
-            <div class="cart-drawer-header">
-                <div class="cart-drawer-title" id="cart-count-mobile">Your Cart (0)</div>
-                <button class="m-drawer-close icon-trigger" id="cart-drawer-close" aria-label="Close cart">
-                    <span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span>
-                </button>
-            </div>
+            <div class="cart-drawer-header"><div class="cart-drawer-title" id="cart-count-mobile">Your Cart (0)</div><button class="m-drawer-close icon-trigger" id="cart-drawer-close" aria-label="Close cart"><span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span></button></div>
             <div class="cart-drawer-body" id="cart-items-mobile"></div>
             <div class="cart-drawer-footer">
-                <div class="mobile-cart-total">
-                    <div class="mobile-cart-total-label">Total</div>
-                    <div class="mobile-cart-total-amount" id="cart-total-mobile">₹0.00</div>
-                </div>
-                <button class="mobile-buy-btn" onclick="window.location.href='checkout.html'">
-                    <span>Checkout Now</span>
-                    <span class="icon-wrap icon-white"><img src="./assets/arrow-right.svg" class="icon-default" alt=""><img src="./assets/arrow-right-fill.svg" class="icon-fill" alt=""></span>
-                </button>
+                <div class="mobile-cart-total"><div class="mobile-cart-total-label">Total</div><div class="mobile-cart-total-amount" id="cart-total-mobile">₹0.00</div></div>
+                <button class="mobile-buy-btn" onclick="window.location.href='checkout.html'"><span>Checkout Now</span><span class="icon-wrap icon-white"><img src="./assets/arrow-right.svg" class="icon-default" alt=""><img src="./assets/arrow-right-fill.svg" class="icon-fill" alt=""></span></button>
             </div>
         </div>
     </div>
@@ -828,6 +759,26 @@
             mSearchToggle.onclick = () => { mSearchOverlay.style.display = 'flex'; document.getElementById('mobile-search').focus(); };
             mSearchClose.onclick = () => mSearchOverlay.style.display = 'none';
         }
+    }
+
+    // ── CLICK‑BASED ACTIVE STATE FOR DESKTOP & MOBILE NAV LINKS ──
+    function initNavActiveState() {
+        // Desktop: exclude the categories dropdown trigger (href starts with "javascript")
+        document.querySelectorAll('a.d-nav-link').forEach(link => {
+            if (link.getAttribute('href') && !link.getAttribute('href').startsWith('javascript')) {
+                link.addEventListener('click', function(e) {
+                    document.querySelectorAll('a.d-nav-link').forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            }
+        });
+        // Mobile: all .m-nav-link elements (Home, Shop, Wishlist, My Orders)
+        document.querySelectorAll('.m-nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                document.querySelectorAll('.m-nav-link').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
     }
 
     function togglePassword(inputId, btn) {
@@ -1296,10 +1247,11 @@
     // ── INIT EVERYTHING ──
     document.addEventListener('DOMContentLoaded', () => {
         initNavbarUI();
+        initNavActiveState();   // ← activates clicked links in navbar
         checkAuth();
         renderCart();
         updateWishlistCount();
-        loadCategories();          // desktop/mobile category links
+        loadCategories();
         initLiveSearch();
         initAuthModal();
         initShopFilters();
