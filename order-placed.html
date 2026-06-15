@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +11,7 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
     body {
-      background-color: #C0392B; /* Matches your core brand red color precisely */
+      background-color: #C0392B; /* Matches your core brand red exactly */
       font-family: 'IBM Plex Sans', sans-serif;
       width: 100vw;
       height: 100vh;
@@ -20,43 +19,36 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px;
     }
 
-    /* Dynamic container that auto-adjusts layout presentation between devices */
     .animation-wrapper {
       width: 100%;
-      max-width: 600px; /* Perfect square/portrait desktop card ratio layout boundary */
-      aspect-ratio: 4 / 3; /* Matches your specific delivery video frame structure */
+      height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
-      border-radius: 24px;
-      overflow: hidden;
-      /* Smoothly blend background matching to eliminate edge lines */
-      background-color: #C0392B; 
+      background-color: #C0392B;
     }
 
     video {
+      display: block;
       width: 100%;
       height: 100%;
-      object-fit: cover; /* Keeps video details seamlessly fitted into corners without bars */
-      display: block;
     }
 
-    /* Mobile view structural responsiveness override */
-    @media (max-width: 600px) {
-      body {
-        padding: 0; /* Remove boundaries to take up entire glass surface area */
-      }
-      .animation-wrapper {
-        max-width: 100vw;
-        height: 100vh;
-        border-radius: 0; /* Full edge-to-edge coverage on phone screens */
-        aspect-ratio: auto;
-      }
+    /* Desktop layout rendering optimizations */
+    @media (min-width: 601px) {
       video {
-        object-fit: contain; /* Prevents crucial truck graphics from cropping on narrow phones */
+        object-fit: contain; /* Prevents letterboxing stretch lines on wide monitors */
+        max-width: 800px;
+        max-height: 600px;
+      }
+    }
+
+    /* Mobile layout rendering optimizations */
+    @media (max-width: 600px) {
+      video {
+        object-fit: cover; /* Forces the red video background to scale beautifully edge-to-edge on phones */
       }
     }
   </style>
@@ -93,38 +85,53 @@
       if (!rawData) return;
 
       const orderPayload = JSON.parse(rawData);
-      orderPayload.createdAt = serverTimestamp(); // Inject database accurate timing
+      orderPayload.createdAt = serverTimestamp();
 
       await addDoc(collection(db, "orders"), orderPayload);
 
-      // Clear your cart and session memory data upon successful submission
+      // Clear volatile states instantly upon success
       sessionStorage.removeItem('checkoutData');
       localStorage.removeItem('vastramaya_cart');
     } catch (err) {
-      console.error("Firebase database insertion failed:", err);
+      console.error("Firebase tracking write failed:", err);
     }
   }
 
-  // Fire data transaction cycle silently during active rendering
+  // Submit background operations asynchronously
   uploadOrderToFirebase();
 
   const video = document.getElementById('successAnimation');
-  const redirectPage = 'index.html'; // Your store home target
+  const redirectPage = 'index.html';
 
   if (video) {
-    // When the delivery truck reaches the destination and finish playing, go home
+    // FORCE PLAYBACK: Resolves strict device engine autoplay blocks immediately upon mount
+    document.addEventListener('DOMContentLoaded', () => {
+      video.load();
+      const playPromise = video.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.warn("Autoplay context interrupted. Falling back to timer route...", error);
+          // If video file is flat out missing or blocked, redirect after 5 seconds instead of getting stuck
+          setTimeout(() => {
+            window.location.href = redirectPage;
+          }, 5000);
+        });
+      }
+    });
+
+    // Fallback: If it plays normally, redirect the exact millisecond the truck stops animating
     video.onended = () => { 
       window.location.href = redirectPage; 
     };
-    
-    // Safety Fallback (10 seconds): Guarantees user safe-exit routing in case network lag freezes media thread
+
+    // Global safety timer in case the track lags or loops infinitely
     setTimeout(() => { 
       window.location.href = redirectPage; 
-    }, 10000);
+    }, 9500);
   } else {
     window.location.href = redirectPage;
   }
 </script>
 </body>
 </html>
-
