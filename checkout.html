@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>Checkout – Happy NonVeg Pickles</title>
-  <!-- ... same fonts and styles as before ... -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -190,6 +189,28 @@
     .save-address { background: var(--rust); color: white; }
     .close-modal { background: #ccc; }
 
+    /* ─── FULL-SCREEN ANIMATION OVERLAY (Desktop & Mobile) ─── */
+    .animation-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #C0392B; /* Matches your core brand/video fallback background color */
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+    .animation-overlay video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain; /* Ensures the complete animation canvas fits elegantly on mobile & desktop screens */
+      max-width: 100%;
+      max-height: 100%;
+    }
+
     footer {
       background: var(--ink);
       color: rgba(255,255,255,0.6);
@@ -207,7 +228,6 @@
 </head>
 <body>
 
-<!-- Back button at top left corner -->
 <button class="back-button" onclick="goBack()">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
     <path d="M15 18l-6-6 6-6"/>
@@ -217,7 +237,6 @@
 
 <main id="checkoutRoot"><div style="text-align:center; padding:60px;">Loading checkout...</div></main>
 
-<!-- Address Modal -->
 <div id="addressModal" class="modal">
   <div class="modal-content">
     <h3>Add Delivery Address</h3>
@@ -231,6 +250,13 @@
       <button class="save-address" onclick="saveAddress()">Save Address</button>
     </div>
   </div>
+</div>
+
+<div id="animationOverlay" class="animation-overlay">
+  <video id="placedAnimationVideo" playsinline muted>
+    <source src="large-thumbnail20250211-1846070-1x65j2q.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
 </div>
 
 <footer><p>© 2025 Happy NonVeg Pickles — handcrafted with tradition.</p></footer>
@@ -588,7 +614,6 @@
     }
 
     updateTotalsAndButton();
-    // ─── MODIFIED: Pay Now button now navigates instead of processing order directly ───
     document.getElementById('payNowBtn')?.addEventListener('click', () => navigateToPayment());
   }
 
@@ -621,9 +646,8 @@
     closeAddressModal();
   };
 
-  // ─── NEW: Collect data, store in session, then go to payment page ──────────────────
+  // ─── Modified: Collect data, store in session, show animation, then redirect ───
   function navigateToPayment() {
-    // Prevent double click
     if (isProcessing) return;
     const payBtn = document.getElementById('payNowBtn');
     if (!payBtn) return;
@@ -639,9 +663,8 @@
     const totals = getCurrentTotals();
     const paymentMethod = selectedPayment === 'online' ? 'Online Payment' : 'Cash on Delivery';
 
-    // Build the full checkout data object exactly as the next page will need it
     const checkoutData = {
-      createdAt: new Date().toISOString(), // temporary timestamp, will be replaced by serverTimestamp later
+      createdAt: new Date().toISOString(), 
       status: 'pending',
       paymentMethod: paymentMethod,
 
@@ -676,12 +699,29 @@
       } : null
     };
 
-    // Store in sessionStorage so the next page can retrieve it
+    // Store in sessionStorage
     sessionStorage.setItem('checkoutData', JSON.stringify(checkoutData));
 
-    // ─── CHANGE THE NEXT LINE to the URL of your payment / order-completion page ───
-    const nextPage = 'order-placed.html';   // <-- Replace with your actual page later
-    window.location.href = nextPage;
+    // Show Full-Screen Video Animation Canvas
+    const overlay = document.getElementById('animationOverlay');
+    const video = document.getElementById('placedAnimationVideo');
+    const nextPage = 'order-placed.html'; // <-- Replace with your actual page link
+
+    if (overlay && video) {
+      overlay.style.display = 'flex';
+      video.play().catch(err => {
+        console.warn("Video auto-play blocked or failed, navigating directly:", err);
+        window.location.href = nextPage;
+      });
+
+      // Navigate automatically immediately when the video finishes playing
+      video.onended = () => {
+        window.location.href = nextPage;
+      };
+    } else {
+      // Fallback if elements aren't present
+      window.location.href = nextPage;
+    }
   }
 
   function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
