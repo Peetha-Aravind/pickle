@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Shop – Happy NonVeg Pickles</title>
     
-    <!-- Fonts & Icons (same as landing) -->
+    <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -21,12 +21,12 @@
             font-family: "DM Sans", Roboto, sans-serif;
             overflow-x: hidden;
             color: #2c1a0e;
-            padding-top: 0; /* navbar removed */
+            padding-top: 0;
             transition: none;
         }
 
         :root {
-            --header-height-desktop: 0;   /* not used anymore */
+            --header-height-desktop: 0;
             --navbar-height-mobile: 0;
             --page-bg: #ffffff;
             --text-primary: #000000;
@@ -59,10 +59,10 @@
             --r-pill: 999px;
             --ff-display: 'Playfair Display', Georgia, serif;
             --ff-body: 'DM Sans', sans-serif;
-            --nav-h: 0;   /* not used */
+            --nav-h: 0;
         }
 
-        /* General icon styles retained for auth / filters etc. */
+        /* General icon styles */
         .icon-wrap {
             position: relative; width: 20px; height: 20px;
             display: inline-flex; align-items: center; justify-content: center;
@@ -84,7 +84,7 @@
         .icon-wrap.icon-danger .icon-default, .icon-wrap.icon-danger .icon-fill { filter: invert(16%) sepia(97%) saturate(4500%) hue-rotate(345deg) brightness(90%) contrast(110%); }
         .icon-wrap.icon-success .icon-default, .icon-wrap.icon-success .icon-fill { filter: invert(52%) sepia(47%) saturate(490%) hue-rotate(112deg) brightness(89%) contrast(87%); }
 
-        /* AUTH MODAL STYLES (unchanged) */
+        /* AUTH MODAL STYLES */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.5); backdrop-filter: blur(6px); z-index: 5000;
@@ -203,7 +203,7 @@
 
         .white-header-bar {
             background: var(--surface-card); border-bottom: 1px solid var(--border-subtle);
-            padding: 12px 5vw; position: sticky; top: 0; /* stick to top now */
+            padding: 12px 5vw; position: sticky; top: 0;
             z-index: 50; width: 100%;
         }
         .header-bar-container {
@@ -226,7 +226,7 @@
         /* FILTER SIDEBAR (desktop) */
         .shop-layout { display: flex; gap: 32px; max-width: 1440px; margin: 0 auto; padding: 40px 5vw; align-items: flex-start; }
         .filter-sidebar {
-            width: 250px; flex-shrink: 0; position: sticky; top: 60px;  /* adjusted top */
+            width: 250px; flex-shrink: 0; position: sticky; top: 60px;
             background: var(--surface-card); border: 1px solid var(--border-subtle);
             border-radius: var(--r-card); padding: 24px; box-shadow: var(--shadow-sm);
         }
@@ -284,7 +284,29 @@
             font-family: var(--ff-display); font-size: 1.5rem; font-weight: 700;
             color: var(--ink); margin-bottom: 16px; padding-bottom: 8px;
         }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 24px; }
+        /* Desktop: grid layout */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 24px;
+        }
+        /* Mobile: horizontal scroll – two cards at a time */
+        @media (max-width: 768px) {
+            .product-grid {
+                display: flex;
+                overflow-x: auto;
+                gap: 16px;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 8px;
+            }
+            .product-grid::-webkit-scrollbar { display: none; }
+            .product-card {
+                flex: 0 0 auto;
+                width: calc(50% - 10px);  /* two cards visible + gap */
+                scroll-snap-align: start;
+            }
+        }
         .product-card {
             background: #fff; border-radius: var(--r-card); overflow: hidden;
             border: 1px solid var(--border); box-shadow: var(--shadow-sm);
@@ -475,7 +497,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
 <script>
-    // ═══════════ FIREBASE INIT (two projects) ═══════════
+    // ═══════════ FIREBASE INIT ═══════════
     const frontendConfig = {
         apiKey: "AIzaSyCZbCr-Zt5KQblRQ8Pk58KuinCVP-TlXGo",
         authDomain: "happynonvegpickles-f2636.firebaseapp.com",
@@ -509,9 +531,8 @@
     let wishlist = [];
     let wishlistUnsubscribe = null;
 
-    // ═══════════ AUTH & UI INIT ═══════════
     function initAll() {
-        initShopFilters();   // replaced initNavbar with filter toggles only
+        initShopFilters();
         initAuthModal();
         loadCategoriesAndProducts();
         renderCart();
@@ -544,7 +565,7 @@
         const googleBtn = document.getElementById('google-login-btn');
 
         if (!modalOverlay || !closeBtn || !showLoginBtn || !showSignupBtn || !loginForm || !signupForm) {
-            console.warn('Auth modal elements missing. Skipping modal initialization.');
+            console.warn('Auth modal elements missing.');
             return;
         }
 
@@ -600,31 +621,23 @@
             setupWishlistListener(user);
         } else {
             if (wishlistUnsubscribe) { wishlistUnsubscribe(); wishlistUnsubscribe = null; }
-            wishlist = []; updateWishlistCount();
+            wishlist = [];
             if (cart.length) saveCart(false);
         }
         renderCart();
     });
 
     function updateAuthUI() {
-        // Auth UI was previously tied to navbar elements; now we just update the auth-only visibility.
         const authOnly = document.querySelectorAll('.auth-only');
-        if (currentUser) {
-            authOnly.forEach(el => el.classList.remove('auth-hidden'));
-        } else {
-            authOnly.forEach(el => el.classList.add('auth-hidden'));
-        }
+        if (currentUser) authOnly.forEach(el => el.classList.remove('auth-hidden'));
+        else authOnly.forEach(el => el.classList.add('auth-hidden'));
     }
 
     function setupWishlistListener(user) {
         if (wishlistUnsubscribe) wishlistUnsubscribe();
         wishlistUnsubscribe = cartDb.collection('users').doc(user.uid).onSnapshot(doc => {
             wishlist = doc.exists && doc.data().wishlist ? doc.data().wishlist : [];
-            updateWishlistCount();
         });
-    }
-    function updateWishlistCount() {
-        // No navbar badges exist, function kept for compatibility
     }
 
     function saveCart(syncDB) {
@@ -667,10 +680,7 @@
         if (item.quantity <= 0) removeFromCart(id);
         else { saveCart(true); renderCart(); }
     }
-    function renderCart() {
-        // Cart display removed along with navbar – keep the function for data management.
-        // If you need a cart display somewhere else, add it accordingly.
-    }
+    function renderCart() { /* kept for data management */ }
     function showToast(msg) {
         const container = document.getElementById('toast-container') || (() => { const div = document.createElement('div'); div.id = 'toast-container'; document.body.appendChild(div); return div; })();
         const toast = document.createElement('div'); toast.className = 'toast'; toast.textContent = msg;
@@ -794,22 +804,26 @@
             products.forEach(prod => {
                 const minPrice = parseFloat(prod.minPrice) || 0;
                 const maxPrice = parseFloat(prod.maxPrice) || 0;
-                const priceDisplay = (minPrice && maxPrice && minPrice !== maxPrice)
-                    ? `₹${minPrice} – ₹${maxPrice}`
-                    : `₹${minPrice || maxPrice}`;
+                // Always show selling price
+                const priceDisplay = `₹${minPrice}`;
 
-                const rating = prod.rating ? parseFloat(prod.rating) : null;
-                const ratingHtml = rating ? `<div class="product-card-rating"><span class="stars">${'★'.repeat(Math.round(rating))}</span><span class="rating-value">${rating.toFixed(1)}</span></div>` : '';
-
-                let discountHtml = '';
+                // Show MRP always if maxPrice exists (even if equal to minPrice)
                 let mrpHtml = '';
-                if (maxPrice && minPrice && maxPrice > minPrice) {
+                if (maxPrice > 0) {
+                    mrpHtml = `<span class="product-card-mrp">₹${maxPrice}</span>`;
+                }
+
+                // Discount badge only if there is an actual discount
+                let discountHtml = '';
+                if (maxPrice > minPrice && minPrice > 0) {
                     const discountPercent = Math.round((1 - minPrice / maxPrice) * 100);
                     if (discountPercent > 0) {
-                        mrpHtml = `<span class="product-card-mrp">₹${maxPrice}</span>`;
                         discountHtml = `<span class="product-card-discount">${discountPercent}% OFF</span>`;
                     }
                 }
+
+                const rating = prod.rating ? parseFloat(prod.rating) : null;
+                const ratingHtml = rating ? `<div class="product-card-rating"><span class="stars">${'★'.repeat(Math.round(rating))}</span><span class="rating-value">${rating.toFixed(1)}</span></div>` : '';
 
                 const card = document.createElement('div'); card.className = 'product-card';
                 card.onclick = () => window.location.href = `view.html?id=${prod.id}`;
