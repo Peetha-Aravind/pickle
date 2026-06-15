@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>Checkout – Happy NonVeg Pickles</title>
+  <!-- ... same fonts and styles as before ... -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -587,7 +588,8 @@
     }
 
     updateTotalsAndButton();
-    document.getElementById('payNowBtn')?.addEventListener('click', () => processOrder());
+    // ─── MODIFIED: Pay Now button now navigates instead of processing order directly ───
+    document.getElementById('payNowBtn')?.addEventListener('click', () => navigateToPayment());
   }
 
   // ─── Address modal handlers ──────────────────────────────────
@@ -619,87 +621,67 @@
     closeAddressModal();
   };
 
-  // ─── Final order processing ──────────────────────────────────
-  async function processOrder() {
+  // ─── NEW: Collect data, store in session, then go to payment page ──────────────────
+  function navigateToPayment() {
+    // Prevent double click
     if (isProcessing) return;
     const payBtn = document.getElementById('payNowBtn');
     if (!payBtn) return;
 
+    // Validations
     if (!savedAddress) { alert('Please add a delivery address first'); return; }
     if (!checkoutItems.length) { alert('No items in checkout'); return; }
 
     isProcessing = true;
     payBtn.disabled = true;
-    payBtn.innerText = 'Processing...';
+    payBtn.innerText = 'Preparing...';
 
-    try {
-      const totals = getCurrentTotals();
-      const paymentMethod = selectedPayment === 'online' ? 'Online Payment' : 'Cash on Delivery';
+    const totals = getCurrentTotals();
+    const paymentMethod = selectedPayment === 'online' ? 'Online Payment' : 'Cash on Delivery';
 
-      const orderData = {
-        createdAt: serverTimestamp(),
-        status: 'pending',
-        paymentMethod: paymentMethod,
+    // Build the full checkout data object exactly as the next page will need it
+    const checkoutData = {
+      createdAt: new Date().toISOString(), // temporary timestamp, will be replaced by serverTimestamp later
+      status: 'pending',
+      paymentMethod: paymentMethod,
 
-        shippingAddress: {
-          name: savedAddress.name,
-          phone: savedAddress.phone,
-          address: savedAddress.address,
-          city: savedAddress.city,
-          pincode: savedAddress.pincode
-        },
+      shippingAddress: {
+        name: savedAddress.name,
+        phone: savedAddress.phone,
+        address: savedAddress.address,
+        city: savedAddress.city,
+        pincode: savedAddress.pincode
+      },
 
-        items: checkoutItems.map(item => ({
-          productId: item.id,
-          name: item.name,
-          image: item.image,
-          variant: item.variant,
-          quantity: item.quantity,
-          unitPrice: item.price,
-          totalPrice: item.price * item.quantity
-        })),
+      items: checkoutItems.map(item => ({
+        productId: item.id,
+        name: item.name,
+        image: item.image,
+        variant: item.variant,
+        quantity: item.quantity,
+        unitPrice: item.price,
+        totalPrice: item.price * item.quantity
+      })),
 
-        subtotal: totals.subtotal,
-        discount: totals.discount,
-        shipping: totals.shipping,
-        handlingFee: totals.handlingFee,
-        total: totals.total,
+      subtotal: totals.subtotal,
+      discount: totals.discount,
+      shipping: totals.shipping,
+      handlingFee: totals.handlingFee,
+      total: totals.total,
 
-        coupon: appliedCoupon ? {
-          code: appliedCoupon.code,
-          type: appliedCoupon.type,
-          value: appliedCoupon.value
-        } : null
-      };
+      coupon: appliedCoupon ? {
+        code: appliedCoupon.code,
+        type: appliedCoupon.type,
+        value: appliedCoupon.value
+      } : null
+    };
 
-      // 1. Save to Firestore
-      const ordersRef = collection(db, 'orders');
-      const docRef = await addDoc(ordersRef, orderData);
+    // Store in sessionStorage so the next page can retrieve it
+    sessionStorage.setItem('checkoutData', JSON.stringify(checkoutData));
 
-      // 2. Increment coupon usage if applied
-      if (appliedCoupon && appliedCoupon.docId) {
-        await updateDoc(doc(db, 'coupons', appliedCoupon.docId), {
-          usage: increment(1)
-        });
-      }
-
-      // 3. Clear cart (only if from cart)
-      if (!new URLSearchParams(window.location.search).get('id')) {
-        localStorage.removeItem('vastramaya_cart');
-      }
-
-      // 4. Success feedback
-      const itemList = checkoutItems.map(i => `${i.name} (${i.variant}) x ${i.quantity}`).join(', ');
-      alert(`✅ Order placed successfully!\n\nOrder ID: ${docRef.id}\nItems: ${itemList}\nTotal: ${formatPrice(totals.total)}\nPayment: ${paymentMethod}\n\nWe will send you updates.`);
-      window.location.href = 'index.html';
-
-    } catch (error) {
-      console.error('Order failed:', error);
-      alert('Something went wrong while placing the order. Please try again.');
-      isProcessing = false;
-      payBtn.disabled = false;
-      payBtn.innerText = `Pay ${formatPrice(getCurrentTotals().total)}`;
-    }
+    // ─── CHANGE THE NEXT LINE to the URL of your payment / order-completion page ───
+    const nextPage = 'payment.html';   // <-- Replace with your actual page later
+    window.location.href = nextPage;
   }
 
   function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
