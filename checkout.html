@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    /* (styles unchanged – same as your original) */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
       --rust: #C0392B; --rust-dark: #962d22; --rust-light: #f5e9e7;
@@ -26,7 +27,6 @@
       line-height: 1.5;
     }
     
-    /* ----- Back Button (top left) ----- */
     .back-button {
       position: fixed;
       top: 20px;
@@ -111,7 +111,6 @@
     .cart-item-variant { font-size: 0.8rem; color: var(--ash); margin-bottom: 6px; }
     .cart-item-price-row { display: flex; justify-content: space-between; align-items: baseline; }
     
-    /* Coupon section */
     .coupon-section {
       padding: 16px 24px;
       border-bottom: 1px solid var(--border);
@@ -157,7 +156,6 @@
     }
     .pay-btn:hover { background: var(--rust-dark); transform: translateY(-2px); }
     
-    /* Address Modal */
     .modal {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;
@@ -235,7 +233,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  import { getFirestore, doc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
@@ -253,7 +251,7 @@
 
   // Global state
   let checkoutItems = [];      // array of { id, name, image, variant, quantity, price }
-  let appliedCoupon = null;
+  let appliedCoupon = null;    // { code, type, value, docId }
   let selectedPayment = 'online';
   let savedAddress = null;
 
@@ -266,9 +264,9 @@
     if (productId) {
       const qty = parseInt(params.get('quantity')) || 1;
       const variantWeight = params.get('weight') || '';
-      const directPrice = params.get('price');   // optional fallback
-      const directName = params.get('name');     // optional fallback
-      const directImage = params.get('image');   // optional fallback
+      const directPrice = params.get('price');
+      const directName = params.get('name');
+      const directImage = params.get('image');
 
       try {
         const prodSnap = await getDoc(doc(db, "products", productId));
@@ -294,7 +292,6 @@
         }
       } catch(e) { console.warn("Firestore fetch failed, using URL params", e); }
 
-      // Fallback: construct item from URL params only
       return [{
         id: productId,
         name: directName || "Product",
@@ -307,7 +304,7 @@
 
     // ── Cart Checkout flow ──
     const rawCart = JSON.parse(localStorage.getItem('vastramaya_cart')) || [];
-    if (!rawCart.length) return [];   // empty cart
+    if (!rawCart.length) return [];
 
     return rawCart.map(item => ({
       id: item.productId || item.id,
@@ -329,14 +326,14 @@
     let discount = 0;
     let discountText = '';
     if (appliedCoupon) {
-      if (appliedCoupon.discountType === 'percentage') {
-        discount = subtotal * (appliedCoupon.discountValue / 100);
-        discountText = `${appliedCoupon.discountValue}% off`;
-      } else if (appliedCoupon.discountType === 'fixed') {
-        discount = appliedCoupon.discountValue;
-        discountText = `₹${appliedCoupon.discountValue} off`;
+      if (appliedCoupon.type === 'percentage') {
+        discount = subtotal * (appliedCoupon.value / 100);
+        discountText = `${appliedCoupon.value}% off`;
+      } else if (appliedCoupon.type === 'flat') {
+        discount = appliedCoupon.value;
+        discountText = `₹${appliedCoupon.value} off`;
       }
-      discount = Math.min(discount, subtotal);
+      discount = Math.min(discount, subtotal); // discount cannot exceed subtotal
     }
 
     let shipping = subtotal > 499 ? 0 : 40;
@@ -363,39 +360,64 @@
     if (payBtn) payBtn.innerText = `Pay ${formatPrice(totals.total)}`;
   }
 
-  // ─── Coupon logic ────────────────────────────────────────────
+  // ─── Coupon logic – aligned with admin schema ──────────────────
   async function applyCoupon(code) {
     if (!code) return { success: false, message: 'Enter a coupon code' };
     const upperCode = code.toUpperCase();
     try {
       const couponRef = doc(db, "coupons", upperCode);
       const couponSnap = await getDoc(couponRef);
+
       if (!couponSnap.exists()) {
         return { success: false, message: 'Invalid coupon code' };
       }
+
       const data = couponSnap.data();
+
+      // 1. Check active status
+      if (data.isActive === false) {
+        return { success: false, message: 'Coupon is not active' };
+      }
+
+      // 2. Check expiry (admin stores as string "YYYY-MM-DD")
       if (data.expiry) {
-        let expiryDate = data.expiry.toDate ? data.expiry.toDate() : new Date(data.expiry);
-        if (expiryDate < new Date()) {
-          return { success: false, message: 'Coupon expired' };
+        const today = new Date();
+        today.setHours(0,0,0,0); // compare date only
+        const expiryDate = new Date(data.expiry);
+        if (expiryDate < today) {
+          return { success: false, message: 'Coupon has expired' };
         }
       }
-      const subtotal = getCurrentTotals().subtotal;
-      if (data.minOrder && subtotal < data.minOrder) {
-        return { success: false, message: `Minimum order ₹${data.minOrder} required` };
+
+      // 3. Check total usage limit
+      if (data.totalLimit) {
+        const used = data.usage || 0;
+        if (used >= data.totalLimit) {
+          return { success: false, message: 'Coupon usage limit reached' };
+        }
       }
+
+      // 4. Validate discount type and value
+      const type = data.type; // "percentage" or "flat"
+      const value = Number(data.value);
+      if (!type || !value || value <= 0) {
+        return { success: false, message: 'Invalid coupon configuration' };
+      }
+
+      // Store applied coupon info for totals calculation
       appliedCoupon = {
         code: upperCode,
-        discountType: data.discountType,
-        discountValue: data.discountValue,
-        minOrder: data.minOrder
+        type: type,
+        value: value,
+        docId: upperCode  // same as doc ID
       };
-      const discountText = data.discountType === 'percentage' ? `${data.discountValue}% off` : `₹${data.discountValue} off`;
+
+      const discountText = type === 'percentage' ? `${value}% off` : `₹${value} off`;
       updateTotalsAndButton();
       return { success: true, message: `Coupon applied! ${discountText}` };
     } catch(e) {
-      console.error(e);
-      return { success: false, message: 'Error validating coupon' };
+      console.error("Coupon apply error:", e);
+      return { success: false, message: 'Error validating coupon. Please try again.' };
     }
   }
 
@@ -459,7 +481,6 @@
     const rightContainer = document.getElementById('rightColumnContainer');
     if (!rightContainer) return;
 
-    // Build cart items HTML
     const itemsHtml = checkoutItems.map(item => `
       <div class="cart-item">
         <div class="cart-item-img"><img src="${item.image}" alt="${escapeHtml(item.name)}" onerror="this.src='https://placehold.co/70x70/f5e9e7/c0392b?text=Pickle'"></div>
@@ -490,7 +511,7 @@
       </div>
     `;
 
-    // Coupon handlers
+    // Coupon apply handler
     const applyBtn = document.getElementById('applyCouponBtnRight');
     const couponInput = document.getElementById('couponInputRight');
     if (applyBtn) {
@@ -500,7 +521,6 @@
         const msgDiv = document.getElementById('discountMsgRight');
         if (result.success) {
           msgDiv.innerHTML = `<span style="color:#2e7d32;">✅ ${result.message}</span>`;
-          updateTotalsAndButton();
         } else {
           msgDiv.innerHTML = `<span style="color:#d32f2f;">❌ ${result.message}</span>`;
         }
@@ -540,8 +560,8 @@
     closeAddressModal();
   };
 
-  // ─── Final order processing ──────────────────────────────────
-  function processOrder() {
+  // ─── Final order processing (placeholder) ────────────────────
+  async function processOrder() {
     if (!savedAddress) { alert('Please add a delivery address first'); return; }
     if (!checkoutItems.length) { alert('No items in checkout'); return; }
 
@@ -549,10 +569,18 @@
     const paymentMethod = selectedPayment === 'online' ? 'Online Payment' : 'Cash on Delivery';
     const itemList = checkoutItems.map(i => `${i.name} (${i.variant}) x ${i.quantity}`).join(', ');
 
-    // Clear cart if it came from the cart flow (not direct buy)
+    // Clear cart if it came from the cart flow
     if (!new URLSearchParams(window.location.search).get('id')) {
       localStorage.removeItem('vastramaya_cart');
     }
+
+    /* 
+      NOTE: In a real implementation you would:
+      1. Call your payment gateway to charge the user.
+      2. On success, increment the coupon usage with:
+         await updateDoc(doc(db, "coupons", appliedCoupon.docId), { usage: increment(1) });
+      3. Save the order to a Firestore "orders" collection.
+    */
 
     alert(`✅ Order placed successfully!\n\nDeliver to: ${savedAddress.name}, ${savedAddress.address}, ${savedAddress.city}\nItems: ${itemList}\nTotal: ${formatPrice(totals.total)}\nPayment: ${paymentMethod}\n\nThank you for shopping!`);
     window.location.href = 'index.html';
