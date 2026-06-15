@@ -1976,13 +1976,26 @@ window.vastramayaShowToast = showToast;
           <div class="pg-tax-text">MRP Inclusive of all taxes</div>
           ${variants.length ? `<div class="pg-variants-section"><h3>Select Size:</h3><div class="pg-variant-buttons" id="pg-variantButtons">${variantsHtml}</div></div>` : ''}
           <div class="pg-qty-selector"><span style="font-weight:600;">Quantity:</span><div class="pg-qty-control"><button id="pg-qtyMinus">-</button><input type="text" id="pg-qtyInput" value="1" readonly><button id="pg-qtyPlus">+</button></div></div>
-          <div class="pg-action-buttons">
-            <div class="pg-dual-buttons">
-              <div class="pg-btn-cart" id="pg-addToCartBtn">🛒 Add to Cart</div>
-              <div class="pg-btn-wishlist" id="pg-wishlistBtn">❤️ Wishlist</div>
-            </div>
-            <div class="pg-btn-buynow" id="pg-buyNowBtn">⚡ Buy Now</div>
-          </div>
+         <div style="display: flex; flex-direction: column; gap: 12px; font-family: sans-serif;">
+  
+  <div style="display: flex; gap: 16px; width: 100%;">
+    <button id="pg-addToCartBtn" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 12px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; background: black; color: white; border: none;">
+      <img src="./assets/cart.svg" alt="Cart Icon" style="width: 18px; height: 18px; object-fit: contain; display: block;">
+      Add to Cart
+    </button>
+    
+    <button id="pg-wishlistBtn" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 12px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; background: transparent; border: 1.5px solid #C0392B; color: #C0392B;">
+      <img src="./assets/heart.svg" alt="Wishlist Icon" style="width: 18px; height: 18px; object-fit: contain; display: block;">
+      Wishlist
+    </button>
+  </div>
+  
+  <button id="pg-buyNowBtn" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 12px; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; background: #C0392B; color: white; border: none;">
+    <img src="https://fastrr-boost-ui.pickrr.com/assets/images/boost_button/upi_options.svg" alt="UPI" class="upi-icon"" alt="Buy Icon" style="width: 18px; height: 18px; object-fit: contain; display: block;">
+    Buy Now
+  </button>
+  
+</div>
           <div class="pg-feature-icons">
             <div class="pg-icon-item"><span>🚚</span><span>Free Ship</span></div>
             <div class="pg-icon-item"><span>⭐</span><span>100% Authentic</span></div>
