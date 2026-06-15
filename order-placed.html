@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Placing your order… | Happy NonVeg Pickles</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --rust: #C0392B; --rust-dark: #962d22; --rust-light: #f5e9e7;
+      --turmeric: #E8A020; --cream: #FDF6EC; --ink: #1C1009;
+      --ash: #6b5b4e; --border: rgba(28,16,9,0.1);
+      --shadow-sm: 0 2px 8px rgba(28,16,9,0.08);
+      --shadow-md: 0 8px 32px rgba(28,16,9,0.12);
+      --r-card: 16px; --r-pill: 999px;
+      --ff-body: 'IBM Plex Sans', sans-serif;
+    }
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: var(--ff-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+    }
+    .container {
+      width: 100%;
+      max-width: 500px;
+      background: white;
+      border-radius: var(--r-card);
+      box-shadow: var(--shadow-md);
+      padding: 40px 30px;
+      position: relative;
+    }
+    .order-summary-box {
+      margin-bottom: 30px;
+      text-align: left;
+      background: #faf7f2;
+      padding: 16px;
+      border-radius: 12px;
+    }
+    .summary-line {
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .summary-line strong { color: var(--rust); }
+
+    .progress-container {
+      margin: 24px 0;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e0d6cc;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--turmeric), var(--rust));
+      border-radius: 10px;
+      transition: width 0.4s ease;
+    }
+    .steps {
+      list-style: none;
+      text-align: left;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      font-size: 0.9rem;
+      opacity: 0.5;
+      transform: translateY(10px);
+      transition: all 0.4s ease;
+    }
+    .step.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .step .icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #e0d6cc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
+      flex-shrink: 0;
+      transition: 0.2s;
+    }
+    .step.active .icon { background: var(--rust); }
+    .step.done .icon { background: #2e7d32; }
+    .step.done .icon::after { content: "✓"; }
+
+    .success-message {
+      display: none;
+      animation: fadeInUp 0.5s ease;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .checkmark-wrapper {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+    }
+    .checkmark-circle {
+      stroke-dasharray: 166;
+      stroke-dashoffset: 166;
+      stroke-width: 2;
+      stroke: var(--rust);
+      fill: none;
+      animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards 0.3s;
+    }
+    .checkmark-check {
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+      stroke: var(--rust);
+      stroke-width: 3;
+      fill: none;
+      animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) forwards 0.8s;
+    }
+    @keyframes stroke {
+      100% { stroke-dashoffset: 0; }
+    }
+    .order-id {
+      font-weight: 700;
+      color: var(--rust);
+      margin: 12px 0;
+    }
+    .home-btn {
+      margin-top: 24px;
+      background: var(--rust);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: 0.2s;
+      display: inline-block;
+      text-decoration: none;
+    }
+    .home-btn:hover { background: var(--rust-dark); transform: translateY(-2px); }
+  </style>
+</head>
+<body>
+<div class="container" id="animationContainer">
+  <div id="processingView">
+    <h2 style="margin-bottom:8px;">Placing your order…</h2>
+    <p style="color:var(--ash); margin-bottom:20px;">Just a moment while we prepare everything.</p>
+
+    <!-- Mini order summary -->
+    <div class="order-summary-box" id="orderSummary"></div>
+
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <ul class="steps" id="stepsList">
+      <li class="step" data-step="verify"><span class="icon"></span> Verifying payment details</li>
+      <li class="step" data-step="stock"><span class="icon"></span> Checking stock & availability</li>
+      <li class="step" data-step="prepare"><span class="icon"></span> Handpicking your pickle jars</li>
+      <li class="step" data-step="pack"><span class="icon"></span> Packing with traditional love ❤️</li>
+      <li class="step" data-step="confirm"><span class="icon"></span> Confirming order</li>
+    </ul>
+  </div>
+
+  <div class="success-message" id="successView">
+    <div class="checkmark-wrapper">
+      <svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+        <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+        <path class="checkmark-check" fill="none" d="M14 27l7 7 16-16"/>
+      </svg>
+    </div>
+    <h2>Order Placed!</h2>
+    <p class="order-id" id="orderIdDisplay">Order ID: ...</p>
+    <p style="color:var(--ash);">We’ll send you updates on your phone and email.</p>
+    <a href="index.html" class="home-btn">Continue Shopping</a>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { 
+    getFirestore, doc, updateDoc, increment, collection, addDoc, serverTimestamp 
+  } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
+    authDomain: "pickle-fdc54.firebaseapp.com",
+    projectId: "pickle-fdc54",
+    storageBucket: "pickle-fdc54.firebasestorage.app",
+    messagingSenderId: "650348710985",
+    appId: "1:650348710985:web:b8eedb551a79b536578398",
+    measurementId: "G-B40NG5KQDL"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  function formatPrice(p) { return `₹${Math.round(Number(p) || 0)}`; }
+
+  // Retrieve checkout data from sessionStorage (set by previous checkout page)
+  const checkoutData = JSON.parse(sessionStorage.getItem('checkoutData'));
+
+  if (!checkoutData) {
+    document.getElementById('processingView').innerHTML = `
+      <h2>No order data found</h2>
+      <p>Please return to checkout and try again.</p>
+      <a href="index.html" class="home-btn">Back to Home</a>
+    `;
+    throw new Error("No checkout data");
+  }
+
+  // Display order summary in the animation card
+  const summaryDiv = document.getElementById('orderSummary');
+  if (summaryDiv) {
+    const itemList = checkoutData.items.map(i => 
+      `<div class="summary-line"><span>${i.name} (${i.variant}) × ${i.quantity}</span><span>${formatPrice(i.totalPrice)}</span></div>`
+    ).join('');
+    summaryDiv.innerHTML = `
+      <div class="summary-line"><strong>Total</strong><strong>${formatPrice(checkoutData.total)}</strong></div>
+      ${itemList}
+      <div class="summary-line" style="margin-top:8px; font-size:0.8rem; color:var(--ash);">
+        <span>Payment</span><span>${checkoutData.paymentMethod}</span>
+      </div>
+    `;
+  }
+
+  // ── Animation steps ──
+  const steps = [
+    'verify', 'stock', 'prepare', 'pack', 'confirm'
+  ];
+  const progressFill = document.getElementById('progressFill');
+  const stepsList = document.getElementById('stepsList');
+  const stepElements = stepsList.querySelectorAll('.step');
+
+  let currentStep = 0;
+
+  function animateStep(index) {
+    if (index >= steps.length) {
+      // All steps done → show success
+      document.getElementById('processingView').style.display = 'none';
+      document.getElementById('successView').style.display = 'block';
+      // Actually save order to Firestore now
+      saveOrderToFirestore();
+      return;
+    }
+
+    // Activate current step
+    const stepEl = stepElements[index];
+    stepEl.classList.add('active');
+    // Update progress bar (5 steps → each step 20%)
+    const percent = ((index + 1) / steps.length) * 100;
+    progressFill.style.width = percent + '%';
+
+    // Simulate step duration, then mark as done
+    setTimeout(() => {
+      stepEl.classList.remove('active');
+      stepEl.classList.add('done');
+      currentStep++;
+      animateStep(currentStep);
+    }, 1000 + Math.random() * 500); // random 1-1.5s per step
+  }
+
+  // Start animation after a tiny delay to let the UI render
+  setTimeout(() => animateStep(0), 400);
+
+  // ── Firestore order creation ──────────────────────
+  async function saveOrderToFirestore() {
+    try {
+      const ordersRef = collection(db, 'orders');
+      const orderData = {
+        ...checkoutData,
+        createdAt: serverTimestamp(), // replace the temporary ISO string
+        status: 'pending'
+      };
+      const docRef = await addDoc(ordersRef, orderData);
+      
+      // If a coupon was used, increment its usage
+      if (checkoutData.coupon && checkoutData.coupon.code) {
+        await updateDoc(doc(db, 'coupons', checkoutData.coupon.code.toUpperCase()), {
+          usage: increment(1)
+        });
+      }
+
+      // Show the Firestore order ID
+      document.getElementById('orderIdDisplay').textContent = `Order ID: ${docRef.id}`;
+
+      // Optionally clear the cart from localStorage (if it came from the cart flow)
+      if (!new URLSearchParams(window.location.search).get('id')) {
+        localStorage.removeItem('vastramaya_cart');
+      }
+
+      // Clean up session storage after success
+      sessionStorage.removeItem('checkoutData');
+
+    } catch (error) {
+      console.error("Order save failed:", error);
+      // Even if Firestore fails, show a generic success (optimistic) but we can add a fallback
+      document.getElementById('orderIdDisplay').textContent = 'Order ID: (error saving, contact support)';
+    }
+  }
+</script>
+</body>
+</html>
