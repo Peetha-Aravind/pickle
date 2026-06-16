@@ -1673,6 +1673,11 @@ function showToast(msg) {
     let comboAllPickles = [];
     let comboSelectedIds = [];
     let comboMaxSelect = 4;
+    // Combo metadata for cart
+    let comboDocId = null;
+    let comboPrice = 599;
+    let comboTitle = "Special Combo";
+    let comboBannerImage = "https://placehold.co/800x600/C0392B/white?text=Pickle+Combo";
 
     function comboEscapeHtml(str) {
         if (!str) return '';
@@ -1767,6 +1772,51 @@ function showToast(msg) {
         comboUpdateUI();
     }
 
+    // New function to add combo to cart
+    function comboAddToCart() {
+        if (comboSelectedIds.length !== comboMaxSelect) return false;
+
+        const selectedPickles = comboAllPickles.filter(p => comboSelectedIds.includes(p.id));
+        const names = selectedPickles.map(p => p.name).join(', ');
+        const uniqueId = `combo_${comboDocId}_${comboSelectedIds.sort().join('_')}`;
+
+        const existing = cart.find(item => item.uniqueId === uniqueId);
+        if (existing) {
+            existing.quantity += 1;
+        } else {
+            cart.push({
+                uniqueId: uniqueId,
+                name: `${comboTitle} (Combo: ${names})`,
+                price: comboPrice,
+                image: comboBannerImage,
+                quantity: 1,
+                comboItems: comboSelectedIds.slice(),
+            });
+        }
+
+        saveCart(true);
+        renderCart();
+        return true;
+    }
+
+    function setupComboButtons() {
+        document.getElementById('comboAddToCartBtn').addEventListener('click', () => {
+            if (comboAddToCart()) {
+                showToast("🎉 Combo added to cart!");
+            } else {
+                showToast(`Please select exactly ${comboMaxSelect} pickles.`);
+            }
+        });
+
+        document.getElementById('comboBuyNowBtn').addEventListener('click', () => {
+            if (comboAddToCart()) {
+                window.location.href = 'checkout.html';
+            } else {
+                showToast(`Select ${comboMaxSelect} pickles to continue.`);
+            }
+        });
+    }
+
     async function comboFetchFromFirestore() {
         try {
             const snapshot = await landingDb.collection('combos').get();
@@ -1779,6 +1829,12 @@ function showToast(msg) {
                 throw new Error('No items array in combo document');
             }
 
+            // Save combo metadata for the cart
+            comboDocId = comboDoc.id;
+            comboTitle = data.title || 'Special Combo';
+            comboPrice = data.price || 599;
+            comboBannerImage = data.bannerImage || 'https://placehold.co/800x600/C0392B/white?text=Pickle+Combo';
+
             comboAllPickles = data.items.slice(0, 8).map(item => ({
                 id: item.id || item.pickleId || `item_${Math.random()}`,
                 name: item.name || 'Unnamed Pickle',
@@ -1787,18 +1843,21 @@ function showToast(msg) {
             }));
 
             // Update banner
-            document.getElementById('comboBannerTitle').textContent = data.title || 'Special Combo';
+            document.getElementById('comboBannerTitle').textContent = comboTitle;
             document.getElementById('comboBannerDesc').textContent = data.description || 'Select your favourite pickles';
-            const bannerImg = data.bannerImage || 'https://placehold.co/800x600/C0392B/white?text=Pickle+Combo';
-            document.getElementById('comboBannerPanel').style.backgroundImage = `url('${bannerImg}')`;
+            document.getElementById('comboBannerPanel').style.backgroundImage = `url('${comboBannerImage}')`;
 
             if (data.maxSelect && typeof data.maxSelect === 'number') {
                 comboMaxSelect = data.maxSelect;
             }
             document.getElementById('comboMaxSpan').textContent = comboMaxSelect;
+
             comboSelectedIds = [];
             comboRenderGrid();
             observeReveal();
+
+            // Attach the button listeners only after data is ready
+            setupComboButtons();
         } catch (err) {
             console.error('Combo Firestore error:', err);
             document.getElementById('comboPickleGridContainer').innerHTML =
@@ -1806,17 +1865,6 @@ function showToast(msg) {
             document.getElementById('comboStatusMsg').textContent = '';
         }
     }
-
-    document.getElementById('comboAddToCartBtn').addEventListener('click', () => {
-        if (comboSelectedIds.length !== comboMaxSelect) { alert(`Please select exactly ${comboMaxSelect} pickles.`); return; }
-        const names = comboAllPickles.filter(p => comboSelectedIds.includes(p.id)).map(i => i.name).join(', ');
-        alert(`🍯 Combo added to cart!\nSelected: ${names}\n(Integrate with your cart system.)`);
-    });
-    document.getElementById('comboBuyNowBtn').addEventListener('click', () => {
-        if (comboSelectedIds.length !== comboMaxSelect) { alert(`Select ${comboMaxSelect} pickles to continue.`); return; }
-        const names = comboAllPickles.filter(p => comboSelectedIds.includes(p.id)).map(i => i.name).join(', ');
-        alert(`🚀 Proceeding to checkout with combo: ${names}`);
-    });
 
     // ═══════════════════════════ MAIN INIT ═══════════════════════════
     async function initLanding() {
