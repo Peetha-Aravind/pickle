@@ -3,68 +3,156 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Order Placed Successfully!</title>
+  <title>Order Placed – Happy NonVeg Pickles</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    
+    :root {
+      --rust: #C0392B; --rust-dark: #962d22; --rust-light: #f5e9e7;
+      --turmeric: #E8A020; --cream: #FDF6EC; --ink: #1C1009;
+      --success: #2e7d32; --ash: #6b5b4e;
+      --ff-body: 'IBM Plex Sans', sans-serif;
+    }
     body {
-      background-color: #C0392B; /* Matches your core brand red exactly */
-      font-family: 'IBM Plex Sans', sans-serif;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
+      background: linear-gradient(145deg, #fff9f2 0%, var(--cream) 100%);
+      font-family: var(--ff-body);
+      min-height: 100vh;
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
     }
-
-    .animation-wrapper {
+    .container {
       width: 100%;
-      height: 100%;
+      max-width: 480px;
+      background: white;
+      border-radius: 28px;
+      box-shadow: 0 20px 60px rgba(28,16,9,0.08);
+      padding: 48px 32px;
+    }
+    .order-summary-box {
+      margin: 24px 0;
+      text-align: left;
+      background: #faf7f2;
+      padding: 18px;
+      border-radius: 16px;
+      font-size: 0.9rem;
+    }
+    .summary-line {
+      margin-bottom: 8px;
       display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: #C0392B;
+      justify-content: space-between;
+    }
+    .summary-line strong { color: var(--rust); }
+
+    .animation-stage {
+      position: relative;
+      height: 160px;
+      margin: 20px auto;
+    }
+    .checkmark-video {
+      width: 150px;
+      height: 150px;
+      object-fit: contain;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 12px; /* optional, for a softer look */
     }
 
-    video {
-      display: block;
-      width: 100%;
-      height: 100%;
+    .status-text {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-top: 24px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.6s ease;
     }
-
-    /* Desktop layout rendering optimizations */
-    @media (min-width: 601px) {
-      video {
-        object-fit: contain; /* Prevents letterboxing stretch lines on wide monitors */
-        max-width: 800px;
-        max-height: 600px;
-      }
+    .status-text.show {
+      opacity: 1;
+      transform: translateY(0);
     }
-
-    /* Mobile layout rendering optimizations */
-    @media (max-width: 600px) {
-      video {
-        object-fit: cover; /* Forces the red video background to scale beautifully edge-to-edge on phones */
-      }
+    .order-id {
+      font-weight: 700;
+      color: var(--rust);
+      margin-top: 8px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.6s ease 0.2s;
     }
+    .order-id.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .sub-message {
+      color: var(--ash);
+      margin-top: 12px;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: all 0.6s ease 0.4s;
+    }
+    .sub-message.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .home-btn {
+      margin-top: 28px;
+      background: var(--rust);
+      color: white;
+      padding: 14px 32px;
+      border-radius: 40px;
+      text-decoration: none;
+      font-weight: 700;
+      display: inline-block;
+      box-shadow: 0 4px 12px rgba(192,57,43,0.2);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.6s ease 0.6s;
+    }
+    .home-btn.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .home-btn:hover { background: var(--rust-dark); }
   </style>
 </head>
 <body>
+<div class="container" id="animationContainer">
+  <div class="order-summary-box" id="orderSummary"></div>
 
-<div class="animation-wrapper">
-  <video id="successAnimation" autoplay playsinline webkit-playsinline muted preload="auto">
-    <source src="large-thumbnail20250211-1846070-1x65j2q.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
+  <div class="animation-stage" id="animationStage">
+    <!--
+      🎬 SAMPLE VIDEO: Big Buck Bunny (short clip).
+      Replace the src below with your own order‑confirmation video.
+      Example: https://raw.githubusercontent.com/your‑username/your‑repo/main/assets/order‑confirm.mp4
+    -->
+    <video 
+      class="checkmark-video" 
+      id="animationVideo" 
+      autoplay 
+      muted 
+      playsinline
+      onended="showSuccessText()"
+    >
+      <source src="./assets/video.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <div class="status-text" id="statusText">Order Placed!</div>
+  <div class="order-id" id="orderIdDisplay">Order ID: ...</div>
+  <p class="sub-message" id="subMessage">We’ll send you updates on your phone and email.</p>
+  <a href="landing-page.html" class="home-btn" id="homeBtn">Continue Shopping</a>
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  import { getFirestore, doc, updateDoc, increment, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
@@ -75,63 +163,72 @@
     appId: "1:650348710985:web:b8eedb551a79b536578398",
     measurementId: "G-B40NG5KQDL"
   };
-  
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  async function uploadOrderToFirebase() {
-    try {
-      const rawData = sessionStorage.getItem('checkoutData');
-      if (!rawData) return;
+  function formatPrice(p) { return `₹${Math.round(Number(p) || 0)}`; }
 
-      const orderPayload = JSON.parse(rawData);
-      orderPayload.createdAt = serverTimestamp();
-
-      await addDoc(collection(db, "orders"), orderPayload);
-
-      // Clear volatile states instantly upon success
-      sessionStorage.removeItem('checkoutData');
-      localStorage.removeItem('vastramaya_cart');
-    } catch (err) {
-      console.error("Firebase tracking write failed:", err);
-    }
+  const checkoutData = JSON.parse(sessionStorage.getItem('checkoutData'));
+  if (!checkoutData) {
+    document.body.innerHTML = `<div class="container"><h2>No order data</h2><a href="index.html">Back</a></div>`;
+    throw new Error("No checkout data");
   }
 
-  // Submit background operations asynchronously
-  uploadOrderToFirebase();
+  // Populate order summary
+  const summaryDiv = document.getElementById('orderSummary');
+  if (summaryDiv) {
+    const itemList = checkoutData.items.map(i => 
+      `<div class="summary-line"><span>${i.name} (${i.variant}) × ${i.quantity}</span><span>${formatPrice(i.totalPrice)}</span></div>`
+    ).join('');
+    summaryDiv.innerHTML = `
+      <div class="summary-line"><strong>Total</strong><strong>${formatPrice(checkoutData.total)}</strong></div>
+      ${itemList}
+      <div class="summary-line" style="margin-top:8px; font-size:0.8rem; color:var(--ash);">
+        <span>Payment</span><span>${checkoutData.paymentMethod}</span>
+      </div>
+    `;
+  }
 
-  const video = document.getElementById('successAnimation');
-  const redirectPage = 'index.html';
+  // Reveal text/button when video finishes
+  window.showSuccessText = function() {
+    document.getElementById('statusText').classList.add('show');
+    document.getElementById('orderIdDisplay').classList.add('show');
+    document.getElementById('subMessage').classList.add('show');
+    document.getElementById('homeBtn').classList.add('show');
+  };
 
-  if (video) {
-    // FORCE PLAYBACK: Resolves strict device engine autoplay blocks immediately upon mount
-    document.addEventListener('DOMContentLoaded', () => {
-      video.load();
-      const playPromise = video.play();
-      
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          console.warn("Autoplay context interrupted. Falling back to timer route...", error);
-          // If video file is flat out missing or blocked, redirect after 5 seconds instead of getting stuck
-          setTimeout(() => {
-            window.location.href = redirectPage;
-          }, 5000);
+  // Fallback if the sample video fails to load or autoplay
+  setTimeout(() => {
+    const video = document.getElementById('animationVideo');
+    if (video && video.paused && video.readyState === 0) {
+      showSuccessText(); // show UI after 3 seconds anyway
+    }
+  }, 3000);
+
+  // Save order to Firestore
+  async function saveOrder() {
+    try {
+      const ordersRef = collection(db, 'orders');
+      const docRef = await addDoc(ordersRef, {
+        ...checkoutData,
+        createdAt: serverTimestamp(),
+        status: 'pending'
+      });
+      if (checkoutData.coupon?.code) {
+        await updateDoc(doc(db, 'coupons', checkoutData.coupon.code.toUpperCase()), {
+          usage: increment(1)
         });
       }
-    });
-
-    // Fallback: If it plays normally, redirect the exact millisecond the truck stops animating
-    video.onended = () => { 
-      window.location.href = redirectPage; 
-    };
-
-    // Global safety timer in case the track lags or loops infinitely
-    setTimeout(() => { 
-      window.location.href = redirectPage; 
-    }, 9500);
-  } else {
-    window.location.href = redirectPage;
+      document.getElementById('orderIdDisplay').textContent = `Order ID: ${docRef.id}`;
+      if (!new URLSearchParams(window.location.search).get('id')) {
+        localStorage.removeItem('vastramaya_cart');
+      }
+      sessionStorage.removeItem('checkoutData');
+    } catch (error) {
+      document.getElementById('orderIdDisplay').textContent = 'Order ID: (error saving)';
+    }
   }
+  saveOrder();
 </script>
 </body>
 </html>
