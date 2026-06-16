@@ -1,604 +1,969 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Checkout – Happy NonVeg Pickles</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --rust: #C0392B; --rust-dark: #962d22; --rust-light: #f5e9e7;
-      --turmeric: #E8A020; --cream: #FDF6EC; --ink: #1C1009;
-      --ash: #6b5b4e; --border: rgba(28,16,9,0.1);
-      --shadow-sm: 0 2px 8px rgba(28,16,9,0.08);
-      --shadow-md: 0 8px 32px rgba(28,16,9,0.12);
-      --r-card: 16px; --r-pill: 999px;
-      --ff-body: 'IBM Plex Sans', sans-serif;
-    }
-    body {
-      background: var(--cream);
-      color: var(--ink);
-      font-family: var(--ff-body);
-      font-size: 15px;
-      line-height: 1.5;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Checkout – Happy NonVeg Pickles</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    /* ─── SKELETON LOADING ─── */
-    .skeleton {
-      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      border-radius: 8px;
-    }
-    @keyframes shimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
-    }
-    .skeleton-title { border-radius: 12px; }
-    .skeleton-line { padding: 10px 0; border-bottom: 1px dashed var(--border); }
+        :root {
+            /* Pickles brand palette */
+            --rust: #C0392B;
+            --rust-dark: #962d22;
+            --rust-light: #f5e9e7;
+            --turmeric: #E8A020;
+            --cream: #FDF6EC;
+            --ink: #1C1009;
+            --ash: #6b5b4e;
+            --border: rgba(28, 16, 9, 0.1);
+            --border-subtle: #e8d5c4;
 
-    .back-button {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      z-index: 1100;
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 40px;
-      padding: 8px 16px;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--ink);
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      box-shadow: var(--shadow-sm);
-      transition: all 0.2s ease;
-      cursor: pointer;
-      font-family: var(--ff-body);
-    }
-    .back-button:hover {
-      background: var(--rust-light);
-      border-color: var(--rust);
-      color: var(--rust);
-      transform: translateX(-2px);
-    }
-    .back-button svg {
-      width: 16px;
-      height: 16px;
-      stroke: currentColor;
-      stroke-width: 2.5;
-      fill: none;
-    }
+            /* Elevation & surfaces */
+            --shadow-sm: 0 4px 12px rgba(28, 16, 9, 0.06);
+            --shadow-md: 0 8px 24px rgba(28, 16, 9, 0.08);
+            --shadow-rich: 0 16px 40px rgba(28, 16, 9, 0.12);
+            --surface-light: #fefcf3;
+            --surface-hover: #f9f2e3;
 
-    .checkout-container {
-      max-width: 1200px;
-      margin: 80px auto 40px;
-      padding: 0 5vw;
-      display: grid;
-      grid-template-columns: 1fr 1.2fr;
-      gap: 40px;
-    }
-    .left-panel { background: white; border-radius: var(--r-card); box-shadow: var(--shadow-sm); overflow: hidden; }
-    .card { padding: 24px; border-bottom: 1px solid var(--border); }
-    .card-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 16px; color: var(--ink); }
-    .add-address-btn {
-      background: white; border: 2px dashed var(--rust); border-radius: 60px;
-      padding: 12px; width: 100%; text-align: center; font-weight: 600;
-      color: var(--rust); cursor: pointer; transition: 0.2s;
-    }
-    .add-address-btn:hover { background: var(--rust-light); }
-    .address-display {
-      background: #f9f5f0; border-radius: 16px; padding: 14px;
-      margin-top: 12px; font-size: 0.85rem; line-height: 1.4;
-    }
-    .payment-options { display: flex; flex-direction: column; gap: 14px; margin-top: 8px; }
-    .payment-radio {
-      display: flex; align-items: center; gap: 12px;
-      border: 2px solid var(--border); border-radius: 16px;
-      padding: 14px; cursor: pointer; transition: 0.2s;
-    }
-    .payment-radio.active { border-color: var(--rust); background: var(--rust-light); }
-    .payment-radio input { width: 18px; height: 18px; margin: 0; cursor: pointer; }
-    .payment-radio .label { flex: 1; }
-    .payment-radio .name { font-weight: 700; display: block; }
-    .payment-radio .fee { font-size: 0.7rem; color: var(--ash); }
+            --r-card: 20px;
+            --r-pill: 999px;
+            --ff-body: 'IBM Plex Sans', sans-serif;
+            --transition-smooth: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
 
-    .order-summary {
-      background: white; border-radius: var(--r-card); box-shadow: var(--shadow-sm);
-      overflow: hidden; position: sticky; top: 20px;
-      display: flex; flex-direction: column;
-    }
-    .summary-header { background: var(--rust); color: white; padding: 18px 24px; font-weight: 700; font-size: 1.2rem; }
-    .summary-items { padding: 20px 24px; border-bottom: 1px solid var(--border); max-height: 300px; overflow-y: auto; }
-    .cart-item { display: flex; gap: 16px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px dashed var(--border); }
-    .cart-item:last-child { margin-bottom: 0; border-bottom: none; }
-    .cart-item-img { width: 70px; height: 70px; border-radius: 12px; background: #f0e7de; overflow: hidden; flex-shrink: 0; }
-    .cart-item-img img { width: 100%; height: 100%; object-fit: cover; }
-    .cart-item-details { flex: 1; }
-    .cart-item-name { font-weight: 700; margin-bottom: 4px; }
-    .cart-item-variant { font-size: 0.8rem; color: var(--ash); margin-bottom: 6px; }
-    .cart-item-price-row { display: flex; justify-content: space-between; align-items: baseline; }
+        body {
+            background: var(--cream);
+            color: var(--ink);
+            font-family: var(--ff-body);
+            font-size: 15px;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.6s ease;
+        }
 
-    .coupon-section {
-      padding: 16px 24px;
-      border-bottom: 1px solid var(--border);
-      background: #fffef8;
-    }
-    .coupon-row {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 8px;
-    }
-    .coupon-row input {
-      flex: 1;
-      padding: 12px;
-      border-radius: 60px;
-      border: 1px solid var(--border);
-      font-family: var(--ff-body);
-    }
-    .apply-coupon-btn {
-      background: var(--ink);
-      color: white;
-      border: none;
-      padding: 0 20px;
-      border-radius: 60px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .apply-coupon-btn:hover { background: var(--rust); }
-    .discount-msg {
-      font-size: 0.8rem;
-      margin-top: 6px;
-      min-height: 32px;
-    }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
 
-    .summary-totals { padding: 20px 24px; background: #faf7f2; }
-    .totals-row { display: flex; justify-content: space-between; margin-bottom: 12px; }
-    .totals-row.grand-total { font-weight: 800; font-size: 1.2rem; border-top: 2px solid var(--border); padding-top: 12px; margin-top: 8px; color: var(--rust); }
-    .pay-btn {
-      width: calc(100% - 48px); margin: 0 24px 24px 24px;
-      background: var(--rust); color: white; border: none;
-      padding: 16px; font-size: 1.1rem; font-weight: 700; border-radius: 40px;
-      cursor: pointer; transition: 0.2s;
-    }
-    .pay-btn:hover { background: var(--rust-dark); transform: translateY(-2px); }
-    .pay-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        /* ─── SKELETON LOADING (unchanged) ─── */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 8px;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .skeleton-title { border-radius: 12px; }
+        .skeleton-line { padding: 10px 0; border-bottom: 1px dashed var(--border); }
 
-    .modal {
-      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;
-    }
-    .modal-content {
-      background: white; max-width: 500px; width: 90%; border-radius: 24px;
-      padding: 28px; position: relative;
-    }
-    .modal-content h3 { margin-bottom: 20px; }
-    .modal-content input, .modal-content textarea {
-      width: 100%; margin-bottom: 16px; padding: 12px; border: 1px solid var(--border);
-      border-radius: 12px;
-      font-family: var(--ff-body);
-    }
-    .modal-buttons { display: flex; gap: 12px; justify-content: flex-end; margin-top: 12px; }
-    .modal-buttons button { padding: 10px 20px; border-radius: 40px; border: none; cursor: pointer; }
-    .save-address { background: var(--rust); color: white; }
-    .close-modal { background: #ccc; }
+        /* ─── BACK BUTTON ─── */
+        .back-button {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            z-index: 1100;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ink);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            font-family: var(--ff-body);
+            backdrop-filter: blur(8px);
+            background: rgba(255,255,255,0.9);
+        }
+        .back-button:hover {
+            background: var(--rust-light);
+            border-color: var(--rust);
+            color: var(--rust);
+            transform: translateX(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        .back-button svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            stroke-width: 2.5;
+            fill: none;
+        }
 
-    footer {
-      background: var(--ink);
-      color: rgba(255,255,255,0.6);
-      padding: 30px 5vw;
-      text-align: center;
-      margin-top: 60px;
-    }
+        /* ─── LAYOUT ─── */
+        .checkout-container {
+            max-width: 1150px;
+            margin: 100px auto 50px;
+            padding: 0 5vw;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 50px;
+        }
+        .left-panel { background: transparent; border-radius: var(--r-card); display: flex; flex-direction: column; gap: 28px; }
+        .card {
+            background: white;
+            border-radius: var(--r-card);
+            padding: 28px;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.3s;
+            border: 1px solid var(--border);
+        }
+        .card:hover { box-shadow: var(--shadow-md); }
+        .card-title {
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+            color: var(--ash);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-title::after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 30px;
+            background: var(--rust);
+            border-radius: 2px;
+            margin-left: auto;
+        }
 
-    @media (max-width: 800px) {
-      .checkout-container { grid-template-columns: 1fr; gap: 30px; margin-top: 70px; }
-      .order-summary { position: relative; top: 0; }
-      .back-button { top: 12px; left: 12px; padding: 6px 12px; font-size: 13px; }
-    }
-  </style>
+        /* ─── ADDRESS SECTION ─── */
+        .add-address-btn {
+            background: white;
+            border: 2px dashed var(--rust);
+            border-radius: 60px;
+            padding: 16px;
+            width: 100%;
+            text-align: center;
+            font-weight: 700;
+            color: var(--rust);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: #fef9f7;
+        }
+        .add-address-btn:hover {
+            background: var(--rust-light);
+            border-color: var(--rust-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(192, 57, 43, 0.15);
+        }
+        .address-display {
+            background: #fdfaf5;
+            border-radius: 16px;
+            padding: 18px;
+            margin-top: 16px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            position: relative;
+            transition: var(--transition-smooth);
+        }
+        .address-display:hover { background: #fff; }
+        .address-display strong {
+            display: block;
+            font-size: 1.1rem;
+            color: var(--ink);
+            margin-bottom: 6px;
+        }
+        .address-type-tag {
+            display: inline-block;
+            background: var(--rust-light);
+            color: var(--rust);
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        /* ─── PAYMENT OPTIONS ─── */
+        .payment-options {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 8px;
+        }
+        .payment-radio {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border: 2px solid var(--border);
+            border-radius: 18px;
+            padding: 18px 20px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .payment-radio::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 0;
+            background: var(--rust);
+            transition: height 0.3s ease;
+        }
+        .payment-radio:hover::before { height: 100%; }
+        .payment-radio.active {
+            border-color: var(--rust);
+            background: var(--rust-light);
+            box-shadow: 0 4px 15px rgba(192, 57, 43, 0.12);
+        }
+        .payment-radio input {
+            width: 20px;
+            height: 20px;
+            margin: 0;
+            cursor: pointer;
+            accent-color: var(--rust);
+        }
+        .payment-radio .label { flex: 1; }
+        .payment-radio .name {
+            font-weight: 700;
+            display: block;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        .payment-radio .fee {
+            font-size: 13px;
+            color: var(--ash);
+            font-weight: 500;
+        }
+        .best-value-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--turmeric);
+            color: white;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 6px 14px;
+            border-bottom-left-radius: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 10px rgba(232, 160, 32, 0.3);
+        }
+        .fee-warning {
+            display: inline-block;
+            background: #ffebee;
+            color: var(--rust);
+            font-weight: 700;
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-left: 8px;
+            animation: pulse-warning 2s infinite;
+        }
+        @keyframes pulse-warning {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* ─── ORDER SUMMARY ─── */
+        .order-summary {
+            background: white;
+            border-radius: var(--r-card);
+            box-shadow: var(--shadow-rich);
+            overflow: hidden;
+            position: sticky;
+            top: 24px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border);
+        }
+        .summary-header {
+            background: linear-gradient(135deg, var(--rust-dark), var(--rust));
+            color: white;
+            padding: 20px 28px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: 0.5px;
+        }
+        .summary-items {
+            padding: 24px 28px;
+            border-bottom: 1px solid var(--border);
+            max-height: 320px;
+            overflow-y: auto;
+        }
+        .cart-item {
+            display: flex;
+            gap: 18px;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed var(--border);
+            align-items: center;
+            transition: var(--transition-smooth);
+        }
+        .cart-item:last-child { margin-bottom: 0; border-bottom: none; }
+        .cart-item:hover { transform: translateX(4px); }
+        .cart-item-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 14px;
+            background: #f0e7de;
+            overflow: hidden;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .cart-item-img img { width: 100%; height: 100%; object-fit: cover; }
+        .cart-item-details { flex: 1; }
+        .cart-item-name { font-weight: 700; margin-bottom: 6px; font-size: 15px; }
+        .cart-item-variant { font-size: 13px; color: var(--ash); margin-bottom: 8px; }
+        .cart-item-price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .cart-item-qty { font-weight: 600; color: var(--ink); }
+        .cart-item-total { font-weight: 800; color: var(--rust); font-size: 16px; }
+
+        /* ─── COUPON SECTION ─── */
+        .coupon-section {
+            padding: 20px 28px;
+            border-bottom: 1px solid var(--border);
+            background: #fffef8;
+        }
+        .coupon-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .coupon-row input {
+            flex: 1;
+            padding: 14px 18px;
+            border-radius: 60px;
+            border: 2px solid var(--border);
+            font-family: var(--ff-body);
+            font-size: 15px;
+            background: white;
+            transition: var(--transition-smooth);
+        }
+        .coupon-row input:focus {
+            outline: none;
+            border-color: var(--rust);
+            box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.1);
+        }
+        .apply-coupon-btn {
+            background: var(--ink);
+            color: white;
+            border: none;
+            padding: 0 24px;
+            border-radius: 60px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            font-size: 14px;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+        .apply-coupon-btn:hover {
+            background: var(--rust);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(192, 57, 43, 0.3);
+        }
+        .active-coupon-display {
+            background: #e8f5e9;
+            border: 1px solid #a5d6a7;
+            padding: 14px 18px;
+            border-radius: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .discount-msg { font-size: 0.85rem; margin-top: 10px; min-height: 28px; font-weight: 600; }
+
+        /* ─── TOTALS ─── */
+        .summary-totals {
+            padding: 24px 28px;
+            background: #fefcf8;
+        }
+        .totals-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            font-size: 15px;
+        }
+        .totals-row.grand-total {
+            font-weight: 800;
+            font-size: 1.3rem;
+            border-top: 2px dashed var(--border);
+            padding-top: 18px;
+            margin-top: 12px;
+            color: var(--rust);
+        }
+        .totals-row.grand-total span:last-child { font-size: 1.5rem; }
+
+        /* ─── PAY BUTTON ─── */
+        .pay-btn {
+            width: calc(100% - 48px);
+            margin: 0 24px 28px 24px;
+            background: linear-gradient(135deg, var(--rust-dark), var(--rust));
+            color: white;
+            border: none;
+            padding: 18px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            box-shadow: 0 12px 28px rgba(192, 57, 43, 0.35);
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .pay-btn:hover {
+            background: var(--rust);
+            transform: translateY(-3px);
+            box-shadow: 0 18px 35px rgba(192, 57, 43, 0.45);
+        }
+        .pay-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 8px 20px rgba(192, 57, 43, 0.2);
+        }
+
+        /* ─── MODAL ─── */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(28, 16, 9, 0.5);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.25s ease;
+        }
+        .modal-content {
+            background: white;
+            max-width: 500px;
+            width: 90%;
+            border-radius: 28px;
+            padding: 32px;
+            position: relative;
+            box-shadow: 0 30px 50px rgba(0,0,0,0.3);
+            animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes modalPop {
+            from { transform: scale(0.9) translateY(20px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .modal-content h3 {
+            margin-bottom: 24px;
+            font-size: 1.5rem;
+            color: var(--ink);
+        }
+        .modal-content input,
+        .modal-content textarea {
+            width: 100%;
+            margin-bottom: 18px;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            font-family: var(--ff-body);
+            font-size: 15px;
+            transition: var(--transition-smooth);
+            background: #fdfaf5;
+        }
+        .modal-content input:focus,
+        .modal-content textarea:focus {
+            border-color: var(--rust);
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.08);
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .modal-buttons button {
+            padding: 12px 28px;
+            border-radius: 40px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            font-size: 15px;
+        }
+        .save-address {
+            background: linear-gradient(135deg, var(--rust-dark), var(--rust));
+            color: white;
+            box-shadow: 0 8px 18px rgba(192, 57, 43, 0.3);
+        }
+        .save-address:hover { transform: translateY(-2px); }
+        .close-modal {
+            background: #e0e0e0;
+            color: #333;
+        }
+        .close-modal:hover { background: #ccc; }
+
+        /* ─── FOOTER ─── */
+        footer {
+            background: var(--ink);
+            color: rgba(255,255,255,0.6);
+            padding: 30px 5vw;
+            text-align: center;
+            margin-top: auto;
+            font-size: 14px;
+        }
+
+        @media (max-width: 800px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                margin-top: 90px;
+            }
+            .order-summary { position: relative; top: 0; }
+            .back-button { top: 16px; left: 16px; padding: 8px 16px; font-size: 13px; }
+            .card { padding: 22px; }
+            .modal-content { padding: 24px; }
+        }
+    </style>
 </head>
 <body>
 
 <button class="back-button" onclick="goBack()">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M15 18l-6-6 6-6"/>
-  </svg>
-  Back
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 18l-6-6 6-6"/>
+    </svg>
+    Back
 </button>
 
 <main id="checkoutRoot"><div style="text-align:center; padding:60px;">Loading checkout...</div></main>
 
 <div id="addressModal" class="modal">
-  <div class="modal-content">
-    <h3>Add Delivery Address</h3>
-    <input type="text" id="addrName" placeholder="Full Name *">
-    <input type="tel" id="addrPhone" placeholder="Phone Number *">
-    <textarea id="addrFull" rows="3" placeholder="Street, Area, Landmark *"></textarea>
-    <input type="text" id="addrCity" placeholder="City *">
-    <input type="text" id="addrPincode" placeholder="PIN Code *">
-    <div class="modal-buttons">
-      <button class="close-modal" onclick="closeAddressModal()">Cancel</button>
-      <button class="save-address" onclick="saveAddress()">Save Address</button>
+    <div class="modal-content">
+        <h3>📍 Add Delivery Address</h3>
+        <input type="text" id="addrName" placeholder="Full Name *">
+        <input type="tel" id="addrPhone" placeholder="Phone Number *">
+        <textarea id="addrFull" rows="3" placeholder="Street, Area, Landmark *"></textarea>
+        <input type="text" id="addrCity" placeholder="City *">
+        <input type="text" id="addrPincode" placeholder="PIN Code *">
+        <div class="modal-buttons">
+            <button class="close-modal" onclick="closeAddressModal()">Cancel</button>
+            <button class="save-address" onclick="saveAddress()">Save Address</button>
+        </div>
     </div>
-  </div>
 </div>
 
 <footer><p>© 2025 Happy NonVeg Pickles — handcrafted with tradition.</p></footer>
 
 <script>
-  function goBack() {
-    if (document.referrer && document.referrer !== "") {
-      window.history.back();
-    } else {
-      window.location.href = 'index.html';
+    function goBack() {
+        if (document.referrer && document.referrer !== "") {
+            window.history.back();
+        } else {
+            window.location.href = 'index.html';
+        }
     }
-  }
 </script>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-  import { 
-    getFirestore, doc, getDoc, collection, addDoc 
-  } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+        getFirestore, doc, getDoc, collection, addDoc 
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
-    authDomain: "pickle-fdc54.firebaseapp.com",
-    projectId: "pickle-fdc54",
-    storageBucket: "pickle-fdc54.firebasestorage.app",
-    messagingSenderId: "650348710985",
-    appId: "1:650348710985:web:b8eedb551a79b536578398",
-    measurementId: "G-B40NG5KQDL"
-  };
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+    const firebaseConfig = {
+        apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
+        authDomain: "pickle-fdc54.firebaseapp.com",
+        projectId: "pickle-fdc54",
+        storageBucket: "pickle-fdc54.firebasestorage.app",
+        messagingSenderId: "650348710985",
+        appId: "1:650348710985:web:b8eedb551a79b536578398",
+        measurementId: "G-B40NG5KQDL"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-  function formatPrice(p) { return `₹${Math.round(Number(p) || 0)}`; }
+    function formatPrice(p) { return `₹${Math.round(Number(p) || 0)}`; }
 
-  const skeletonHTML = `
-  <div class="checkout-container">
-    <div class="left-panel">
-      <div class="card">
-        <div class="skeleton skeleton-title" style="width:50%; height:24px; margin-bottom:16px;"></div>
-        <div class="skeleton" style="width:100%; height:50px; border-radius:60px;"></div>
-      </div>
-      <div class="card">
-        <div class="skeleton skeleton-title" style="width:40%; height:24px; margin-bottom:16px;"></div>
-        <div class="skeleton" style="width:100%; height:60px; border-radius:16px; margin-bottom:12px;"></div>
-        <div class="skeleton" style="width:100%; height:60px; border-radius:16px;"></div>
-      </div>
-    </div>
-    <div style="position: sticky; top: 20px;">
-      <div class="order-summary">
-        <div class="skeleton" style="width:100%; height:56px; border-radius:16px 16px 0 0;"></div>
-        <div class="summary-items">
-          <div class="cart-item skeleton-line" style="margin-bottom:16px;">
-            <div class="skeleton" style="width:70px; height:70px; border-radius:12px;"></div>
-            <div style="flex:1;">
-              <div class="skeleton" style="width:60%; height:16px; margin-bottom:8px;"></div>
-              <div class="skeleton" style="width:40%; height:14px; margin-bottom:8px;"></div>
-              <div class="skeleton" style="width:30%; height:14px;"></div>
+    const skeletonHTML = `
+    <div class="checkout-container">
+        <div class="left-panel">
+            <div class="card">
+                <div class="skeleton skeleton-title" style="width:50%; height:24px; margin-bottom:16px;"></div>
+                <div class="skeleton" style="width:100%; height:50px; border-radius:60px;"></div>
             </div>
-          </div>
+            <div class="card">
+                <div class="skeleton skeleton-title" style="width:40%; height:24px; margin-bottom:16px;"></div>
+                <div class="skeleton" style="width:100%; height:60px; border-radius:16px; margin-bottom:12px;"></div>
+                <div class="skeleton" style="width:100%; height:60px; border-radius:16px;"></div>
+            </div>
         </div>
-        <div class="summary-totals" style="padding:20px 24px;">
-          <div class="skeleton" style="width:40%; height:20px; margin-top:12px;"></div>
+        <div style="position: sticky; top: 24px;">
+            <div class="order-summary">
+                <div class="skeleton" style="width:100%; height:56px; border-radius:20px 20px 0 0;"></div>
+                <div class="summary-items">
+                    <div class="cart-item skeleton-line" style="margin-bottom:16px;">
+                        <div class="skeleton" style="width:70px; height:70px; border-radius:14px;"></div>
+                        <div style="flex:1;">
+                            <div class="skeleton" style="width:60%; height:16px; margin-bottom:8px;"></div>
+                            <div class="skeleton" style="width:40%; height:14px; margin-bottom:8px;"></div>
+                            <div class="skeleton" style="width:30%; height:14px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="summary-totals" style="padding:20px 28px;">
+                    <div class="skeleton" style="width:40%; height:20px; margin-top:12px;"></div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>`;
+    </div>`;
 
-  let checkoutItems = [];
-  let appliedCoupon = null;
-  let selectedPayment = 'online';
-  let savedAddress = null;
-  let isProcessing = false;
+    let checkoutItems = [];
+    let appliedCoupon = null;
+    let selectedPayment = 'online';
+    let savedAddress = null;
+    let isProcessing = false;
 
-  async function getCheckoutItems() {
-    const params = new URLSearchParams(window.location.search);
-    const productId = params.get('id') || params.get('productId');
+    async function getCheckoutItems() {
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get('id') || params.get('productId');
 
-    if (productId) {
-      const qty = parseInt(params.get('quantity')) || 1;
-      const variantWeight = params.get('weight') || '';
-      const directPrice = params.get('price');
-      const directName = params.get('name');
-      const directImage = params.get('image');
+        if (productId) {
+            const qty = parseInt(params.get('quantity')) || 1;
+            const variantWeight = params.get('weight') || '';
+            const directPrice = params.get('price');
+            const directName = params.get('name');
+            const directImage = params.get('image');
 
-      try {
-        const prodSnap = await getDoc(doc(db, "products", productId));
-        if (prodSnap.exists()) {
-          const product = prodSnap.data();
-          let selectedVariant = null;
-          if (variantWeight && product.variants) {
-            selectedVariant = product.variants.find(v => v.weight === variantWeight);
-          }
-          if (!selectedVariant && product.variants && product.variants.length > 0) {
-            selectedVariant = product.variants[0];
-          }
-          const itemPrice = selectedVariant ? selectedVariant.price : (product.price || directPrice || 0);
-          const imageUrl = product.mainImage || product.image || directImage || "https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle";
-          return [{
-            id: productId,
-            name: product.longName || product.name || directName || "Pickle",
-            image: imageUrl,
-            variant: selectedVariant ? selectedVariant.weight : (variantWeight || "Standard"),
-            quantity: qty,
-            price: Number(itemPrice)
-          }];
+            try {
+                const prodSnap = await getDoc(doc(db, "products", productId));
+                if (prodSnap.exists()) {
+                    const product = prodSnap.data();
+                    let selectedVariant = null;
+                    if (variantWeight && product.variants) {
+                        selectedVariant = product.variants.find(v => v.weight === variantWeight);
+                    }
+                    if (!selectedVariant && product.variants && product.variants.length > 0) {
+                        selectedVariant = product.variants[0];
+                    }
+                    const itemPrice = selectedVariant ? selectedVariant.price : (product.price || directPrice || 0);
+                    const imageUrl = product.mainImage || product.image || directImage || "https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle";
+                    return [{
+                        id: productId,
+                        name: product.longName || product.name || directName || "Pickle",
+                        image: imageUrl,
+                        variant: selectedVariant ? selectedVariant.weight : (variantWeight || "Standard"),
+                        quantity: qty,
+                        price: Number(itemPrice)
+                    }];
+                }
+            } catch(e) { console.warn("Firestore fetch failed, using URL params", e); }
+
+            return [{
+                id: productId,
+                name: directName || "Product",
+                image: directImage || "https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle",
+                variant: variantWeight || "Standard",
+                quantity: qty,
+                price: Number(directPrice) || 0
+            }];
         }
-      } catch(e) { console.warn("Firestore fetch failed, using URL params", e); }
 
-      return [{
-        id: productId,
-        name: directName || "Product",
-        image: directImage || "https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle",
-        variant: variantWeight || "Standard",
-        quantity: qty,
-        price: Number(directPrice) || 0
-      }];
+        const rawCart = JSON.parse(localStorage.getItem('vastramaya_cart')) || [];
+        if (!rawCart.length) return [];
+
+        return rawCart.map(item => ({
+            id: item.productId || item.id,
+            name: item.name,
+            image: item.image || "https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle",
+            variant: item.size || item.variant || "Standard",
+            quantity: item.quantity || 1,
+            price: Number(item.price) || 0
+        }));
     }
 
-    const rawCart = JSON.parse(localStorage.getItem('vastramaya_cart')) || [];
-    if (!rawCart.length) return [];
+    function getCurrentTotals() {
+        let subtotal = 0;
+        checkoutItems.forEach(item => {
+            subtotal += item.price * item.quantity;
+        });
 
-    return rawCart.map(item => ({
-      id: item.productId || item.id,
-      name: item.name,
-      image: item.image || "https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle",
-      variant: item.size || item.variant || "Standard",
-      quantity: item.quantity || 1,
-      price: Number(item.price) || 0
-    }));
-  }
+        let discount = 0;
+        let discountText = '';
+        if (appliedCoupon) {
+            if (appliedCoupon.type === 'percentage') {
+                discount = subtotal * (appliedCoupon.value / 100);
+                discountText = `${appliedCoupon.value}% off`;
+            } else if (appliedCoupon.type === 'flat') {
+                discount = appliedCoupon.value;
+                discountText = `₹${appliedCoupon.value} off`;
+            }
+            discount = Math.min(discount, subtotal);
+        }
 
-  function getCurrentTotals() {
-    let subtotal = 0;
-    checkoutItems.forEach(item => {
-      subtotal += item.price * item.quantity;
-    });
+        let shipping = subtotal > 499 ? 0 : 40;
+        let handlingFee = 0;
+        if (selectedPayment === 'cod') handlingFee = 100;
 
-    let discount = 0;
-    let discountText = '';
-    if (appliedCoupon) {
-      if (appliedCoupon.type === 'percentage') {
-        discount = subtotal * (appliedCoupon.value / 100);
-        discountText = `${appliedCoupon.value}% off`;
-      } else if (appliedCoupon.type === 'flat') {
-        discount = appliedCoupon.value;
-        discountText = `₹${appliedCoupon.value} off`;
-      }
-      discount = Math.min(discount, subtotal);
+        const total = subtotal - discount + shipping + handlingFee;
+        return { subtotal, discount, discountText, shipping, handlingFee, total };
     }
 
-    let shipping = subtotal > 499 ? 0 : 40;
-    let handlingFee = 0;
-    if (selectedPayment === 'cod') handlingFee = 100;
-
-    const total = subtotal - discount + shipping + handlingFee;
-    return { subtotal, discount, discountText, shipping, handlingFee, total };
-  }
-
-  function updateTotalsAndButton() {
-    const totals = getCurrentTotals();
-    const totalsPanel = document.getElementById('totalsPanel');
-    if (totalsPanel) {
-      totalsPanel.innerHTML = `
-        <div class="totals-row"><span>Subtotal</span><span>${formatPrice(totals.subtotal)}</span></div>
-        ${totals.discount > 0 ? `<div class="totals-row"><span>Coupon Discount (${totals.discountText})</span><span>-${formatPrice(totals.discount)}</span></div>` : ''}
-        <div class="totals-row"><span>Shipping</span><span>${totals.shipping === 0 ? 'FREE' : formatPrice(totals.shipping)}</span></div>
-        ${selectedPayment === 'cod' ? `<div class="totals-row"><span>COD Handling Fee</span><span>${formatPrice(totals.handlingFee)}</span></div>` : ''}
-        <div class="totals-row grand-total"><span>Total</span><span>${formatPrice(totals.total)}</span></div>
-      `;
+    function updateTotalsAndButton() {
+        const totals = getCurrentTotals();
+        const totalsPanel = document.getElementById('totalsPanel');
+        if (totalsPanel) {
+            totalsPanel.innerHTML = `
+                <div class="totals-row"><span>Subtotal</span><span>${formatPrice(totals.subtotal)}</span></div>
+                ${totals.discount > 0 ? `<div class="totals-row"><span>Coupon Discount (${totals.discountText})</span><span style="color:#2e7d32;">-${formatPrice(totals.discount)}</span></div>` : ''}
+                <div class="totals-row"><span>Shipping</span><span>${totals.shipping === 0 ? '<span style="color:#2e7d32;">FREE</span>' : formatPrice(totals.shipping)}</span></div>
+                ${selectedPayment === 'cod' ? `<div class="totals-row"><span>COD Handling Fee</span><span style="color:#c62828;">${formatPrice(totals.handlingFee)}</span></div>` : ''}
+                <div class="totals-row grand-total"><span>Total</span><span>${formatPrice(totals.total)}</span></div>
+            `;
+        }
+        const payBtn = document.getElementById('payNowBtn');
+        if (payBtn && !isProcessing) payBtn.innerText = `Pay ${formatPrice(totals.total)}`;
     }
-    const payBtn = document.getElementById('payNowBtn');
-    if (payBtn && !isProcessing) payBtn.innerText = `Pay ${formatPrice(totals.total)}`;
-  }
 
-  async function applyCoupon(code) {
-    if (!code) return { success: false, message: 'Enter a coupon code' };
-    const upperCode = code.toUpperCase();
-    try {
-      const couponRef = doc(db, "coupons", upperCode);
-      const couponSnap = await getDoc(couponRef);
+    async function applyCoupon(code) {
+        if (!code) return { success: false, message: 'Enter a coupon code' };
+        const upperCode = code.toUpperCase();
+        try {
+            const couponRef = doc(db, "coupons", upperCode);
+            const couponSnap = await getDoc(couponRef);
 
-      if (!couponSnap.exists()) return { success: false, message: 'Invalid coupon code' };
-      const data = couponSnap.data();
-      if (data.isActive === false) return { success: false, message: 'Coupon is not active' };
+            if (!couponSnap.exists()) return { success: false, message: 'Invalid coupon code' };
+            const data = couponSnap.data();
+            if (data.isActive === false) return { success: false, message: 'Coupon is not active' };
 
-      if (data.expiry) {
-        const today = new Date();
-        today.setHours(0,0,0,0);
-        if (new Date(data.expiry) < today) return { success: false, message: 'Coupon has expired' };
-      }
+            if (data.expiry) {
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                if (new Date(data.expiry) < today) return { success: false, message: 'Coupon has expired' };
+            }
 
-      if (data.totalLimit && (data.usage || 0) >= data.totalLimit) {
-        return { success: false, message: 'Coupon usage limit reached' };
-      }
+            if (data.totalLimit && (data.usage || 0) >= data.totalLimit) {
+                return { success: false, message: 'Coupon usage limit reached' };
+            }
 
-      const type = data.type;
-      const value = Number(data.value);
-      if (!type || !value || value <= 0) return { success: false, message: 'Invalid coupon configuration' };
+            const type = data.type;
+            const value = Number(data.value);
+            if (!type || !value || value <= 0) return { success: false, message: 'Invalid coupon configuration' };
 
-      appliedCoupon = { code: upperCode, type, value, docId: upperCode };
-      updateTotalsAndButton();
-      return { success: true, message: `Coupon applied! ${type === 'percentage' ? `${value}% off` : `₹${value} off`}` };
-    } catch(e) {
-      return { success: false, message: 'Error validating coupon.' };
+            appliedCoupon = { code: upperCode, type, value, docId: upperCode };
+            updateTotalsAndButton();
+            return { success: true, message: `Coupon applied! ${type === 'percentage' ? `${value}% off` : `₹${value} off`}` };
+        } catch(e) {
+            return { success: false, message: 'Error validating coupon.' };
+        }
     }
-  }
 
-  function renderLeftPanel() {
-    const leftContainer = document.getElementById('leftPanelContainer');
-    if (!leftContainer) return;
-    const addressHtml = savedAddress ? `
-      <div class="address-display">
-        <strong>${escapeHtml(savedAddress.name)}</strong><br>
-        ${escapeHtml(savedAddress.address)}<br>
-        ${escapeHtml(savedAddress.city)} - ${escapeHtml(savedAddress.pincode)}<br>
-        Phone: ${escapeHtml(savedAddress.phone)}
-      </div>
-    ` : '<p style="color:var(--ash); margin-top:10px;">No address added yet.</p>';
-
-    leftContainer.innerHTML = `
-      <div class="card">
-        <div class="card-title">📦 Delivery Address</div>
-        <button class="add-address-btn" id="openAddressBtn">+ Add Address</button>
-        <div id="addressDisplay">${addressHtml}</div>
-      </div>
-      <div class="card">
-        <div class="card-title">💳 Payment Method</div>
-        <div class="payment-options" id="paymentOptions">
-          <div class="payment-radio ${selectedPayment === 'online' ? 'active' : ''}" data-payment="online">
-            <input type="radio" name="payment" value="online" ${selectedPayment === 'online' ? 'checked' : ''}>
-            <div class="label">
-              <span class="name">🔒 Online Payment</span>
-              <span class="fee">Recommended (UPI/Card/NetBanking)</span>
+    function renderLeftPanel() {
+        const leftContainer = document.getElementById('leftPanelContainer');
+        if (!leftContainer) return;
+        const addressHtml = savedAddress ? `
+            <div class="address-display">
+                <span class="address-type-tag">🏠 Home</span>
+                <strong>${escapeHtml(savedAddress.name)}</strong>
+                ${escapeHtml(savedAddress.address)}<br>
+                ${escapeHtml(savedAddress.city)} - ${escapeHtml(savedAddress.pincode)}<br>
+                📞 ${escapeHtml(savedAddress.phone)}
             </div>
-          </div>
-          <div class="payment-radio ${selectedPayment === 'cod' ? 'active' : ''}" data-payment="cod">
-            <input type="radio" name="payment" value="cod" ${selectedPayment === 'cod' ? 'checked' : ''}>
-            <div class="label">
-              <span class="name">💰 Cash on Delivery</span>
-              <span class="fee">+ ₹100 handling fee</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
+        ` : '<p style="color:var(--ash); margin-top:16px; font-size:14px;">No address added yet.</p>';
 
-    document.getElementById('openAddressBtn')?.addEventListener('click', openAddressModal);
-    const radios = document.querySelectorAll('.payment-radio');
-    radios.forEach(radio => {
-      radio.addEventListener('click', () => {
-        selectedPayment = radio.getAttribute('data-payment');
-        radios.forEach(r => r.classList.remove('active'));
-        radio.classList.add('active');
-        const inp = radio.querySelector('input');
-        if (inp) inp.checked = true;
+        leftContainer.innerHTML = `
+            <div class="card">
+                <div class="card-title">📦 Delivery Address</div>
+                <button class="add-address-btn" id="openAddressBtn">+ Add Address</button>
+                <div id="addressDisplay">${addressHtml}</div>
+            </div>
+            <div class="card">
+                <div class="card-title">💳 Payment Method</div>
+                <div class="payment-options" id="paymentOptions">
+                    <div class="payment-radio ${selectedPayment === 'online' ? 'active' : ''}" data-payment="online">
+                        <div class="best-value-badge">RECOMMENDED</div>
+                        <input type="radio" name="payment" value="online" ${selectedPayment === 'online' ? 'checked' : ''}>
+                        <div class="label">
+                            <span class="name">🔒 Pay Online</span>
+                            <span class="fee">UPI, Cards, Net Banking — Fast & Secure</span>
+                        </div>
+                    </div>
+                    <div class="payment-radio ${selectedPayment === 'cod' ? 'active' : ''}" data-payment="cod">
+                        <input type="radio" name="payment" value="cod" ${selectedPayment === 'cod' ? 'checked' : ''}>
+                        <div class="label">
+                            <span class="name">💰 Cash on Delivery <span class="fee-warning">+ ₹100 Fee</span></span>
+                            <span class="fee">Pay when you receive the order</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('openAddressBtn')?.addEventListener('click', openAddressModal);
+        const radios = document.querySelectorAll('.payment-radio');
+        radios.forEach(radio => {
+            radio.addEventListener('click', () => {
+                selectedPayment = radio.getAttribute('data-payment');
+                radios.forEach(r => r.classList.remove('active'));
+                radio.classList.add('active');
+                const inp = radio.querySelector('input');
+                if (inp) inp.checked = true;
+                updateTotalsAndButton();
+            });
+        });
+    }
+
+    function renderRightColumn() {
+        const rightContainer = document.getElementById('rightColumnContainer');
+        if (!rightContainer) return;
+
+        const itemsHtml = checkoutItems.map(item => `
+            <div class="cart-item">
+                <div class="cart-item-img"><img src="${item.image}" alt="${escapeHtml(item.name)}" onerror="this.src='https://placehold.co/70x70/f5e9e7/c0392b?text=Pickle'"></div>
+                <div class="cart-item-details">
+                    <div class="cart-item-name">${escapeHtml(item.name)}</div>
+                    <div class="cart-item-variant">${escapeHtml(item.variant)}</div>
+                    <div class="cart-item-price-row">
+                        <span class="cart-item-qty">Qty: ${item.quantity}</span>
+                        <span class="cart-item-total">${formatPrice(item.price * item.quantity)}</span>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        rightContainer.innerHTML = `
+            <div class="order-summary">
+                <div class="summary-header">🧾 Order Summary</div>
+                <div class="summary-items">${itemsHtml}</div>
+                <div class="coupon-section">
+                    <div class="coupon-row">
+                        <input type="text" id="couponInputRight" placeholder="Enter coupon code">
+                        <button class="apply-coupon-btn" id="applyCouponBtnRight">Apply</button>
+                    </div>
+                    <div id="discountMsgRight" class="discount-msg"></div>
+                </div>
+                <div class="summary-totals" id="totalsPanel"></div>
+                <button class="pay-btn" id="payNowBtn">Pay Now</button>
+            </div>
+        `;
+
+        document.getElementById('applyCouponBtnRight').onclick = async () => {
+            const code = document.getElementById('couponInputRight').value.trim();
+            const result = await applyCoupon(code);
+            document.getElementById('discountMsgRight').innerHTML = result.success ? 
+                `<span style="color:#2e7d32;">✅ ${result.message}</span>` : `<span style="color:#d32f2f;">❌ ${result.message}</span>`;
+        };
+
         updateTotalsAndButton();
-      });
-    });
-  }
-
-  function renderRightColumn() {
-    const rightContainer = document.getElementById('rightColumnContainer');
-    if (!rightContainer) return;
-
-    const itemsHtml = checkoutItems.map(item => `
-      <div class="cart-item">
-        <div class="cart-item-img"><img src="${item.image}" alt="${escapeHtml(item.name)}" onerror="this.src='https://placehold.co/70x70/f5e9e7/c0392b?text=Pickle'"></div>
-        <div class="cart-item-details">
-          <div class="cart-item-name">${escapeHtml(item.name)}</div>
-          <div class="cart-item-variant">${escapeHtml(item.variant)}</div>
-          <div class="cart-item-price-row">
-            <span class="cart-item-qty">Qty: ${item.quantity}</span>
-            <span class="cart-item-total">${formatPrice(item.price * item.quantity)}</span>
-          </div>
-        </div>
-      </div>
-    `).join('');
-
-    rightContainer.innerHTML = `
-      <div class="order-summary">
-        <div class="summary-header">Order Summary</div>
-        <div class="summary-items">${itemsHtml}</div>
-        <div class="coupon-section">
-          <div class="coupon-row">
-            <input type="text" id="couponInputRight" placeholder="Enter coupon code">
-            <button class="apply-coupon-btn" id="applyCouponBtnRight">Apply</button>
-          </div>
-          <div id="discountMsgRight" class="discount-msg"></div>
-        </div>
-        <div class="summary-totals" id="totalsPanel"></div>
-        <button class="pay-btn" id="payNowBtn">Pay Now</button>
-      </div>
-    `;
-
-    document.getElementById('applyCouponBtnRight').onclick = async () => {
-      const code = document.getElementById('couponInputRight').value.trim();
-      const result = await applyCoupon(code);
-      document.getElementById('discountMsgRight').innerHTML = result.success ? 
-        `<span style="color:#2e7d32;">✅ ${result.message}</span>` : `<span style="color:#d32f2f;">❌ ${result.message}</span>`;
-    };
-
-    updateTotalsAndButton();
-    document.getElementById('payNowBtn')?.addEventListener('click', navigateToPaymentPage);
-  }
-
-  function openAddressModal() { document.getElementById('addressModal').style.display = 'flex'; }
-  window.closeAddressModal = function() { document.getElementById('addressModal').style.display = 'none'; };
-  window.saveAddress = function() {
-    const name = document.getElementById('addrName').value.trim();
-    const phone = document.getElementById('addrPhone').value.trim();
-    const address = document.getElementById('addrFull').value.trim();
-    const city = document.getElementById('addrCity').value.trim();
-    const pincode = document.getElementById('addrPincode').value.trim();
-    if (!name || !phone || !address || !city || !pincode) { alert('Please fill all fields'); return; }
-    savedAddress = { name, phone, address, city, pincode };
-    renderLeftPanel();
-    closeAddressModal();
-  };
-
-  function navigateToPaymentPage() {
-    if (isProcessing) return;
-    if (!savedAddress) { alert('Please add a delivery address first'); return; }
-    if (!checkoutItems.length) { alert('No items in checkout'); return; }
-
-    isProcessing = true;
-    const payBtn = document.getElementById('payNowBtn');
-    payBtn.disabled = true;
-    payBtn.innerText = 'Redirecting...';
-
-    const totals = getCurrentTotals();
-    const checkoutData = {
-      status: 'pending',
-      paymentMethod: selectedPayment === 'online' ? 'Online Payment' : 'Cash on Delivery',
-      shippingAddress: savedAddress,
-      items: checkoutItems.map(item => ({
-        productId: item.id,
-        name: item.name,
-        image: item.image,
-        variant: item.variant,
-        quantity: item.quantity,
-        unitPrice: item.price,
-        totalPrice: item.price * item.quantity
-      })),
-      subtotal: totals.subtotal,
-      discount: totals.discount,
-      shipping: totals.shipping,
-      handlingFee: totals.handlingFee,
-      total: totals.total,
-      coupon: appliedCoupon ? { code: appliedCoupon.code, type: appliedCoupon.type, value: appliedCoupon.value } : null
-    };
-
-    sessionStorage.setItem('checkoutData', JSON.stringify(checkoutData));
-    window.location.href = 'order-placed.html';
-  }
-
-  function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
-
-  async function initCheckout() {
-    const root = document.getElementById('checkoutRoot');
-    root.innerHTML = skeletonHTML;
-    checkoutItems = await getCheckoutItems();
-    if (!checkoutItems.length) {
-      root.innerHTML = `<div style="text-align:center; padding:40px;">❌ No items to checkout. <a href="index.html" style="color:var(--rust);">Continue Shopping</a></div>`;
-      return;
+        document.getElementById('payNowBtn')?.addEventListener('click', navigateToPaymentPage);
     }
-    root.innerHTML = `<div class="checkout-container"><div class="left-panel" id="leftPanelContainer"></div><div id="rightColumnContainer"></div></div>`;
-    renderLeftPanel();
-    renderRightColumn();
-  }
 
-  initCheckout();
+    function openAddressModal() { document.getElementById('addressModal').style.display = 'flex'; }
+    window.closeAddressModal = function() { document.getElementById('addressModal').style.display = 'none'; };
+    window.saveAddress = function() {
+        const name = document.getElementById('addrName').value.trim();
+        const phone = document.getElementById('addrPhone').value.trim();
+        const address = document.getElementById('addrFull').value.trim();
+        const city = document.getElementById('addrCity').value.trim();
+        const pincode = document.getElementById('addrPincode').value.trim();
+        if (!name || !phone || !address || !city || !pincode) { alert('Please fill all fields'); return; }
+        savedAddress = { name, phone, address, city, pincode };
+        renderLeftPanel();
+        closeAddressModal();
+    };
+
+    function navigateToPaymentPage() {
+        if (isProcessing) return;
+        if (!savedAddress) { alert('Please add a delivery address first'); return; }
+        if (!checkoutItems.length) { alert('No items in checkout'); return; }
+
+        isProcessing = true;
+        const payBtn = document.getElementById('payNowBtn');
+        payBtn.disabled = true;
+        payBtn.innerText = 'Redirecting...';
+
+        const totals = getCurrentTotals();
+        const checkoutData = {
+            status: 'pending',
+            paymentMethod: selectedPayment === 'online' ? 'Online Payment' : 'Cash on Delivery',
+            shippingAddress: savedAddress,
+            items: checkoutItems.map(item => ({
+                productId: item.id,
+                name: item.name,
+                image: item.image,
+                variant: item.variant,
+                quantity: item.quantity,
+                unitPrice: item.price,
+                totalPrice: item.price * item.quantity
+            })),
+            subtotal: totals.subtotal,
+            discount: totals.discount,
+            shipping: totals.shipping,
+            handlingFee: totals.handlingFee,
+            total: totals.total,
+            coupon: appliedCoupon ? { code: appliedCoupon.code, type: appliedCoupon.type, value: appliedCoupon.value } : null
+        };
+
+        sessionStorage.setItem('checkoutData', JSON.stringify(checkoutData));
+        window.location.href = 'order-placed.html';
+    }
+
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+
+    async function initCheckout() {
+        const root = document.getElementById('checkoutRoot');
+        root.innerHTML = skeletonHTML;
+        checkoutItems = await getCheckoutItems();
+        if (!checkoutItems.length) {
+            root.innerHTML = `<div style="text-align:center; padding:60px; font-size:1.2rem;">❌ No items to checkout.<br><a href="index.html" style="color:var(--rust); font-weight:600;">Continue Shopping</a></div>`;
+            return;
+        }
+        root.innerHTML = `<div class="checkout-container"><div class="left-panel" id="leftPanelContainer"></div><div id="rightColumnContainer"></div></div>`;
+        renderLeftPanel();
+        renderRightColumn();
+    }
+
+    initCheckout();
 </script>
 </body>
 </html>
