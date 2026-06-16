@@ -4,231 +4,79 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>Order Placed – Happy NonVeg Pickles</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --rust: #C0392B; --rust-dark: #962d22; --rust-light: #f5e9e7;
-      --turmeric: #E8A020; --cream: #FDF6EC; --ink: #1C1009;
-      --success: #2e7d32; --ash: #6b5b4e;
-      --ff-body: 'IBM Plex Sans', sans-serif;
-    }
     body {
-      background: linear-gradient(145deg, #fff9f2 0%, var(--cream) 100%);
-      font-family: var(--ff-body);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 20px;
+      background: black; /* fallback behind video */
+      overflow: hidden;
     }
-    .container {
+    video {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
-      max-width: 480px;
-      background: white;
-      border-radius: 28px;
-      box-shadow: 0 20px 60px rgba(28,16,9,0.08);
-      padding: 48px 32px;
+      height: 100%;
+      object-fit: cover;   /* fills the screen, crops if needed */
+      z-index: 1;
     }
-    .order-summary-box {
-      margin: 24px 0;
-      text-align: left;
-      background: #faf7f2;
-      padding: 18px;
-      border-radius: 16px;
-      font-size: 0.9rem;
-    }
-    .summary-line {
-      margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-    }
-    .summary-line strong { color: var(--rust); }
-
-    .animation-stage {
-      position: relative;
-      height: 160px;
-      margin: 20px auto;
-    }
-    .checkmark-video {
-      width: 150px;
-      height: 150px;
-      object-fit: contain;
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      border-radius: 12px; /* optional, for a softer look */
-    }
-
-    .status-text {
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: var(--ink);
-      margin-top: 24px;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: all 0.6s ease;
-    }
-    .status-text.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .order-id {
-      font-weight: 700;
-      color: var(--rust);
-      margin-top: 8px;
-      opacity: 0;
-      transform: translateY(8px);
-      transition: all 0.6s ease 0.2s;
-    }
-    .order-id.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .sub-message {
-      color: var(--ash);
-      margin-top: 12px;
-      opacity: 0;
-      transform: translateY(6px);
-      transition: all 0.6s ease 0.4s;
-    }
-    .sub-message.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .home-btn {
-      margin-top: 28px;
-      background: var(--rust);
-      color: white;
-      padding: 14px 32px;
-      border-radius: 40px;
-      text-decoration: none;
-      font-weight: 700;
-      display: inline-block;
-      box-shadow: 0 4px 12px rgba(192,57,43,0.2);
-      opacity: 0;
-      transform: translateY(8px);
-      transition: all 0.6s ease 0.6s;
-    }
-    .home-btn.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .home-btn:hover { background: var(--rust-dark); }
   </style>
 </head>
 <body>
-<div class="container" id="animationContainer">
-  <div class="order-summary-box" id="orderSummary"></div>
+  <!-- Full‑screen video, autoplay, no controls -->
+  <video 
+    id="animationVideo" 
+    autoplay 
+    muted 
+    playsinline
+  >
+    <source src="./assets/video.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
 
-  <div class="animation-stage" id="animationStage">
-    <!--
-      🎬 SAMPLE VIDEO: Big Buck Bunny (short clip).
-      Replace the src below with your own order‑confirmation video.
-      Example: https://raw.githubusercontent.com/your‑username/your‑repo/main/assets/order‑confirm.mp4
-    -->
-    <video 
-      class="checkmark-video" 
-      id="animationVideo" 
-      autoplay 
-      muted 
-      playsinline
-      onended="showSuccessText()"
-    >
-      <source src="./assets/video.mp4" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-  </div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getFirestore, doc, updateDoc, increment, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-  <div class="status-text" id="statusText">Order Placed!</div>
-  <div class="order-id" id="orderIdDisplay">Order ID: ...</div>
-  <p class="sub-message" id="subMessage">We’ll send you updates on your phone and email.</p>
-  <a href="landing-page.html" class="home-btn" id="homeBtn">Continue Shopping</a>
-</div>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
+      authDomain: "pickle-fdc54.firebaseapp.com",
+      projectId: "pickle-fdc54",
+      storageBucket: "pickle-fdc54.firebasestorage.app",
+      messagingSenderId: "650348710985",
+      appId: "1:650348710985:web:b8eedb551a79b536578398",
+      measurementId: "G-B40NG5KQDL"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-  import { getFirestore, doc, updateDoc, increment, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
-    authDomain: "pickle-fdc54.firebaseapp.com",
-    projectId: "pickle-fdc54",
-    storageBucket: "pickle-fdc54.firebasestorage.app",
-    messagingSenderId: "650348710985",
-    appId: "1:650348710985:web:b8eedb551a79b536578398",
-    measurementId: "G-B40NG5KQDL"
-  };
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  function formatPrice(p) { return `₹${Math.round(Number(p) || 0)}`; }
-
-  const checkoutData = JSON.parse(sessionStorage.getItem('checkoutData'));
-  if (!checkoutData) {
-    document.body.innerHTML = `<div class="container"><h2>No order data</h2><a href="index.html">Back</a></div>`;
-    throw new Error("No checkout data");
-  }
-
-  // Populate order summary
-  const summaryDiv = document.getElementById('orderSummary');
-  if (summaryDiv) {
-    const itemList = checkoutData.items.map(i => 
-      `<div class="summary-line"><span>${i.name} (${i.variant}) × ${i.quantity}</span><span>${formatPrice(i.totalPrice)}</span></div>`
-    ).join('');
-    summaryDiv.innerHTML = `
-      <div class="summary-line"><strong>Total</strong><strong>${formatPrice(checkoutData.total)}</strong></div>
-      ${itemList}
-      <div class="summary-line" style="margin-top:8px; font-size:0.8rem; color:var(--ash);">
-        <span>Payment</span><span>${checkoutData.paymentMethod}</span>
-      </div>
-    `;
-  }
-
-  // Reveal text/button when video finishes
-  window.showSuccessText = function() {
-    document.getElementById('statusText').classList.add('show');
-    document.getElementById('orderIdDisplay').classList.add('show');
-    document.getElementById('subMessage').classList.add('show');
-    document.getElementById('homeBtn').classList.add('show');
-  };
-
-  // Fallback if the sample video fails to load or autoplay
-  setTimeout(() => {
-    const video = document.getElementById('animationVideo');
-    if (video && video.paused && video.readyState === 0) {
-      showSuccessText(); // show UI after 3 seconds anyway
+    const checkoutData = JSON.parse(sessionStorage.getItem('checkoutData'));
+    if (checkoutData) {
+      // Save order in background – no UI feedback
+      (async () => {
+        try {
+          const ordersRef = collection(db, 'orders');
+          const docRef = await addDoc(ordersRef, {
+            ...checkoutData,
+            createdAt: serverTimestamp(),
+            status: 'pending'
+          });
+          if (checkoutData.coupon?.code) {
+            await updateDoc(doc(db, 'coupons', checkoutData.coupon.code.toUpperCase()), {
+              usage: increment(1)
+            });
+          }
+          // Clear cart / session silently
+          if (!new URLSearchParams(window.location.search).get('id')) {
+            localStorage.removeItem('vastramaya_cart');
+          }
+          sessionStorage.removeItem('checkoutData');
+        } catch (error) {
+          console.error("Order save failed:", error);
+        }
+      })();
+    } else {
+      console.error("No checkout data found – order cannot be saved.");
     }
-  }, 3000);
-
-  // Save order to Firestore
-  async function saveOrder() {
-    try {
-      const ordersRef = collection(db, 'orders');
-      const docRef = await addDoc(ordersRef, {
-        ...checkoutData,
-        createdAt: serverTimestamp(),
-        status: 'pending'
-      });
-      if (checkoutData.coupon?.code) {
-        await updateDoc(doc(db, 'coupons', checkoutData.coupon.code.toUpperCase()), {
-          usage: increment(1)
-        });
-      }
-      document.getElementById('orderIdDisplay').textContent = `Order ID: ${docRef.id}`;
-      if (!new URLSearchParams(window.location.search).get('id')) {
-        localStorage.removeItem('vastramaya_cart');
-      }
-      sessionStorage.removeItem('checkoutData');
-    } catch (error) {
-      document.getElementById('orderIdDisplay').textContent = 'Order ID: (error saving)';
-    }
-  }
-  saveOrder();
-</script>
+  </script>
 </body>
 </html>
