@@ -49,6 +49,7 @@
             display: flex;
             flex-direction: column;
             animation: fadeIn 0.6s ease;
+            padding-bottom: 0; /* will be adjusted on mobile */
         }
 
         @keyframes fadeIn {
@@ -432,8 +433,8 @@
         }
         .totals-row.grand-total span:last-child { font-size: 1.5rem; }
 
-        /* ─── PAY BUTTON ─── */
-        .pay-btn {
+        /* ─── DESKTOP PAY BUTTON (hidden on mobile) ─── */
+        .desktop-pay-btn {
             width: calc(100% - 48px);
             margin: 0 24px 28px 24px;
             background: linear-gradient(135deg, var(--rust-dark), var(--rust));
@@ -452,16 +453,59 @@
             justify-content: center;
             gap: 12px;
         }
-        .pay-btn:hover {
+        .desktop-pay-btn:hover {
             background: var(--rust);
             transform: translateY(-3px);
             box-shadow: 0 18px 35px rgba(192, 57, 43, 0.45);
         }
-        .pay-btn:disabled {
+        .desktop-pay-btn:disabled {
             opacity: 0.7;
             cursor: not-allowed;
             transform: none;
             box-shadow: 0 8px 20px rgba(192, 57, 43, 0.2);
+        }
+
+        /* ─── MOBILE BOTTOM BAR ─── */
+        .mobile-bottom-bar {
+            display: none; /* hidden on desktop */
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            padding: 16px 24px 24px 24px;
+            z-index: 900;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.08);
+            animation: slideUp 0.4s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .mobile-pay-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--rust-dark), var(--rust));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 12px 25px rgba(192, 57, 43, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: 0.5px;
+            transition: var(--transition-smooth);
+        }
+        .mobile-pay-btn:disabled {
+            opacity: 0.7;
+            transform: none;
         }
 
         /* ─── MODAL ─── */
@@ -554,16 +598,33 @@
             font-size: 14px;
         }
 
-        @media (max-width: 800px) {
+        /* ─── RESPONSIVE BREAKPOINTS ─── */
+        @media (max-width: 900px) {
             .checkout-container {
                 grid-template-columns: 1fr;
                 gap: 30px;
                 margin-top: 90px;
             }
             .order-summary { position: relative; top: 0; }
+            .desktop-pay-btn { display: none; }          /* hide desktop button */
+            .mobile-bottom-bar { display: flex; }        /* show sticky mobile bar */
+            body { padding-bottom: 100px; }              /* prevent content from hiding behind bar */
+        }
+
+        @media (max-width: 600px) {
             .back-button { top: 16px; left: 16px; padding: 8px 16px; font-size: 13px; }
-            .card { padding: 22px; }
-            .modal-content { padding: 24px; }
+            .card { padding: 20px; }
+            .summary-items { padding: 18px 20px; }
+            .coupon-section { padding: 16px 20px; }
+            .summary-totals { padding: 20px; }
+        }
+
+        /* Extra small devices (320px–380px) */
+        @media (max-width: 380px) {
+            .coupon-row { gap: 8px; }
+            .coupon-row input { padding: 12px 14px; font-size: 14px; }
+            .apply-coupon-btn { padding: 0 16px; font-size: 13px; }
+            .cart-item-img { width: 60px; height: 60px; }
         }
     </style>
 </head>
@@ -577,6 +638,16 @@
 </button>
 
 <main id="checkoutRoot"><div style="text-align:center; padding:60px;">Loading checkout...</div></main>
+
+<!-- Mobile sticky bottom bar (hidden on desktop) -->
+<div class="mobile-bottom-bar" id="mobileBottomBar">
+    <button class="mobile-pay-btn" id="mobilePayBtn">
+        <span id="mobilePayText">Pay Now</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+    </button>
+</div>
 
 <div id="addressModal" class="modal">
     <div class="modal-content">
@@ -761,8 +832,13 @@
                 <div class="totals-row grand-total"><span>Total</span><span>${formatPrice(totals.total)}</span></div>
             `;
         }
-        const payBtn = document.getElementById('payNowBtn');
-        if (payBtn && !isProcessing) payBtn.innerText = `Pay ${formatPrice(totals.total)}`;
+        // Update all pay buttons
+        const payText = `Pay ${formatPrice(totals.total)}`;
+        const desktopBtn = document.getElementById('desktopPayBtn');
+        if (desktopBtn && !isProcessing) desktopBtn.innerText = payText;
+        const mobileBtn = document.getElementById('mobilePayBtn');
+        const mobileSpan = document.getElementById('mobilePayText');
+        if (mobileSpan && !isProcessing) mobileSpan.innerText = payText;
     }
 
     async function applyCoupon(code) {
@@ -883,7 +959,7 @@
                     <div id="discountMsgRight" class="discount-msg"></div>
                 </div>
                 <div class="summary-totals" id="totalsPanel"></div>
-                <button class="pay-btn" id="payNowBtn">Pay Now</button>
+                <button class="desktop-pay-btn" id="desktopPayBtn">Pay Now</button>
             </div>
         `;
 
@@ -895,7 +971,9 @@
         };
 
         updateTotalsAndButton();
-        document.getElementById('payNowBtn')?.addEventListener('click', navigateToPaymentPage);
+        // Attach event listeners to both desktop and mobile pay buttons
+        document.getElementById('desktopPayBtn')?.addEventListener('click', navigateToPaymentPage);
+        document.getElementById('mobilePayBtn')?.addEventListener('click', navigateToPaymentPage);
     }
 
     function openAddressModal() { document.getElementById('addressModal').style.display = 'flex'; }
@@ -918,9 +996,17 @@
         if (!checkoutItems.length) { alert('No items in checkout'); return; }
 
         isProcessing = true;
-        const payBtn = document.getElementById('payNowBtn');
-        payBtn.disabled = true;
-        payBtn.innerText = 'Redirecting...';
+        const desktopBtn = document.getElementById('desktopPayBtn');
+        const mobileBtn = document.getElementById('mobilePayBtn');
+        if (desktopBtn) {
+            desktopBtn.disabled = true;
+            desktopBtn.innerText = 'Redirecting...';
+        }
+        if (mobileBtn) {
+            mobileBtn.disabled = true;
+            const mobileSpan = document.getElementById('mobilePayText');
+            if (mobileSpan) mobileSpan.innerText = 'Redirecting...';
+        }
 
         const totals = getCurrentTotals();
         const checkoutData = {
