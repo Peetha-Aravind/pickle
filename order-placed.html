@@ -7,8 +7,9 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background: black; /* fallback behind video */
+      background: black;
       overflow: hidden;
+      font-family: sans-serif;
     }
     video {
       position: fixed;
@@ -16,22 +17,38 @@
       left: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;   /* fills the screen, crops if needed */
+      object-fit: cover;
       z-index: 1;
+    }
+    /* Fallback overlay – only shown if autoplay with sound is blocked */
+    #audioUnlock {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.01); /* almost invisible */
+      z-index: 10;
+      display: none; /* hidden by default */
+      cursor: pointer;
+    }
+    #audioUnlock.show {
+      display: block;
     }
   </style>
 </head>
 <body>
-  <!-- Full‑screen video, autoplay, no controls -->
+  <!-- Full‑screen video – NOT muted, so audio can play -->
   <video 
     id="animationVideo" 
     autoplay 
-    muted 
     playsinline
   >
     <source src="./assets/video.mp4" type="video/mp4">
     Your browser does not support the video tag.
   </video>
+
+  <!-- Invisible overlay to catch a click for audio autoplay policy -->
+  <div id="audioUnlock"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -49,9 +66,9 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // ─── Background Firestore save ─────────────────────
     const checkoutData = JSON.parse(sessionStorage.getItem('checkoutData'));
     if (checkoutData) {
-      // Save order in background – no UI feedback
       (async () => {
         try {
           const ordersRef = collection(db, 'orders');
@@ -65,7 +82,6 @@
               usage: increment(1)
             });
           }
-          // Clear cart / session silently
           if (!new URLSearchParams(window.location.search).get('id')) {
             localStorage.removeItem('vastramaya_cart');
           }
@@ -74,9 +90,31 @@
           console.error("Order save failed:", error);
         }
       })();
-    } else {
-      console.error("No checkout data found – order cannot be saved.");
     }
+
+    // ─── Handle autoplay with sound ──────────────────
+    const video = document.getElementById('animationVideo');
+    const unlockOverlay = document.getElementById('audioUnlock');
+
+    // Try to play with audio
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        // Autoplay with sound was blocked – show transparent overlay
+        unlockOverlay.classList.add('show');
+      });
+    }
+
+    // When the user clicks/taps anywhere, play the video with sound
+    unlockOverlay.addEventListener('click', () => {
+      video.play();
+      unlockOverlay.classList.remove('show');
+    }, { once: true });
+
+    // Once the video starts playing (successfully), hide overlay just in case
+    video.addEventListener('play', () => {
+      unlockOverlay.classList.remove('show');
+    });
   </script>
 </body>
 </html>
