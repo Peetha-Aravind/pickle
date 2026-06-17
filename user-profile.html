@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>My Profile – Happy NonVeg Pickles</title>
 
+    <!-- Favicon (stops 404) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🥒</text></svg>">
+
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -639,8 +642,8 @@
                     <div class="profile-popup" id="profile-popup">
                         <div class="profile-header"><div class="profile-info"><div class="profile-name" id="user-name">Guest User</div><div class="profile-email" id="user-email">Sign in to sync</div></div></div>
                         <div class="profile-links" id="profile-links-container">
-                            <a href="user-profile.html" class="profile-link icon-trigger auth-only auth-hidden"><span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span>My Profile</a>
-                            <a href="user-orders.html" class="profile-link icon-trigger auth-only auth-hidden"><span class="icon-wrap"><img src="./assets/orders.svg" class="icon-default" alt=""><img src="./assets/orders-fill.svg" class="icon-fill" alt=""></span>My Orders</a>
+                            <a href="my-profile.html" class="profile-link icon-trigger auth-only auth-hidden"><span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span>My Profile</a>
+                            <a href="my-orders.html" class="profile-link icon-trigger auth-only auth-hidden"><span class="icon-wrap"><img src="./assets/orders.svg" class="icon-default" alt=""><img src="./assets/orders-fill.svg" class="icon-fill" alt=""></span>My Orders</a>
                             <div id="login-trigger-desktop" class="profile-link icon-trigger"><span class="icon-wrap"><img src="./assets/login.svg" class="icon-default" alt=""><img src="./assets/login-fill.svg" class="icon-fill" alt=""></span>Sign In</div>
                         </div>
                     </div>
@@ -718,7 +721,7 @@
                         </div>
                         <span class="icon-wrap icon-muted"><img src="./assets/chevron.svg" class="icon-default" alt=""><img src="./assets/chevron-fill.svg" class="icon-fill" alt=""></span>
                     </a>
-                    <a href="user-orders.html" class="m-nav-link icon-trigger auth-only auth-hidden">
+                    <a href="my-orders.html" class="m-nav-link icon-trigger auth-only auth-hidden">
                         <div class="m-link-content">
                             <span class="icon-wrap"><img src="./assets/orders.svg" class="icon-default" alt=""><img src="./assets/orders-fill.svg" class="icon-fill" alt=""></span>
                             <span>My Orders</span>
@@ -729,7 +732,7 @@
             </nav>
             <div class="m-drawer-profile" id="mobile-profile-trigger">
                 <div class="m-profile-popup-menu" id="m-profile-popup">
-                    <a href="user-profile.html" class="m-profile-option icon-trigger">
+                    <a href="my-profile.html" class="m-profile-option icon-trigger">
                         <span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span>
                         My Profile
                     </a>
@@ -1001,7 +1004,7 @@
         const container = document.getElementById('toast-container');
         const el = document.createElement('div');
         el.className = 'toast';
-        el.innerHTML = `<span class="icon-wrap icon-success" style="width:20px;height:20px;"><img src="./assets/tick-circle.svg" class="icon-default" style="width:20px;height:20px;" alt=""><img src="./assets/tick-circle-fill.svg" class="icon-fill" style="width:20px;height:20px;" alt=""></span><span>${msg}</span>`;
+        el.innerHTML = `<span style="font-size:1.2rem; color:#4a9c7d;">✅</span><span>${msg}</span>`;
         container.appendChild(el);
         setTimeout(() => el.remove(), 3000);
     }
@@ -1085,12 +1088,21 @@
     let currentUserDoc = null;
 
     async function loadProfileData(user) {
-        // Restore loader containers before use (prevents null error after logout)
-        document.getElementById('profileDetails').innerHTML = `<div class="loader" id="profileLoader"><div class="spinner"></div><p>Loading...</p></div>`;
-        document.getElementById('addressesContainer').innerHTML = `<div class="loader" id="addressLoader"><div class="spinner"></div><p>Loading addresses...</p></div>`;
+        // Guard: ensure loader placeholders exist (recreate if missing)
+        const profileDetails = document.getElementById('profileDetails');
+        if (!profileDetails.querySelector('#profileLoader')) {
+            profileDetails.innerHTML = `<div class="loader" id="profileLoader"><div class="spinner"></div><p>Loading...</p></div>`;
+        }
+        const addressesContainer = document.getElementById('addressesContainer');
+        if (!addressesContainer.querySelector('#addressLoader')) {
+            addressesContainer.innerHTML = `<div class="loader" id="addressLoader"><div class="spinner"></div><p>Loading addresses...</p></div>`;
+        }
 
-        document.getElementById('profileLoader').style.display = 'block';
-        document.getElementById('addressLoader').style.display = 'block';
+        const profileLoader = document.getElementById('profileLoader');
+        const addressLoader = document.getElementById('addressLoader');
+        if (profileLoader) profileLoader.style.display = 'block';
+        if (addressLoader) addressLoader.style.display = 'block';
+
         try {
             const docSnap = await db.collection(USER_COLLECTION).doc(user.uid).get();
             if (!docSnap.exists) {
@@ -1105,8 +1117,8 @@
             }
             renderProfileDetails();
             renderAddresses();
-            document.getElementById('profileLoader').style.display = 'none';
-            document.getElementById('addressLoader').style.display = 'none';
+            if (profileLoader) profileLoader.style.display = 'none';
+            if (addressLoader) addressLoader.style.display = 'none';
         } catch (error) {
             console.error(error);
             showToast('Failed to load profile');
@@ -1292,7 +1304,7 @@
         const mProfilePopup = document.getElementById('m-profile-popup');
         const authOnlyLinks = document.querySelectorAll('.auth-only');
         if (user) {
-            // ⭐ FIX: Restore loader placeholders before loadProfileData tries to access them
+            // Reset loaders before calling loadProfileData (prevents missing element)
             document.getElementById('profileDetails').innerHTML = `<div class="loader" id="profileLoader"><div class="spinner"></div><p>Loading...</p></div>`;
             document.getElementById('addressesContainer').innerHTML = `<div class="loader" id="addressLoader"><div class="spinner"></div><p>Loading addresses...</p></div>`;
 
@@ -1324,8 +1336,7 @@
             triggerMobile.onclick = e => { e.preventDefault(); openAuthModal(); };
             document.getElementById('profileDetails').innerHTML = '<div class="empty-state">Please sign in to view profile.</div>';
             document.getElementById('addressesContainer').innerHTML = '';
-            document.getElementById('profileLoader').style.display = 'none';
-            document.getElementById('addressLoader').style.display = 'none';
+            // Hide loaders (they're gone anyway)
         }
         renderCart();
     });
