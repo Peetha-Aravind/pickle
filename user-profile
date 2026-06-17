@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile – Happy NonVeg Pickles</title>
+    <style>
+        /* Reusing the same visual identity as your landing page */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #fefaf6;
+            color: #2c1a0e;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        /* Simple top nav bar to go back */
+        .profile-nav {
+            background: #fff;
+            border-bottom: 1px solid #e5e5e5;
+            padding: 16px 5vw;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+        .profile-nav a {
+            text-decoration: none;
+            color: #c0392b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .profile-nav h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: #2c1a0e;
+            flex: 1;
+            text-align: center;
+        }
+        .main-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 5vw;
+            flex: 1;
+        }
+        .profile-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+            padding: 30px 24px;
+            margin-bottom: 24px;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .section-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2c1a0e;
+        }
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background: #c0392b;
+            color: white;
+        }
+        .btn-primary:hover { background: #a93226; transform: translateY(-1px); }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #c0392b;
+            color: #c0392b;
+        }
+        .btn-outline:hover {
+            background: #fdf2f2;
+        }
+        .detail-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid #f0e2d4;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #6b5b4e;
+            min-width: 140px;
+        }
+        .detail-value {
+            flex: 1;
+            padding: 0 12px;
+            font-weight: 500;
+        }
+        .address-card {
+            background: #fdf8f0;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid #f0e2d4;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .address-card p { margin: 0; }
+        .address-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid #e0d0c0;
+            background: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .icon-btn:hover {
+            border-color: #c0392b;
+            background: #fef2f2;
+        }
+        .empty-state {
+            color: #6b5b4e;
+            font-style: italic;
+            padding: 20px;
+            text-align: center;
+        }
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.2s;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal {
+            background: #fff;
+            border-radius: 20px;
+            padding: 24px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .modal h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+        }
+        .input-group {
+            margin-bottom: 14px;
+        }
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #4a3b32;
+        }
+        .input-group input,
+        .input-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #e0d0c0;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid #f0e2d4;
+            border-top-color: #c0392b;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        /* Responsive */
+        @media (max-width: 600px) {
+            .detail-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+            .detail-label { min-width: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top bar -->
+    <div class="profile-nav">
+        <a href="landing-page.html">← Back</a>
+        <h1>My Profile</h1>
+        <div style="width:60px"></div> <!-- spacer -->
+    </div>
+
+    <div class="main-container">
+        <!-- Personal Info -->
+        <div class="profile-card" id="personalInfoCard">
+            <div class="section-header">
+                <h2>Personal Details</h2>
+                <button class="btn btn-outline" id="editProfileBtn">✏️ Edit</button>
+            </div>
+            <div id="profileDetails">
+                <div class="loader" id="profileLoader">
+                    <div class="spinner"></div>
+                    <p>Loading...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Addresses -->
+        <div class="profile-card">
+            <div class="section-header">
+                <h2>Saved Addresses</h2>
+                <button class="btn btn-primary" id="addAddressBtn">+ Add New</button>
+            </div>
+            <div id="addressesContainer">
+                <div class="loader" id="addressLoader">
+                    <div class="spinner"></div>
+                    <p>Loading addresses...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal-overlay" id="editProfileModal">
+        <div class="modal">
+            <h3>Edit Personal Details</h3>
+            <div class="input-group">
+                <label>Full Name</label>
+                <input type="text" id="editFullName">
+            </div>
+            <div class="input-group">
+                <label>Email (cannot be changed)</label>
+                <input type="email" id="editEmail" disabled>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" id="cancelEditBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveProfileBtn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Address Modal -->
+    <div class="modal-overlay" id="addressModal">
+        <div class="modal">
+            <h3 id="addressModalTitle">Add New Address</h3>
+            <div class="input-group">
+                <label>Full Name</label>
+                <input type="text" id="addressName">
+            </div>
+            <div class="input-group">
+                <label>Mobile Number</label>
+                <input type="tel" id="addressPhone">
+            </div>
+            <div class="input-group">
+                <label>Pincode</label>
+                <input type="text" id="addressPincode">
+            </div>
+            <div class="input-group">
+                <label>Address Line 1</label>
+                <input type="text" id="addressLine1">
+            </div>
+            <div class="input-group">
+                <label>Address Line 2 (Optional)</label>
+                <input type="text" id="addressLine2">
+            </div>
+            <div class="input-group">
+                <label>City</label>
+                <input type="text" id="addressCity">
+            </div>
+            <div class="input-group">
+                <label>State</label>
+                <input type="text" id="addressState">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" id="cancelAddressBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveAddressBtn">Save Address</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase & core logic -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script>
+        // Same Firebase config as your landing page
+        const firebaseConfig = {
+            apiKey: "AIzaSyCZbCr-Zt5KQblRQ8Pk58KuinCVP-TlXGo",
+            authDomain: "happynonvegpickles-f2636.firebaseapp.com",
+            projectId: "happynonvegpickles-f2636",
+            storageBucket: "happynonvegpickles-f2636.firebasestorage.app",
+            messagingSenderId: "802823212924",
+            appId: "1:802823212924:web:d82c92737ffa950798def9"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Check auth state
+        auth.onAuthStateChanged(async user => {
+            if (!user) {
+                // Not logged in – redirect to landing (or show message)
+                window.location.href = 'landing-page.html';
+                return;
+            }
+            loadProfileData(user);
+        });
+
+        let currentUserDoc = null;
+
+        async function loadProfileData(user) {
+            // Show loader for profile section
+            document.getElementById('profileLoader').style.display = 'block';
+            try {
+                const docSnap = await db.collection('users').doc(user.uid).get();
+                if (!docSnap.exists) {
+                    // First time – create a doc with basic auth data
+                    await db.collection('users').doc(user.uid).set({
+                        name: user.displayName || '',
+                        email: user.email,
+                        addresses: []
+                    });
+                    currentUserDoc = { name: user.displayName, email: user.email, addresses: [] };
+                } else {
+                    currentUserDoc = docSnap.data();
+                }
+                renderProfileDetails();
+                renderAddresses();
+                document.getElementById('profileLoader').style.display = 'none';
+            } catch (error) {
+                console.error(error);
+                alert('Failed to load profile');
+            }
+        }
+
+        function renderProfileDetails() {
+            const container = document.getElementById('profileDetails');
+            container.innerHTML = `
+                <div class="detail-row">
+                    <span class="detail-label">Full Name</span>
+                    <span class="detail-value" id="displayName">${currentUserDoc.name || 'Not set'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Email</span>
+                    <span class="detail-value" id="displayEmail">${currentUserDoc.email}</span>
+                </div>
+            `;
+        }
+
+        function renderAddresses() {
+            const container = document.getElementById('addressesContainer');
+            const addresses = currentUserDoc.addresses || [];
+            if (addresses.length === 0) {
+                container.innerHTML = `<div class="empty-state">🏠 No saved addresses. Add a new one!</div>`;
+                return;
+            }
+            container.innerHTML = addresses.map((addr, index) => `
+                <div class="address-card">
+                    <div>
+                        <p><strong>${addr.name}</strong>, ${addr.phone}</p>
+                        <p>${addr.line1}${addr.line2 ? ', ' + addr.line2 : ''}, ${addr.city}, ${addr.state} - ${addr.pincode}</p>
+                    </div>
+                    <div class="address-actions">
+                        <button class="icon-btn" onclick="editAddress(${index})" title="Edit">✏️</button>
+                        <button class="icon-btn" onclick="deleteAddress(${index})" title="Delete">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ---------- Edit Profile Modal ----------
+        document.getElementById('editProfileBtn').addEventListener('click', () => {
+            document.getElementById('editFullName').value = currentUserDoc.name || '';
+            document.getElementById('editEmail').value = currentUserDoc.email;
+            document.getElementById('editProfileModal').classList.add('active');
+        });
+
+        document.getElementById('cancelEditBtn').addEventListener('click', () => {
+            document.getElementById('editProfileModal').classList.remove('active');
+        });
+
+        document.getElementById('saveProfileBtn').addEventListener('click', async () => {
+            const newName = document.getElementById('editFullName').value.trim();
+            if (!newName) return alert('Name cannot be empty');
+            try {
+                const user = auth.currentUser;
+                // Update Auth display name
+                await user.updateProfile({ displayName: newName });
+                // Update Firestore
+                await db.collection('users').doc(user.uid).update({ name: newName });
+                currentUserDoc.name = newName;
+                renderProfileDetails();
+                document.getElementById('editProfileModal').classList.remove('active');
+            } catch (e) {
+                alert('Failed to update profile: ' + e.message);
+            }
+        });
+
+        // ---------- Address Modal ----------
+        let editingAddressIndex = -1; // -1 means adding new
+
+        document.getElementById('addAddressBtn').addEventListener('click', () => {
+            editingAddressIndex = -1;
+            clearAddressForm();
+            document.getElementById('addressModalTitle').textContent = 'Add New Address';
+            document.getElementById('addressModal').classList.add('active');
+        });
+
+        document.getElementById('cancelAddressBtn').addEventListener('click', () => {
+            document.getElementById('addressModal').classList.remove('active');
+        });
+
+        document.getElementById('saveAddressBtn').addEventListener('click', async () => {
+            const address = {
+                name: document.getElementById('addressName').value.trim(),
+                phone: document.getElementById('addressPhone').value.trim(),
+                pincode: document.getElementById('addressPincode').value.trim(),
+                line1: document.getElementById('addressLine1').value.trim(),
+                line2: document.getElementById('addressLine2').value.trim(),
+                city: document.getElementById('addressCity').value.trim(),
+                state: document.getElementById('addressState').value.trim()
+            };
+            if (!address.name || !address.phone || !address.pincode || !address.line1 || !address.city || !address.state) {
+                return alert('Please fill all required fields');
+            }
+            const user = auth.currentUser;
+            const addresses = currentUserDoc.addresses || [];
+            if (editingAddressIndex >= 0) {
+                addresses[editingAddressIndex] = address;
+            } else {
+                addresses.push(address);
+            }
+            try {
+                await db.collection('users').doc(user.uid).update({ addresses });
+                currentUserDoc.addresses = addresses;
+                renderAddresses();
+                document.getElementById('addressModal').classList.remove('active');
+            } catch (e) {
+                alert('Failed to save address: ' + e.message);
+            }
+        });
+
+        function editAddress(index) {
+            const addr = currentUserDoc.addresses[index];
+            document.getElementById('addressName').value = addr.name;
+            document.getElementById('addressPhone').value = addr.phone;
+            document.getElementById('addressPincode').value = addr.pincode;
+            document.getElementById('addressLine1').value = addr.line1;
+            document.getElementById('addressLine2').value = addr.line2 || '';
+            document.getElementById('addressCity').value = addr.city;
+            document.getElementById('addressState').value = addr.state;
+            editingAddressIndex = index;
+            document.getElementById('addressModalTitle').textContent = 'Edit Address';
+            document.getElementById('addressModal').classList.add('active');
+        }
+
+        async function deleteAddress(index) {
+            if (!confirm('Delete this address?')) return;
+            const addresses = currentUserDoc.addresses || [];
+            addresses.splice(index, 1);
+            await db.collection('users').doc(auth.currentUser.uid).update({ addresses });
+            currentUserDoc.addresses = addresses;
+            renderAddresses();
+        }
+
+        function clearAddressForm() {
+            ['addressName','addressPhone','addressPincode','addressLine1','addressLine2','addressCity','addressState']
+                .forEach(id => document.getElementById(id).value = '');
+        }
+
+        // Close modals on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) overlay.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>
