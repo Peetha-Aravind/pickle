@@ -639,8 +639,8 @@
                     <div class="profile-popup" id="profile-popup">
                         <div class="profile-header"><div class="profile-info"><div class="profile-name" id="user-name">Guest User</div><div class="profile-email" id="user-email">Sign in to sync</div></div></div>
                         <div class="profile-links" id="profile-links-container">
-                            <a href="my-profile.html" class="profile-link icon-trigger auth-only auth-hidden"><span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span>My Profile</a>
-                            <a href="my-orders.html" class="profile-link icon-trigger auth-only auth-hidden"><span class="icon-wrap"><img src="./assets/orders.svg" class="icon-default" alt=""><img src="./assets/orders-fill.svg" class="icon-fill" alt=""></span>My Orders</a>
+                            <a href="user-profile.html" class="profile-link icon-trigger auth-only auth-hidden"><span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span>My Profile</a>
+                            <a href="user-orders.html" class="profile-link icon-trigger auth-only auth-hidden"><span class="icon-wrap"><img src="./assets/orders.svg" class="icon-default" alt=""><img src="./assets/orders-fill.svg" class="icon-fill" alt=""></span>My Orders</a>
                             <div id="login-trigger-desktop" class="profile-link icon-trigger"><span class="icon-wrap"><img src="./assets/login.svg" class="icon-default" alt=""><img src="./assets/login-fill.svg" class="icon-fill" alt=""></span>Sign In</div>
                         </div>
                     </div>
@@ -718,7 +718,7 @@
                         </div>
                         <span class="icon-wrap icon-muted"><img src="./assets/chevron.svg" class="icon-default" alt=""><img src="./assets/chevron-fill.svg" class="icon-fill" alt=""></span>
                     </a>
-                    <a href="my-orders.html" class="m-nav-link icon-trigger auth-only auth-hidden">
+                    <a href="user-orders.html" class="m-nav-link icon-trigger auth-only auth-hidden">
                         <div class="m-link-content">
                             <span class="icon-wrap"><img src="./assets/orders.svg" class="icon-default" alt=""><img src="./assets/orders-fill.svg" class="icon-fill" alt=""></span>
                             <span>My Orders</span>
@@ -729,7 +729,7 @@
             </nav>
             <div class="m-drawer-profile" id="mobile-profile-trigger">
                 <div class="m-profile-popup-menu" id="m-profile-popup">
-                    <a href="my-profile.html" class="m-profile-option icon-trigger">
+                    <a href="user-profile.html" class="m-profile-option icon-trigger">
                         <span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span>
                         My Profile
                     </a>
@@ -1085,6 +1085,10 @@
     let currentUserDoc = null;
 
     async function loadProfileData(user) {
+        // Restore loader containers before use (prevents null error after logout)
+        document.getElementById('profileDetails').innerHTML = `<div class="loader" id="profileLoader"><div class="spinner"></div><p>Loading...</p></div>`;
+        document.getElementById('addressesContainer').innerHTML = `<div class="loader" id="addressLoader"><div class="spinner"></div><p>Loading addresses...</p></div>`;
+
         document.getElementById('profileLoader').style.display = 'block';
         document.getElementById('addressLoader').style.display = 'block';
         try {
@@ -1288,6 +1292,10 @@
         const mProfilePopup = document.getElementById('m-profile-popup');
         const authOnlyLinks = document.querySelectorAll('.auth-only');
         if (user) {
+            // ⭐ FIX: Restore loader placeholders before loadProfileData tries to access them
+            document.getElementById('profileDetails').innerHTML = `<div class="loader" id="profileLoader"><div class="spinner"></div><p>Loading...</p></div>`;
+            document.getElementById('addressesContainer').innerHTML = `<div class="loader" id="addressLoader"><div class="spinner"></div><p>Loading addresses...</p></div>`;
+
             syncCartToFirestore();
             setupWishlistListener(user);
             let name = user.displayName;
