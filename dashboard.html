@@ -1167,7 +1167,7 @@
                     case 'today': return isToday(order.createdAt);
                     case 'pending': return order.status === 'pending';
                     case 'shipped': return order.status === 'shipped';
-                    case 'history': return order.status === 'delivered';
+                    case 'history': return true;   // <--- CHANGED: show all orders (pending, shipped, delivered, cancelled)
                     default: return true;
                 }
             });
