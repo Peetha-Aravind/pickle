@@ -648,7 +648,6 @@
             </div>
         </div>
     </nav>
-    <main class="app-main-content"><div id="productDetailRoot"></div></main>
 </div>
 
 <!-- ═══════════════ MOBILE NAVBAR ═══════════════ -->
@@ -1082,7 +1081,7 @@
     }
 
     // ═══════════ AUTH + PROFILE DATA ═══════════
-    const USER_COLLECTION = 'User profile';  // same as original profile page
+    const USER_COLLECTION = 'User profile';
     let currentUserDoc = null;
 
     async function loadProfileData(user) {
@@ -1233,7 +1232,7 @@
             });
         });
 
-        // Auth Modal (from landing page)
+        // Auth Modal
         const modalOverlay = document.getElementById('login-modal-overlay');
         const closeModalBtn = document.getElementById('close-modal-btn');
         const showLoginBtn = document.getElementById('show-login-btn');
@@ -1302,7 +1301,6 @@
             document.getElementById('user-phone-mobile').innerHTML = user.email;
             triggerMobile.onclick = e => { e.stopPropagation(); if (e.target.closest('.m-profile-popup-menu')) return; mProfilePopup.classList.toggle('active'); };
             document.getElementById('mobile-logout-btn').onclick = () => auth.signOut();
-            // Load profile data after auth
             loadProfileData(user);
         } else {
             authOnlyLinks.forEach(el => el.classList.add('auth-hidden'));
@@ -1316,7 +1314,6 @@
             document.getElementById('user-phone-mobile').innerHTML = '<span class="m-login-text">Login / Sign Up</span>';
             mProfilePopup.classList.remove('active');
             triggerMobile.onclick = e => { e.preventDefault(); openAuthModal(); };
-            // Clear profile view
             document.getElementById('profileDetails').innerHTML = '<div class="empty-state">Please sign in to view profile.</div>';
             document.getElementById('addressesContainer').innerHTML = '';
             document.getElementById('profileLoader').style.display = 'none';
