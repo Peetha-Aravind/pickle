@@ -1,133 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Order Placed – Happy NonVeg Pickles</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            background: black;
-            overflow: hidden;
-            font-family: sans-serif;
-        }
-        video {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            /* FIX: use 'contain' to show entire video without zoom/crop on mobile */
-            object-fit: contain;
-            object-position: center;
-            z-index: 1;
-            background: black;
-        }
-        /* Fallback overlay – only shown if autoplay with sound is blocked */
-        #audioUnlock {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.01);
-            z-index: 10;
-            display: none;
-            cursor: pointer;
-        }
-        #audioUnlock.show {
-            display: block;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Order Placed – Happy NonVeg Pickles</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0a0a;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
 
-        /* Optional: on very wide screens (desktop) you can switch back to cover
-           to fill the full screen without black bars – uncomment if desired */
-        /*
-        @media (min-aspect-ratio: 16/9) {
-          video {
-            object-fit: cover;
-          }
-        }
-        */
-    </style>
+    /* ─── Video Frame Container ────────────────────────── */
+    .video-frame {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0a0a0a;
+      z-index: 1;
+    }
+
+    /* ─── Video Styling (no zoom, full content visible) ─ */
+    #animationVideo {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;  /* <-- Fix: shows full video without cropping */
+      background: #000;
+    }
+
+    /* ─── Desktop: phone-frame look ───────────────────── */
+    @media (min-width: 768px) {
+      .video-frame {
+        background: #1a1a1a; /* subtle desktop background */
+        padding: 20px;
+      }
+      #animationVideo {
+        max-width: 420px;      /* mobile-like width */
+        max-height: 85vh;
+        border-radius: 40px;   /* rounded phone corners */
+        box-shadow: 0 20px 80px rgba(0, 0, 0, 0.9), 0 0 0 2px rgba(255, 255, 255, 0.05);
+      }
+    }
+
+    /* ─── Fallback overlay for audio autoplay ──────────── */
+    #audioUnlock {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.01);
+      z-index: 10;
+      display: none;
+      cursor: pointer;
+    }
+    #audioUnlock.show {
+      display: block;
+    }
+  </style>
 </head>
 <body>
-    <!-- Full‑screen video – NOT muted, so audio can play -->
+
+  <!-- Video frame wrapper -->
+  <div class="video-frame">
     <video id="animationVideo" autoplay playsinline>
-        <source src="./assets/video.mp4" type="video/mp4">
+      <source src="./assets/video.mp4" type="video/mp4">
     </video>
+  </div>
 
-    <!-- Invisible overlay to catch a click for audio autoplay policy -->
-    <div id="audioUnlock"></div>
+  <!-- Transparent overlay to catch the first click for audio -->
+  <div id="audioUnlock"></div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, doc, updateDoc, increment, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getFirestore, doc, updateDoc, increment, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
-            authDomain: "pickle-fdc54.firebaseapp.com",
-            projectId: "pickle-fdc54",
-            storageBucket: "pickle-fdc54.firebasestorage.app",
-            messagingSenderId: "650348710985",
-            appId: "1:650348710985:web:b8eedb551a79b536578398",
-            measurementId: "G-B40NG5KQDL"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+    const firebaseConfig = {
+      apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
+      authDomain: "pickle-fdc54.firebaseapp.com",
+      projectId: "pickle-fdc54",
+      storageBucket: "pickle-fdc54.firebasestorage.app",
+      messagingSenderId: "650348710985",
+      appId: "1:650348710985:web:b8eedb551a79b536578398",
+      measurementId: "G-B40NG5KQDL"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        // ─── Background Firestore save ─────────────────────
-        const checkoutData = JSON.parse(sessionStorage.getItem('checkoutData'));
-        if (checkoutData) {
-            (async () => {
-                try {
-                    const ordersRef = collection(db, 'orders');
-                    const docRef = await addDoc(ordersRef, {
-                        ...checkoutData,
-                        createdAt: serverTimestamp(),
-                        status: 'pending'
-                    });
-                    if (checkoutData.coupon?.code) {
-                        await updateDoc(doc(db, 'coupons', checkoutData.coupon.code.toUpperCase()), {
-                            usage: increment(1)
-                        });
-                    }
-                    if (!new URLSearchParams(window.location.search).get('id')) {
-                        localStorage.removeItem('vastramaya_cart');
-                    }
-                    sessionStorage.removeItem('checkoutData');
-                } catch (error) {
-                    console.error("Order save failed:", error);
-                }
-            })();
-        }
-
-        // ─── Handle autoplay with sound ──────────────────
-        const video = document.getElementById('animationVideo');
-        const unlockOverlay = document.getElementById('audioUnlock');
-
-        // Try to play with audio
-        const playPromise = video.play();
-        if (playPromise !== undefined) {
-            playPromise.catch(() => {
-                // Autoplay with sound was blocked – show transparent overlay
-                unlockOverlay.classList.add('show');
+    // ─── Background Firestore save ─────────────────────
+    const checkoutData = JSON.parse(sessionStorage.getItem('checkoutData'));
+    if (checkoutData) {
+      (async () => {
+        try {
+          const ordersRef = collection(db, 'orders');
+          const docRef = await addDoc(ordersRef, {
+            ...checkoutData,
+            createdAt: serverTimestamp(),
+            status: 'pending'
+          });
+          if (checkoutData.coupon?.code) {
+            await updateDoc(doc(db, 'coupons', checkoutData.coupon.code.toUpperCase()), {
+              usage: increment(1)
             });
+          }
+          if (!new URLSearchParams(window.location.search).get('id')) {
+            localStorage.removeItem('vastramaya_cart');
+          }
+          sessionStorage.removeItem('checkoutData');
+        } catch (error) {
+          console.error("Order save failed:", error);
         }
+      })();
+    }
 
-        // When the user clicks/taps anywhere, play the video with sound
-        unlockOverlay.addEventListener('click', () => {
-            video.play();
-            unlockOverlay.classList.remove('show');
-        }, { once: true });
+    // ─── Handle autoplay with sound ──────────────────
+    const video = document.getElementById('animationVideo');
+    const unlockOverlay = document.getElementById('audioUnlock');
 
-        // Once the video starts playing (successfully), hide overlay just in case
-        video.addEventListener('play', () => {
-            unlockOverlay.classList.remove('show');
-        });
-    </script>
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        unlockOverlay.classList.add('show');
+      });
+    }
+
+    unlockOverlay.addEventListener('click', () => {
+      video.play();
+      unlockOverlay.classList.remove('show');
+    }, { once: true });
+
+    video.addEventListener('play', () => {
+      unlockOverlay.classList.remove('show');
+    });
+  </script>
 </body>
 </html>
