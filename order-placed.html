@@ -7,46 +7,43 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background: #0a0a0a;
+      background: black;
       overflow: hidden;
       font-family: sans-serif;
     }
 
-    /* ─── Video Frame Container ────────────────────────── */
+    /* Full‑screen video container */
     .video-frame {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
+      background: black;
+      z-index: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #0a0a0a;
-      z-index: 1;
     }
 
-    /* ─── Video Styling (no zoom, full content visible) ─ */
     #animationVideo {
-      max-width: 100%;
-      max-height: 100%;
-      width: auto;
-      height: auto;
-      object-fit: contain;  /* <-- Fix: shows full video without cropping */
-      background: #000;
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: black;
     }
 
-    /* ─── Desktop: phone-frame look ───────────────────── */
+    /* ─── Desktop: fill the entire screen (cover) ──────── */
     @media (min-width: 768px) {
-      .video-frame {
-        background: #1a1a1a; /* subtle desktop background */
-        padding: 20px;
-      }
       #animationVideo {
-        max-width: 420px;      /* mobile-like width */
-        max-height: 85vh;
-        border-radius: 40px;   /* rounded phone corners */
-        box-shadow: 0 20px 80px rgba(0, 0, 0, 0.9), 0 0 0 2px rgba(255, 255, 255, 0.05);
+        object-fit: cover;  /* fills whole screen, may crop edges */
+      }
+    }
+
+    /* ─── Mobile: show full video without zooming ────── */
+    @media (max-width: 767px) {
+      #animationVideo {
+        object-fit: contain;  /* entire video visible, no crop/zoom */
       }
     }
 
@@ -68,14 +65,12 @@
 </head>
 <body>
 
-  <!-- Video frame wrapper -->
   <div class="video-frame">
     <video id="animationVideo" autoplay playsinline>
       <source src="./assets/video.mp4" type="video/mp4">
     </video>
   </div>
 
-  <!-- Transparent overlay to catch the first click for audio -->
   <div id="audioUnlock"></div>
 
   <script type="module">
