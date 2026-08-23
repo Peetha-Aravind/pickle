@@ -606,21 +606,10 @@
         .empty-state { grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--ash); font-size: .95rem; }
 
         /* ═══════════════════════════ COMBO SECTION STYLES ═══════════════════════════ */
-        /* Scoped to .combo-section to avoid any conflicts with the rest of the page */
         .combo-section {
             background: #fef7e8;
             padding: 0;
         }
-        {
-  uniqueId: 'combo_1718300000000_abc123',
-  name: 'Your Combo Title',
-  price: 599,                     // total combo price
-  image: 'banner-image-url.jpg',
-  quantity: 1,
-  comboItems: 'Chicken Pickle, Mutton Pickle, …',  // list of selected names
-  color: null,
-  size: null
-}
         .combo-section .combo-inner {
             max-width: 1440px;
             margin: 0 auto;
@@ -777,7 +766,6 @@
         .combo-btn-secondary:hover { background: #1f1108; transform: translateY(-2px); }
         .combo-btn-hidden { display: none !important; }
 
-        /* Combo skeleton loaders */
         .combo-skeleton-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -1355,7 +1343,37 @@ function initAuthModal() {
         const email = document.getElementById('signup-email').value;
         const pass = document.getElementById('signup-password').value;
         document.getElementById('loader').style.display = 'flex';
-        auth.createUserWithEmailAndPassword(email, pass).then(cred => cred.user.updateProfile({ displayName: name }).then(() => db.collection('users').doc(cred.user.uid).set({ name, email, createdAt: firebase.firestore.FieldValue.serverTimestamp() }))).then(() => { document.getElementById('loader').style.display = 'none'; showToast("Account Created!"); modalOverlay.classList.remove('active'); }).catch(err => { document.getElementById('loader').style.display = 'none'; showToast(err.message); });
+
+        auth.createUserWithEmailAndPassword(email, pass)
+            .then(cred => {
+                const uid = cred.user.uid;
+                return cred.user.updateProfile({ displayName: name }).then(() =>
+                    Promise.all([
+                        // Existing 'users' collection — used for cart/wishlist sync, profile, etc.
+                        db.collection('users').doc(uid).set({
+                            name,
+                            email,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }),
+                        // NEW: 'user-login' collection — logs signup metadata (no plaintext password stored).
+                        db.collection('user-login').doc(uid).set({
+                            uid,
+                            name,
+                            email,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        })
+                    ])
+                );
+            })
+            .then(() => {
+                document.getElementById('loader').style.display = 'none';
+                showToast("Account Created!");
+                modalOverlay.classList.remove('active');
+            })
+            .catch(err => {
+                document.getElementById('loader').style.display = 'none';
+                showToast(err.message);
+            });
     });
     document.getElementById('google-login-btn').addEventListener('click', () => {
         const provider = new firebase.auth.GoogleAuthProvider();
@@ -1668,13 +1686,9 @@ function showToast(msg) {
     }
 
     // ═══════════════════════════ COMBO SECTION LOGIC ═══════════════════════════
-    // Uses the same landingDb (pickle-fdc54 project) as the rest of the landing page.
-    // All element IDs and class names are prefixed with "combo" to prevent conflicts.
-
     let comboAllPickles = [];
     let comboSelectedIds = [];
     let comboMaxSelect = 4;
-    // Combo metadata for cart
     let comboDocId = null;
     let comboPrice = 599;
     let comboTitle = "Special Combo";
@@ -1773,7 +1787,6 @@ function showToast(msg) {
         comboUpdateUI();
     }
 
-    // New function to add combo to cart
     function comboAddToCart() {
         if (comboSelectedIds.length !== comboMaxSelect) return false;
 
@@ -1830,7 +1843,6 @@ function showToast(msg) {
                 throw new Error('No items array in combo document');
             }
 
-            // Save combo metadata for the cart
             comboDocId = comboDoc.id;
             comboTitle = data.title || 'Special Combo';
             comboPrice = data.price || 599;
@@ -1843,7 +1855,6 @@ function showToast(msg) {
                 imageUrl: item.imageUrl || item.image || 'https://placehold.co/400x400/f5e9e7/C0392B?text=Pickle'
             }));
 
-            // Update banner
             document.getElementById('comboBannerTitle').textContent = comboTitle;
             document.getElementById('comboBannerDesc').textContent = data.description || 'Select your favourite pickles';
             document.getElementById('comboBannerPanel').style.backgroundImage = `url('${comboBannerImage}')`;
@@ -1857,7 +1868,6 @@ function showToast(msg) {
             comboRenderGrid();
             observeReveal();
 
-            // Attach the button listeners only after data is ready
             setupComboButtons();
         } catch (err) {
             console.error('Combo Firestore error:', err);
@@ -1890,7 +1900,6 @@ function showToast(msg) {
             const picksToShow = bestIds.length ? bestIds : allProds.filter(p => p.isavailable !== false).slice(0, 6).map(p => p.id);
             await loadBestSellers(picksToShow, allProds);
 
-            // Load combo (uses same landingDb / pickle-fdc54 project)
             await comboFetchFromFirestore();
 
             const landingCats = masterData?.config?.categories || [];
