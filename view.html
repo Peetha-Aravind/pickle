@@ -1026,7 +1026,7 @@
             <div class="d-action-icons">
 
                 <!-- Wishlist -->
-                <a href="#" class="d-icon-btn icon-trigger" onclick="handleWishlistClick(event)" aria-label="Wishlist">
+                <a href="user-wishlist.html" class="d-icon-btn icon-trigger" onclick="handleWishlistClick(event)" aria-label="Wishlist">
                     <span class="icon-wrap">
                         <img src="./assets/heart.svg" class="icon-default" alt="">
                         <img src="./assets/heart-fill.svg" class="icon-fill" alt="">
@@ -1172,7 +1172,7 @@
                         </div>
                         <div class="m-categories-content" id="mobile-nav-categories"></div>
                     </div>
-                    <a href="#" class="m-nav-link icon-trigger" onclick="handleWishlistClick(event)">
+                    <a href="user-wishlist.html" class="m-nav-link icon-trigger" onclick="handleWishlistClick(event)">
                         <div class="m-link-content">
                             <span class="icon-wrap"><img src="./assets/heart.svg" class="icon-default" alt=""><img src="./assets/heart-fill.svg" class="icon-fill" alt=""></span>
                             <span>Wishlist</span>
@@ -1482,7 +1482,7 @@ function initLiveSearch() {
 // --- WISHLIST ---
 function handleWishlistClick(e) {
     e.preventDefault();
-    if (currentUser) window.location.href = 'wishlist.html';
+    if (currentUser) window.location.href = 'user-wishlist.html';
     else openAuthModal();
 }
 
