@@ -4,16 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>My Orders – Happy NonVeg Pickles</title>
-
-    <!-- Fonts -->
+    <!-- Fonts & Boxicons (same) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Boxicons -->
     <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
-
     <style>
+        /* Same CSS as in profile page, but with order-specific additions */
         :root {
             --header-height-desktop: 80px;
             --navbar-height-mobile: 70px;
@@ -48,17 +45,10 @@
             --warning-color: #e67e22;
             --danger-color: #C0392B;
         }
-        @media (max-width: 768px) {
-            :root { --nav-h: 70px; }
-        }
-
+        @media (max-width: 768px) { :root { --nav-h: 70px; } }
         *,
         *::before,
-        *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        *::after { margin: 0; padding: 0; box-sizing: border-box; }
         html { -webkit-tap-highlight-color: transparent; }
         body {
             min-height: 100vh;
@@ -75,80 +65,41 @@
             background: var(--surface-card);
             border-bottom: 1px solid var(--border-subtle);
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
             z-index: 1000;
             box-shadow: var(--shadow-sm);
             font-family: var(--ff-body);
         }
         .d-navbar-container {
-            max-width: 1440px;
-            margin: 0 auto;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            max-width: 1440px; margin: 0 auto; height: 100%;
+            display: flex; align-items: center; justify-content: space-between;
             padding: 0 40px;
         }
         .d-navbar-logo { height: 52px; width: auto; object-fit: contain; cursor: pointer; }
         .d-nav-links { display: flex; align-items: center; gap: 28px; margin: 0 32px; }
         .d-nav-link {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text-primary);
-            text-decoration: none;
-            padding: 8px 0;
-            position: relative;
-            transition: color .2s ease;
-            white-space: nowrap;
-            cursor: pointer;
+            font-size: 15px; font-weight: 600; color: var(--text-primary);
+            text-decoration: none; padding: 8px 0; position: relative;
+            transition: color .2s ease; white-space: nowrap; cursor: pointer;
         }
         .d-nav-link:hover, .d-nav-link.active { color: var(--brand-primary); }
         .d-nav-link.active::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--brand-primary);
-            border-radius: 1px;
+            content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+            height: 2px; background: var(--brand-primary); border-radius: 1px;
         }
         .d-action-icons { display: flex; align-items: center; gap: 16px; }
         .d-icon-btn {
-            position: relative;
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: var(--surface-light);
-            border: 1px solid var(--border-subtle);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all .2s ease;
-            text-decoration: none;
-            color: inherit;
+            position: relative; width: 40px; height: 40px; border-radius: 10px;
+            background: var(--surface-light); border: 1px solid var(--border-subtle);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all .2s ease; text-decoration: none; color: inherit;
         }
         .d-icon-btn:hover { background: var(--surface-hover); border-color: var(--brand-primary); transform: translateY(-1px); }
         .cart-badge {
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            background: var(--brand-primary);
-            color: #fff;
-            font-size: 11px;
-            font-weight: 700;
-            min-width: 20px;
-            height: 20px;
-            padding: 0 4px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid var(--surface-card);
-            box-sizing: border-box;
+            position: absolute; top: -6px; right: -6px; background: var(--brand-primary); color: #fff;
+            font-size: 11px; font-weight: 700; min-width: 20px; height: 20px; padding: 0 4px;
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            border: 2px solid var(--surface-card); box-sizing: border-box;
         }
         .icon-wrap { position: relative; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; pointer-events: none; }
         .icon-wrap .icon-default, .icon-wrap .icon-fill { width: 20px; height: 20px; display: block; position: absolute; top: 0; left: 0; transition: opacity .18s ease; }
@@ -158,38 +109,18 @@
         .icon-trigger.active .icon-wrap .icon-fill { opacity: 1; }
         .icon-trigger:hover .icon-wrap .icon-default,
         .icon-trigger.active .icon-wrap .icon-default { opacity: 0; }
-
-        /* Profile Dropdown */
         .d-profile-dropdown { position: relative; }
         .d-profile-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid var(--border-subtle);
-            background: var(--surface-light);
-            cursor: pointer;
-            transition: all .2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 44px; height: 44px; border-radius: 10px; overflow: hidden;
+            border: 1px solid var(--border-subtle); background: var(--surface-light);
+            cursor: pointer; transition: all .2s ease; display: flex; align-items: center; justify-content: center;
         }
         .d-profile-btn:hover { border-color: var(--brand-primary); transform: translateY(-1px); }
         .profile-popup {
-            position: absolute;
-            top: calc(100% + 10px);
-            right: 0;
-            background: var(--surface-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 16px;
-            padding: 20px;
-            min-width: 280px;
-            box-shadow: var(--shadow-premium);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(10px);
-            transition: all .2s ease;
-            z-index: 1000;
+            position: absolute; top: calc(100% + 10px); right: 0; background: var(--surface-card);
+            border: 1px solid var(--border-subtle); border-radius: 16px; padding: 20px; min-width: 280px;
+            box-shadow: var(--shadow-premium); opacity: 0; visibility: hidden; transform: translateY(10px);
+            transition: all .2s ease; z-index: 1000;
         }
         .profile-popup.show { opacity: 1; visibility: visible; transform: translateY(0); }
         .profile-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border-subtle); }
@@ -199,40 +130,17 @@
         .profile-email { font-size: 13px; color: var(--text-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .profile-links { display: flex; flex-direction: column; gap: 6px; }
         .profile-link {
-            display: flex;
-            align-items: center;
-            padding: 10px 14px;
-            color: var(--text-primary);
-            text-decoration: none;
-            border-radius: 10px;
-            font-weight: 500;
-            font-size: 14px;
-            transition: all .2s ease;
-            cursor: pointer;
-            gap: 12px;
+            display: flex; align-items: center; padding: 10px 14px; color: var(--text-primary);
+            text-decoration: none; border-radius: 10px; font-weight: 500; font-size: 14px;
+            transition: all .2s ease; cursor: pointer; gap: 12px;
         }
         .profile-link:hover { background: var(--surface-hover); color: var(--brand-primary); padding-left: 18px; }
         .profile-link.logout-link:hover { background: #fef2f2; color: var(--danger-color); }
-
-        /* Cart Popup */
         .cart-popup {
-            position: absolute;
-            top: calc(100% + 10px);
-            right: 0;
-            background: var(--surface-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 16px;
-            width: 380px;
-            max-height: 480px;
-            box-shadow: var(--shadow-premium);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(10px);
-            transition: all .2s ease;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            position: absolute; top: calc(100% + 10px); right: 0; background: var(--surface-card);
+            border: 1px solid var(--border-subtle); border-radius: 16px; width: 380px; max-height: 480px;
+            box-shadow: var(--shadow-premium); opacity: 0; visibility: hidden; transform: translateY(10px);
+            transition: all .2s ease; z-index: 1000; display: flex; flex-direction: column; overflow: hidden;
         }
         .cart-popup.show { opacity: 1; visibility: visible; transform: translateY(0); }
         .cart-popup-header { padding: 16px 20px; border-bottom: 1px solid var(--border-subtle); background: var(--surface-light); flex-shrink: 0; }
@@ -250,82 +158,36 @@
         .cart-total-label { font-weight: 600; font-size: 15px; }
         .cart-total-amount { font-weight: 700; font-size: 20px; color: var(--brand-primary); }
         .checkout-btn {
-            width: 100%;
-            padding: 12px;
-            background: var(--brand-gradient);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all .3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            width: 100%; padding: 12px; background: var(--brand-gradient); color: #fff; border: none;
+            border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all .3s ease;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
         .checkout-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(192,57,43,.3); }
         .empty-cart-msg { text-align: center; padding: 2rem; color: var(--text-light); font-size: 14px; }
-
-        /* Mobile Navbar */
         .page-mobile { display: none; }
         .m-navbar {
-            height: var(--navbar-height-mobile);
-            background: var(--surface-card);
-            border-bottom: 1px solid var(--border-subtle);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 16px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            box-shadow: var(--shadow-sm);
+            height: var(--navbar-height-mobile); background: var(--surface-card);
+            border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center;
+            justify-content: space-between; padding: 0 16px; position: fixed; top: 0; left: 0; right: 0;
+            z-index: 1000; box-shadow: var(--shadow-sm);
         }
         .m-navbar .d-navbar-logo { height: 44px; position: absolute; left: 50%; transform: translateX(-50%); }
         .m-menu-btn, .m-icon-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            border: 1px solid var(--border-subtle);
-            background: var(--surface-light);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            flex-shrink: 0;
-            transition: all .2s ease;
-            position: relative;
+            width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border-subtle);
+            background: var(--surface-light); display: flex; align-items: center; justify-content: center;
+            cursor: pointer; flex-shrink: 0; transition: all .2s ease; position: relative;
         }
         .m-right-icons { display: flex; align-items: center; gap: 10px; }
         .m-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,.3);
-            backdrop-filter: blur(4px);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity .25s ease-out;
-            z-index: 2000;
+            position: fixed; inset: 0; background: rgba(0,0,0,.3); backdrop-filter: blur(4px);
+            opacity: 0; pointer-events: none; transition: opacity .25s ease-out; z-index: 2000;
         }
         .m-overlay.open { opacity: 1; pointer-events: auto; }
         .m-drawer {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 320px;
-            max-width: 90vw;
-            height: 100%;
-            background: var(--surface-card);
-            display: flex;
-            flex-direction: column;
-            transform: translateX(-100%);
-            transition: transform .25s ease-out;
-            overflow-y: auto;
-            box-shadow: 2px 0 20px rgba(0,0,0,.1);
+            position: absolute; left: 0; top: 0; width: 320px; max-width: 90vw; height: 100%;
+            background: var(--surface-card); display: flex; flex-direction: column;
+            transform: translateX(-100%); transition: transform .25s ease-out;
+            overflow-y: auto; box-shadow: 2px 0 20px rgba(0,0,0,.1);
         }
         .m-overlay.open .m-drawer { transform: translateX(0); }
         .m-drawer-header { height: 64px; min-height: 64px; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; }
@@ -333,50 +195,26 @@
         .m-drawer-close { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--surface-light); display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .m-drawer-nav { padding: 16px; display: flex; flex-direction: column; flex: 1; }
         .m-nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 16px;
-            margin-bottom: 4px;
-            color: var(--text-primary);
-            text-decoration: none;
-            font-size: 15px;
-            font-weight: 500;
-            border-radius: 10px;
-            transition: all .2s ease;
+            display: flex; align-items: center; gap: 12px; padding: 14px 16px; margin-bottom: 4px;
+            color: var(--text-primary); text-decoration: none; font-size: 15px; font-weight: 500;
+            border-radius: 10px; transition: all .2s ease;
         }
         .m-nav-link:hover, .m-nav-link.active { background: #fff0f0; color: var(--brand-primary); }
         .cart-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,.3);
-            backdrop-filter: blur(4px);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity .25s ease-out;
-            z-index: 3000;
+            position: fixed; inset: 0; background: rgba(0,0,0,.3); backdrop-filter: blur(4px);
+            opacity: 0; pointer-events: none; transition: opacity .25s ease-out; z-index: 3000;
         }
         .cart-overlay.open { opacity: 1; pointer-events: auto; }
         .cart-drawer {
-            position: absolute;
-            right: 0;
-            top: 0;
-            width: 360px;
-            max-width: 90vw;
-            height: 100%;
-            background: var(--surface-card);
-            display: flex;
-            flex-direction: column;
-            transform: translateX(100%);
-            transition: transform .25s ease-out;
-            overflow-y: auto;
-            box-shadow: -2px 0 20px rgba(0,0,0,.1);
+            position: absolute; right: 0; top: 0; width: 360px; max-width: 90vw; height: 100%;
+            background: var(--surface-card); display: flex; flex-direction: column;
+            transform: translateX(100%); transition: transform .25s ease-out;
+            overflow-y: auto; box-shadow: -2px 0 20px rgba(0,0,0,.1);
         }
         .cart-overlay.open .cart-drawer { transform: translateX(0); }
         .cart-drawer-header { height: 64px; min-height: 64px; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
         .cart-drawer-body { flex: 1; overflow-y: auto; }
         .cart-drawer-footer { padding: 16px 20px; border-top: 1px solid var(--border-subtle); }
-
         @media (max-width: 768px) {
             .page-desktop { display: none; }
             .page-mobile { display: block; }
@@ -384,187 +222,59 @@
         }
 
         /* ─── ORDERS PAGE SPECIFIC ─── */
-        .orders-page-content {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 40px 24px 80px;
-        }
-        .orders-header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-        .orders-header h1 {
-            font-family: var(--ff-display);
-            font-size: 2.4rem;
-            font-weight: 900;
-            color: var(--ink);
-            margin-bottom: 8px;
-        }
-        .orders-header p {
-            font-size: 15px;
-            color: var(--ash);
-        }
-
+        .orders-page-content { max-width: 1000px; margin: 0 auto; padding: 40px 24px 80px; }
+        .orders-header { text-align: center; margin-bottom: 32px; }
+        .orders-header h1 { font-family: var(--ff-display); font-size: 2.4rem; font-weight: 900; color: var(--ink); margin-bottom: 8px; }
+        .orders-header p { font-size: 15px; color: var(--ash); }
         .current-order-section {
-            background: var(--surface-card);
-            border-radius: var(--r-card);
-            border: 1px solid var(--border-subtle);
-            box-shadow: var(--shadow-sm);
-            padding: 24px 28px;
-            margin-bottom: 32px;
+            background: var(--surface-card); border-radius: var(--r-card); border: 1px solid var(--border-subtle);
+            box-shadow: var(--shadow-sm); padding: 24px 28px; margin-bottom: 32px;
         }
-        .current-order-title {
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .order-status-bar {
-            display: flex;
-            gap: 4px;
-            margin: 16px 0;
-        }
+        .current-order-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .order-status-bar { display: flex; gap: 4px; margin: 16px 0; }
         .order-status-step {
-            flex: 1;
-            text-align: center;
-            font-size: 11px;
-            color: var(--text-light);
-            position: relative;
-            padding-top: 24px;
+            flex: 1; text-align: center; font-size: 11px; color: var(--text-light);
+            position: relative; padding-top: 24px;
         }
         .order-status-step::before {
-            content: '';
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #e0d6cc;
-            border: 2px solid #fff;
-            box-shadow: 0 0 0 2px #e0d6cc;
+            content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+            width: 16px; height: 16px; border-radius: 50%; background: #e0d6cc;
+            border: 2px solid #fff; box-shadow: 0 0 0 2px #e0d6cc;
         }
-        .order-status-step.active {
-            color: var(--brand-primary);
-            font-weight: 600;
-        }
-        .order-status-step.active::before {
-            background: var(--brand-primary);
-            box-shadow: 0 0 0 2px var(--brand-primary);
-        }
-        .current-order-items {
-            margin-top: 12px;
-            border-top: 1px solid var(--border-subtle);
-            padding-top: 16px;
-        }
-        .order-item-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 8px 0;
-        }
-        .order-item-img {
-            width: 50px;
-            height: 50px;
-            border-radius: 8px;
-            object-fit: cover;
-            border: 1px solid var(--border-subtle);
-        }
+        .order-status-step.active { color: var(--brand-primary); font-weight: 600; }
+        .order-status-step.active::before { background: var(--brand-primary); box-shadow: 0 0 0 2px var(--brand-primary); }
+        .current-order-items { margin-top: 12px; border-top: 1px solid var(--border-subtle); padding-top: 16px; }
+        .order-item-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
+        .order-item-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-subtle); }
         .order-item-name { font-weight: 600; font-size: 14px; }
         .order-item-meta { font-size: 12px; color: var(--text-light); }
-        .order-total-row {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 16px;
-            font-weight: 700;
-            font-size: 16px;
-        }
-
+        .order-total-row { display: flex; justify-content: space-between; margin-top: 16px; font-weight: 700; font-size: 16px; }
         .past-orders-section {
-            background: var(--surface-card);
-            border-radius: var(--r-card);
-            border: 1px solid var(--border-subtle);
-            box-shadow: var(--shadow-sm);
-            padding: 24px 28px;
+            background: var(--surface-card); border-radius: var(--r-card); border: 1px solid var(--border-subtle);
+            box-shadow: var(--shadow-sm); padding: 24px 28px;
         }
-        .past-orders-title {
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 16px;
-        }
-        .order-card {
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            transition: box-shadow .2s;
-        }
+        .past-orders-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 16px; }
+        .order-card { border: 1px solid var(--border-subtle); border-radius: 12px; padding: 16px; margin-bottom: 16px; transition: box-shadow .2s; }
         .order-card:hover { box-shadow: var(--shadow-sm); }
-        .order-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
+        .order-card-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
         .order-id { font-weight: 700; font-size: 14px; }
         .order-date { font-size: 12px; color: var(--text-light); }
-        .order-status-badge {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            background: var(--rust-light);
-            color: var(--rust);
-        }
-        .order-address {
-            font-size: 12px;
-            color: var(--text-light);
-            margin-bottom: 8px;
-        }
-        .order-items-preview {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-        .order-item-thumb {
-            width: 40px;
-            height: 40px;
-            border-radius: 6px;
-            object-fit: cover;
-            border: 1px solid var(--border-subtle);
-        }
-        .order-card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid var(--border-subtle);
-            padding-top: 10px;
-            margin-top: 6px;
-        }
+        .order-status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; background: var(--rust-light); color: var(--rust); }
+        .order-address { font-size: 12px; color: var(--text-light); margin-bottom: 8px; }
+        .order-items-preview { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+        .order-item-thumb { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; border: 1px solid var(--border-subtle); }
+        .order-card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 10px; margin-top: 6px; }
         .order-card-total { font-weight: 700; color: var(--brand-primary); }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-light);
-        }
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-light); }
         .loading-skeleton { animation: pulse 1.2s infinite ease-in-out; background: #e2d6ca; border-radius: 8px; }
         @keyframes pulse { 0% { opacity: .6; } 50% { opacity: 1; } 100% { opacity: .6; } }
-        .toast { /* same as profile */ }
         #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 6000; pointer-events: none; display: flex; flex-direction: column; gap: 10px; }
         .toast { padding: 14px 20px; background: #fff; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.15); animation: slideUp .3s ease; display: flex; align-items: center; gap: 12px; border-left: 4px solid var(--brand-primary); min-width: 280px; pointer-events: auto; font-size: 14px; font-weight: 500; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-
-    <!-- ═══════════════ DESKTOP NAVBAR ═══════════════ -->
+    <!-- Desktop Navbar -->
     <div class="page-desktop">
         <nav class="d-navbar">
             <div class="d-navbar-container">
@@ -576,57 +286,31 @@
                     <a href="user-orders.html" class="d-nav-link active">My Orders</a>
                 </div>
                 <div class="d-action-icons">
-                    <!-- Cart -->
                     <button class="d-icon-btn icon-trigger" id="d-cart-toggle" aria-label="Cart">
-                        <span class="icon-wrap">
-                            <img src="./assets/cart.svg" class="icon-default" alt="">
-                            <img src="./assets/cart-fill.svg" class="icon-fill" alt="">
-                        </span>
+                        <span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default" alt=""><img src="./assets/cart-fill.svg" class="icon-fill" alt=""></span>
                         <span class="cart-badge" id="cart-badge-desktop" style="display:none">0</span>
                     </button>
                     <div class="cart-popup" id="cart-popup">
-                        <div class="cart-popup-header">
-                            <div class="cart-popup-title">Your Cart</div>
-                            <div class="cart-popup-subtitle" id="cart-count-desktop">0 items</div>
-                        </div>
+                        <div class="cart-popup-header"><div class="cart-popup-title">Your Cart</div><div class="cart-popup-subtitle" id="cart-count-desktop">0 items</div></div>
                         <div class="cart-popup-body" id="cart-items-desktop"></div>
                         <div class="cart-popup-footer">
-                            <div class="cart-total-row">
-                                <span class="cart-total-label">Total</span>
-                                <span class="cart-total-amount" id="cart-total-desktop">₹0</span>
-                            </div>
+                            <div class="cart-total-row"><span class="cart-total-label">Total</span><span class="cart-total-amount" id="cart-total-desktop">₹0</span></div>
                             <button class="checkout-btn" onclick="window.location.href='checkout.html'">Checkout →</button>
                         </div>
                     </div>
-                    <!-- Profile -->
                     <div class="d-profile-dropdown">
                         <button class="d-profile-btn icon-trigger" id="d-profile-toggle" aria-label="Profile">
-                            <span class="icon-wrap">
-                                <img src="./assets/user.svg" class="icon-default" alt="">
-                                <img src="./assets/user-fill.svg" class="icon-fill" alt="">
-                            </span>
+                            <span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span>
                         </button>
                         <div class="profile-popup" id="profile-popup">
                             <div class="profile-header">
                                 <div class="profile-avatar" id="profile-avatar-initial">G</div>
-                                <div class="profile-info">
-                                    <div class="profile-name" id="user-name">Guest</div>
-                                    <div class="profile-email" id="user-email">Sign in to sync</div>
-                                </div>
+                                <div class="profile-info"><div class="profile-name" id="user-name">Guest</div><div class="profile-email" id="user-email">Sign in to sync</div></div>
                             </div>
                             <div class="profile-links">
-                                <a href="user-profile.html" class="profile-link icon-trigger">
-                                    <span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span>
-                                    My Profile
-                                </a>
-                                <a href="user-orders.html" class="profile-link icon-trigger">
-                                    <span class="icon-wrap"><img src="./assets/orders.svg" class="icon-default" alt=""><img src="./assets/orders-fill.svg" class="icon-fill" alt=""></span>
-                                    My Orders
-                                </a>
-                                <div class="profile-link logout-link icon-trigger" id="logout-btn-desktop">
-                                    <span class="icon-wrap"><img src="./assets/logout.svg" class="icon-default" alt=""><img src="./assets/logout-fill.svg" class="icon-fill" alt=""></span>
-                                    Sign Out
-                                </div>
+                                <a href="user-profile.html" class="profile-link icon-trigger"><span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span> My Profile</a>
+                                <a href="user-orders.html" class="profile-link icon-trigger"><span class="icon-wrap"><img src="./assets/orders.svg" class="icon-default" alt=""><img src="./assets/orders-fill.svg" class="icon-fill" alt=""></span> My Orders</a>
+                                <div class="profile-link logout-link icon-trigger" id="logout-btn-desktop"><span class="icon-wrap"><img src="./assets/logout.svg" class="icon-default" alt=""><img src="./assets/logout-fill.svg" class="icon-fill" alt=""></span> Sign Out</div>
                             </div>
                         </div>
                     </div>
@@ -635,93 +319,52 @@
         </nav>
     </div>
 
-    <!-- ═══════════════ MOBILE NAVBAR ═══════════════ -->
+    <!-- Mobile Navbar -->
     <div class="page-mobile">
         <nav class="m-navbar">
-            <button class="m-menu-btn icon-trigger" id="m-menu-toggle" aria-label="Menu">
-                <span class="icon-wrap"><img src="./assets/menu.svg" class="icon-default" alt=""><img src="./assets/menu-fill.svg" class="icon-fill" alt=""></span>
-            </button>
+            <button class="m-menu-btn icon-trigger" id="m-menu-toggle" aria-label="Menu"><span class="icon-wrap"><img src="./assets/menu.svg" class="icon-default" alt=""><img src="./assets/menu-fill.svg" class="icon-fill" alt=""></span></button>
             <img class="d-navbar-logo" src="./assets/logo.png" alt="Logo" onclick="window.location.href='landing-page.html'" />
             <div class="m-right-icons">
-                <button class="m-icon-btn icon-trigger" id="m-cart-toggle-m" aria-label="Cart">
-                    <span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default" alt=""><img src="./assets/cart-fill.svg" class="icon-fill" alt=""></span>
-                    <span class="cart-badge" id="cart-badge-mobile" style="display:none">0</span>
-                </button>
+                <button class="m-icon-btn icon-trigger" id="m-cart-toggle-m" aria-label="Cart"><span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default" alt=""><img src="./assets/cart-fill.svg" class="icon-fill" alt=""></span><span class="cart-badge" id="cart-badge-mobile" style="display:none">0</span></button>
             </div>
         </nav>
-        <!-- Mobile Drawer -->
         <div class="m-overlay" id="m-overlay">
             <div class="m-drawer">
-                <div class="m-drawer-header">
-                    <img class="m-drawer-logo" src="./assets/logo.png" alt="Logo" />
-                    <button class="m-drawer-close icon-trigger" id="m-drawer-close" aria-label="Close">
-                        <span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span>
-                    </button>
-                </div>
+                <div class="m-drawer-header"><img class="m-drawer-logo" src="./assets/logo.png" alt="Logo" /><button class="m-drawer-close icon-trigger" id="m-drawer-close" aria-label="Close"><span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span></button></div>
                 <nav class="m-drawer-nav">
-                    <a href="landing-page.html" class="m-nav-link icon-trigger">
-                        <span class="icon-wrap"><img src="./assets/home.svg" class="icon-default" alt=""><img src="./assets/home-fill.svg" class="icon-fill" alt=""></span> Home
-                    </a>
-                    <a href="shop.html" class="m-nav-link icon-trigger">
-                        <span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default" alt=""><img src="./assets/cart-fill.svg" class="icon-fill" alt=""></span> Shop
-                    </a>
-                    <a href="user-profile.html" class="m-nav-link icon-trigger">
-                        <span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span> My Profile
-                    </a>
-                    <a href="user-orders.html" class="m-nav-link active icon-trigger">
-                        <span class="icon-wrap"><img src="./assets/orders.svg" class="icon-default" alt=""><img src="./assets/orders-fill.svg" class="icon-fill" alt=""></span> My Orders
-                    </a>
+                    <a href="landing-page.html" class="m-nav-link icon-trigger"><span class="icon-wrap"><img src="./assets/home.svg" class="icon-default" alt=""><img src="./assets/home-fill.svg" class="icon-fill" alt=""></span> Home</a>
+                    <a href="shop.html" class="m-nav-link icon-trigger"><span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default" alt=""><img src="./assets/cart-fill.svg" class="icon-fill" alt=""></span> Shop</a>
+                    <a href="user-profile.html" class="m-nav-link icon-trigger"><span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span> My Profile</a>
+                    <a href="user-orders.html" class="m-nav-link active icon-trigger"><span class="icon-wrap"><img src="./assets/orders.svg" class="icon-default" alt=""><img src="./assets/orders-fill.svg" class="icon-fill" alt=""></span> My Orders</a>
                     <div class="divider-line" style="height:1px;background:var(--border-subtle);margin:12px 0;"></div>
-                    <div class="m-nav-link icon-trigger" id="logout-btn-mobile" style="color:#C0392B;">
-                        <span class="icon-wrap"><img src="./assets/logout.svg" class="icon-default" alt=""><img src="./assets/logout-fill.svg" class="icon-fill" alt=""></span> Sign Out
-                    </div>
+                    <div class="m-nav-link icon-trigger" id="logout-btn-mobile" style="color:#C0392B;"><span class="icon-wrap"><img src="./assets/logout.svg" class="icon-default" alt=""><img src="./assets/logout-fill.svg" class="icon-fill" alt=""></span> Sign Out</div>
                 </nav>
             </div>
         </div>
-        <!-- Mobile Cart Drawer -->
         <div class="cart-overlay" id="cart-overlay">
             <div class="cart-drawer">
-                <div class="cart-drawer-header">
-                    <span style="font-weight:700;font-size:16px;">Your Cart (<span id="cart-count-mobile">0</span>)</span>
-                    <button class="m-drawer-close icon-trigger" id="cart-drawer-close" aria-label="Close cart">
-                        <span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span>
-                    </button>
-                </div>
+                <div class="cart-drawer-header"><span style="font-weight:700;font-size:16px;">Your Cart (<span id="cart-count-mobile">0</span>)</span><button class="m-drawer-close icon-trigger" id="cart-drawer-close" aria-label="Close cart"><span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span></button></div>
                 <div class="cart-drawer-body" id="cart-items-mobile"></div>
-                <div class="cart-drawer-footer">
-                    <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
-                        <span style="font-weight:600;">Total</span>
-                        <span style="font-weight:700;color:var(--brand-primary);font-size:18px;" id="cart-total-mobile">₹0</span>
-                    </div>
-                    <button class="checkout-btn" onclick="window.location.href='checkout.html'">Checkout →</button>
-                </div>
+                <div class="cart-drawer-footer"><div style="display:flex;justify-content:space-between;margin-bottom:12px;"><span style="font-weight:600;">Total</span><span style="font-weight:700;color:var(--brand-primary);font-size:18px;" id="cart-total-mobile">₹0</span></div><button class="checkout-btn" onclick="window.location.href='checkout.html'">Checkout →</button></div>
             </div>
         </div>
     </div>
 
-    <!-- ═══════════════ MAIN CONTENT ═══════════════ -->
+    <!-- Main Content -->
     <main class="orders-page-content">
         <div class="orders-header">
             <h1>📦 My Orders</h1>
             <p>Track your active order and view order history.</p>
         </div>
-
-        <!-- Skeleton loader -->
         <div id="ordersSkeleton">
             <div class="loading-skeleton" style="height:180px;margin-bottom:20px;"></div>
             <div class="loading-skeleton" style="height:300px;"></div>
         </div>
-
-        <!-- Orders content (hidden until loaded) -->
         <div id="ordersContent" style="display:none;">
-            <!-- Current Active Order Section -->
             <div class="current-order-section" id="currentOrderSection">
                 <div class="current-order-title">🔄 Current Order</div>
-                <!-- Will be filled by JS -->
                 <div id="currentOrderContainer"></div>
             </div>
-
-            <!-- Past Orders Section -->
             <div class="past-orders-section" id="pastOrdersSection">
                 <div class="past-orders-title">🗂️ Order History</div>
                 <div id="pastOrdersContainer"></div>
@@ -729,18 +372,13 @@
         </div>
     </main>
 
-    <!-- AUTH MODAL -->
+    <!-- Auth Modal -->
     <div class="modal-overlay" id="login-modal-overlay">
         <div class="login-container">
-            <button class="modal-close-btn icon-trigger" id="close-modal-btn" aria-label="Close">
-                <span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span>
-            </button>
+            <button class="modal-close-btn icon-trigger" id="close-modal-btn" aria-label="Close"><span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span></button>
             <div class="form-panel-wrapper">
                 <div id="loader"><div class="spinner"></div></div>
-                <div class="form-toggle">
-                    <button id="show-login-btn" class="toggle-btn active">Sign In</button>
-                    <button id="show-signup-btn" class="toggle-btn">Sign Up</button>
-                </div>
+                <div class="form-toggle"><button id="show-login-btn" class="toggle-btn active">Sign In</button><button id="show-signup-btn" class="toggle-btn">Sign Up</button></div>
                 <div class="form-container">
                     <form id="login-form" class="active">
                         <div class="form-header"><h2>Welcome Back</h2><p>Sign in to view your orders.</p></div>
@@ -764,7 +402,7 @@
 
     <div id="toast-container"></div>
 
-    <!-- ═══════════ FIREBASE SDKs ═══════════ -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -794,7 +432,6 @@
         });
 
         function initNavbarUI() {
-            // Same as profile page: popups, drawer, cart
             const pToggle = document.getElementById('d-profile-toggle');
             const pPopup = document.getElementById('profile-popup');
             if (pToggle) {
@@ -858,8 +495,8 @@
                         const uid = cred.user.uid;
                         return cred.user.updateProfile({ displayName: name }).then(() =>
                             Promise.all([
-                                db.collection('users').doc(uid).set({ name, email, createdAt: firebase.firestore.FieldValue.serverTimestamp() }),
-                                db.collection('user-login').doc(uid).set({ uid, name, email, createdAt: firebase.firestore.FieldValue.serverTimestamp() })
+                                db.collection('user-login').doc(uid).set({ uid, name, email, createdAt: firebase.firestore.FieldValue.serverTimestamp() }),
+                                db.collection('users').doc(uid).set({ name, email, createdAt: firebase.firestore.FieldValue.serverTimestamp() })
                             ])
                         );
                     })
@@ -868,14 +505,10 @@
             });
         }
 
-        function openAuthModal() { document.getElementById('login-modal-overlay').classList.add('active'); }
-
-        // ─── Auth & Orders ───
         function checkAuthAndLoadOrders() {
             auth.onAuthStateChanged(async user => {
                 currentUser = user;
                 if (user) {
-                    // Update navbar
                     document.getElementById('profile-avatar-initial').textContent = (user.displayName || user.email || 'G').charAt(0).toUpperCase();
                     document.getElementById('user-name').textContent = user.displayName || 'User';
                     document.getElementById('user-email').textContent = user.email;
@@ -891,7 +524,7 @@
 
         async function loadOrders(uid) {
             try {
-                const doc = await db.collection('users').doc(uid).get();
+                const doc = await db.collection('user-login').doc(uid).get();
                 if (doc.exists) {
                     const data = doc.data();
                     const currentOrder = data.currentOrder || null;
@@ -905,13 +538,11 @@
                 showToast('Failed to load orders.');
                 renderOrders(null, []);
             }
-            // Hide skeleton, show content
             document.getElementById('ordersSkeleton').style.display = 'none';
             document.getElementById('ordersContent').style.display = 'block';
         }
 
         function renderOrders(currentOrder, pastOrders) {
-            // Render current order
             const currentContainer = document.getElementById('currentOrderContainer');
             if (currentOrder) {
                 let html = '';
@@ -931,7 +562,6 @@
                 } else {
                     html = '<div class="empty-state">No items in current order.</div>';
                 }
-                // Status bar
                 const status = currentOrder.status || 'processing';
                 const steps = ['Placed', 'Processing', 'Shipped', 'Delivered'];
                 const activeIndex = steps.findIndex(s => s.toLowerCase() === status.toLowerCase());
@@ -945,7 +575,6 @@
                 currentContainer.innerHTML = '<div class="empty-state">No active order.</div>';
             }
 
-            // Render past orders
             const pastContainer = document.getElementById('pastOrdersContainer');
             if (!pastOrders || pastOrders.length === 0) {
                 pastContainer.innerHTML = '<div class="empty-state">No past orders.</div>';
@@ -977,17 +606,16 @@
             pastContainer.innerHTML = html;
         }
 
-        // ─── Cart Logic (same as profile) ───
         function saveCart(syncDB = true) {
             localStorage.setItem('vastramaya_cart', JSON.stringify(cart));
             if (syncDB && currentUser) {
-                db.collection('users').doc(currentUser.uid).update({ cart }).catch(err => console.error('Cart sync error:', err));
+                db.collection('user-login').doc(currentUser.uid).update({ cart }).catch(err => console.error('Cart sync error:', err));
             }
         }
         async function syncCartToFirestore() {
             if (!currentUser) return;
             try {
-                const doc = await db.collection('users').doc(currentUser.uid).get();
+                const doc = await db.collection('user-login').doc(currentUser.uid).get();
                 if (doc.exists && doc.data().cart) {
                     if (cart.length === 0) { cart = doc.data().cart; saveCart(false); renderCart(); } else {
                         const dbCart = doc.data().cart || [];
@@ -1012,9 +640,7 @@
             const totalM = document.getElementById('cart-total-mobile');
             const countD = document.getElementById('cart-count-desktop');
             const countM = document.getElementById('cart-count-mobile');
-            let total = 0,
-                count = 0,
-                html = '';
+            let total = 0, count = 0, html = '';
             if (cart.length === 0) html = '<div class="empty-cart-msg">Your cart is empty</div>';
             else cart.forEach(item => {
                 total += item.price * item.quantity;
@@ -1023,10 +649,8 @@
             });
             if (desktopBody) desktopBody.innerHTML = html;
             if (mobileBody) mobileBody.innerHTML = html;
-            if (badgeD) { badgeD.textContent = count;
-                badgeD.style.display = count > 0 ? 'flex' : 'none'; }
-            if (badgeM) { badgeM.textContent = count;
-                badgeM.style.display = count > 0 ? 'flex' : 'none'; }
+            if (badgeD) { badgeD.textContent = count; badgeD.style.display = count > 0 ? 'flex' : 'none'; }
+            if (badgeM) { badgeM.textContent = count; badgeM.style.display = count > 0 ? 'flex' : 'none'; }
             if (totalD) totalD.textContent = `₹${total.toFixed(2)}`;
             if (totalM) totalM.textContent = `₹${total.toFixed(2)}`;
             if (countD) countD.textContent = `${count} item${count !== 1 ? 's' : ''}`;
