@@ -3,773 +3,1044 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Wishlist | Happy NonVeg Pickles</title>
-    
+    <title>My Orders – Happy NonVeg Pickles</title>
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+
+    <!-- Boxicons -->
+    <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
+
     <style>
-        /* ═══════════════════════════ GLOBAL RESET & VARIABLES (same as landing page) ═══════════════════════════ */
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-        html { -webkit-tap-highlight-color: transparent; }
-        body {
-            min-height: 100vh;
-            background: #fffaf3;
-            font-family: "DM Sans", Roboto, sans-serif;
-            overflow-x: hidden;
-            color: #2c1a0e;
-            padding-top: 80px;
-            transition: padding-top 0.2s ease;
-        }
-        @media (max-width: 768px) { body { padding-top: 70px; } }
         :root {
             --header-height-desktop: 80px;
             --navbar-height-mobile: 70px;
-            --page-bg: #ffffff;
-            --text-primary: #000000;
-            --text-secondary: #333333;
-            --text-light: #666666;
-            --brand-primary: #E61D26;
-            --brand-secondary: #c01820;
-            --brand-gradient: linear-gradient(135deg, #E61D26 0%, #c01820 100%);
-            --progress-color: #E61D26;
-            --progress-bg: rgba(230, 29, 38, 0.15);
-            --glass-bg: rgba(255, 255, 255, 0.8);
-            --glass-border: rgba(230, 29, 38, 0.1);
-            --circle-bg: #fff5f5;
-            --circle-border: #ffd6d8;
-            --border-subtle: #e5e5e5;
-            --surface-light: #f9f9f9;
+            --page-bg: #fffaf3;
+            --text-primary: #1C1009;
+            --text-secondary: #4a3728;
+            --text-light: #8a7a6e;
+            --brand-primary: #C0392B;
+            --brand-secondary: #962d22;
+            --brand-gradient: linear-gradient(135deg, #C0392B 0%, #962d22 100%);
             --surface-card: #ffffff;
-            --surface-hover: #f5f5f5;
-            --product-card-bg: #ffffff;
-            --success-color: #4a9c7d;
-            --shadow-premium: 0 10px 25px -5px rgba(0,0,0,0.08), 0 5px 10px -5px rgba(0,0,0,0.04);
-            --shadow-light: 0 2px 10px rgba(0,0,0,0.05);
-            --shadow-medium: 0 8px 30px rgba(0,0,0,0.10);
-            --shadow-modal: 0 25px 50px -12px rgba(0,0,0,0.20);
+            --surface-light: #f9f5f0;
+            --surface-hover: #f3ede6;
+            --border-subtle: #e8e0d8;
             --rust: #C0392B;
             --rust-dark: #962d22;
             --rust-light: #f5e9e7;
             --turmeric: #E8A020;
-            --cream: #FDF6EC;
             --ink: #1C1009;
             --ash: #6b5b4e;
             --border: rgba(28,16,9,.1);
             --shadow-sm: 0 2px 8px rgba(28,16,9,.08);
             --shadow-md: 0 8px 32px rgba(28,16,9,.12);
             --shadow-lg: 0 20px 60px rgba(28,16,9,.18);
+            --shadow-premium: 0 10px 25px -5px rgba(0,0,0,.08), 0 5px 10px -5px rgba(0,0,0,.04);
             --r-card: 16px;
             --r-pill: 999px;
             --ff-display: 'Playfair Display', Georgia, serif;
             --ff-body: 'DM Sans', sans-serif;
             --nav-h: 80px;
+            --success-color: #4a9c7d;
+            --warning-color: #e67e22;
+            --danger-color: #C0392B;
         }
-        @media (max-width: 768px) { :root { --nav-h: 70px; } }
+        @media (max-width: 768px) {
+            :root { --nav-h: 70px; }
+        }
 
-        /* ---------- NAVBAR STYLES (identical to earlier) ---------- */
-        .d-navbar, .m-navbar, .m-drawer, .cart-drawer, .modal-overlay, #toast-container {
-            font-family: "DM Sans", Roboto, sans-serif;
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html { -webkit-tap-highlight-color: transparent; }
+        body {
+            min-height: 100vh;
+            background: var(--page-bg);
+            font-family: var(--ff-body);
+            overflow-x: hidden;
             color: var(--text-primary);
+            padding-top: var(--nav-h);
         }
-        .icon-wrap {
-            position: relative; width: 20px; height: 20px;
-            display: inline-flex; align-items: center; justify-content: center;
-            flex-shrink: 0; pointer-events: none;
-        }
-        .icon-wrap .icon-default, .icon-wrap .icon-fill {
-            width: 20px; height: 20px; display: block; position: absolute; top: 0; left: 0;
-            transition: opacity 0.18s ease;
-        }
-        .icon-wrap .icon-fill   { opacity: 0; }
-        .icon-wrap .icon-default { opacity: 1; }
-        .icon-trigger:hover   .icon-wrap .icon-fill,
-        .icon-trigger.active  .icon-wrap .icon-fill  { opacity: 1; }
-        .icon-trigger:hover   .icon-wrap .icon-default,
-        .icon-trigger.active  .icon-wrap .icon-default { opacity: 0; }
-        .icon-wrap.icon-white .icon-default, .icon-wrap.icon-white .icon-fill { filter: brightness(0) invert(1); }
-        .icon-wrap.icon-muted .icon-default { filter: invert(45%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(90%) contrast(90%); }
-        .icon-trigger:hover .icon-wrap.icon-muted .icon-fill { filter: invert(16%) sepia(97%) saturate(4500%) hue-rotate(345deg) brightness(90%) contrast(110%); }
-        .icon-wrap.icon-danger .icon-default, .icon-wrap.icon-danger .icon-fill { filter: invert(16%) sepia(97%) saturate(4500%) hue-rotate(345deg) brightness(90%) contrast(110%); }
-        .icon-wrap.icon-success .icon-default, .icon-wrap.icon-success .icon-fill { filter: invert(52%) sepia(47%) saturate(490%) hue-rotate(112deg) brightness(89%) contrast(87%); }
-        .m-nav-link.active .icon-wrap .icon-fill, .d-nav-link.active .icon-wrap .icon-fill { opacity: 1; }
-        .m-nav-link.active .icon-wrap .icon-default, .d-nav-link.active .icon-wrap .icon-default { opacity: 0; }
-        .m-categories-toggle.active .chevron-wrap .icon-default { opacity: 0; }
-        .m-categories-toggle.active .chevron-wrap .icon-fill { opacity: 1; filter: invert(16%) sepia(97%) saturate(4500%) hue-rotate(345deg) brightness(90%) contrast(110%); }
-        .chevron-wrap { transition: transform 0.2s ease; }
-        .m-categories-toggle.active .chevron-wrap { transform: rotate(90deg); }
 
-        .page-desktop { min-height: 0; width: 100%; }
+        /* ─── NAVBAR (shared) ─── */
         .d-navbar {
-            height: var(--header-height-desktop); background: var(--surface-card);
-            border-bottom: 1px solid var(--border-subtle); position: fixed; top: 0; left: 0; right: 0;
-            z-index: 1000; box-shadow: var(--shadow-light);
+            height: var(--header-height-desktop);
+            background: var(--surface-card);
+            border-bottom: 1px solid var(--border-subtle);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-sm);
+            font-family: var(--ff-body);
         }
         .d-navbar-container {
-            max-width: 1440px; margin: 0 auto; height: 100%;
-            display: flex; align-items: center; justify-content: space-between; padding: 0 40px;
+            max-width: 1440px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
         }
         .d-navbar-logo { height: 52px; width: auto; object-fit: contain; cursor: pointer; }
-        .d-nav-links { display: flex; align-items: center; gap: 32px; margin: 0 40px; }
+        .d-nav-links { display: flex; align-items: center; gap: 28px; margin: 0 32px; }
         .d-nav-link {
-            font-size: 15px; font-weight: 600; color: var(--text-primary);
-            text-decoration: none; padding: 8px 0; position: relative; transition: color 0.2s ease; white-space: nowrap;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 8px 0;
+            position: relative;
+            transition: color .2s ease;
+            white-space: nowrap;
+            cursor: pointer;
         }
         .d-nav-link:hover, .d-nav-link.active { color: var(--brand-primary); }
         .d-nav-link.active::after {
-            content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
-            height: 2px; background: var(--brand-primary); border-radius: 1px;
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--brand-primary);
+            border-radius: 1px;
         }
-        .d-categories-dropdown { position: relative; }
-        .d-categories-content {
-            position: absolute; top: 100%; left: -20px; background: var(--surface-card);
-            border: 1px solid var(--border-subtle); border-radius: 12px; padding: 12px 0; min-width: 220px;
-            box-shadow: var(--shadow-premium); opacity: 0; visibility: hidden; transform: translateY(10px);
-            transition: all 0.2s ease; z-index: 100;
-        }
-        .d-categories-dropdown:hover .d-categories-content { opacity: 1; visibility: visible; transform: translateY(0); }
-        .d-category-item {
-            display: block; padding: 12px 24px; color: var(--text-primary);
-            text-decoration: none; font-size: 14px; font-weight: 500; transition: all 0.2s ease;
-        }
-        .d-category-item:hover { background: var(--surface-hover); color: var(--brand-primary); padding-left: 28px; }
-        .d-action-icons { display: flex; align-items: center; gap: 20px; }
+        .d-action-icons { display: flex; align-items: center; gap: 16px; }
         .d-icon-btn {
-            position: relative; width: 40px; height: 40px; border-radius: 10px;
-            background: var(--surface-light); border: 1px solid var(--border-subtle);
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.2s ease; text-decoration: none; color: inherit;
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--surface-light);
+            border: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all .2s ease;
+            text-decoration: none;
+            color: inherit;
         }
         .d-icon-btn:hover { background: var(--surface-hover); border-color: var(--brand-primary); transform: translateY(-1px); }
-        .cart-badge, .wishlist-badge {
-            position: absolute; top: -6px; right: -6px; background: var(--brand-primary); color: white;
-            font-size: 11px; font-weight: 700; min-width: 20px; height: 20px; padding: 0 4px;
-            border-radius: 10px; display: flex; align-items: center; justify-content: center;
-            border: 2px solid var(--surface-card); box-sizing: border-box;
+        .cart-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--brand-primary);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 4px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--surface-card);
+            box-sizing: border-box;
         }
+        .icon-wrap { position: relative; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; pointer-events: none; }
+        .icon-wrap .icon-default, .icon-wrap .icon-fill { width: 20px; height: 20px; display: block; position: absolute; top: 0; left: 0; transition: opacity .18s ease; }
+        .icon-wrap .icon-fill { opacity: 0; }
+        .icon-wrap .icon-default { opacity: 1; }
+        .icon-trigger:hover .icon-wrap .icon-fill,
+        .icon-trigger.active .icon-wrap .icon-fill { opacity: 1; }
+        .icon-trigger:hover .icon-wrap .icon-default,
+        .icon-trigger.active .icon-wrap .icon-default { opacity: 0; }
+
+        /* Profile Dropdown */
         .d-profile-dropdown { position: relative; }
         .d-profile-btn {
-            width: 44px; height: 44px; border-radius: 10px; overflow: hidden;
-            border: 1px solid var(--border-subtle); background: var(--surface-light);
-            cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border-subtle);
+            background: var(--surface-light);
+            cursor: pointer;
+            transition: all .2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .d-profile-btn:hover { border-color: var(--brand-primary); transform: translateY(-1px); background: var(--surface-hover); }
+        .d-profile-btn:hover { border-color: var(--brand-primary); transform: translateY(-1px); }
         .profile-popup {
-            position: absolute; top: calc(100% + 10px); right: 0; background: var(--surface-card);
-            border: 1px solid var(--border-subtle); border-radius: 16px; padding: 20px; min-width: 280px;
-            box-shadow: var(--shadow-premium); opacity: 0; visibility: hidden; transform: translateY(10px);
-            transition: all 0.2s ease; z-index: 1000;
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: var(--surface-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 20px;
+            min-width: 280px;
+            box-shadow: var(--shadow-premium);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all .2s ease;
+            z-index: 1000;
         }
         .profile-popup.show { opacity: 1; visibility: visible; transform: translateY(0); }
         .profile-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border-subtle); }
-        .profile-info { flex: 1; }
-        .profile-name { font-weight: 700; font-size: 16px; color: var(--text-primary); margin-bottom: 4px; }
-        .profile-email { font-size: 14px; color: var(--text-light); }
-        .profile-links { display: flex; flex-direction: column; gap: 8px; }
+        .profile-avatar { width: 48px; height: 48px; border-radius: 12px; background: var(--brand-gradient); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 20px; font-family: var(--ff-display); flex-shrink: 0; }
+        .profile-info { flex: 1; min-width: 0; }
+        .profile-name { font-weight: 700; font-size: 16px; color: var(--text-primary); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .profile-email { font-size: 13px; color: var(--text-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .profile-links { display: flex; flex-direction: column; gap: 6px; }
         .profile-link {
-            display: flex; align-items: center; padding: 12px 16px; color: var(--text-primary);
-            text-decoration: none; border-radius: 10px; font-weight: 500; transition: all 0.2s ease; cursor: pointer; gap: 12px;
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all .2s ease;
+            cursor: pointer;
+            gap: 12px;
         }
-        .profile-link:hover { background: var(--surface-hover); color: var(--brand-primary); padding-left: 20px; transform: translateX(2px); }
-        /* MOBILE NAVBAR (identical) */
-        .page-mobile { display: none; width: 100%; }
+        .profile-link:hover { background: var(--surface-hover); color: var(--brand-primary); padding-left: 18px; }
+        .profile-link.logout-link:hover { background: #fef2f2; color: var(--danger-color); }
+
+        /* Cart Popup */
+        .cart-popup {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: var(--surface-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            width: 380px;
+            max-height: 480px;
+            box-shadow: var(--shadow-premium);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all .2s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .cart-popup.show { opacity: 1; visibility: visible; transform: translateY(0); }
+        .cart-popup-header { padding: 16px 20px; border-bottom: 1px solid var(--border-subtle); background: var(--surface-light); flex-shrink: 0; }
+        .cart-popup-title { font-weight: 700; font-size: 16px; }
+        .cart-popup-subtitle { font-size: 13px; color: var(--text-light); }
+        .cart-popup-body { flex: 1; overflow-y: auto; min-height: 200px; max-height: 260px; }
+        .cart-item { display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border-subtle); gap: 12px; }
+        .cart-item-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-subtle); }
+        .cart-item-details { flex: 1; min-width: 0; }
+        .cart-item-title { font-weight: 600; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .cart-item-price { font-weight: 700; font-size: 14px; color: var(--brand-primary); margin-top: 2px; }
+        .cart-item-qty { font-size: 12px; color: var(--text-light); }
+        .cart-popup-footer { padding: 16px 20px; border-top: 1px solid var(--border-subtle); background: var(--surface-card); flex-shrink: 0; }
+        .cart-total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .cart-total-label { font-weight: 600; font-size: 15px; }
+        .cart-total-amount { font-weight: 700; font-size: 20px; color: var(--brand-primary); }
+        .checkout-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--brand-gradient);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all .3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .checkout-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(192,57,43,.3); }
+        .empty-cart-msg { text-align: center; padding: 2rem; color: var(--text-light); font-size: 14px; }
+
+        /* Mobile Navbar */
+        .page-mobile { display: none; }
         .m-navbar {
-            height: var(--navbar-height-mobile); background: var(--surface-card);
-            border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center;
-            justify-content: space-between; padding: 0 16px; position: fixed; top: 0; left: 0; right: 0;
-            z-index: 1000; box-shadow: var(--shadow-light);
+            height: var(--navbar-height-mobile);
+            background: var(--surface-card);
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-sm);
         }
-        .m-menu-btn {
-            width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border-subtle);
-            background: var(--surface-light); display: flex; align-items: center; justify-content: center;
-            cursor: pointer; flex-shrink: 0; transition: all 0.2s ease; z-index: 2; min-width: 40px;
+        .m-navbar .d-navbar-logo { height: 44px; position: absolute; left: 50%; transform: translateX(-50%); }
+        .m-menu-btn, .m-icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid var(--border-subtle);
+            background: var(--surface-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all .2s ease;
+            position: relative;
         }
-        .m-menu-btn:hover { background: var(--surface-hover); }
-        .m-logo { height: 50px; width: auto; object-fit: contain; position: absolute; left: calc(42.5%); transform: translateX(-50%); }
-        .m-right-icons { display: flex; align-items: center; gap: 12px; z-index: 2; min-width: 92px; justify-content: flex-end; }
-        .m-icon-btn {
-            width: 40px; height: 40px; border-radius: 10px; background: var(--surface-light);
-            border: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.2s ease; position: relative;
-        }
-        .m-icon-btn:hover { background: var(--surface-hover); }
-        .mobile-cart-badge, .mobile-wishlist-badge {
-            position: absolute; top: -4px; right: -4px; background: var(--brand-primary);
-            color: white; font-size: 10px; font-weight: 700; min-width: 18px; height: 18px;
-            padding: 0 3px; border-radius: 9px; display: flex; align-items: center; justify-content: center;
-            border: 2px solid var(--surface-card); box-sizing: border-box;
-        }
+        .m-right-icons { display: flex; align-items: center; gap: 10px; }
         .m-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px);
-            opacity: 0; pointer-events: none; transition: opacity 0.25s ease-out; z-index: 2000;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.3);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .25s ease-out;
+            z-index: 2000;
         }
         .m-overlay.open { opacity: 1; pointer-events: auto; }
         .m-drawer {
-            position: absolute; left: 0; top: 0; width: 320px; max-width: 90vw; height: 100%;
-            background: var(--surface-card); display: flex; flex-direction: column;
-            transform: translateX(-100%); transition: transform 0.25s ease-out;
-            overflow-y: auto; box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 320px;
+            max-width: 90vw;
+            height: 100%;
+            background: var(--surface-card);
+            display: flex;
+            flex-direction: column;
+            transform: translateX(-100%);
+            transition: transform .25s ease-out;
+            overflow-y: auto;
+            box-shadow: 2px 0 20px rgba(0,0,0,.1);
         }
         .m-overlay.open .m-drawer { transform: translateX(0); }
-        .m-drawer-header {
-            height: 72px; min-height: 72px; border-bottom: 1px solid var(--border-subtle);
-            display: flex; align-items: center; justify-content: space-between; padding: 0 16px;
-            background: var(--surface-card); position: relative; z-index: 10;
+        .m-drawer-header { height: 64px; min-height: 64px; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; }
+        .m-drawer-logo { height: 36px; width: auto; object-fit: contain; }
+        .m-drawer-close { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--surface-light); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .m-drawer-nav { padding: 16px; display: flex; flex-direction: column; flex: 1; }
+        .m-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            border-radius: 10px;
+            transition: all .2s ease;
         }
-        .m-drawer-logo { height: 42px; width: auto; object-fit: contain; display: block; }
-        .m-drawer-close {
-            width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border-subtle);
-            background: var(--surface-light); display: flex; align-items: center; justify-content: center;
-            cursor: pointer; flex-shrink: 0; transition: all 0.2s ease;
+        .m-nav-link:hover, .m-nav-link.active { background: #fff0f0; color: var(--brand-primary); }
+        .cart-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.3);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .25s ease-out;
+            z-index: 3000;
         }
-        .m-drawer-close:hover { background: var(--surface-hover); border-color: var(--brand-primary); }
-        .m-drawer-nav { padding: 24px 16px 10px; display: flex; flex-direction: column; flex: 1; overflow-y: auto; }
-        .nav-section { padding-bottom: 0; margin-bottom: 0; border: none; }
-        .m-nav-link, .m-categories-toggle {
-            display: flex; align-items: center; justify-content: space-between;
-            height: 54px; padding: 0 16px; margin-bottom: 8px; color: var(--text-primary); text-decoration: none;
-            font-size: 16px; font-weight: 500; border-radius: 12px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            background: transparent; border: 1px solid transparent;
+        .cart-overlay.open { opacity: 1; pointer-events: auto; }
+        .cart-drawer {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 360px;
+            max-width: 90vw;
+            height: 100%;
+            background: var(--surface-card);
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform .25s ease-out;
+            overflow-y: auto;
+            box-shadow: -2px 0 20px rgba(0,0,0,.1);
         }
-        .m-link-content { display: flex; align-items: center; flex: 1; gap: 14px; }
-        .m-nav-link:hover, .m-categories-toggle:hover { background: var(--surface-hover); border-color: rgba(230, 29, 38, 0.05); transform: translateX(4px); }
-        .m-nav-link.active, .m-categories-toggle.active { background: #fff0f0; color: var(--brand-primary); border-color: rgba(230, 29, 38, 0.1); font-weight: 600; }
-        .m-categories-dropdown { margin: 2px 0 8px; }
-        .m-categories-content { display: none; margin-left: 20px; padding-left: 16px; border-left: 2px solid var(--border-subtle); margin-top: 4px; margin-bottom: 12px; }
-        .m-categories-content.show { display: block; animation: slideDown 0.2s ease-out; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-        .m-category-item {
-            display: flex; align-items: center; height: 44px; padding: 0 16px;
-            color: var(--text-secondary); text-decoration: none; font-size: 15px; font-weight: 400;
-            border-radius: 8px; transition: all 0.15s ease; margin-bottom: 2px;
-        }
-        .m-category-item:hover { background: var(--surface-hover); color: var(--brand-primary); padding-left: 20px; }
-        .m-drawer-profile {
-            padding: 20px 24px; border-top: 1px solid var(--border-subtle);
-            background: var(--surface-light); flex-shrink: 0; cursor: pointer; position: relative;
-        }
-        .m-profile-popup-menu {
-            position: absolute; bottom: 100%; left: 20px; right: 20px;
-            background: var(--surface-card); border: 1px solid var(--border-subtle);
-            border-radius: 16px; padding: 8px; box-shadow: var(--shadow-modal);
-            display: none; flex-direction: column; gap: 4px; margin-bottom: 12px; z-index: 200;
-        }
-        .m-profile-popup-menu.active { display: flex; animation: slideUpFade 0.2s ease-out; }
-        @keyframes slideUpFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .m-profile-option {
-            padding: 12px 16px; border-radius: 8px; font-size: 15px; font-weight: 500;
-            color: var(--text-primary); text-decoration: none; display: flex; align-items: center; gap: 12px; transition: background 0.2s;
-        }
-        .m-profile-option:hover { background: var(--surface-hover); color: var(--brand-primary); }
-        .m-profile-option.logout { color: #E61D26; }
-        .m-profile-option.logout:hover { background: #fff0f0; }
+        .cart-overlay.open .cart-drawer { transform: translateX(0); }
+        .cart-drawer-header { height: 64px; min-height: 64px; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
+        .cart-drawer-body { flex: 1; overflow-y: auto; }
+        .cart-drawer-footer { padding: 16px 20px; border-top: 1px solid var(--border-subtle); }
 
-        /* PAGE SPECIFIC STYLES */
-        .wishlist-container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 5vw;
-        }
-        .wishlist-container h2 {
-            font-family: var(--ff-display);
-            font-size: 2rem;
-            margin-bottom: 24px;
-        }
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 24px;
-        }
-        .product-card {
-            background: white;
-            border-radius: var(--r-card);
-            overflow: hidden;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-sm);
-            transition: transform .25s, box-shadow .25s;
-            cursor: pointer;
-        }
-        .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
-        .product-card-img { aspect-ratio: 1/1; overflow: hidden; background: #f5ede4; }
-        .product-card-img img { width: 100%; height: 100%; object-fit: cover; }
-        .product-card-body { padding: 16px; }
-        .product-card-name { font-weight: 700; font-size: 15px; color: var(--ink); margin-bottom: 4px; }
-        .product-card-price { font-size: 1.2rem; font-weight: 800; color: var(--rust); margin: 8px 0; }
-        .wishlist-remove-btn {
-            background: #fff0f0;
-            border: 1px solid #ffc2c2;
-            color: var(--brand-primary);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .wishlist-remove-btn:hover { background: #ffe0e0; }
-        .empty-wishlist {
-            text-align: center;
-            color: var(--ash);
-            padding: 60px 20px;
-            font-size: 1.1rem;
-        }
         @media (max-width: 768px) {
-            .product-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
-            .product-card-body { padding: 12px; }
+            .page-desktop { display: none; }
+            .page-mobile { display: block; }
+            .d-navbar-container { padding: 0 16px; }
         }
+
+        /* ─── ORDERS PAGE SPECIFIC ─── */
+        .orders-page-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+        }
+        .orders-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .orders-header h1 {
+            font-family: var(--ff-display);
+            font-size: 2.4rem;
+            font-weight: 900;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+        .orders-header p {
+            font-size: 15px;
+            color: var(--ash);
+        }
+
+        .current-order-section {
+            background: var(--surface-card);
+            border-radius: var(--r-card);
+            border: 1px solid var(--border-subtle);
+            box-shadow: var(--shadow-sm);
+            padding: 24px 28px;
+            margin-bottom: 32px;
+        }
+        .current-order-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .order-status-bar {
+            display: flex;
+            gap: 4px;
+            margin: 16px 0;
+        }
+        .order-status-step {
+            flex: 1;
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-light);
+            position: relative;
+            padding-top: 24px;
+        }
+        .order-status-step::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #e0d6cc;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 2px #e0d6cc;
+        }
+        .order-status-step.active {
+            color: var(--brand-primary);
+            font-weight: 600;
+        }
+        .order-status-step.active::before {
+            background: var(--brand-primary);
+            box-shadow: 0 0 0 2px var(--brand-primary);
+        }
+        .current-order-items {
+            margin-top: 12px;
+            border-top: 1px solid var(--border-subtle);
+            padding-top: 16px;
+        }
+        .order-item-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+        }
+        .order-item-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid var(--border-subtle);
+        }
+        .order-item-name { font-weight: 600; font-size: 14px; }
+        .order-item-meta { font-size: 12px; color: var(--text-light); }
+        .order-total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 16px;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .past-orders-section {
+            background: var(--surface-card);
+            border-radius: var(--r-card);
+            border: 1px solid var(--border-subtle);
+            box-shadow: var(--shadow-sm);
+            padding: 24px 28px;
+        }
+        .past-orders-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+        }
+        .order-card {
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            transition: box-shadow .2s;
+        }
+        .order-card:hover { box-shadow: var(--shadow-sm); }
+        .order-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .order-id { font-weight: 700; font-size: 14px; }
+        .order-date { font-size: 12px; color: var(--text-light); }
+        .order-status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            background: var(--rust-light);
+            color: var(--rust);
+        }
+        .order-address {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+        .order-items-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .order-item-thumb {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid var(--border-subtle);
+        }
+        .order-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-subtle);
+            padding-top: 10px;
+            margin-top: 6px;
+        }
+        .order-card-total { font-weight: 700; color: var(--brand-primary); }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+        }
+        .loading-skeleton { animation: pulse 1.2s infinite ease-in-out; background: #e2d6ca; border-radius: 8px; }
+        @keyframes pulse { 0% { opacity: .6; } 50% { opacity: 1; } 100% { opacity: .6; } }
+        .toast { /* same as profile */ }
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 6000; pointer-events: none; display: flex; flex-direction: column; gap: 10px; }
+        .toast { padding: 14px 20px; background: #fff; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.15); animation: slideUp .3s ease; display: flex; align-items: center; gap: 12px; border-left: 4px solid var(--brand-primary); min-width: 280px; pointer-events: auto; font-size: 14px; font-weight: 500; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<!-- ═══════════════ DESKTOP NAVBAR (reused) ═══════════════ -->
-<div class="page-desktop">
-    <nav class="d-navbar">
-        <div class="d-navbar-container">
-            <img class="d-navbar-logo" src="./assets/logo.png" alt="Happy NonVeg pickles" onclick="window.location.href='landing.html'" />
-            <div class="d-nav-links">
-                <a href="landing.html" class="d-nav-link">Home</a>
-                <a href="shop.html" class="d-nav-link">Shop</a>
-                <div class="d-categories-dropdown">
-                    <a href="javascript:void(0)" class="d-nav-link">Categories</a>
-                    <div class="d-categories-content" id="desktop-nav-categories"></div>
+    <!-- ═══════════════ DESKTOP NAVBAR ═══════════════ -->
+    <div class="page-desktop">
+        <nav class="d-navbar">
+            <div class="d-navbar-container">
+                <img class="d-navbar-logo" src="./assets/logo.png" alt="Happy NonVeg Pickles" onclick="window.location.href='landing-page.html'" />
+                <div class="d-nav-links">
+                    <a href="landing-page.html" class="d-nav-link">Home</a>
+                    <a href="shop.html" class="d-nav-link">Shop</a>
+                    <a href="user-profile.html" class="d-nav-link">My Profile</a>
+                    <a href="user-orders.html" class="d-nav-link active">My Orders</a>
                 </div>
-            </div>
-            <div class="d-action-icons">
-                <a href="wishlist.html" class="d-icon-btn icon-trigger active">
-                    <span class="icon-wrap"><img src="./assets/heart.svg" class="icon-default" alt=""><img src="./assets/heart-fill.svg" class="icon-fill" alt=""></span>
-                    <span class="wishlist-badge" id="wishlist-badge-desktop" style="display:none">0</span>
-                </a>
-                <div class="d-profile-dropdown">
+                <div class="d-action-icons">
+                    <!-- Cart -->
                     <button class="d-icon-btn icon-trigger" id="d-cart-toggle" aria-label="Cart">
-                        <span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default" alt=""><img src="./assets/cart-fill.svg" class="icon-fill" alt=""></span>
+                        <span class="icon-wrap">
+                            <img src="./assets/cart.svg" class="icon-default" alt="">
+                            <img src="./assets/cart-fill.svg" class="icon-fill" alt="">
+                        </span>
                         <span class="cart-badge" id="cart-badge-desktop" style="display:none">0</span>
                     </button>
                     <div class="cart-popup" id="cart-popup">
-                        <div class="cart-popup-header"><div class="cart-popup-title">Your Shopping Cart</div><div class="cart-popup-subtitle" id="cart-count-desktop">0 items</div></div>
+                        <div class="cart-popup-header">
+                            <div class="cart-popup-title">Your Cart</div>
+                            <div class="cart-popup-subtitle" id="cart-count-desktop">0 items</div>
+                        </div>
                         <div class="cart-popup-body" id="cart-items-desktop"></div>
                         <div class="cart-popup-footer">
-                            <div class="cart-total"><div class="cart-total-label">Total Amount</div><div class="cart-total-amount" id="cart-total-desktop">₹0.00</div></div>
-                            <button class="buy-btn" onclick="window.location.href='checkout.html'"><span>Checkout Now</span><span class="icon-wrap icon-white"><img src="./assets/arrow-right.svg" class="icon-default" alt=""><img src="./assets/arrow-right-fill.svg" class="icon-fill" alt=""></span></button>
+                            <div class="cart-total-row">
+                                <span class="cart-total-label">Total</span>
+                                <span class="cart-total-amount" id="cart-total-desktop">₹0</span>
+                            </div>
+                            <button class="checkout-btn" onclick="window.location.href='checkout.html'">Checkout →</button>
                         </div>
                     </div>
-                </div>
-                <div class="d-profile-dropdown">
-                    <button class="d-profile-btn icon-trigger" id="d-profile-toggle" aria-label="Profile">
-                        <span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span>
-                    </button>
-                    <div class="profile-popup" id="profile-popup">
-                        <div class="profile-header"><div class="profile-info"><div class="profile-name" id="user-name">Guest User</div><div class="profile-email" id="user-email">Sign in to sync</div></div></div>
-                        <div class="profile-links" id="profile-links-container">
-                            <a href="user-profile.html" class="profile-link icon-trigger auth-only auth-hidden"><span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span>My Profile</a>
-                            <a href="user-orders.html" class="profile-link icon-trigger auth-only auth-hidden"><span class="icon-wrap"><img src="./assets/orders.svg" class="icon-default" alt=""><img src="./assets/orders-fill.svg" class="icon-fill" alt=""></span>My Orders</a>
-                            <div id="login-trigger-desktop" class="profile-link icon-trigger"><span class="icon-wrap"><img src="./assets/login.svg" class="icon-default" alt=""><img src="./assets/login-fill.svg" class="icon-fill" alt=""></span>Sign In</div>
+                    <!-- Profile -->
+                    <div class="d-profile-dropdown">
+                        <button class="d-profile-btn icon-trigger" id="d-profile-toggle" aria-label="Profile">
+                            <span class="icon-wrap">
+                                <img src="./assets/user.svg" class="icon-default" alt="">
+                                <img src="./assets/user-fill.svg" class="icon-fill" alt="">
+                            </span>
+                        </button>
+                        <div class="profile-popup" id="profile-popup">
+                            <div class="profile-header">
+                                <div class="profile-avatar" id="profile-avatar-initial">G</div>
+                                <div class="profile-info">
+                                    <div class="profile-name" id="user-name">Guest</div>
+                                    <div class="profile-email" id="user-email">Sign in to sync</div>
+                                </div>
+                            </div>
+                            <div class="profile-links">
+                                <a href="user-profile.html" class="profile-link icon-trigger">
+                                    <span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span>
+                                    My Profile
+                                </a>
+                                <a href="user-orders.html" class="profile-link icon-trigger">
+                                    <span class="icon-wrap"><img src="./assets/orders.svg" class="icon-default" alt=""><img src="./assets/orders-fill.svg" class="icon-fill" alt=""></span>
+                                    My Orders
+                                </a>
+                                <div class="profile-link logout-link icon-trigger" id="logout-btn-desktop">
+                                    <span class="icon-wrap"><img src="./assets/logout.svg" class="icon-default" alt=""><img src="./assets/logout-fill.svg" class="icon-fill" alt=""></span>
+                                    Sign Out
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </nav>
-</div>
+        </nav>
+    </div>
 
-<!-- ═══════════════ MOBILE NAVBAR (reused) ═══════════════ -->
-<div class="page-mobile">
-    <nav class="m-navbar">
-        <button class="m-menu-btn icon-trigger" id="m-menu-toggle" aria-label="Open menu">
-            <span class="icon-wrap"><img src="./assets/menu.svg" class="icon-default" alt=""><img src="./assets/menu-fill.svg" class="icon-fill" alt=""></span>
-        </button>
-        <img class="d-navbar-logo" src="./assets/logo.png" alt="Happy NonVeg Pickles" onclick="window.location.href='landing.html'" />
-        <div class="m-right-icons">
-            <button class="m-icon-btn icon-trigger" id="m-cart-toggle" aria-label="Cart">
-                <span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default" alt=""><img src="./assets/cart-fill.svg" class="icon-fill" alt=""></span>
-                <span class="mobile-cart-badge" id="cart-badge-mobile" style="display:none">0</span>
+    <!-- ═══════════════ MOBILE NAVBAR ═══════════════ -->
+    <div class="page-mobile">
+        <nav class="m-navbar">
+            <button class="m-menu-btn icon-trigger" id="m-menu-toggle" aria-label="Menu">
+                <span class="icon-wrap"><img src="./assets/menu.svg" class="icon-default" alt=""><img src="./assets/menu-fill.svg" class="icon-fill" alt=""></span>
             </button>
-        </div>
-    </nav>
-    <div class="m-overlay" id="m-overlay">
-        <div class="m-drawer">
-            <div class="m-drawer-header">
-                <img class="m-drawer-logo" src="./assets/logo.png" alt="Logo" />
-                <button class="m-drawer-close icon-trigger" id="m-drawer-close" aria-label="Close menu">
-                    <span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span>
+            <img class="d-navbar-logo" src="./assets/logo.png" alt="Logo" onclick="window.location.href='landing-page.html'" />
+            <div class="m-right-icons">
+                <button class="m-icon-btn icon-trigger" id="m-cart-toggle-m" aria-label="Cart">
+                    <span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default" alt=""><img src="./assets/cart-fill.svg" class="icon-fill" alt=""></span>
+                    <span class="cart-badge" id="cart-badge-mobile" style="display:none">0</span>
                 </button>
             </div>
-            <nav class="m-drawer-nav">
-                <div class="nav-section">
-                    <a href="landing.html" class="m-nav-link icon-trigger">
-                        <div class="m-link-content">
-                            <span class="icon-wrap"><img src="./assets/home.svg" class="icon-default" alt=""><img src="./assets/home-fill.svg" class="icon-fill" alt=""></span>
-                            <span>Home</span>
-                        </div>
+        </nav>
+        <!-- Mobile Drawer -->
+        <div class="m-overlay" id="m-overlay">
+            <div class="m-drawer">
+                <div class="m-drawer-header">
+                    <img class="m-drawer-logo" src="./assets/logo.png" alt="Logo" />
+                    <button class="m-drawer-close icon-trigger" id="m-drawer-close" aria-label="Close">
+                        <span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span>
+                    </button>
+                </div>
+                <nav class="m-drawer-nav">
+                    <a href="landing-page.html" class="m-nav-link icon-trigger">
+                        <span class="icon-wrap"><img src="./assets/home.svg" class="icon-default" alt=""><img src="./assets/home-fill.svg" class="icon-fill" alt=""></span> Home
                     </a>
                     <a href="shop.html" class="m-nav-link icon-trigger">
-                        <div class="m-link-content">
-                            <span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default" alt=""><img src="./assets/cart-fill.svg" class="icon-fill" alt=""></span>
-                            <span>Shop</span>
-                        </div>
+                        <span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default" alt=""><img src="./assets/cart-fill.svg" class="icon-fill" alt=""></span> Shop
                     </a>
-                    <div class="m-categories-dropdown">
-                        <div class="m-categories-toggle icon-trigger" id="m-categories-toggle">
-                            <div class="m-link-content">
-                                <span class="icon-wrap"><img src="./assets/category.svg" class="icon-default" alt=""><img src="./assets/category-fill.svg" class="icon-fill" alt=""></span>
-                                <span>Categories</span>
-                            </div>
-                            <span class="icon-wrap icon-muted chevron-wrap"><img src="./assets/chevron.svg" class="icon-default" alt=""><img src="./assets/chevron-fill.svg" class="icon-fill" alt=""></span>
-                        </div>
-                        <div class="m-categories-content" id="mobile-nav-categories"></div>
+                    <a href="user-profile.html" class="m-nav-link icon-trigger">
+                        <span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span> My Profile
+                    </a>
+                    <a href="user-orders.html" class="m-nav-link active icon-trigger">
+                        <span class="icon-wrap"><img src="./assets/orders.svg" class="icon-default" alt=""><img src="./assets/orders-fill.svg" class="icon-fill" alt=""></span> My Orders
+                    </a>
+                    <div class="divider-line" style="height:1px;background:var(--border-subtle);margin:12px 0;"></div>
+                    <div class="m-nav-link icon-trigger" id="logout-btn-mobile" style="color:#C0392B;">
+                        <span class="icon-wrap"><img src="./assets/logout.svg" class="icon-default" alt=""><img src="./assets/logout-fill.svg" class="icon-fill" alt=""></span> Sign Out
                     </div>
-                    <a href="wishlist.html" class="m-nav-link icon-trigger active">
-                        <div class="m-link-content">
-                            <span class="icon-wrap"><img src="./assets/heart.svg" class="icon-default" alt=""><img src="./assets/heart-fill.svg" class="icon-fill" alt=""></span>
-                            <span>Wishlist</span>
-                            <span class="mobile-wishlist-badge" id="wishlist-badge-mobile" style="display:none; position:relative; top:0; right:0; margin-left:8px;">0</span>
-                        </div>
-                    </a>
-                    <a href="user-orders.html" class="m-nav-link icon-trigger auth-only auth-hidden">
-                        <div class="m-link-content">
-                            <span class="icon-wrap"><img src="./assets/orders.svg" class="icon-default" alt=""><img src="./assets/orders-fill.svg" class="icon-fill" alt=""></span>
-                            <span>My Orders</span>
-                        </div>
-                    </a>
+                </nav>
+            </div>
+        </div>
+        <!-- Mobile Cart Drawer -->
+        <div class="cart-overlay" id="cart-overlay">
+            <div class="cart-drawer">
+                <div class="cart-drawer-header">
+                    <span style="font-weight:700;font-size:16px;">Your Cart (<span id="cart-count-mobile">0</span>)</span>
+                    <button class="m-drawer-close icon-trigger" id="cart-drawer-close" aria-label="Close cart">
+                        <span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span>
+                    </button>
                 </div>
-            </nav>
-            <div class="m-drawer-profile" id="mobile-profile-trigger">
-                <div class="m-profile-popup-menu" id="m-profile-popup">
-                    <a href="user-profile.html" class="m-profile-option icon-trigger">
-                        <span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span>
-                        My Profile
-                    </a>
-                    <div class="m-profile-option logout icon-trigger" id="mobile-logout-btn">
-                        <span class="icon-wrap icon-danger"><img src="./assets/logout.svg" class="icon-default" alt=""><img src="./assets/logout-fill.svg" class="icon-fill" alt=""></span>
-                        Logout
+                <div class="cart-drawer-body" id="cart-items-mobile"></div>
+                <div class="cart-drawer-footer">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+                        <span style="font-weight:600;">Total</span>
+                        <span style="font-weight:700;color:var(--brand-primary);font-size:18px;" id="cart-total-mobile">₹0</span>
                     </div>
-                </div>
-                <div class="m-profile-header">
-                    <div class="m-profile-icon-container icon-trigger">
-                        <span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span>
-                    </div>
-                    <div class="m-profile-info">
-                        <div class="m-profile-name" id="user-name-mobile">Guest</div>
-                        <div class="m-profile-email" id="user-phone-mobile"><span class="m-login-text">Login / Sign Up</span></div>
-                    </div>
+                    <button class="checkout-btn" onclick="window.location.href='checkout.html'">Checkout →</button>
                 </div>
             </div>
         </div>
     </div>
-    <div class="cart-overlay" id="cart-overlay">
-        <div class="cart-drawer">
-            <div class="cart-drawer-header">
-                <div class="cart-drawer-title" id="cart-count-mobile">Your Cart (0)</div>
-                <button class="m-drawer-close icon-trigger" id="cart-drawer-close" aria-label="Close cart">
-                    <span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span>
-                </button>
+
+    <!-- ═══════════════ MAIN CONTENT ═══════════════ -->
+    <main class="orders-page-content">
+        <div class="orders-header">
+            <h1>📦 My Orders</h1>
+            <p>Track your active order and view order history.</p>
+        </div>
+
+        <!-- Skeleton loader -->
+        <div id="ordersSkeleton">
+            <div class="loading-skeleton" style="height:180px;margin-bottom:20px;"></div>
+            <div class="loading-skeleton" style="height:300px;"></div>
+        </div>
+
+        <!-- Orders content (hidden until loaded) -->
+        <div id="ordersContent" style="display:none;">
+            <!-- Current Active Order Section -->
+            <div class="current-order-section" id="currentOrderSection">
+                <div class="current-order-title">🔄 Current Order</div>
+                <!-- Will be filled by JS -->
+                <div id="currentOrderContainer"></div>
             </div>
-            <div class="cart-drawer-body" id="cart-items-mobile"></div>
-            <div class="cart-drawer-footer">
-                <div class="mobile-cart-total">
-                    <div class="mobile-cart-total-label">Total</div>
-                    <div class="mobile-cart-total-amount" id="cart-total-mobile">₹0.00</div>
+
+            <!-- Past Orders Section -->
+            <div class="past-orders-section" id="pastOrdersSection">
+                <div class="past-orders-title">🗂️ Order History</div>
+                <div id="pastOrdersContainer"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- AUTH MODAL -->
+    <div class="modal-overlay" id="login-modal-overlay">
+        <div class="login-container">
+            <button class="modal-close-btn icon-trigger" id="close-modal-btn" aria-label="Close">
+                <span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span>
+            </button>
+            <div class="form-panel-wrapper">
+                <div id="loader"><div class="spinner"></div></div>
+                <div class="form-toggle">
+                    <button id="show-login-btn" class="toggle-btn active">Sign In</button>
+                    <button id="show-signup-btn" class="toggle-btn">Sign Up</button>
                 </div>
-                <button class="mobile-buy-btn" onclick="window.location.href='checkout.html'">
-                    <span>Checkout Now</span>
-                    <span class="icon-wrap icon-white"><img src="./assets/arrow-right.svg" class="icon-default" alt=""><img src="./assets/arrow-right-fill.svg" class="icon-fill" alt=""></span>
-                </button>
+                <div class="form-container">
+                    <form id="login-form" class="active">
+                        <div class="form-header"><h2>Welcome Back</h2><p>Sign in to view your orders.</p></div>
+                        <div class="input-group"><label>Email</label><input type="email" id="login-email" placeholder="john@example.com" required></div>
+                        <div class="input-group"><label>Password</label><input type="password" id="login-password" placeholder="Enter password" required></div>
+                        <button type="submit" class="btn-submit">Sign In</button>
+                        <p class="switch-form-text">New here? <a class="switch-to-signup">Create Account</a></p>
+                    </form>
+                    <form id="signup-form">
+                        <div class="form-header"><h2>Join Us</h2><p>Create your account to get started.</p></div>
+                        <div class="input-group"><label>Full Name</label><input type="text" id="signup-name" placeholder="John Doe" required></div>
+                        <div class="input-group"><label>Email</label><input type="email" id="signup-email" placeholder="john@example.com" required></div>
+                        <div class="input-group"><label>Password</label><input type="password" id="signup-password" placeholder="Create password" required></div>
+                        <button type="submit" class="btn-submit">Create Account</button>
+                        <p class="switch-form-text">Already a member? <a class="switch-to-login">Sign In</a></p>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- ═══════════════ WISHLIST CONTENT ═══════════════ -->
-<div class="wishlist-container">
-    <h2>❤️ My Wishlist</h2>
-    <div class="product-grid" id="wishlist-grid"></div>
-    <div class="empty-wishlist" id="wishlist-empty" style="display:none;">Your wishlist is empty. Browse our <a href="shop.html">products</a>.</div>
-</div>
+    <div id="toast-container"></div>
 
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <!-- ═══════════ FIREBASE SDKs ═══════════ -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-<script>
-    // Initialize both Firebase apps
-    const mainConfig = {
-        apiKey: "AIzaSyCZbCr-Zt5KQblRQ8Pk58KuinCVP-TlXGo",
-        authDomain: "happynonvegpickles-f2636.firebaseapp.com",
-        projectId: "happynonvegpickles-f2636",
-        storageBucket: "happynonvegpickles-f2636.firebasestorage.app",
-        messagingSenderId: "802823212924",
-        appId: "1:802823212924:web:d82c92737ffa950798def9"
-    };
-    const landingConfig = {
-        apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
-        authDomain: "pickle-fdc54.firebaseapp.com",
-        projectId: "pickle-fdc54",
-        storageBucket: "pickle-fdc54.firebasestorage.app",
-        messagingSenderId: "650348710985",
-        appId: "1:650348710985:web:b8eedb551a79b536578398",
-        measurementId: "G-B40NG5KQDL"
-    };
+    <script>
+        // ─── Firebase Init ───
+        const firebaseConfig = {
+            apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
+            authDomain: "pickle-fdc54.firebaseapp.com",
+            projectId: "pickle-fdc54",
+            storageBucket: "pickle-fdc54.firebasestorage.app",
+            messagingSenderId: "650348710985",
+            appId: "1:650348710985:web:b8eedb551a79b536578398",
+            measurementId: "G-B40NG5KQDL"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
-    const mainApp = firebase.initializeApp(mainConfig);        // default app
-    const landingApp = firebase.initializeApp(landingConfig, 'landingApp');
+        let currentUser = null;
+        let cart = JSON.parse(localStorage.getItem('vastramaya_cart')) || [];
 
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    const landingDb = firebase.firestore(landingApp);          // for products
-
-    // Shared navbar & cart logic
-    let cart = JSON.parse(localStorage.getItem('vastramaya_cart')) || [];
-    let currentUser = null;
-    let wishlist = [];
-
-    function renderCart() {
-        const desktopBody = document.getElementById('cart-items-desktop');
-        const mobileBody = document.getElementById('cart-items-mobile');
-        const badgeDesktop = document.getElementById('cart-badge-desktop');
-        const badgeMobile = document.getElementById('cart-badge-mobile');
-        const totalDesktop = document.getElementById('cart-total-desktop');
-        const totalMobile = document.getElementById('cart-total-mobile');
-        const countDesktop = document.getElementById('cart-count-desktop');
-        const countMobile = document.getElementById('cart-count-mobile');
-        let total = 0, count = 0, html = '';
-        if (cart.length === 0) {
-            html = '<div class="empty-cart-msg">Your cart is empty</div>';
-        } else {
-            cart.forEach(item => {
-                total += item.price * item.quantity;
-                count += item.quantity;
-                html += `<div class="cart-item">
-                    <img src="${item.image}" alt="${item.name}" class="cart-item-img">
-                    <div class="cart-item-details">
-                        <div class="cart-item-title">${item.name}</div>
-                        <div class="cart-item-price">₹${item.price}</div>
-                        <div class="cart-item-quantity">
-                            <div class="quantity-btn" onclick="updateQuantity('${item.uniqueId}', -1)">−</div>
-                            <div class="quantity-value">${item.quantity}</div>
-                            <div class="quantity-btn" onclick="updateQuantity('${item.uniqueId}', 1)">+</div>
-                        </div>
-                    </div>
-                    <div class="cart-item-remove" onclick="removeFromCart('${item.uniqueId}')">×</div>
-                </div>`;
-            });
-        }
-        if (desktopBody) desktopBody.innerHTML = html;
-        if (mobileBody) mobileBody.innerHTML = html;
-        if (badgeDesktop) { badgeDesktop.textContent = count; badgeDesktop.style.display = count > 0 ? 'flex' : 'none'; }
-        if (badgeMobile) { badgeMobile.textContent = count; badgeMobile.style.display = count > 0 ? 'flex' : 'none'; }
-        if (totalDesktop) totalDesktop.textContent = `₹${total.toFixed(2)}`;
-        if (totalMobile) totalMobile.textContent = `₹${total.toFixed(2)}`;
-        if (countDesktop) countDesktop.textContent = `${count} item${count !== 1 ? 's' : ''}`;
-        if (countMobile) countMobile.textContent = `Your Cart (${count})`;
-    }
-
-    function removeFromCart(uniqueId) {
-        cart = cart.filter(item => String(item.uniqueId) !== String(uniqueId));
-        saveCart(true);
-        renderCart();
-    }
-    function updateQuantity(uniqueId, change) {
-        const item = cart.find(item => String(item.uniqueId) === String(uniqueId));
-        if (item) {
-            item.quantity += change;
-            if (item.quantity <= 0) removeFromCart(uniqueId);
-            else { saveCart(true); renderCart(); }
-        }
-    }
-    function saveCart(syncDB) {
-        localStorage.setItem('vastramaya_cart', JSON.stringify(cart));
-        if (syncDB && currentUser) {
-            db.collection('users').doc(currentUser.uid).update({ cart }).catch(() => {});
-        }
-    }
-
-    function initNavbarUI() {
-        const dCartToggle = document.getElementById('d-cart-toggle');
-        const cartPopup = document.getElementById('cart-popup');
-        if (dCartToggle && cartPopup) {
-            dCartToggle.onclick = e => { e.stopPropagation(); cartPopup.classList.toggle('show'); };
-            cartPopup.onclick = e => e.stopPropagation();
-            document.addEventListener('click', () => cartPopup.classList.remove('show'));
-        }
-        const pToggle = document.getElementById('d-profile-toggle');
-        const pPopup = document.getElementById('profile-popup');
-        if (pToggle) {
-            pToggle.onclick = e => { e.stopPropagation(); pPopup.classList.toggle('show'); };
-            document.onclick = () => pPopup.classList.remove('show');
-        }
-        const mMenuToggle = document.getElementById('m-menu-toggle');
-        const mOverlay = document.getElementById('m-overlay');
-        const mDrawerClose = document.getElementById('m-drawer-close');
-        if (mMenuToggle) mMenuToggle.onclick = () => mOverlay.classList.add('open');
-        if (mDrawerClose) mDrawerClose.onclick = () => mOverlay.classList.remove('open');
-        if (mOverlay) mOverlay.onclick = e => { if (e.target === mOverlay) mOverlay.classList.remove('open'); };
-
-        const mCartToggle = document.getElementById('m-cart-toggle');
-        const cartOverlay = document.getElementById('cart-overlay');
-        const cartDrawerClose = document.getElementById('cart-drawer-close');
-        if (mCartToggle && cartOverlay) {
-            mCartToggle.onclick = () => cartOverlay.classList.add('open');
-            cartDrawerClose.onclick = () => cartOverlay.classList.remove('open');
-            cartOverlay.onclick = e => { if (e.target === cartOverlay) cartOverlay.classList.remove('open'); };
-        }
-        const mCatToggle = document.getElementById('m-categories-toggle');
-        const mCatContent = document.getElementById('mobile-nav-categories');
-        if (mCatToggle) {
-            mCatToggle.onclick = () => {
-                const open = mCatContent.style.display === 'block';
-                mCatContent.style.display = open ? 'none' : 'block';
-                mCatToggle.classList.toggle('active', !open);
-            };
-        }
-        const mProfileTrig = document.getElementById('mobile-profile-trigger');
-        const mProfilePopup = document.getElementById('m-profile-popup');
-        if (mProfileTrig) {
-            mProfileTrig.onclick = (e) => {
-                if (e.target.closest('.m-profile-popup-menu')) return;
-                mProfilePopup.classList.toggle('active');
-            };
-        }
-        document.getElementById('mobile-logout-btn')?.addEventListener('click', () => auth.signOut());
-    }
-
-    async function loadCategories() {
-        try {
-            const snapshot = await db.collection('categories').get();
-            const categories = snapshot.docs.map(d => ({ id: d.id, ...d.data() })).filter(c => c.enabled !== false);
-            document.getElementById('desktop-nav-categories').innerHTML = categories.map(c => `<a href="shop.html?category=${encodeURIComponent(c.name)}" class="d-category-item">${c.name}</a>`).join('');
-            document.getElementById('mobile-nav-categories').innerHTML = categories.map(c => `<a href="shop.html?category=${encodeURIComponent(c.name)}" class="m-category-item">${c.name}</a>`).join('');
-        } catch (err) { console.error('Categories error', err); }
-    }
-
-    // Remove product from wishlist (Firestore)
-    async function removeFromWishlist(productId) {
-        if (!currentUser) return;
-        const userRef = db.collection('users').doc(currentUser.uid);
-        try {
-            await userRef.update({
-                wishlist: firebase.firestore.FieldValue.arrayRemove(productId)
-            });
-        } catch (err) {
-            console.error('Wishlist remove error', err);
-        }
-    }
-
-    // Render wishlist items
-    async function renderWishlist() {
-        const grid = document.getElementById('wishlist-grid');
-        const emptyMsg = document.getElementById('wishlist-empty');
-        if (!currentUser) {
-            grid.innerHTML = '<p style="text-align:center; color:var(--ash);">Please <a href="landing.html?login=true">sign in</a> to see your wishlist.</p>';
-            emptyMsg.style.display = 'none';
-            return;
-        }
-
-        // Fetch wishlist from user doc
-        const userDoc = await db.collection('users').doc(currentUser.uid).get();
-        const data = userDoc.data();
-        wishlist = data?.wishlist || [];
-
-        const badgeDesktop = document.getElementById('wishlist-badge-desktop');
-        const badgeMobile = document.getElementById('wishlist-badge-mobile');
-        if (badgeDesktop) { badgeDesktop.textContent = wishlist.length; badgeDesktop.style.display = wishlist.length > 0 ? 'flex' : 'none'; }
-        if (badgeMobile) { badgeMobile.textContent = wishlist.length; badgeMobile.style.display = wishlist.length > 0 ? 'flex' : 'none'; }
-
-        if (!wishlist.length) {
-            grid.innerHTML = '';
-            emptyMsg.style.display = 'block';
-            return;
-        }
-
-        // Fetch product details from landingDb (pickle-fdc54)
-        const productIds = wishlist;
-        const productsSnap = await landingDb.collection('products').where(firebase.firestore.FieldPath.documentId(), 'in', productIds).get();
-        const productsMap = {};
-        productsSnap.forEach(doc => { productsMap[doc.id] = { id: doc.id, ...doc.data() }; });
-
-        let html = '';
-        wishlist.forEach(id => {
-            const prod = productsMap[id];
-            if (!prod) return;
-            const img = prod.image || `https://placehold.co/400x400/f5e9e7/c0392b?text=${encodeURIComponent(prod.name)}`;
-            html += `
-                <div class="product-card">
-                    <div class="product-card-img">
-                        <img src="${img}" alt="${prod.name}" onerror="this.src='${img}'">
-                    </div>
-                    <div class="product-card-body">
-                        <div class="product-card-name">${prod.name}</div>
-                        <div class="product-card-price">₹${prod.price || '--'}</div>
-                        <button class="wishlist-remove-btn" onclick="removeFromWishlist('${id}')">Remove</button>
-                    </div>
-                </div>`;
+        document.addEventListener('DOMContentLoaded', () => {
+            initNavbarUI();
+            checkAuthAndLoadOrders();
+            renderCart();
         });
 
-        grid.innerHTML = html || '<div class="empty-wishlist">No valid products found in wishlist.</div>';
-        emptyMsg.style.display = html ? 'none' : 'block';
-    }
-
-    // Auth state listener
-    auth.onAuthStateChanged(async user => {
-        currentUser = user;
-        renderCart();
-        loadCategories();
-        initNavbarUI();
-
-        const authOnly = document.querySelectorAll('.auth-only');
-        const loginTrigDesktop = document.getElementById('login-trigger-desktop');
-        const mobileProfileTrig = document.getElementById('mobile-profile-trigger');
-        const userNameDesktop = document.getElementById('user-name');
-        const userEmailDesktop = document.getElementById('user-email');
-        const userNameMobile = document.getElementById('user-name-mobile');
-        const userPhoneMobile = document.getElementById('user-phone-mobile');
-
-        if (user) {
-            authOnly.forEach(el => el.classList.remove('auth-hidden'));
-            const userDoc = await db.collection('users').doc(user.uid).get();
-            const data = userDoc.exists ? userDoc.data() : {};
-            const name = data.name || user.displayName || 'User';
-            const email = user.email;
-
-            if (userNameDesktop) { userNameDesktop.textContent = name; userEmailDesktop.textContent = email; }
-            if (userNameMobile) { userNameMobile.textContent = name; userPhoneMobile.textContent = email; }
-            if (loginTrigDesktop) {
-                loginTrigDesktop.innerHTML = `<span class="icon-wrap"><img src="./assets/logout.svg" class="icon-default" alt=""><img src="./assets/logout-fill.svg" class="icon-fill" alt=""></span> Sign Out`;
-                loginTrigDesktop.onclick = (e) => { e.preventDefault(); auth.signOut(); };
+        function initNavbarUI() {
+            // Same as profile page: popups, drawer, cart
+            const pToggle = document.getElementById('d-profile-toggle');
+            const pPopup = document.getElementById('profile-popup');
+            if (pToggle) {
+                pToggle.onclick = e => { e.stopPropagation(); pPopup.classList.toggle('show'); };
+                document.addEventListener('click', e => { if (pPopup && !pPopup.contains(e.target) && !pToggle.contains(e.target)) pPopup.classList.remove('show'); });
             }
-            if (mobileProfileTrig) {
-                mobileProfileTrig.onclick = (e) => {
-                    if (e.target.closest('.m-profile-popup-menu')) return;
-                    document.getElementById('m-profile-popup').classList.toggle('active');
-                };
+            const cToggle = document.getElementById('d-cart-toggle');
+            const cPopup = document.getElementById('cart-popup');
+            if (cToggle) {
+                cToggle.onclick = e => { e.stopPropagation(); cPopup.classList.toggle('show'); };
+                cPopup.onclick = e => e.stopPropagation();
+                document.addEventListener('click', e => { if (cPopup && !cPopup.contains(e.target) && !cToggle.contains(e.target)) cPopup.classList.remove('show'); });
             }
-        } else {
-            authOnly.forEach(el => el.classList.add('auth-hidden'));
-            if (loginTrigDesktop) {
-                loginTrigDesktop.innerHTML = `<span class="icon-wrap"><img src="./assets/login.svg" class="icon-default" alt=""><img src="./assets/login-fill.svg" class="icon-fill" alt=""></span> Sign In`;
-                loginTrigDesktop.onclick = (e) => { e.preventDefault(); window.location.href = 'landing.html?login=true'; };
-            }
-            if (mobileProfileTrig) {
-                mobileProfileTrig.onclick = (e) => { e.preventDefault(); window.location.href = 'landing.html?login=true'; };
-            }
-            if (userNameDesktop) userNameDesktop.textContent = 'Guest';
-            if (userNameMobile) userNameMobile.textContent = 'Guest';
+            const mMenuToggle = document.getElementById('m-menu-toggle');
+            const mDrawerClose = document.getElementById('m-drawer-close');
+            const mOverlay = document.getElementById('m-overlay');
+            if (mMenuToggle) mMenuToggle.onclick = () => mOverlay.classList.toggle('open');
+            if (mDrawerClose) mDrawerClose.onclick = () => mOverlay.classList.remove('open');
+            if (mOverlay) mOverlay.onclick = e => { if (e.target === mOverlay) mOverlay.classList.remove('open'); };
+            const mCartToggle = document.getElementById('m-cart-toggle-m');
+            const cartOverlay = document.getElementById('cart-overlay');
+            const cartDrawerClose = document.getElementById('cart-drawer-close');
+            if (mCartToggle) mCartToggle.onclick = () => cartOverlay.classList.add('open');
+            if (cartDrawerClose) cartDrawerClose.onclick = () => cartOverlay.classList.remove('open');
+            if (cartOverlay) cartOverlay.onclick = e => { if (e.target === cartOverlay) cartOverlay.classList.remove('open'); };
+            initAuthModal();
         }
 
-        // Render wishlist based on current user
-        renderWishlist();
+        function initAuthModal() {
+            const overlay = document.getElementById('login-modal-overlay');
+            const closeBtn = document.getElementById('close-modal-btn');
+            const showLoginBtn = document.getElementById('show-login-btn');
+            const showSignupBtn = document.getElementById('show-signup-btn');
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            const goLogin = () => { signupForm.classList.remove('active'); showSignupBtn.classList.remove('active'); loginForm.classList.add('active'); showLoginBtn.classList.add('active'); };
+            const goSignup = () => { loginForm.classList.remove('active'); showLoginBtn.classList.remove('active'); signupForm.classList.add('active'); showSignupBtn.classList.add('active'); };
+            showLoginBtn.onclick = goLogin;
+            showSignupBtn.onclick = goSignup;
+            document.querySelectorAll('.switch-to-login').forEach(el => el.onclick = goLogin);
+            document.querySelectorAll('.switch-to-signup').forEach(el => el.onclick = goSignup);
+            closeBtn.onclick = () => { overlay.classList.remove('active'); };
+            overlay.onclick = e => { if (e.target === overlay) overlay.classList.remove('active'); };
+            loginForm.addEventListener('submit', e => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const pass = document.getElementById('login-password').value;
+                document.getElementById('loader').style.display = 'flex';
+                auth.signInWithEmailAndPassword(email, pass)
+                    .then(() => { document.getElementById('loader').style.display = 'none'; overlay.classList.remove('active'); showToast('Login Successful!'); })
+                    .catch(err => { document.getElementById('loader').style.display = 'none'; showToast(err.message); });
+            });
+            signupForm.addEventListener('submit', e => {
+                e.preventDefault();
+                const name = document.getElementById('signup-name').value;
+                const email = document.getElementById('signup-email').value;
+                const pass = document.getElementById('signup-password').value;
+                document.getElementById('loader').style.display = 'flex';
+                auth.createUserWithEmailAndPassword(email, pass)
+                    .then(cred => {
+                        const uid = cred.user.uid;
+                        return cred.user.updateProfile({ displayName: name }).then(() =>
+                            Promise.all([
+                                db.collection('users').doc(uid).set({ name, email, createdAt: firebase.firestore.FieldValue.serverTimestamp() }),
+                                db.collection('user-login').doc(uid).set({ uid, name, email, createdAt: firebase.firestore.FieldValue.serverTimestamp() })
+                            ])
+                        );
+                    })
+                    .then(() => { document.getElementById('loader').style.display = 'none'; overlay.classList.remove('active'); showToast('Account Created!'); })
+                    .catch(err => { document.getElementById('loader').style.display = 'none'; showToast(err.message); });
+            });
+        }
 
-        // Realtime wishlist listener (updates badges & grid on changes)
-        if (user) {
-            db.collection('users').doc(user.uid).onSnapshot(doc => {
-                if (doc.exists) {
-                    wishlist = doc.data().wishlist || [];
-                    renderWishlist(); // re-render grid
+        function openAuthModal() { document.getElementById('login-modal-overlay').classList.add('active'); }
+
+        // ─── Auth & Orders ───
+        function checkAuthAndLoadOrders() {
+            auth.onAuthStateChanged(async user => {
+                currentUser = user;
+                if (user) {
+                    // Update navbar
+                    document.getElementById('profile-avatar-initial').textContent = (user.displayName || user.email || 'G').charAt(0).toUpperCase();
+                    document.getElementById('user-name').textContent = user.displayName || 'User';
+                    document.getElementById('user-email').textContent = user.email;
+                    document.getElementById('logout-btn-desktop').onclick = () => auth.signOut();
+                    document.getElementById('logout-btn-mobile').onclick = () => auth.signOut();
+                    await syncCartToFirestore();
+                    await loadOrders(user.uid);
+                } else {
+                    window.location.href = 'landing-page.html';
                 }
-            }, err => console.error('Wishlist listener error', err));
+            });
         }
-    });
-</script>
+
+        async function loadOrders(uid) {
+            try {
+                const doc = await db.collection('users').doc(uid).get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    const currentOrder = data.currentOrder || null;
+                    const orders = data.orders || [];
+                    renderOrders(currentOrder, orders);
+                } else {
+                    renderOrders(null, []);
+                }
+            } catch (err) {
+                console.error('Error loading orders:', err);
+                showToast('Failed to load orders.');
+                renderOrders(null, []);
+            }
+            // Hide skeleton, show content
+            document.getElementById('ordersSkeleton').style.display = 'none';
+            document.getElementById('ordersContent').style.display = 'block';
+        }
+
+        function renderOrders(currentOrder, pastOrders) {
+            // Render current order
+            const currentContainer = document.getElementById('currentOrderContainer');
+            if (currentOrder) {
+                let html = '';
+                if (currentOrder.items && currentOrder.items.length) {
+                    html += '<div class="current-order-items">';
+                    currentOrder.items.forEach(item => {
+                        html += `<div class="order-item-row">
+                            <img src="${item.image}" class="order-item-img" onerror="this.src='https://placehold.co/50'">
+                            <div>
+                                <div class="order-item-name">${item.name}</div>
+                                <div class="order-item-meta">Qty: ${item.quantity} × ₹${item.price}</div>
+                            </div>
+                        </div>`;
+                    });
+                    html += '</div>';
+                    html += `<div class="order-total-row"><span>Total</span><span>₹${currentOrder.total || 0}</span></div>`;
+                } else {
+                    html = '<div class="empty-state">No items in current order.</div>';
+                }
+                // Status bar
+                const status = currentOrder.status || 'processing';
+                const steps = ['Placed', 'Processing', 'Shipped', 'Delivered'];
+                const activeIndex = steps.findIndex(s => s.toLowerCase() === status.toLowerCase());
+                html += '<div class="order-status-bar">';
+                steps.forEach((step, i) => {
+                    html += `<div class="order-status-step ${i <= activeIndex ? 'active' : ''}">${step}</div>`;
+                });
+                html += '</div>';
+                currentContainer.innerHTML = html;
+            } else {
+                currentContainer.innerHTML = '<div class="empty-state">No active order.</div>';
+            }
+
+            // Render past orders
+            const pastContainer = document.getElementById('pastOrdersContainer');
+            if (!pastOrders || pastOrders.length === 0) {
+                pastContainer.innerHTML = '<div class="empty-state">No past orders.</div>';
+                return;
+            }
+            let html = '';
+            pastOrders.forEach(order => {
+                html += `<div class="order-card">
+                    <div class="order-card-header">
+                        <span class="order-id">Order #${order.orderId || order.id || 'N/A'}</span>
+                        <span class="order-date">${order.date ? new Date(order.date).toLocaleDateString() : ''}</span>
+                        <span class="order-status-badge">${order.status || 'completed'}</span>
+                    </div>`;
+                if (order.address) {
+                    html += `<div class="order-address">📍 ${order.address.fullName || ''}, ${order.address.line1 || ''}, ${order.address.city || ''} - ${order.address.pincode || ''}</div>`;
+                }
+                if (order.items && order.items.length) {
+                    html += '<div class="order-items-preview">';
+                    order.items.forEach(item => {
+                        html += `<img src="${item.image}" class="order-item-thumb" onerror="this.src='https://placehold.co/40'" alt="${item.name}">`;
+                    });
+                    html += '</div>';
+                }
+                html += `<div class="order-card-footer">
+                    <span>${order.items ? order.items.reduce((s,i) => s + i.quantity, 0) : 0} items</span>
+                    <span class="order-card-total">₹${order.total || 0}</span>
+                </div></div>`;
+            });
+            pastContainer.innerHTML = html;
+        }
+
+        // ─── Cart Logic (same as profile) ───
+        function saveCart(syncDB = true) {
+            localStorage.setItem('vastramaya_cart', JSON.stringify(cart));
+            if (syncDB && currentUser) {
+                db.collection('users').doc(currentUser.uid).update({ cart }).catch(err => console.error('Cart sync error:', err));
+            }
+        }
+        async function syncCartToFirestore() {
+            if (!currentUser) return;
+            try {
+                const doc = await db.collection('users').doc(currentUser.uid).get();
+                if (doc.exists && doc.data().cart) {
+                    if (cart.length === 0) { cart = doc.data().cart; saveCart(false); renderCart(); } else {
+                        const dbCart = doc.data().cart || [];
+                        cart.forEach(localItem => {
+                            const existing = dbCart.find(d => String(d.uniqueId) === String(localItem.uniqueId));
+                            if (existing) existing.quantity = Math.max(existing.quantity, localItem.quantity);
+                            else dbCart.push(localItem);
+                        });
+                        cart = dbCart;
+                        saveCart(false);
+                        renderCart();
+                    }
+                } else if (cart.length > 0) saveCart(true);
+            } catch (e) { console.error('Sync error', e); }
+        }
+        function renderCart() {
+            const desktopBody = document.getElementById('cart-items-desktop');
+            const mobileBody = document.getElementById('cart-items-mobile');
+            const badgeD = document.getElementById('cart-badge-desktop');
+            const badgeM = document.getElementById('cart-badge-mobile');
+            const totalD = document.getElementById('cart-total-desktop');
+            const totalM = document.getElementById('cart-total-mobile');
+            const countD = document.getElementById('cart-count-desktop');
+            const countM = document.getElementById('cart-count-mobile');
+            let total = 0,
+                count = 0,
+                html = '';
+            if (cart.length === 0) html = '<div class="empty-cart-msg">Your cart is empty</div>';
+            else cart.forEach(item => {
+                total += item.price * item.quantity;
+                count += item.quantity;
+                html += `<div class="cart-item"><img src="${item.image}" class="cart-item-img" onerror="this.src='https://placehold.co/50'"><div class="cart-item-details"><div class="cart-item-title">${item.name}</div><div class="cart-item-price">₹${item.price}</div><div class="cart-item-qty">Qty: ${item.quantity}</div></div></div>`;
+            });
+            if (desktopBody) desktopBody.innerHTML = html;
+            if (mobileBody) mobileBody.innerHTML = html;
+            if (badgeD) { badgeD.textContent = count;
+                badgeD.style.display = count > 0 ? 'flex' : 'none'; }
+            if (badgeM) { badgeM.textContent = count;
+                badgeM.style.display = count > 0 ? 'flex' : 'none'; }
+            if (totalD) totalD.textContent = `₹${total.toFixed(2)}`;
+            if (totalM) totalM.textContent = `₹${total.toFixed(2)}`;
+            if (countD) countD.textContent = `${count} item${count !== 1 ? 's' : ''}`;
+            if (countM) countM.textContent = count;
+        }
+
+        function showToast(msg) {
+            const container = document.getElementById('toast-container');
+            const el = document.createElement('div');
+            el.className = 'toast';
+            el.innerHTML = `<span>${msg}</span>`;
+            container.appendChild(el);
+            setTimeout(() => el.remove(), 3000);
+        }
+    </script>
 </body>
 </html>
