@@ -679,8 +679,9 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { 
-        getFirestore, doc, getDoc, collection, addDoc 
+        getFirestore, doc, getDoc, setDoc
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCxjDuFS_ntaOF-K8hFBaxQ0_8CR9yvbkM",
@@ -693,6 +694,7 @@
     };
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth(app);
 
     function formatPrice(p) { return `₹${Math.round(Number(p) || 0)}`; }
 
@@ -729,6 +731,7 @@
         </div>
     </div>`;
 
+    let currentUser = null;
     let checkoutItems = [];
     let appliedCoupon = null;
     let selectedPayment = 'online';
@@ -874,9 +877,26 @@
         }
     }
 
+    async function loadSavedAddress() {
+        if (!currentUser) return;
+        try {
+            const userDoc = await getDoc(doc(db, "user-login", currentUser.uid));
+            if (userDoc.exists()) {
+                const data = userDoc.data();
+                if (data.address) {
+                    savedAddress = data.address;
+                    renderLeftPanel(); // re-render to show address
+                }
+            }
+        } catch (e) {
+            console.error('Error loading address:', e);
+        }
+    }
+
     function renderLeftPanel() {
         const leftContainer = document.getElementById('leftPanelContainer');
         if (!leftContainer) return;
+
         const addressHtml = savedAddress ? `
             <div class="address-display">
                 <span class="address-type-tag">🏠 Home</span>
@@ -884,6 +904,7 @@
                 ${escapeHtml(savedAddress.address)}<br>
                 ${escapeHtml(savedAddress.city)} - ${escapeHtml(savedAddress.pincode)}<br>
                 📞 ${escapeHtml(savedAddress.phone)}
+                <button class="add-address-btn" id="changeAddressBtn" style="margin-top:12px;">✏️ Change</button>
             </div>
         ` : '<p style="color:var(--ash); margin-top:16px; font-size:14px;">No address added yet.</p>';
 
@@ -916,6 +937,21 @@
         `;
 
         document.getElementById('openAddressBtn')?.addEventListener('click', openAddressModal);
+
+        // Attach change button listener if it exists
+        const changeBtn = document.getElementById('changeAddressBtn');
+        if (changeBtn) {
+            changeBtn.addEventListener('click', () => {
+                // Pre-fill modal with existing address
+                document.getElementById('addrName').value = savedAddress.name || '';
+                document.getElementById('addrPhone').value = savedAddress.phone || '';
+                document.getElementById('addrFull').value = savedAddress.address || '';
+                document.getElementById('addrCity').value = savedAddress.city || '';
+                document.getElementById('addrPincode').value = savedAddress.pincode || '';
+                openAddressModal();
+            });
+        }
+
         const radios = document.querySelectorAll('.payment-radio');
         radios.forEach(radio => {
             radio.addEventListener('click', () => {
@@ -978,14 +1014,32 @@
 
     function openAddressModal() { document.getElementById('addressModal').style.display = 'flex'; }
     window.closeAddressModal = function() { document.getElementById('addressModal').style.display = 'none'; };
-    window.saveAddress = function() {
+
+    window.saveAddress = async function() {
         const name = document.getElementById('addrName').value.trim();
         const phone = document.getElementById('addrPhone').value.trim();
         const address = document.getElementById('addrFull').value.trim();
         const city = document.getElementById('addrCity').value.trim();
         const pincode = document.getElementById('addrPincode').value.trim();
-        if (!name || !phone || !address || !city || !pincode) { alert('Please fill all fields'); return; }
-        savedAddress = { name, phone, address, city, pincode };
+
+        if (!name || !phone || !address || !city || !pincode) {
+            alert('Please fill all fields');
+            return;
+        }
+
+        const newAddress = { name, phone, address, city, pincode };
+        savedAddress = newAddress;
+
+        // Save to Firestore if logged in
+        if (currentUser) {
+            try {
+                await setDoc(doc(db, "user-login", currentUser.uid), { address: newAddress }, { merge: true });
+            } catch (e) {
+                console.error('Error saving address to Firestore:', e);
+                alert('Address saved locally but failed to sync to your account.');
+            }
+        }
+
         renderLeftPanel();
         closeAddressModal();
     };
@@ -1039,6 +1093,13 @@
     async function initCheckout() {
         const root = document.getElementById('checkoutRoot');
         root.innerHTML = skeletonHTML;
+
+        // Set up auth listener to load address as soon as user is known
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            loadSavedAddress();
+        });
+
         checkoutItems = await getCheckoutItems();
         if (!checkoutItems.length) {
             root.innerHTML = `<div style="text-align:center; padding:60px; font-size:1.2rem;">❌ No items to checkout.<br><a href="index.html" style="color:var(--rust); font-weight:600;">Continue Shopping</a></div>`;
