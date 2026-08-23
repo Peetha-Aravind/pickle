@@ -88,6 +88,7 @@
             height: 2px; background: var(--brand-primary); border-radius: 1px;
         }
         .d-action-icons { display: flex; align-items: center; gap: 16px; }
+        .d-cart-dropdown { position: relative; }
         .d-icon-btn {
             position: relative; width: 40px; height: 40px; border-radius: 10px;
             background: var(--surface-light); border: 1px solid var(--border-subtle);
@@ -271,6 +272,44 @@
         #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 6000; pointer-events: none; display: flex; flex-direction: column; gap: 10px; }
         .toast { padding: 14px 20px; background: #fff; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.15); animation: slideUp .3s ease; display: flex; align-items: center; gap: 12px; border-left: 4px solid var(--brand-primary); min-width: 280px; pointer-events: auto; font-size: 14px; font-weight: 500; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ─── AUTH MODAL (fixed) ─── */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,.5); backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center; z-index: 4000;
+        }
+        .modal-overlay.active { display: flex; }
+        .login-container {
+            background: var(--surface-card); border-radius: var(--r-card); max-width: 420px; width: 90%;
+            padding: 32px 28px; position: relative; box-shadow: var(--shadow-lg);
+        }
+        .modal-close-btn {
+            position: absolute; top: 16px; right: 16px; width: 40px; height: 40px;
+            border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--surface-light);
+            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .2s;
+            z-index: 5;
+        }
+        .modal-close-btn:hover { background: var(--surface-hover); border-color: var(--brand-primary); }
+        .form-panel-wrapper { position: relative; }
+        #loader { display: none; position: absolute; inset: 0; background: rgba(255,255,255,.7); align-items: center; justify-content: center; z-index: 10; border-radius: var(--r-card); }
+        #loader .spinner { width: 32px; height: 32px; border: 3px solid #ddd; border-top-color: var(--brand-primary); border-radius: 50%; animation: spin .8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .form-toggle { display: flex; gap: 8px; margin-bottom: 24px; background: var(--surface-light); border-radius: var(--r-pill); padding: 4px; }
+        .toggle-btn { flex: 1; padding: 10px 16px; border: none; background: transparent; border-radius: var(--r-pill); font-weight: 600; font-size: 14px; cursor: pointer; color: var(--text-secondary); transition: all .2s; }
+        .toggle-btn.active { background: var(--brand-gradient); color: #fff; box-shadow: 0 4px 12px rgba(192,57,43,.3); }
+        .form-container form { display: none; }
+        .form-container form.active { display: block; }
+        .form-header { margin-bottom: 20px; }
+        .form-header h2 { font-family: var(--ff-display); font-size: 1.8rem; font-weight: 900; color: var(--ink); margin-bottom: 4px; }
+        .form-header p { color: var(--ash); font-size: 14px; }
+        .input-group { margin-bottom: 16px; }
+        .input-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: var(--text-secondary); }
+        .input-group input { width: 100%; padding: 12px 14px; border: 1px solid var(--border-subtle); border-radius: 10px; font-size: 14px; transition: border-color .2s; outline: none; background: var(--surface-light); }
+        .input-group input:focus { border-color: var(--brand-primary); }
+        .btn-submit { width: 100%; padding: 12px; background: var(--brand-gradient); color: #fff; border: none; border-radius: 10px; font-weight: 600; font-size: 15px; cursor: pointer; transition: all .3s; }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(192,57,43,.3); }
+        .switch-form-text { margin-top: 16px; text-align: center; font-size: 14px; color: var(--ash); }
+        .switch-form-text a { color: var(--brand-primary); font-weight: 600; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -286,20 +325,22 @@
                     <a href="user-orders.html" class="d-nav-link active">My Orders</a>
                 </div>
                 <div class="d-action-icons">
-                    <button class="d-icon-btn icon-trigger" id="d-cart-toggle" aria-label="Cart">
-                        <span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default" alt=""><img src="./assets/cart-fill.svg" class="icon-fill" alt=""></span>
-                        <span class="cart-badge" id="cart-badge-desktop" style="display:none">0</span>
-                    </button>
-                    <div class="cart-popup" id="cart-popup">
-                        <div class="cart-popup-header"><div class="cart-popup-title">Your Cart</div><div class="cart-popup-subtitle" id="cart-count-desktop">0 items</div></div>
-                        <div class="cart-popup-body" id="cart-items-desktop"></div>
-                        <div class="cart-popup-footer">
-                            <div class="cart-total-row"><span class="cart-total-label">Total</span><span class="cart-total-amount" id="cart-total-desktop">₹0</span></div>
-                            <button class="checkout-btn" onclick="window.location.href='checkout.html'">Checkout →</button>
+                    <div class="d-cart-dropdown">
+                        <button class="d-icon-btn icon-trigger" id="d-cart-toggle" aria-label="Cart" type="button">
+                            <span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default" alt=""><img src="./assets/cart-fill.svg" class="icon-fill" alt=""></span>
+                            <span class="cart-badge" id="cart-badge-desktop" style="display:none">0</span>
+                        </button>
+                        <div class="cart-popup" id="cart-popup">
+                            <div class="cart-popup-header"><div class="cart-popup-title">Your Cart</div><div class="cart-popup-subtitle" id="cart-count-desktop">0 items</div></div>
+                            <div class="cart-popup-body" id="cart-items-desktop"></div>
+                            <div class="cart-popup-footer">
+                                <div class="cart-total-row"><span class="cart-total-label">Total</span><span class="cart-total-amount" id="cart-total-desktop">₹0</span></div>
+                                <button class="checkout-btn" onclick="window.location.href='checkout.html'">Checkout →</button>
+                            </div>
                         </div>
                     </div>
                     <div class="d-profile-dropdown">
-                        <button class="d-profile-btn icon-trigger" id="d-profile-toggle" aria-label="Profile">
+                        <button class="d-profile-btn icon-trigger" id="d-profile-toggle" aria-label="Profile" type="button">
                             <span class="icon-wrap"><img src="./assets/user.svg" class="icon-default" alt=""><img src="./assets/user-fill.svg" class="icon-fill" alt=""></span>
                         </button>
                         <div class="profile-popup" id="profile-popup">
@@ -322,15 +363,15 @@
     <!-- Mobile Navbar -->
     <div class="page-mobile">
         <nav class="m-navbar">
-            <button class="m-menu-btn icon-trigger" id="m-menu-toggle" aria-label="Menu"><span class="icon-wrap"><img src="./assets/menu.svg" class="icon-default" alt=""><img src="./assets/menu-fill.svg" class="icon-fill" alt=""></span></button>
+            <button class="m-menu-btn icon-trigger" id="m-menu-toggle" aria-label="Menu" type="button"><span class="icon-wrap"><img src="./assets/menu.svg" class="icon-default" alt=""><img src="./assets/menu-fill.svg" class="icon-fill" alt=""></span></button>
             <img class="d-navbar-logo" src="./assets/logo.png" alt="Logo" onclick="window.location.href='landing-page.html'" />
             <div class="m-right-icons">
-                <button class="m-icon-btn icon-trigger" id="m-cart-toggle-m" aria-label="Cart"><span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default" alt=""><img src="./assets/cart-fill.svg" class="icon-fill" alt=""></span><span class="cart-badge" id="cart-badge-mobile" style="display:none">0</span></button>
+                <button class="m-icon-btn icon-trigger" id="m-cart-toggle-m" aria-label="Cart" type="button"><span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default" alt=""><img src="./assets/cart-fill.svg" class="icon-fill" alt=""></span><span class="cart-badge" id="cart-badge-mobile" style="display:none">0</span></button>
             </div>
         </nav>
         <div class="m-overlay" id="m-overlay">
             <div class="m-drawer">
-                <div class="m-drawer-header"><img class="m-drawer-logo" src="./assets/logo.png" alt="Logo" /><button class="m-drawer-close icon-trigger" id="m-drawer-close" aria-label="Close"><span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span></button></div>
+                <div class="m-drawer-header"><img class="m-drawer-logo" src="./assets/logo.png" alt="Logo" /><button class="m-drawer-close icon-trigger" id="m-drawer-close" aria-label="Close" type="button"><span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span></button></div>
                 <nav class="m-drawer-nav">
                     <a href="landing-page.html" class="m-nav-link icon-trigger"><span class="icon-wrap"><img src="./assets/home.svg" class="icon-default" alt=""><img src="./assets/home-fill.svg" class="icon-fill" alt=""></span> Home</a>
                     <a href="shop.html" class="m-nav-link icon-trigger"><span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default" alt=""><img src="./assets/cart-fill.svg" class="icon-fill" alt=""></span> Shop</a>
@@ -343,7 +384,7 @@
         </div>
         <div class="cart-overlay" id="cart-overlay">
             <div class="cart-drawer">
-                <div class="cart-drawer-header"><span style="font-weight:700;font-size:16px;">Your Cart (<span id="cart-count-mobile">0</span>)</span><button class="m-drawer-close icon-trigger" id="cart-drawer-close" aria-label="Close cart"><span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span></button></div>
+                <div class="cart-drawer-header"><span style="font-weight:700;font-size:16px;">Your Cart (<span id="cart-count-mobile">0</span>)</span><button class="m-drawer-close icon-trigger" id="cart-drawer-close" aria-label="Close cart" type="button"><span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span></button></div>
                 <div class="cart-drawer-body" id="cart-items-mobile"></div>
                 <div class="cart-drawer-footer"><div style="display:flex;justify-content:space-between;margin-bottom:12px;"><span style="font-weight:600;">Total</span><span style="font-weight:700;color:var(--brand-primary);font-size:18px;" id="cart-total-mobile">₹0</span></div><button class="checkout-btn" onclick="window.location.href='checkout.html'">Checkout →</button></div>
             </div>
@@ -375,10 +416,10 @@
     <!-- Auth Modal -->
     <div class="modal-overlay" id="login-modal-overlay">
         <div class="login-container">
-            <button class="modal-close-btn icon-trigger" id="close-modal-btn" aria-label="Close"><span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span></button>
+            <button class="modal-close-btn icon-trigger" id="close-modal-btn" aria-label="Close" type="button"><span class="icon-wrap"><img src="./assets/close.svg" class="icon-default" alt=""><img src="./assets/close-fill.svg" class="icon-fill" alt=""></span></button>
             <div class="form-panel-wrapper">
                 <div id="loader"><div class="spinner"></div></div>
-                <div class="form-toggle"><button id="show-login-btn" class="toggle-btn active">Sign In</button><button id="show-signup-btn" class="toggle-btn">Sign Up</button></div>
+                <div class="form-toggle"><button id="show-login-btn" class="toggle-btn active" type="button">Sign In</button><button id="show-signup-btn" class="toggle-btn" type="button">Sign Up</button></div>
                 <div class="form-container">
                     <form id="login-form" class="active">
                         <div class="form-header"><h2>Welcome Back</h2><p>Sign in to view your orders.</p></div>
@@ -423,7 +464,16 @@
         const db = firebase.firestore();
 
         let currentUser = null;
-        let cart = JSON.parse(localStorage.getItem('vastramaya_cart')) || [];
+        
+        // Safe localStorage parsing
+        function getCartFromStorage() {
+            try {
+                return JSON.parse(localStorage.getItem('vastramaya_cart')) || [];
+            } catch (e) {
+                return [];
+            }
+        }
+        let cart = getCartFromStorage();
 
         document.addEventListener('DOMContentLoaded', () => {
             initNavbarUI();
@@ -495,8 +545,8 @@
                         const uid = cred.user.uid;
                         return cred.user.updateProfile({ displayName: name }).then(() =>
                             Promise.all([
-                                db.collection('user-login').doc(uid).set({ uid, name, email, createdAt: firebase.firestore.FieldValue.serverTimestamp() }),
-                                db.collection('users').doc(uid).set({ name, email, createdAt: firebase.firestore.FieldValue.serverTimestamp() })
+                                db.collection('user-login').doc(uid).set({ uid, name, email, createdAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }),
+                                db.collection('users').doc(uid).set({ name, email, createdAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true })
                             ])
                         );
                     })
@@ -542,6 +592,12 @@
             document.getElementById('ordersContent').style.display = 'block';
         }
 
+        function formatDate(dateVal) {
+            if (!dateVal) return '';
+            const d = dateVal && dateVal.toDate ? dateVal.toDate() : new Date(dateVal);
+            return d instanceof Date && !isNaN(d) ? d.toLocaleDateString() : '';
+        }
+
         function renderOrders(currentOrder, pastOrders) {
             const currentContainer = document.getElementById('currentOrderContainer');
             if (currentOrder) {
@@ -585,7 +641,7 @@
                 html += `<div class="order-card">
                     <div class="order-card-header">
                         <span class="order-id">Order #${order.orderId || order.id || 'N/A'}</span>
-                        <span class="order-date">${order.date ? new Date(order.date).toLocaleDateString() : ''}</span>
+                        <span class="order-date">${formatDate(order.date)}</span>
                         <span class="order-status-badge">${order.status || 'completed'}</span>
                     </div>`;
                 if (order.address) {
@@ -599,7 +655,7 @@
                     html += '</div>';
                 }
                 html += `<div class="order-card-footer">
-                    <span>${order.items ? order.items.reduce((s,i) => s + i.quantity, 0) : 0} items</span>
+                    <span>${order.items ? order.items.reduce((s,i) => s + (i.quantity || 0), 0) : 0} items</span>
                     <span class="order-card-total">₹${order.total || 0}</span>
                 </div></div>`;
             });
@@ -609,15 +665,22 @@
         function saveCart(syncDB = true) {
             localStorage.setItem('vastramaya_cart', JSON.stringify(cart));
             if (syncDB && currentUser) {
-                db.collection('user-login').doc(currentUser.uid).update({ cart }).catch(err => console.error('Cart sync error:', err));
+                // Use set with merge to avoid errors if document doesn't exist
+                db.collection('user-login').doc(currentUser.uid).set({ cart }, { merge: true })
+                    .catch(err => console.error('Cart sync error:', err));
             }
         }
+
         async function syncCartToFirestore() {
             if (!currentUser) return;
             try {
                 const doc = await db.collection('user-login').doc(currentUser.uid).get();
                 if (doc.exists && doc.data().cart) {
-                    if (cart.length === 0) { cart = doc.data().cart; saveCart(false); renderCart(); } else {
+                    if (cart.length === 0) {
+                        cart = doc.data().cart;
+                        saveCart(false);
+                        renderCart();
+                    } else {
                         const dbCart = doc.data().cart || [];
                         cart.forEach(localItem => {
                             const existing = dbCart.find(d => String(d.uniqueId) === String(localItem.uniqueId));
@@ -628,9 +691,14 @@
                         saveCart(false);
                         renderCart();
                     }
-                } else if (cart.length > 0) saveCart(true);
-            } catch (e) { console.error('Sync error', e); }
+                } else if (cart.length > 0) {
+                    saveCart(true); // will create doc if missing
+                }
+            } catch (e) {
+                console.error('Sync error', e);
+            }
         }
+
         function renderCart() {
             const desktopBody = document.getElementById('cart-items-desktop');
             const mobileBody = document.getElementById('cart-items-mobile');
