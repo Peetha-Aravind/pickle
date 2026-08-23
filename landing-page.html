@@ -836,7 +836,7 @@
             <img class="d-navbar-logo" src="./assets/logo.png" alt="Happy NonVeg pickles" onclick="window.location.href='landing-page.html'" />
             <div class="d-nav-links">
                 <a href="landing-page.html" class="d-nav-link active">Home</a>
-                <a href="shop.html" class="d-nav-link">Shop</a>
+                <a href="shop.html" class="d-nav-link" onclick="return handleNavClick(event,'shop.html')">Shop</a>
                 <div class="d-categories-dropdown">
                     <a href="javascript:void(0)" class="d-nav-link" style="cursor:default">Categories</a>
                     <div class="d-categories-content" id="desktop-nav-categories"></div>
@@ -862,7 +862,7 @@
                         <div class="cart-popup-body" id="cart-items-desktop"></div>
                         <div class="cart-popup-footer">
                             <div class="cart-total"><div class="cart-total-label">Total Amount</div><div class="cart-total-amount" id="cart-total-desktop">₹0.00</div></div>
-                            <button class="buy-btn" onclick="window.location.href='checkout.html'"><span>Checkout Now</span><span class="icon-wrap icon-white"><img src="./assets/arrow-right.svg" class="icon-default" alt=""><img src="./assets/arrow-right-fill.svg" class="icon-fill" alt=""></span></button>
+                            <button class="buy-btn" onclick="requireLoginThenNavigate('checkout.html')"><span>Checkout Now</span><span class="icon-wrap icon-white"><img src="./assets/arrow-right.svg" class="icon-default" alt=""><img src="./assets/arrow-right-fill.svg" class="icon-fill" alt=""></span></button>
                         </div>
                     </div>
                 </div>
@@ -929,7 +929,7 @@
                         </div>
                         <span class="icon-wrap icon-muted"><img src="./assets/chevron.svg" class="icon-default" alt=""><img src="./assets/chevron-fill.svg" class="icon-fill" alt=""></span>
                     </a>
-                    <a href="shop.html" class="m-nav-link icon-trigger">
+                    <a href="shop.html" class="m-nav-link icon-trigger" onclick="return handleNavClick(event,'shop.html')">
                         <div class="m-link-content">
                             <span class="icon-wrap"><img src="./assets/cart.svg" class="icon-default" alt=""><img src="./assets/cart-fill.svg" class="icon-fill" alt=""></span>
                             <span>Shop</span>
@@ -1000,7 +1000,7 @@
                     <div class="mobile-cart-total-label">Total</div>
                     <div class="mobile-cart-total-amount" id="cart-total-mobile">₹0.00</div>
                 </div>
-                <button class="mobile-buy-btn" onclick="window.location.href='checkout.html'">
+                <button class="mobile-buy-btn" onclick="requireLoginThenNavigate('checkout.html')">
                     <span>Checkout Now</span>
                     <span class="icon-wrap icon-white"><img src="./assets/arrow-right.svg" class="icon-default" alt=""><img src="./assets/arrow-right-fill.svg" class="icon-fill" alt=""></span>
                 </button>
@@ -1235,6 +1235,51 @@ let currentUser = null;
 let wishlistUnsubscribe = null;
 let allProducts = [];
 
+// ═══════════ LOGIN-GATE HELPERS (used across the whole landing page) ═══════════
+window.pendingComboAction = null;   // 'cart' | 'buy' | null — set when guest tries the combo box
+window.pendingNavigation = null;    // URL string — set when guest tries to open any other page
+
+// Call this instead of window.location.href for any link/button that should require login
+function requireLoginThenNavigate(url) {
+    if (currentUser) {
+        window.location.href = url;
+    } else {
+        window.pendingNavigation = url;
+        showToast("Login to view this page.");
+        openAuthModal();
+    }
+}
+
+// Used as onclick="return handleNavClick(event,'someurl.html')" on plain <a> tags
+function handleNavClick(e, url) {
+    if (!currentUser) {
+        e.preventDefault();
+        requireLoginThenNavigate(url);
+        return false;
+    }
+    return true; // let the normal <a href> navigation happen
+}
+
+// Runs once, right after a successful login/signup/Google sign-in
+function runPendingActions() {
+    setTimeout(() => {
+        if (window.pendingComboAction && typeof window.comboAddToCart === 'function') {
+            const action = window.pendingComboAction;
+            window.pendingComboAction = null;
+            if (action === 'cart') {
+                if (window.comboAddToCart()) showToast("🎉 Combo added to cart!");
+            } else if (action === 'buy') {
+                if (window.comboAddToCart()) window.location.href = 'checkout.html';
+            }
+        }
+        if (window.pendingNavigation) {
+            const url = window.pendingNavigation;
+            window.pendingNavigation = null;
+            window.location.href = url;
+        }
+    }, 300);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     initNavbarUI();
     checkAuth();
@@ -1271,7 +1316,7 @@ function initLiveSearch() {
         const results = allProducts.filter(p => p.name.toLowerCase().includes(lowerQuery)).slice(0, 6);
         let html = '';
         if (results.length === 0) { html = '<div class="search-no-results">No products found</div>'; }
-        else { results.forEach(p => { html += `<a href="view.html?id=${p.productId}" class="search-result-item"><img src="${p.image}" alt="${p.name}" class="search-result-img" onerror="this.src='https://placehold.co/48'"><div class="search-result-info"><div class="search-result-name">${p.name}</div><div class="search-result-price">₹${p.price}</div></div></a>`; }); }
+        else { results.forEach(p => { html += `<a href="view.html?id=${p.productId}" class="search-result-item" onclick="return handleNavClick(event,'view.html?id=${p.productId}')"><img src="${p.image}" alt="${p.name}" class="search-result-img" onerror="this.src='https://placehold.co/48'"><div class="search-result-info"><div class="search-result-name">${p.name}</div><div class="search-result-price">₹${p.price}</div></div></a>`; }); }
         container.innerHTML = html;
         container.classList.add('show');
     };
@@ -1284,8 +1329,7 @@ function initLiveSearch() {
 
 function handleWishlistClick(e) {
     e.preventDefault();
-    if (currentUser) window.location.href = 'wishlist.html';
-    else openAuthModal();
+    requireLoginThenNavigate('wishlist.html');
 }
 function updateWishlistCount() {
     const count = wishlist.length;
@@ -1335,7 +1379,13 @@ function initAuthModal() {
         const email = document.getElementById('login-email').value;
         const pass = document.getElementById('login-password').value;
         document.getElementById('loader').style.display = 'flex';
-        auth.signInWithEmailAndPassword(email, pass).then(() => { document.getElementById('loader').style.display = 'none'; showToast("Login Successful!"); modalOverlay.classList.remove('active'); }).catch(err => { document.getElementById('loader').style.display = 'none'; showToast(err.message); });
+        auth.signInWithEmailAndPassword(email, pass).then(() => {
+            document.getElementById('loader').style.display = 'none';
+            showToast("Login Successful!");
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+            runPendingActions();
+        }).catch(err => { document.getElementById('loader').style.display = 'none'; showToast(err.message); });
     });
     signupForm.addEventListener('submit', e => {
         e.preventDefault();
@@ -1369,6 +1419,8 @@ function initAuthModal() {
                 document.getElementById('loader').style.display = 'none';
                 showToast("Account Created!");
                 modalOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+                runPendingActions();
             })
             .catch(err => {
                 document.getElementById('loader').style.display = 'none';
@@ -1381,6 +1433,8 @@ function initAuthModal() {
             if (result.additionalUserInfo.isNewUser) db.collection('users').doc(result.user.uid).set({ name: result.user.displayName, email: result.user.email, createdAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
             showToast("Welcome " + result.user.displayName);
             modalOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+            runPendingActions();
         }).catch(err => showToast(err.message));
     });
 }
@@ -1389,8 +1443,8 @@ async function loadCategories() {
     try {
         const snapshot = await db.collection('categories').get();
         const categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).filter(c => c.enabled !== false);
-        const dHtml = categories.map(c => `<a href="shop.html?category=${encodeURIComponent(c.name)}" class="d-category-item">${c.name}</a>`).join('');
-        const mHtml = categories.map(c => `<a href="shop.html?category=${encodeURIComponent(c.name)}" class="m-category-item">${c.name}</a>`).join('');
+        const dHtml = categories.map(c => `<a href="shop.html?category=${encodeURIComponent(c.name)}" class="d-category-item" onclick="return handleNavClick(event,'shop.html?category=${encodeURIComponent(c.name)}')">${c.name}</a>`).join('');
+        const mHtml = categories.map(c => `<a href="shop.html?category=${encodeURIComponent(c.name)}" class="m-category-item" onclick="return handleNavClick(event,'shop.html?category=${encodeURIComponent(c.name)}')">${c.name}</a>`).join('');
         document.getElementById('desktop-nav-categories').innerHTML = dHtml;
         document.getElementById('mobile-nav-categories').innerHTML = mHtml;
     } catch (err) { console.error("Error loading categories:", err); }
@@ -1542,7 +1596,7 @@ function showToast(msg) {
         const card = document.createElement('div');
         card.className = 'product-card reveal';
         card.style.transitionDelay = `${(index % 6) * 70}ms`;
-        card.onclick = () => window.location.href = `view.html?id=${prod.id}`;
+        card.onclick = () => requireLoginThenNavigate(`view.html?id=${prod.id}`);
         card.innerHTML = `<div class="product-card-img">${disc ? `<div class="card-ribbon">${disc}</div>` : ''}<img src="${img}" alt="${prod.name}" loading="lazy" onerror="this.src='${fallback(400,400,prod.name)}'"></div><div class="product-card-body"><div class="product-card-name">${prod.name}</div>${v0.weight ? `<div class="product-card-weight">${v0.weight}${variants.length > 1 ? ` · ${variants.length} sizes` : ''}</div>` : ''}<div class="product-card-pricing"><span class="product-card-price">${fmt(price)}</span>${mrp && +mrp > +price ? `<span class="product-card-mrp">${fmt(mrp)}</span>` : ''}${disc ? `<span class="product-card-discount">${disc}</span>` : ''}</div></div><div class="product-card-cta">View Product</div>`;
         return card;
     }
@@ -1648,7 +1702,15 @@ function showToast(msg) {
             const img = cat.image || fallback(300, 400, cat.name);
             const prodCount = cat.products ? Object.keys(cat.products).length : null;
             const card = document.createElement('div'); card.className = 'cat-card reveal'; card.style.transitionDelay = `${i * 80}ms`;
-            card.onclick = () => { const targetSection = document.getElementById(`category-section-${cat.id}`); if (targetSection) targetSection.scrollIntoView({ behavior: 'smooth' }); else window.location.href = `products.html?categoryId=${cat.id}`; };
+            card.onclick = () => {
+                const targetSection = document.getElementById(`category-section-${cat.id}`);
+                if (targetSection) {
+                    // scrolling to a section already on this page is not a real navigation — no login required
+                    targetSection.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    requireLoginThenNavigate(`products.html?categoryId=${cat.id}`);
+                }
+            };
             card.innerHTML = `<img src="${img}" alt="${cat.name}" loading="lazy" onerror="this.src='${fallback(300,400,cat.name)}'"><div class="cat-card-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div><div class="cat-card-label"><div class="cat-card-name">${cat.name}</div>${prodCount !== null ? `<div class="cat-card-count">${prodCount} product${prodCount !== 1 ? 's' : ''}</div>` : ''}</div>`;
             grid.appendChild(card);
         });
@@ -1812,9 +1874,16 @@ function showToast(msg) {
         renderCart();
         return true;
     }
+    window.comboAddToCart = comboAddToCart; // expose so the navbar/login script can trigger it post-login
 
     function setupComboButtons() {
         document.getElementById('comboAddToCartBtn').addEventListener('click', () => {
+            if (!currentUser) {
+                showToast("Please login first to continue.");
+                window.pendingComboAction = 'cart';
+                openAuthModal();
+                return;
+            }
             if (comboAddToCart()) {
                 showToast("🎉 Combo added to cart!");
             } else {
@@ -1823,6 +1892,12 @@ function showToast(msg) {
         });
 
         document.getElementById('comboBuyNowBtn').addEventListener('click', () => {
+            if (!currentUser) {
+                showToast("Please login first to continue.");
+                window.pendingComboAction = 'buy';
+                openAuthModal();
+                return;
+            }
             if (comboAddToCart()) {
                 window.location.href = 'checkout.html';
             } else {
