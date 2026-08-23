@@ -310,115 +310,6 @@
         .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(192,57,43,.3); }
         .switch-form-text { margin-top: 16px; text-align: center; font-size: 14px; color: var(--ash); }
         .switch-form-text a { color: var(--brand-primary); font-weight: 600; cursor: pointer; }
-
-        /* ─── WISHLIST SECTION (added) ─── */
-        .wishlist-section {
-            margin-top: 32px;
-            background: var(--surface-card);
-            border-radius: var(--r-card);
-            border: 1px solid var(--border-subtle);
-            box-shadow: var(--shadow-sm);
-            padding: 24px 28px;
-        }
-        .wishlist-title {
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .wishlist-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 16px;
-        }
-        .wishlist-card {
-            background: #fff;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid var(--border-subtle);
-            transition: transform .2s, box-shadow .2s;
-            position: relative;
-        }
-        .wishlist-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-sm);
-        }
-        .wishlist-card-img {
-            width: 100%;
-            aspect-ratio: 1/1;
-            object-fit: cover;
-            background: #f5ede4;
-        }
-        .wishlist-card-body {
-            padding: 12px;
-        }
-        .wishlist-card-name {
-            font-weight: 700;
-            font-size: 14px;
-            color: var(--ink);
-            line-height: 1.3;
-            margin-bottom: 4px;
-        }
-        .wishlist-card-price {
-            font-weight: 700;
-            color: var(--brand-primary);
-            font-size: 16px;
-        }
-        .wishlist-remove-btn {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: rgba(255,255,255,.9);
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border: 1px solid var(--border-subtle);
-            transition: all .2s;
-        }
-        .wishlist-remove-btn:hover {
-            background: #fff0f0;
-            border-color: #fecaca;
-        }
-        .wishlist-remove-btn .icon-wrap {
-            width: 16px;
-            height: 16px;
-        }
-        .wishlist-remove-btn .icon-wrap .icon-default,
-        .wishlist-remove-btn .icon-wrap .icon-fill {
-            width: 16px;
-            height: 16px;
-        }
-        .wishlist-remove-btn .icon-wrap .icon-fill {
-            filter: invert(16%) sepia(97%) saturate(4500%) hue-rotate(345deg) brightness(90%) contrast(110%);
-        }
-        .wishlist-empty {
-            text-align: center;
-            padding: 30px;
-            color: var(--text-light);
-        }
-        .wishlist-view-btn {
-            display: inline-block;
-            margin-top: 12px;
-            padding: 8px 16px;
-            background: var(--brand-gradient);
-            color: #fff;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all .2s;
-        }
-        .wishlist-view-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(192,57,43,.3);
-        }
     </style>
 </head>
 <body>
@@ -519,13 +410,6 @@
                 <div class="past-orders-title">🗂️ Order History</div>
                 <div id="pastOrdersContainer"></div>
             </div>
-            <!-- Wishlist Section added below order history -->
-            <div class="wishlist-section" id="wishlistSection">
-                <div class="wishlist-title">❤️ My Wishlist</div>
-                <div id="wishlistContainer">
-                    <div class="loading-skeleton" style="height:120px;"></div>
-                </div>
-            </div>
         </div>
     </main>
 
@@ -591,43 +475,11 @@
         }
         let cart = getCartFromStorage();
 
-        // Wishlist globals
-        let allProducts = [];
-        let wishlist = [];
-        let wishlistUnsubscribe = null;
-
         document.addEventListener('DOMContentLoaded', () => {
             initNavbarUI();
             checkAuthAndLoadOrders();
             renderCart();
-            fetchAllProducts(); // Fetch products for wishlist mapping
         });
-
-        async function fetchAllProducts() {
-            try {
-                // Try collectionGroup first for subcollections
-                const snapshot = await db.collectionGroup('products').get();
-                const uniqueProducts = new Map();
-                snapshot.docs.forEach(doc => {
-                    const data = doc.data();
-                    if (data.productId && !uniqueProducts.has(data.productId)) {
-                        uniqueProducts.set(data.productId, { id: data.productId, ...data });
-                    } else if (data.id && !uniqueProducts.has(data.id)) {
-                        uniqueProducts.set(data.id, { id: data.id, ...data });
-                    }
-                });
-                allProducts = Array.from(uniqueProducts.values());
-            } catch (groupError) {
-                console.warn('CollectionGroup failed, trying top-level products collection:', groupError);
-                try {
-                    const snapshot = await db.collection('products').get();
-                    allProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                } catch (error) {
-                    console.error('Error fetching products:', error);
-                    allProducts = [];
-                }
-            }
-        }
 
         function initNavbarUI() {
             const pToggle = document.getElementById('d-profile-toggle');
@@ -714,7 +566,6 @@
                     document.getElementById('logout-btn-mobile').onclick = () => auth.signOut();
                     await syncCartToFirestore();
                     await loadOrders(user.uid);
-                    setupWishlistListener(user);
                 } else {
                     window.location.href = 'landing-page.html';
                 }
@@ -811,86 +662,10 @@
             pastContainer.innerHTML = html;
         }
 
-        // ─── WISHLIST FUNCTIONS ───
-        function setupWishlistListener(user) {
-            if (wishlistUnsubscribe) wishlistUnsubscribe();
-            wishlistUnsubscribe = db.collection('users').doc(user.uid).onSnapshot(doc => {
-                wishlist = (doc.exists && doc.data().wishlist) ? doc.data().wishlist : [];
-                renderWishlist();
-            }, err => {
-                console.error('Wishlist sync error:', err);
-                renderWishlist();
-            });
-        }
-
-        function renderWishlist() {
-            const container = document.getElementById('wishlistContainer');
-            if (!container) return;
-
-            if (!currentUser) {
-                container.innerHTML = '<div class="wishlist-empty">Please log in to see your wishlist.</div>';
-                return;
-            }
-
-            if (!wishlist.length) {
-                container.innerHTML = `<div class="wishlist-empty">Your wishlist is empty. <br><a href="shop.html" class="wishlist-view-btn">Browse Products</a></div>`;
-                return;
-            }
-
-            // Map wishlist IDs to product objects
-            const wishlistProducts = wishlist.map(id => allProducts.find(p => p.id === id || p.productId === id)).filter(Boolean);
-
-            if (!wishlistProducts.length) {
-                container.innerHTML = '<div class="wishlist-empty">Products not found.</div>';
-                return;
-            }
-
-            let html = '<div class="wishlist-grid">';
-            wishlistProducts.forEach(prod => {
-                const price = prod.price || (prod.variants && prod.variants[0]?.price) || 0;
-                const img = prod.image || 'https://placehold.co/400x400/f5e9e7/c0392b?text=Pickle';
-                html += `
-                    <div class="wishlist-card">
-                        <button class="wishlist-remove-btn" onclick="removeFromWishlist('${prod.id}')" title="Remove from wishlist">
-                            <span class="icon-wrap"><img src="./assets/heart-fill.svg" class="icon-default" style="filter: invert(16%) sepia(97%) saturate(4500%) hue-rotate(345deg) brightness(90%) contrast(110%);"><img src="./assets/heart-fill.svg" class="icon-fill" alt=""></span>
-                        </button>
-                        <img src="${img}" class="wishlist-card-img" onerror="this.src='https://placehold.co/400x400/e2d6ca/5a3a2a?text=Oops'">
-                        <div class="wishlist-card-body">
-                            <div class="wishlist-card-name">${prod.name || 'Pickle'}</div>
-                            <div class="wishlist-card-price">₹${Math.round(parseFloat(price))}</div>
-                        </div>
-                    </div>
-                `;
-            });
-            html += '</div>';
-            container.innerHTML = html;
-        }
-
-        async function removeFromWishlist(productId) {
-            if (!currentUser) {
-                showToast('Please log in first.');
-                return;
-            }
-            try {
-                const docRef = db.collection('users').doc(currentUser.uid);
-                const doc = await docRef.get();
-                let wishlistArray = doc.exists && doc.data().wishlist ? doc.data().wishlist : [];
-                wishlistArray = wishlistArray.filter(id => id !== productId);
-                await docRef.update({ wishlist: wishlistArray });
-                wishlist = wishlistArray; // local update
-                showToast('Removed from wishlist');
-                // re-render will happen via listener, but for immediacy:
-                renderWishlist();
-            } catch (err) {
-                console.error('Error removing from wishlist:', err);
-                showToast('Could not remove item. Please try again.');
-            }
-        }
-
-        // ─── CART FUNCTIONS ───
         function saveCart(syncDB = true) {
             localStorage.setItem('vastramaya_cart', JSON.stringify(cart));
             if (syncDB && currentUser) {
+                // Use set with merge to avoid errors if document doesn't exist
                 db.collection('user-login').doc(currentUser.uid).set({ cart }, { merge: true })
                     .catch(err => console.error('Cart sync error:', err));
             }
@@ -917,7 +692,7 @@
                         renderCart();
                     }
                 } else if (cart.length > 0) {
-                    saveCart(true);
+                    saveCart(true); // will create doc if missing
                 }
             } catch (e) {
                 console.error('Sync error', e);
